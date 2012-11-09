@@ -1,7 +1,12 @@
 {
-  "author": "",
-  "name": "",
-  "version": "0.0.0",
+  "author": "Rob Walch",
+  "name": "b3",
+  "version": "0.0.1",
+  "homepage" : "",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository" : {
+  	"type" : "git",
+  	"url" : ""
+  }
 }
