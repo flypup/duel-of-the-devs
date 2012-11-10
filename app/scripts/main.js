@@ -7,9 +7,11 @@ ec.height = 540;//720;
 	'use strict';
 	var THREE = window.THREE;
 	var requestAnimationFrame = window.requestAnimationFrame;
+	var Stats = window.Stats;
 	var camera, scene, renderer;
 	var geometry, material, mesh;
 	var delta, deltaTime;
+	var stats;
 
 	var core = {
 
@@ -40,6 +42,12 @@ ec.height = 540;//720;
 		    document.body.appendChild( renderer.domElement );
 
 
+		    stats = new Stats();
+			// stats.setMode(1);
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.left = '0px';
+			stats.domElement.style.top = '0px';
+		    document.body.appendChild( stats.domElement );
 
 
 		    deltaTime = time;
@@ -47,6 +55,7 @@ ec.height = 540;//720;
 		},
 
 		animate: function(time) {
+			stats.begin();
 
 			delta = time - deltaTime;
 			deltaTime = time;
@@ -68,6 +77,7 @@ ec.height = 540;//720;
 
 		    renderer.render( scene, camera );
 
+		    stats.end();
 		}
 
 	};
