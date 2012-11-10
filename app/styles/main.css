@@ -1,1 +1,8 @@
 /* Will be compiled down to a single stylesheet with your sass files */
+body {
+	/*background-color: #000000;*/
+}
+
+canvas {
+	border: 1px solid red;
+}
