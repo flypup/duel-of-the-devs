@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "Joseph Gentle",
+    "email": "josephg@gmail.com",
+    "url": "josephg.com"
+  },
+  "name": "Chipmunk-js",
+  "description": "Chipmunk 2d physics engine, in Javascript",
+  "version": "0.1.1",
+  "homepage": "https://github.com/josephg/chipmunk-js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/josephg/Chipmunk-js.git"
+  },
+  "main": "cp.js",
+  "engines": {
+    "node": "~0.6.5"
+  },
+  "keywords": [
+    "physics",
+    "engine",
+    "chipmunk"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "readme": "# Chipmunk for Javascript!\n\nThis is a port of the [Chipmunk Physics](http://chipmunk-physics.net/) library to Javascript!\n\n## Caveats\n\n- It is slower than the C version (duh, its in javascript). Specifically, physics simulations using chipmunk-js runs about 3 times slower than the C equivalent.\n- I haven't implemented chipmunk's spatial hash, and I have no intention to do so.\n\n# Usage\n\nThe API for Chipmunk-js is almost identical to chipmunk-physics. Except:\n\n- The `cp` prefix has gone\n- Most functions are wrapped by their containing objects\n- Some functions took an array-and-length. Arrays are now all simply javascript arrays, and the length argument has been removed. Eg:\n\n    ```c\ncpMomentForPoly(mass, numVerts, *verts, offset);\n    ```\n\n    is now simply:\n\n    ```javascript\nmomentForPoly(mass, verts, offset);\n    ```\n\n- Lots of trivial getters and setters have been removed. Access the property directly.\n\n## On a website\n\n```html\n<script src=\"cp.min.js\"></script>\n\n<script>\nvar space = new cp.Space();\nspace.addBody(new cp.Body(...))\n// ...\n</script>\n```\n\nIf any exceptions are thrown or anything, use `cp.js` instead and post the stack trace you get to the issue page.\n\n## From nodejs\n\n`npm install chipmunk`\n\n```javascript\ncp = require('chipmunk');\n\nvar space = new cp.Space();\nspace.addBody(new cp.Body(...))\n// ...\n```\n\n# Example\n\nThis code creates a new space, sets 10 physics iterations per update (these increase simulation stability). Then it adds a bunch of line segments to the space.\n\nIn C, this code looked like:\n\n```C\n  cpSpace *space = cpSpaceNew();\n  space->iterations = 10;\n  \n  cpVect offset = cpv(-320, -240);\n  for(int i=0; i<(bouncy_terrain_count - 1); i++){\n    cpVect a = bouncy_terrain_verts[i], b = bouncy_terrain_verts[i+1];\n    cpShape *shape = cpSpaceAddShape(space, cpSegmentShapeNew(cpSpaceGetStaticBody(space), cpvadd(a, offset), cpvadd(b, offset), 0.0f));\n    cpShapeSetElasticity(shape, 1.0f);\n  }\n```\n\nIn javascript, the equivalent code is:\n\n```javascript\n  var space = new cp.Space();\n  space.iterations = 10;\n  \n  var offset = cp.v(-320, -240);\n  for(var i=0; i<(bouncy_terrain_verts.length - 1); i++){\n    var a = bouncy_terrain_verts[i], b = bouncy_terrain_verts[i+1];\n    var shape = space.addShape(new cp.SegmentShape(space.staticBody, cp.vadd(a, offset), cp.vadd(b, offset), 0));\n    shape.setElasticity(1);\n  }\n```\n\n# License\n\nLike Chipmunk, chipmunk-js is MIT licensed.\n\n```\nCopyright (c) 2007 Scott Lembcke and Joseph Gentle\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n```\n",
+  "readmeFilename": "README.md",
+  "_id": "chipmunk@0.1.1"
+}
