@@ -11,6 +11,7 @@ ec.height = 540;//720;
 	var view;
 	var updateBodyView;
 	var debugView;
+	var cpDebugView;
 	
 	var TIME_STEP = 1000/60;
 	var delta, deltaTime, remainder;
@@ -24,12 +25,16 @@ ec.height = 540;//720;
 
 			world = new ec.World();
 			world.addFloor();
+			world.add(new ec.Box()).setView(new ec.ThreeJsBoxView()).setPos(-1200, -400);
+			world.add(new ec.Box()).setView(new ec.ThreeJsBoxView()).setPos( 1200, -400);
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 
 		    view = new ec.ThreeJsWorldView();
 		    updateBodyView = view.updateBody();
 
 		    debugView = new ec.DebugView();
+		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		},
 
 		animate: function(time) {
@@ -52,9 +57,11 @@ ec.height = 540;//720;
 			    world.space.eachBody(updateBodyView);
 			} else {
 				world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			}
 
 		    view.draw();
+		    cpDebugView.step();
 
 		    debugView.stats.end();
 		}
