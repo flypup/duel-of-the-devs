@@ -125,7 +125,7 @@ var cp = cp;
 		this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
 		this.ctx.fillText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')', 5, 60, maxWidth);
 
-		this.ctx.fillText('Mouse: ' + this.mouse.x +', '+ this.mouse.y, 5, 80, maxWidth);
+		this.ctx.fillText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0), 5, 80, maxWidth);
 
 		if (this.message) {
 			this.ctx.fillText(this.message, 5, this.height - 50, maxWidth);
