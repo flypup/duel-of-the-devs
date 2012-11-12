@@ -10,6 +10,8 @@ var ec = ec || {};
 	    //this.camera = new THREE.OrthographicCamera( ec.width / - 2, ec.width / 2, ec.height / 2, ec.height / - 2, 1, 10000 );
 	    //this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 10000 );
 	    camera.position.z = 1000;
+	    camera.position.x = -1000;
+	    camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 	    this.scene = new THREE.Scene();
 
