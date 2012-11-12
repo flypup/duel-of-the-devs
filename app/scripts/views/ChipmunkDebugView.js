@@ -13,7 +13,9 @@ var cp = cp;
 		this.width  = 320;
 		this.height = 180;
 		this.scale = this.width  * 0.25 / ec.width;
-		this.scale = this.height * 0.25 / ec.height;
+		//this.scale = this.height * 0.25 / ec.height;
+		this.orthoSize = v(this.width, this.height).mult(1/this.scale);
+		this.orthoPos = v.mult(this.orthoSize, 0.5);
 
 		var canvas = this.canvas = document.createElement( 'canvas' );
 		canvas.width = this.width;
@@ -29,17 +31,23 @@ var cp = cp;
 
 		var self = this;
 		var canvas2point = this.canvas2point = function(x, y) {
-			return v((x - 150) / self.scale, 1650 - y / self.scale);
+			return v(x / self.scale - self.orthoPos.x, self.orthoPos.y - y / self.scale);
 		};
 
 		this.point2canvas = function(point) {
-			return v(point.x * self.scale + 150, (1650 - point.y) * self.scale);
+			return v((point.x + self.orthoPos.x) * self.scale, (self.orthoPos.y - point.y) * self.scale);
 		};
 
 		// HACK HACK HACK - its awful having this here, and its going to break when we
 		// have multiple demos open at the same time.
 		this.canvas.onmousemove = function(e) {
 			self.mouse = canvas2point(e.offsetX, e.offsetY);
+			if (self.mouseDown && !self.mouseJoint) {
+				var mv = v(e.offsetX - self.mouseDown.x, e.offsetY - self.mouseDown.y).mult(1/self.scale);
+				self.mouseDown.x = e.offsetX;
+				self.mouseDown.y = e.offsetY;
+				self.orthoPos.add(mv);
+			}
 		};
 
 		/*
@@ -60,7 +68,8 @@ var cp = cp;
 
 			if(!rightclick && !self.mouseJoint) {
 				var point = canvas2point(e.offsetX, e.offsetY);
-			
+				self.mouseDown = v(e.offsetX, e.offsetY);
+
 				var shape = space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
 				if(shape){
 					var body = shape.body;
@@ -81,9 +90,17 @@ var cp = cp;
 					space.removeConstraint(self.mouseJoint);
 					self.mouseJoint = null;
 				}
+				self.mouseDown = null;
 			}
 		};
 
+		this.canvas.onmousewheel = function(e) {
+			var value = e.detail ? e.detail * -1 : (e.wheelDeltaY ? e.wheelDeltaY : e.wheelDelta) / 40;
+			self.scale = Math.min(Math.max(0.005, self.scale + value / (-999*self.scale + 1000)), 1);
+			var sizeDiff = v.sub(self.orthoSize, v(self.width, self.height).mult(1/self.scale));
+			self.orthoSize.sub(sizeDiff);
+			self.orthoPos.sub(sizeDiff.mult(0.5));
+		};
 	};
 
 	ChipmunkDebugView.prototype.drawInfo = function() {
