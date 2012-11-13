@@ -28,10 +28,10 @@ var ec = ec || {};
 	    this.update(body, scene);
 	};
 
-	ec.ThreeJsSphereView.prototype.updateMesh = function(body, scene) {
-	    this.mesh.position.x = body.p.x;
-		this.mesh.position.y = body.p.y;
-		this.mesh.rotation.z = body.a;
+	ec.ThreeJsSphereView.prototype.updateMesh = function(shape, scene) {
+	    this.mesh.position.x = shape.body.p.x;
+		this.mesh.position.y = shape.body.p.y;
+		this.mesh.rotation.z = shape.body.a;
 	};
 
 })();

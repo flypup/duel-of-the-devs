@@ -25,10 +25,12 @@ var ec = ec || {};
 	    document.body.appendChild( renderer.domElement );
 	};
 
-	ec.ThreeJsWorldView.prototype.updateBody = function() {
+	ec.ThreeJsWorldView.prototype.updateShape = function() {
 		var scene = this.scene;
-		return function(body) {
-			body.view.update(body, scene);
+		return function(shape) {
+			if (shape.view) {
+				shape.view.update(shape, scene);
+			}
 		};
 	};
 

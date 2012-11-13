@@ -73,11 +73,13 @@ var cp = cp;
 				var shape = space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
 				if(shape){
 					var body = shape.body;
-					var mouseJoint = self.mouseJoint = new cp.PivotJoint(mouseBody, body, v(0,0), body.world2Local(point));
+					if (!body.isStatic()) {
+						var mouseJoint = self.mouseJoint = new cp.PivotJoint(mouseBody, body, v(0,0), body.world2Local(point));
 
-					mouseJoint.maxForce = 50000;
-					mouseJoint.errorBias = Math.pow(1 - 0.15, 60);
-					space.addConstraint(mouseJoint);
+						mouseJoint.maxForce = 50000;
+						mouseJoint.errorBias = Math.pow(1 - 0.15, 60);
+						space.addConstraint(mouseJoint);
+					}
 				}
 			}
 		};

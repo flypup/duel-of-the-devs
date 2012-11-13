@@ -25,7 +25,7 @@ var cp = cp;
 	};
 
 	ec.Circle.prototype.setView = function(view) {
-		this.view = this.body.view = view;
+		this.view = this.shape.view = view;
 		return this;
 	};
 

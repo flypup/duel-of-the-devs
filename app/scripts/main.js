@@ -9,7 +9,8 @@ ec.height = 540;//720;
 	
 	var world;
 	var view;
-	var updateBodyView;
+	var updateShapeView;
+	var redraw;
 	var debugView;
 	var cpDebugView;
 	
@@ -25,13 +26,14 @@ ec.height = 540;//720;
 
 			world = new ec.World();
 			world.addFloor();
-			world.add(new ec.Box()).setView(new ec.ThreeJsBoxView()).setPos(-1200, -400);
-			world.add(new ec.Box()).setView(new ec.ThreeJsBoxView()).setPos( 1200, -400);
+			world.add(new ec.Box(world.createStaticBody()).setPos(-1200, -400)).setView(new ec.ThreeJsBoxView());
+			world.add(new ec.Box(world.createStaticBody()).setPos( 1200, -400)).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+			redraw = true;
 
 		    view = new ec.ThreeJsWorldView();
-		    updateBodyView = view.updateBody();
+		    updateShapeView = view.updateShape();
 
 		    debugView = new ec.DebugView();
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
@@ -53,11 +55,12 @@ ec.height = 540;//720;
 				world.step(TIME_STEP/1000);
 			}
 
-			if (world.space.activeShapes.count > 0) { //} || resized) {
-			    world.space.eachBody(updateBodyView);
+			if (world.space.activeShapes.count > 0 || redraw) {
+			    world.space.eachShape(updateShapeView);
+			    redraw = false;
 			} else {
 				world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+				world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			}
 
 		    view.draw();

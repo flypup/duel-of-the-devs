@@ -17,9 +17,17 @@ var cp = cp;
 	};
 
 	ec.World.prototype.add = function(bodyShape) {
-		this.space.addBody(bodyShape.body);
+		if (!bodyShape.body.isStatic()) {
+			this.space.addBody(bodyShape.body);
+		}
 		this.space.addShape(bodyShape.shape);
 		return bodyShape;
+	};
+
+	ec.World.prototype.createStaticBody = function() {
+		var body = new cp.Body(Infinity, Infinity);
+		body.nodeIdleTime = Infinity;
+		return body;
 	};
 
 	ec.World.prototype.addFloor = function() {
