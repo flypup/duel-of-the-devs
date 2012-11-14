@@ -21,9 +21,10 @@ var cp = cp;
 		canvas.width = this.width;
 		canvas.height = this.height;
 		canvas.style.position = 'absolute';
-		canvas.style.top = '0';
+		canvas.style.top = '100%';
 		canvas.style.left = '100%';
-		canvas.style.marginLeft = '-320px';
+		canvas.style.marginLeft = '-'+(this.width+5)+'px';
+		canvas.style.marginTop =  '-'+(this.height+5)+'px';
 		this.ctx = canvas.getContext('2d');
 		document.body.appendChild( canvas );
 

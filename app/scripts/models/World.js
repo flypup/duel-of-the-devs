@@ -10,10 +10,12 @@ var cp = cp;
 	ec.World = function() {
 		var space =
 		this.space = new cp.Space();
-		space.iterations = 30;
 		space.gravity = v(0, -300);
-		space.sleepTimeThreshold = 0.5;
-		space.collisionSlop = 0.5;
+		space.iterations = 8;
+		space.sleepTimeThreshold = ec.TIME_STEP * 9;
+		space.idleSpeedThreshold = 5;
+		space.collisionSlop = 0.1;
+		space.damping = 0.99;
 	};
 
 	ec.World.prototype.add = function(bodyShape) {
