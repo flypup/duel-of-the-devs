@@ -14,7 +14,7 @@ ec.height = 540;//720;
 	var debugView;
 	var cpDebugView;
 	
-	var TIME_STEP = 1000/60;
+	var TIME_STEP = ec.TIME_STEP = 1/60;
 	var delta, deltaTime, remainder;
 
 	var core = ec.Core = {
@@ -35,8 +35,12 @@ ec.height = 540;//720;
 		    view = new ec.ThreeJsWorldView();
 		    updateShapeView = view.updateShape();
 
-		    debugView = new ec.DebugView();
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
+		    debugView = new ec.DebugView();
+
+		    // GUI Settings
+			//	debugView.worldGui(world);
+			//	debugView.viewGui(view);
 		},
 
 		animate: function(time) {
@@ -45,14 +49,14 @@ ec.height = 540;//720;
 			// note: three.js includes requestAnimationFrame shim
 		    requestAnimationFrame( core.animate );
 
-			delta = time - deltaTime;
+			delta = (time - deltaTime) / 1000;
 			deltaTime = time;
 
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*5));
 			remainder += delta;
 			while(remainder > TIME_STEP) {
 				remainder -= TIME_STEP;
-				world.step(TIME_STEP/1000);
+				world.step(TIME_STEP);
 			}
 
 			if (world.space.activeShapes.count > 0 || redraw) {

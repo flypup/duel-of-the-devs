@@ -34,6 +34,10 @@ var ec = ec || {};
 		};
 	};
 
+	ec.ThreeJsWorldView.prototype.lookAt = function(x, y, z) {
+		this.camera.lookAt(new THREE.Vector3(x, y, z));
+	};
+
 	ec.ThreeJsWorldView.prototype.draw = function() {
 		this.renderer.render( this.scene, this.camera );
 	};
