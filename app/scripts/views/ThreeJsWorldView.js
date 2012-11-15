@@ -3,6 +3,9 @@ var ec = ec || {};
 (function() {
 	'use strict';
 	var THREE = window.THREE;
+	var ratio = window.devicePixelRatio || 1;
+	ec.width = 960;//1280;
+	ec.height = 540;//720;
 
 	ec.ThreeJsWorldView = function() {
 		var camera =
@@ -17,11 +20,13 @@ var ec = ec || {};
 
 	    var renderer =
 	    this.renderer = new THREE.CanvasRenderer();
-	    renderer.setSize( ec.width, ec.height );
-	    
+	    renderer.setSize( ec.width * ratio, ec.height * ratio );
+	    renderer.domElement.style.width = ec.width + 'px';
+        renderer.domElement.style.height = ec.height + 'px';
 	    renderer.domElement.style.position = 'absolute';
-		renderer.domElement.style.left = '0px';
+		renderer.domElement.style.left =
 		renderer.domElement.style.top = '0px';
+		renderer.domElement.getContext( '2d' ).scale(ratio, ratio);
 	    document.body.appendChild( renderer.domElement );
 	};
 

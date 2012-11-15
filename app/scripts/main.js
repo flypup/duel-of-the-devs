@@ -1,8 +1,5 @@
 var ec = ec || {};
 
-ec.width = 960;//1280;
-ec.height = 540;//720;
-
 (function() {
 	'use strict';
 	var requestAnimationFrame = window.requestAnimationFrame;
