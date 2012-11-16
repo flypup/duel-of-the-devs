@@ -8,7 +8,7 @@ var ec = ec || {};
 	ec.mobile = Modernizr.mobile;
 	ec.ios = Modernizr.ios;
 	ec.android = Modernizr.android;
-	
+	ec.fullscreen = Modernizr.fullscreen;
 	var world;
 	var view;
 	var updateShapeView;
@@ -100,6 +100,14 @@ var ec = ec || {};
 
 		paused: function() {
 			return paused;
+		},
+
+		fullscreen: function() {
+			if (ec.fullscreen) {
+				var element = document.body;
+				element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+				element.requestFullscreen();
+			}
 		},
 
 		resize: function() {

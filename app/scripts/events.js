@@ -8,14 +8,31 @@ var ec = ec || {};
 	};
 
 	ec.addBrowserListeners = function() {
-		this.bind(window, 'blur',  ec.core.pause,  false);
-		this.bind(window, 'focus', ec.core.resume, false);
+		this.bind(window, 'blur',  this.core.pause,  false);
+		this.bind(window, 'focus', this.core.resume, false);
 		if (ec.mobile) {
 			// prevent scrolling
 			this.bind(document, 'touchmove', preventDefault, false);
 		} else {
 			// resize window
-			this.bind(window, 'resize', ec.core.resize, false);
+			this.bind(window, 'resize', this.core.resize, false);
+		}
+		this.bind(document, 'keyup', this.keyup, false);
+	};
+
+	ec.keyup = function(e) {
+		var key = e.keyCode || e.which;
+		console.log(String.fromCharCode(key), key);
+
+		if (key === 80) { // "P"
+			if (ec.core.paused()) {
+				ec.core.resume();
+			} else {
+				ec.core.pause();
+			}
+			
+		} else if (key === 220) { // "\"
+			ec.core.fullscreen();
 		}
 	};
 
