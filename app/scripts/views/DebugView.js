@@ -4,7 +4,7 @@ var dat = dat;
 (function() {
 	'use strict';
 
-	ec.DebugView = function() {
+	var DebugView = ec.DebugView = function() {
 		var stats =
 		this.stats = new Stats();
 		stats.domElement.style.position = 'absolute';
@@ -13,7 +13,15 @@ var dat = dat;
 	    document.body.appendChild( stats.domElement );
 	};
 
-	ec.DebugView.prototype.addGui = function(settings) {
+	DebugView.prototype.show = function() {
+		this.stats.domElement.style.display = 'block';
+	};
+
+	DebugView.prototype.hide = function() {
+		this.stats.domElement.style.display = 'none';
+	};
+
+	DebugView.prototype.addGui = function(settings) {
 	    var gui = new dat.GUI();
 	    var folder = gui;
 	    for(var i=0; i<settings.length; i++) {
@@ -54,7 +62,7 @@ var dat = dat;
 	    return gui;
 	};
 
-	ec.DebugView.prototype.worldGui = function(world) {
+	DebugView.prototype.worldGui = function(world) {
 		this.addGui([
 			{
 				name: 'space',
@@ -83,8 +91,8 @@ var dat = dat;
 	    ]);
 	};
 
-	ec.DebugView.prototype.viewGui = function(view) {
-		var lookAtCenter = function(e) {//e.object, e.property
+	DebugView.prototype.viewGui = function(view) {
+		var lookAtCenter = function() {//e) {//e.object, e.property
 			view.lookAt(0, 0, 0);
 		};
 		this.addGui([

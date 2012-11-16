@@ -10,7 +10,8 @@ var ec = ec || {};
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
 	ec.gamepads = Modernizr.gamepads;
-
+	ec.debug = ec.mobile ? 1 : 2;
+	
 	var world;
 	var view;
 	var updateShapeView;
@@ -62,8 +63,9 @@ var ec = ec || {};
 		},
 
 		animate: function(time) {
-			debugView.stats.begin();
-
+			if (ec.debug > 0) {
+				debugView.stats.begin();
+			}
 			// note: three.js includes requestAnimationFrame shim
 		    requestAnimationFrame( core.animate );
 
@@ -91,11 +93,13 @@ var ec = ec || {};
 			}
 
 		    view.draw();
-		    if (!ec.mobile) {
-				cpDebugView.step();
-		    }
 
-		    debugView.stats.end();
+		    if (ec.debug > 0) {
+			    if (ec.debug > 1) {
+					cpDebugView.step();
+			    }
+				debugView.stats.end();
+			}
 		},
 
 		pause: function() {
@@ -123,8 +127,23 @@ var ec = ec || {};
 				view.resize();
 				cpDebugView.resize();
 			}
-		}
+		},
 
+		setDebugLevel: function(level) {
+			if (level < 0) {
+				level = 2;
+			}
+			debugView.hide();
+			cpDebugView.hide();
+			switch (level) {
+				case 2:
+					cpDebugView.show();
+					/*falls through*/
+				case 1:
+					debugView.show();
+			}
+			ec.debug = level;
+		}
 	};
 
 	requestAnimationFrame( core.init );

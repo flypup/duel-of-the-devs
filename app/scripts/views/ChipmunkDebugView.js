@@ -95,6 +95,14 @@ var cp = cp;
 		};
 	};
 
+	ChipmunkDebugView.prototype.show = function() {
+		this.canvas.style.display = 'block';
+	};
+
+	ChipmunkDebugView.prototype.hide = function() {
+		this.canvas.style.display = 'none';
+	};
+
 	ChipmunkDebugView.prototype.resize = function() {
 		var ratio = this.ratio = ec.pixelRatio;
 		this.width  = Math.max(160 / ratio, Math.round(ec.width / 3));

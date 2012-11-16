@@ -30,6 +30,9 @@ var ec = ec || {};
 			} else {
 				ec.core.pause();
 			}
+
+		} else if (key === 68) { // "D"
+			ec.core.setDebugLevel(ec.debug-1);
 			
 		} else if (key === 220) { // "\"
 			ec.core.fullscreen();
