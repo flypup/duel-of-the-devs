@@ -17,9 +17,10 @@ var ec = ec || {};
 	var cpDebugView;
 	
 	var TIME_STEP = ec.TIME_STEP = 1/60;
+	var paused = false;
 	var delta, deltaTime, remainder;
 
-	var core = ec.Core = {
+	var core = ec.core = {
 
 		init: function(time) {
 			deltaTime = time;
@@ -42,18 +43,16 @@ var ec = ec || {};
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
 
-		    // GUI Settings
+		    ec.addBrowserListeners();
+
+		    // hideUrlBarOnLoad
+			if (ec.mobile) {
+				window.scrollTo( 0, 1 );
+			}
+
+			// GUI Settings
 			//	debugView.worldGui(world);
 			//	debugView.viewGui(view);
-
-			if (ec.mobile) {
-				// hideUrlBarOnLoad
-				window.scrollTo( 0, 1 );
-				// prevent scrolling
-				document.addEventListener('touchmove', function(e) {
-		            e.preventDefault();
-		        }, false);
-			}
 		},
 
 		animate: function(time) {
@@ -66,18 +65,21 @@ var ec = ec || {};
 			deltaTime = time;
 
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*5));
-			remainder += delta;
-			while(remainder > TIME_STEP) {
-				remainder -= TIME_STEP;
-				world.step(TIME_STEP);
-			}
 
-			if (world.space.activeShapes.count > 0 || redraw) {
-			    world.space.eachShape(updateShapeView);
-			    redraw = false;
-			} else {
-				world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-				world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+			if (!paused) {
+				remainder += delta;
+				while(remainder > TIME_STEP) {
+					remainder -= TIME_STEP;
+					world.step(TIME_STEP);
+				}
+
+				if (world.space.activeShapes.count > 0 || redraw) {
+				    world.space.eachShape(updateShapeView);
+				    redraw = false;
+				} else {
+					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
+					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+				}
 			}
 
 		    view.draw();
@@ -86,6 +88,18 @@ var ec = ec || {};
 		    }
 
 		    debugView.stats.end();
+		},
+
+		pause: function() {
+			paused = true;
+		},
+
+		resume: function() {
+			paused = false;
+		},
+
+		paused: function() {
+			return paused;
 		},
 
 		resize: function() {
@@ -98,9 +112,5 @@ var ec = ec || {};
 	};
 
 	requestAnimationFrame( core.init );
-
-	if (!ec.mobile) {
-		window.onresize = core.resize;
-	}
 
 })();
