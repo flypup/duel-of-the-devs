@@ -7,6 +7,14 @@ var cp = cp;
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
+	var verticalSpacer = function(y, lineSpace) {
+		y -= lineSpace;
+		return function() {
+			y += lineSpace;
+			return y;
+		};
+	};
+
 	var ChipmunkDebugView = ec.ChipmunkDebugView = function(space) {
 		this.space = space;
 
@@ -18,6 +26,14 @@ var cp = cp;
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
+
+		var maxWidth = this.width - 10;
+		var getY = verticalSpacer(5, 15);
+		var infoFields = this.infoFields = [];
+		for (var i=6; i-->0;) {
+			infoFields.push(new ec.TextField(this.ctx, 5, getY(), maxWidth));
+		}
+		infoFields[5].setPos(5, this.height - 50);
 
 		var self = this;
 		var canvas2point = this.canvas2point = function(x, y) {
@@ -104,7 +120,7 @@ var cp = cp;
 	};
 
 	ChipmunkDebugView.prototype.resize = function() {
-		var ratio = this.ratio = ec.pixelRatio;
+		var ratio = this.ratio = ec.pixelRatio || 1;
 		this.width  = Math.max(160 / ratio, Math.round(ec.width / 3));
 		this.height = Math.max(90  / ratio, Math.round(ec.height / 3));
 		this.scale = this.width  * 0.25 / ec.width;
@@ -114,39 +130,37 @@ var cp = cp;
 		canvas.height = this.height * ratio;
 		canvas.style.width = this.width + 'px';
 		canvas.style.height = this.height + 'px';
-		canvas.style.left = (ec.width  - this.width  -1)+'px';
-		canvas.style.top  = (ec.height - this.height -1)+'px';
+		canvas.style.left = (ec.width  - this.width )+'px';
+		canvas.style.top  = (ec.height - this.height)+'px';
 		this.ctx.scale(ratio, ratio);
 	};
 
 	ChipmunkDebugView.prototype.drawInfo = function() {
 		var space = this.space;
-
-		var maxWidth = this.width - 20;
-
+		var infoFields = this.infoFields;
+		var index = 0;
 		this.ctx.textAlign = 'start';
 		this.ctx.textBaseline = 'alphabetic';
 		this.ctx.fillStyle = 'black';
 
-		this.ctx.fillText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio, 5, 15, maxWidth);
-
-		this.ctx.fillText('Step: ' + space.stamp, 5, 30, maxWidth);
+		infoFields[index++].setText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio);
+		//infoFields[index++].setText('Step: ' + space.stamp);
 
 		var arbiters = space.arbiters.length;
 		this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;
-		this.ctx.fillText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')', 5, 45, maxWidth);
+		infoFields[index++].setText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')');
 
 		var contacts = 0;
 		for(var i = 0; i < arbiters; i++) {
 			contacts += space.arbiters[i].contacts.length;
 		}
 		this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
-		this.ctx.fillText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')', 5, 60, maxWidth);
+		infoFields[index++].setText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')');
 
-		this.ctx.fillText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0), 5, 75, maxWidth);
+		infoFields[index++].setText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0));
 
 		if (this.message) {
-			this.ctx.fillText(this.message, 5, this.height - 50, maxWidth);
+			infoFields[5].setText(this.message);
 		}
 	};
 
@@ -162,7 +176,6 @@ var cp = cp;
 		ctx.strokeStyle = 'black';
 		//ctx.clearRect(0, 0, this.width, this.height);
 		
-		this.ctx.font = '12px sans-serif';
 		this.ctx.lineCap = 'round';
 
 		this.space.eachShape(function(shape) {
