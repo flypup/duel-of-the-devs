@@ -45,6 +45,15 @@ var ec = ec || {};
 		    // GUI Settings
 			//	debugView.worldGui(world);
 			//	debugView.viewGui(view);
+
+			if (ec.mobile) {
+				// hideUrlBarOnLoad
+				window.scrollTo( 0, 1 );
+				// prevent scrolling
+				document.addEventListener('touchmove', function(e) {
+		            e.preventDefault();
+		        }, false);
+			}
 		},
 
 		animate: function(time) {
@@ -73,7 +82,7 @@ var ec = ec || {};
 
 		    view.draw();
 		    if (!ec.mobile) {
-		    	cpDebugView.step();
+				cpDebugView.step();
 		    }
 
 		    debugView.stats.end();
