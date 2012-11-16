@@ -9,6 +9,8 @@ var ec = ec || {};
 	ec.ios = Modernizr.ios;
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
+	ec.gamepads = Modernizr.gamepads;
+
 	var world;
 	var view;
 	var updateShapeView;
@@ -19,6 +21,8 @@ var ec = ec || {};
 	var TIME_STEP = ec.TIME_STEP = 1/60;
 	var paused = false;
 	var delta, deltaTime, remainder;
+
+	var userInput;
 
 	var core = ec.core = {
 
@@ -45,6 +49,8 @@ var ec = ec || {};
 
 		    ec.addBrowserListeners();
 
+		    userInput = new ec.UserInput();
+
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
 				window.scrollTo( 0, 1 );
@@ -65,6 +71,8 @@ var ec = ec || {};
 			deltaTime = time;
 
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*5));
+
+			userInput.poll();
 
 			if (!paused) {
 				remainder += delta;
