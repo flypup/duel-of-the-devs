@@ -10,22 +10,11 @@ var cp = cp;
 	var ChipmunkDebugView = ec.ChipmunkDebugView = function(space) {
 		this.space = space;
 
-		this.width  = 320;
-		this.height = 180;
-		this.scale = this.width  * 0.25 / ec.width;
-		//this.scale = this.height * 0.25 / ec.height;
-		this.orthoSize = v(this.width, this.height).mult(1/this.scale);
-		this.orthoPos = v.mult(this.orthoSize, 0.5);
-
 		var canvas = this.canvas = document.createElement( 'canvas' );
-		canvas.width = this.width;
-		canvas.height = this.height;
 		canvas.style.position = 'absolute';
-		canvas.style.top = '100%';
-		canvas.style.left = '100%';
-		canvas.style.marginLeft = '-'+(this.width+5)+'px';
-		canvas.style.marginTop =  '-'+(this.height+5)+'px';
 		this.ctx = canvas.getContext('2d');
+		this.resize();
+		this.orthoPos = v.mult(this.orthoSize, 0.5);
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -106,6 +95,22 @@ var cp = cp;
 		};
 	};
 
+	ChipmunkDebugView.prototype.resize = function() {
+		var ratio = this.ratio = ec.pixelRatio;
+		this.width  = Math.max(160 / ratio, Math.round(ec.width / 3));
+		this.height = Math.max(90  / ratio, Math.round(ec.height / 3));
+		this.scale = this.width  * 0.25 / ec.width;
+		this.orthoSize = v(this.width, this.height).mult(1/this.scale);
+		var canvas = this.canvas;
+		canvas.width = this.width * ratio;
+		canvas.height = this.height * ratio;
+		canvas.style.width = this.width + 'px';
+		canvas.style.height = this.height + 'px';
+		canvas.style.left = (ec.width  - this.width  -1)+'px';
+		canvas.style.top  = (ec.height - this.height -1)+'px';
+		this.ctx.scale(ratio, ratio);
+	};
+
 	ChipmunkDebugView.prototype.drawInfo = function() {
 		var space = this.space;
 
@@ -115,11 +120,13 @@ var cp = cp;
 		this.ctx.textBaseline = 'alphabetic';
 		this.ctx.fillStyle = 'black';
 
-		this.ctx.fillText('Step: ' + space.stamp, 5, 20, maxWidth);
+		this.ctx.fillText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio, 5, 15, maxWidth);
+
+		this.ctx.fillText('Step: ' + space.stamp, 5, 30, maxWidth);
 
 		var arbiters = space.arbiters.length;
 		this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;
-		this.ctx.fillText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')', 5, 40, maxWidth);
+		this.ctx.fillText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')', 5, 45, maxWidth);
 
 		var contacts = 0;
 		for(var i = 0; i < arbiters; i++) {
@@ -128,7 +135,7 @@ var cp = cp;
 		this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
 		this.ctx.fillText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')', 5, 60, maxWidth);
 
-		this.ctx.fillText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0), 5, 80, maxWidth);
+		this.ctx.fillText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0), 5, 75, maxWidth);
 
 		if (this.message) {
 			this.ctx.fillText(this.message, 5, this.height - 50, maxWidth);
@@ -140,10 +147,13 @@ var cp = cp;
 
 		var self = this;
 
+		ctx.fillStyle = '#ACF';
+		ctx.fillRect(0, 0, this.width, this.height);
+
 		// Draw shapes
 		ctx.strokeStyle = 'black';
-		ctx.clearRect(0, 0, this.width, this.height);
-
+		//ctx.clearRect(0, 0, this.width, this.height);
+		
 		this.ctx.font = '12px sans-serif';
 		this.ctx.lineCap = 'round';
 

@@ -3,6 +3,11 @@ var ec = ec || {};
 (function() {
 	'use strict';
 	var requestAnimationFrame = window.requestAnimationFrame;
+	var Modernizr = window.Modernizr;
+
+	ec.mobile = Modernizr.mobile;
+	ec.ios = Modernizr.ios;
+	ec.android = Modernizr.android;
 	
 	var world;
 	var view;
@@ -28,6 +33,8 @@ var ec = ec || {};
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			redraw = true;
+
+			ec.initDisplay();
 
 		    view = new ec.ThreeJsWorldView();
 		    updateShapeView = view.updateShape();
@@ -65,13 +72,25 @@ var ec = ec || {};
 			}
 
 		    view.draw();
-		    cpDebugView.step();
+		    if (!ec.mobile) {
+		    	cpDebugView.step();
+		    }
 
 		    debugView.stats.end();
+		},
+
+		resize: function() {
+			ec.initDisplay();
+			view.resize();
+			cpDebugView.resize();
 		}
 
 	};
 
 	requestAnimationFrame( core.init );
+
+	if (!ec.mobile) {
+		window.onresize = core.resize;
+	}
 
 })();

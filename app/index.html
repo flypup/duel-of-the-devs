@@ -29,6 +29,25 @@
 
         <!-- build:js scripts/utils.js -->
         <script src="scripts/vendor/modernizr.min.js"></script>
+        <script>
+            Modernizr.addTest({
+                mobile: function(){
+                    return (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
+                },
+                ios: function(){
+                    return (/iPhone|iPad|iPod/).test(navigator.userAgent);
+                },
+                ipad: function(){
+                    return (/iPad/).test(navigator.userAgent);
+                },
+                android: function(){
+                    return (/Android/).test(navigator.userAgent);
+                },
+                standalone:function(){
+                    return !!navigator.standalone;
+                }
+            });
+        </script>
         <!-- endbuild -->
     </head>
     <body>
@@ -55,6 +74,7 @@
         <script src="scripts/views/ChipmunkDebugView.js"></script>
         <script src="scripts/views/DebugView.js"></script>
 
+        <script src="scripts/display.js"></script>
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
 
