@@ -34,7 +34,7 @@ var ec = ec || {};
 		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			redraw = true;
 
-			ec.initDisplay();
+			ec.resizeDisplay();
 
 		    view = new ec.ThreeJsWorldView();
 		    updateShapeView = view.updateShape();
@@ -89,9 +89,10 @@ var ec = ec || {};
 		},
 
 		resize: function() {
-			ec.initDisplay();
-			view.resize();
-			cpDebugView.resize();
+			if (ec.resizeDisplay()) {
+				view.resize();
+				cpDebugView.resize();
+			}
 		}
 
 	};
