@@ -7,7 +7,14 @@ var ec = ec || {};
 		//console.log('inner', window.innerWidth, window.innerHeight);
 		//console.log('screen', window.screen.width, window.screen.height, 'x', window.devicePixelRatio);
 
+		ec.pixelRatioY =
 		ec.pixelRatio = window.devicePixelRatio || 1;
+		/* iPad 3 does not render full resultion well */
+		// TODO: do same for iPhone 4
+		if (ec.ipad) {
+			ec.pixelRatioY = Math.min(1.333333, ec.pixelRatio);
+			ec.pixelRatio  = Math.min(1, ec.pixelRatio);
+		}
 
 		var screenWidth  = Math.max(window.screen.width, window.screen.height);
 		var screenHeight = Math.min(window.screen.width, window.screen.height);

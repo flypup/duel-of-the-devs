@@ -7,6 +7,7 @@ var ec = ec || {};
 
 	ec.mobile = Modernizr.mobile;
 	ec.ios = Modernizr.ios;
+	ec.ipad = Modernizr.ipad;
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
 	ec.gamepads = Modernizr.gamepads;

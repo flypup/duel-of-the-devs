@@ -44,12 +44,13 @@ var ec = ec || {};
 	};
 
 	ThreeJsWorldView.prototype.resize = function() {
-		var ratio = ec.pixelRatio;
+		var ratioX = ec.pixelRatio;
+		var ratioY = ec.pixelRatioY || ratioX;
 		var renderer = this.renderer;
-		renderer.setSize( ec.width * ratio, ec.height * ratio );
+		renderer.setSize( ec.width * ratioX, ec.height * ratioY );
 	    renderer.domElement.style.width = ec.width + 'px';
         renderer.domElement.style.height = ec.height + 'px';
-		renderer.domElement.getContext( '2d' ).scale(ratio, ratio);
+			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
 	};
 
 })();
