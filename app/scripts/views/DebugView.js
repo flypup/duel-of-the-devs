@@ -3,6 +3,7 @@ var Stats = Stats;
 var dat = dat;
 (function() {
 	'use strict';
+	var THREE = window.THREE;
 
 	var DebugView = ec.DebugView = function() {
 		var stats =
@@ -95,9 +96,26 @@ var dat = dat;
 		var lookAtCenter = function() {//e) {//e.object, e.property
 			view.lookAt(0, 0, 0);
 		};
+		var updateMatrix = function() {
+			view.camera.updateProjectionMatrix();
+		};
+		var cameraProps = [];
+		if (view.camera instanceof THREE.PerspectiveCamera) {
+			cameraProps.push({name: 'fov',    listen: true, onChange: updateMatrix});
+			cameraProps.push({name: 'aspect', listen: true, onChange: updateMatrix});
+			cameraProps.push({name: 'near', onChange: updateMatrix, params:{step: 10, min: 1, max: 1000}});
+		} else {
+			cameraProps.push({name: 'left',  onChange: updateMatrix, params:{min: -10000, max: -100}});
+			cameraProps.push({name: 'right', onChange: updateMatrix, params:{min: 100, max: 10000}});
+			cameraProps.push({name: 'bottom',  onChange: updateMatrix, params:{min: -10000, max: -100}});
+			cameraProps.push({name: 'top', onChange: updateMatrix, params:{min: 100, max: 10000}});
+			cameraProps.push({name: 'near', onChange: updateMatrix, params:{step: 10, min: -10000, max: 10000}});
+		}
+		cameraProps.push({name: 'far',  onChange: updateMatrix, params:{step: 100, min: 1000, max: 10000}});
+
 		this.addGui([
 			{
-				name: 'camera',
+				name: 'camera position',
 				remember: true,
 				target: view.camera.position,
 				props: [
@@ -105,6 +123,14 @@ var dat = dat;
 					{name: 'y', listen: true, onChange: lookAtCenter, params:{step: 10, min: -5000, max: 5000}},
 					{name: 'z', listen: true, onChange: lookAtCenter}
 				]
+			}
+		]);
+		this.addGui([
+			{
+				name: 'camera',
+				remember: true,
+				target: view.camera,
+				props: cameraProps
 			}
 	    ]);
 	};

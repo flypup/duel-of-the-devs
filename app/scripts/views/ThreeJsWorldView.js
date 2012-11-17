@@ -6,9 +6,9 @@ var ec = ec || {};
 
 	var ThreeJsWorldView = ec.ThreeJsWorldView = function() {
 		var camera =
-		this.camera = new THREE.PerspectiveCamera( 75, ec.width / ec.height, 1, 10000 );
-	    //this.camera = new THREE.OrthographicCamera( ec.width / - 2, ec.width / 2, ec.height / 2, ec.height / - 2, 1, 10000 );
-	    //this.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 10000 );
+		//this.camera = new THREE.PerspectiveCamera( 75, ec.width / ec.height, 1, 10000 );
+	    this.camera = new THREE.OrthographicCamera( -ec.width*4, ec.width*4, ec.height*4, -ec.height*4, -1000, 5000 );
+	    camera.position.y =
 	    camera.position.z = 1000;
 	    camera.position.x = -1000;
 	    camera.lookAt(new THREE.Vector3(0, 0, 0));
