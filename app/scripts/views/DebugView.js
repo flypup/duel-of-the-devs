@@ -94,7 +94,7 @@ var dat = dat;
 
 	DebugView.prototype.viewGui = function(view) {
 		var lookAtCenter = function() {//e) {//e.object, e.property
-			view.lookAt(0, 0, 0);
+			view.lookAt(0, 160, 0);
 		};
 		var updateMatrix = function() {
 			view.camera.updateProjectionMatrix();
