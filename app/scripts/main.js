@@ -74,13 +74,13 @@ var ec = ec || {};
 			delta = (time - deltaTime) / 1000;
 			deltaTime = time;
 
-			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*5));
+			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
 			userInput.poll();
 
 			if (!paused) {
 				remainder += delta;
-				while(remainder > TIME_STEP) {
+				while(remainder >= TIME_STEP) {
 					remainder -= TIME_STEP;
 					world.step(TIME_STEP);
 				}
