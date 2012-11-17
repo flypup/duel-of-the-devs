@@ -11,7 +11,7 @@ var ec = ec || {};
 		ec.pixelRatio = window.devicePixelRatio || 1;
 		/* iPad 3 does not render full resultion well */
 		// TODO: do same for iPhone 4
-		if (ec.ipad) {
+		if (ec.ipad && !ec.webgl) {
 			ec.pixelRatioY = Math.min(1.333333, ec.pixelRatio);
 			ec.pixelRatio  = Math.min(1, ec.pixelRatio);
 		}

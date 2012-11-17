@@ -14,10 +14,18 @@ var ec = ec || {};
 	    camera.position.x = -1000;
 	    camera.lookAt(new THREE.Vector3(0, 160, 0));
 
+	    var scene =
 	    this.scene = new THREE.Scene();
 
-	    var renderer =
-	    this.renderer = (ec.webgl && !ec.ios) ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
+	    var renderer;
+	    try {
+			renderer = this.renderer = ec.webgl ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
+			ec.webgl = renderer instanceof THREE.WebGLRenderer;
+	    } catch(e) {
+			renderer = this.renderer = new THREE.CanvasRenderer();
+			ec.webgl = false;
+			ec.resizeDisplay();
+	    }
 	    renderer.setClearColorHex( 0xefefff, 1 );
 	    renderer.domElement.style.position = 'absolute';
 		renderer.domElement.style.left =
