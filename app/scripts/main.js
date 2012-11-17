@@ -94,7 +94,9 @@ var ec = ec || {};
 				}
 			}
 
-		    view.draw();
+			if (ec.debug < 3) {
+				view.draw();
+			}
 
 		    if (ec.debug > 0) {
 			    if (ec.debug > 1) {
@@ -131,13 +133,18 @@ var ec = ec || {};
 			}
 		},
 
+		getViewDom: function() {
+			return view.renderer.domElement;
+		},
+
 		setDebugLevel: function(level) {
 			if (level < 0) {
-				level = 2;
+				level = 3;
 			}
 			debugView.hide();
 			cpDebugView.hide();
 			switch (level) {
+				case 3:
 				case 2:
 					cpDebugView.show();
 					/*falls through*/

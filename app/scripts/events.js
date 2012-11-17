@@ -7,12 +7,17 @@ var ec = ec || {};
 		 e.preventDefault();
 	};
 
+	var cycleDebug = function() {
+		 ec.core.setDebugLevel(ec.debug-1);
+	};
+
 	ec.addBrowserListeners = function() {
 		this.bind(window, 'blur',  this.core.pause,  false);
 		this.bind(window, 'focus', this.core.resume, false);
 		if (ec.mobile) {
 			// prevent scrolling
 			this.bind(document, 'touchmove', preventDefault, false);
+			this.bind(ec.core.getViewDom(), 'touchstart', cycleDebug, false);
 		} else {
 			// resize window
 			this.bind(window, 'resize', this.core.resize, false);
@@ -32,7 +37,7 @@ var ec = ec || {};
 			}
 
 		} else if (key === 68) { // "D"
-			ec.core.setDebugLevel(ec.debug-1);
+			cycleDebug();
 			
 		} else if (key === 220) { // "\"
 			ec.core.fullscreen();
