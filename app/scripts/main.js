@@ -5,6 +5,7 @@ var ec = ec || {};
 	var requestAnimationFrame = window.requestAnimationFrame;
 	var Modernizr = window.Modernizr;
 
+	ec.webgl = Modernizr.webgl;
 	ec.mobile = Modernizr.mobile;
 	ec.ios = Modernizr.ios;
 	ec.ipad = Modernizr.ipad;

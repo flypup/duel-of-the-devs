@@ -17,7 +17,7 @@ var ec = ec || {};
 	    this.scene = new THREE.Scene();
 
 	    var renderer =
-	    this.renderer = new THREE.CanvasRenderer();
+	    this.renderer = (ec.webgl && !ec.ios) ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
 	    renderer.setClearColorHex( 0xefefff, 1 );
 	    renderer.domElement.style.position = 'absolute';
 		renderer.domElement.style.left =
@@ -50,7 +50,9 @@ var ec = ec || {};
 		renderer.setSize( ec.width * ratioX, ec.height * ratioY );
 	    renderer.domElement.style.width = ec.width + 'px';
         renderer.domElement.style.height = ec.height + 'px';
+        if (renderer.domElement.getContext( '2d' )) {
 			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
+        }
 	};
 
 })();
