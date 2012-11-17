@@ -33,15 +33,15 @@ var ec = ec || {};
 			}
 		}
 
+		if (!ec.mobile) {
+			document.body.style.left = Math.floor((maxWidth - width)/2) + 'px';
+			document.body.style.top  = Math.floor((maxHeight - height)/2) + 'px';
+		}
 		if (ec.width === width && ec.height === height) {
 			return false;
 		}
 		ec.width  = width;
 		ec.height = height;
-		if (!ec.mobile) {
-			document.body.style.left = Math.floor((maxWidth - width)/2) + 'px';
-			document.body.style.top  = Math.floor((maxHeight - height)/2) + 'px';
-		}
 		document.body.style.width  = width + 'px';
         document.body.style.height = height + 'px';
 
