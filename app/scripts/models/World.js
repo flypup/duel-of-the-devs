@@ -33,7 +33,7 @@ var cp = cp;
 	};
 
 	ec.World.prototype.addFloor = function() {
-		var floor = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v(-10000, -500), v(10000, -500), 0));
+		var floor = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v(-10000, 0), v(10000, 0), 0));
 		floor.setElasticity(1);
 		floor.setFriction(1);
 		floor.setLayers(NOT_GRABABLE_MASK);

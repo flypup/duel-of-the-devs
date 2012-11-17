@@ -5,8 +5,8 @@ var cp = cp;
 
 	var v = cp.v;
 
-	var BOX_WIDTH = 200;
-	var BOX_HEIGHT = 200;
+	var BOX_WIDTH = 64;
+	var BOX_HEIGHT = 64;
 
 	ec.Box = function(body) {
 		if (body) {

@@ -11,8 +11,8 @@ var ec = ec || {};
 	ec.ThreeJsBoxView.prototype.createMesh = function(body, scene) {
 
 		//var verts = body.shape.verts;
-		var BOX_WIDTH  = 200;
-		var BOX_HEIGHT = 200;
+		var BOX_WIDTH  = 64;
+		var BOX_HEIGHT = 64;
 
 		var geometry = new THREE.CubeGeometry( BOX_WIDTH, BOX_HEIGHT, BOX_WIDTH );
 	    var material = new THREE.MeshBasicMaterial( {

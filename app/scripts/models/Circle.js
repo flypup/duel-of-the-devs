@@ -5,7 +5,7 @@ var cp = cp;
 
 	var v = cp.v;
 
-	var RADIUS = 75;
+	var RADIUS = 32;
 
 	ec.Circle = function() {
 		var mass = 1;

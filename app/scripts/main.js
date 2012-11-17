@@ -34,8 +34,8 @@ var ec = ec || {};
 
 			world = new ec.World();
 			world.addFloor();
-			world.add(new ec.Box(world.createStaticBody()).setPos(-1200, -400)).setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos( 1200, -400)).setView(new ec.ThreeJsBoxView());
+			world.add(new ec.Box(world.createStaticBody()).setPos(-1000, 32)).setView(new ec.ThreeJsBoxView());
+			world.add(new ec.Box(world.createStaticBody()).setPos( 1000, 32)).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			redraw = true;

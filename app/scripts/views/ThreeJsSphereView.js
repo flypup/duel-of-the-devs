@@ -11,9 +11,9 @@ var ec = ec || {};
 	ec.ThreeJsSphereView.prototype.createMesh = function(body, scene) {
 
 		//var verts = body.shape.verts;
-		var RADIUS  = 75;
 		var segmentsWidth = 12;
 		var segmentsHeight = 6;
+		var RADIUS  = 32;
 
 		var geometry = new THREE.SphereGeometry( RADIUS, segmentsWidth, segmentsHeight );
 	    var material = new THREE.MeshBasicMaterial( {
