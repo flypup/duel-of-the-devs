@@ -22,6 +22,13 @@ var ec = ec || {};
 	    var scene =
 	    this.scene = new THREE.Scene();
 
+		// var pointLight = new THREE.DirectionalLight(0xFFFFFF);
+		// pointLight.position.x = 10;
+		// pointLight.position.y = 50;
+		// pointLight.position.z = 130;
+		// scene.add(pointLight);
+		// scene.fog = new THREE.Fog( 0x000000, 1500, 2100 );
+
 		var texture = new THREE.ImageUtils.loadTexture('img/tile/floor_8888_32.png');//THREE.Texture();//
 		texture.wrapS =
 		texture.wrapT = THREE.RepeatWrapping;
