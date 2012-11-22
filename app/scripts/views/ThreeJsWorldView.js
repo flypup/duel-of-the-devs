@@ -46,6 +46,27 @@ var ec = ec || {};
 		floor.renderDepth = -1000;
 		scene.add(floor);
 
+		var texture2 = THREE.ImageUtils.loadTexture('img/sprite/minipr.png');
+		//var texture2 = THREE.ImageUtils.loadTexture('img/background/template_1080p.png');
+		//var useScreenCoordinates = true;
+
+		for (var i = 0; i < 20; i++) {
+			var particle = new THREE.Particle(new THREE.ParticleBasicMaterial({
+				color: 0xffffff,
+				map: texture2,
+				size: 100,
+				sizeAttenuation: true,
+				vertexColors: false,
+				fog : false
+			}));
+			//var particle = new THREE.Particle( new THREE.ParticleCanvasMaterial( { color: Math.random() * 0x808080 + 0x808080, program: programStroke } ) );
+			particle.position.x = Math.random() * 800 - 400;
+			particle.position.y = Math.random() * 800 - 400;
+			particle.position.z = Math.random() * 800 - 400;
+			particle.scale.x = particle.scale.y = Math.random() * 10 + 10;
+			scene.add( particle );
+		}
+		
 	    var renderer;
 	    try {
 			renderer = this.renderer = ec.webgl ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
