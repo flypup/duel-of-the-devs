@@ -3,16 +3,21 @@ var ec = ec || {};
 (function() {
 	'use strict';
 	var THREE = window.THREE;
+	var v3 = function(x, y, z) {
+		return new THREE.Vector3(x, y, z);
+	};
 
 	var ThreeJsWorldView = ec.ThreeJsWorldView = function() {
 		var halfwidth = Math.floor(320 * ec.width / ec.height);
 	    var camera =
 		//this.camera = new THREE.PerspectiveCamera( 75, ec.width / ec.height, 1, 10000 );
 		this.camera = new THREE.OrthographicCamera( -halfwidth, halfwidth, 320, -320, -1000, 5000 );
-	    camera.position.y =
-	    camera.position.z = 1000;
-	    camera.position.x = -1000;
-	    camera.lookAt(new THREE.Vector3(0, 160, 0));
+		//this.camera = new THREE.CombinedCamera( halfwidth*2, halfwidth*2, 75, 1, 10000, -1000, 5000 );
+	    camera.position.x = -320;//-1000;
+	    camera.position.y = -320;//-1000;
+	    camera.position.z = 262;
+	    camera.up = v3( 0, 0, 1 );
+	    camera.lookAt(v3(0, 0, 0));
 
 	    var scene =
 	    this.scene = new THREE.Scene();
@@ -44,7 +49,7 @@ var ec = ec || {};
 	};
 
 	ThreeJsWorldView.prototype.lookAt = function(x, y, z) {
-		this.camera.lookAt(new THREE.Vector3(x, y, z));
+		this.camera.lookAt(v3(x, y, z));
 	};
 
 	ThreeJsWorldView.prototype.draw = function() {
