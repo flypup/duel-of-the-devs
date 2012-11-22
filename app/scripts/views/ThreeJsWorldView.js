@@ -31,7 +31,13 @@ var ec = ec || {};
 			ec.webgl = false;
 			ec.resizeDisplay();
 	    }
+
+	    renderer.antialias = true;
+	    renderer.sortObjects = false;
+	    renderer.sortElements = false;
+	    renderer.autoClear = false;
 	    renderer.setClearColorHex( 0xefefff, 1 );
+
 	    renderer.domElement.style.position = 'absolute';
 		renderer.domElement.style.left =
 		renderer.domElement.style.top = '0px';

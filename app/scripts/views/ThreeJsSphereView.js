@@ -11,27 +11,36 @@ var ec = ec || {};
 	ec.ThreeJsSphereView.prototype.createMesh = function(body, scene) {
 
 		//var verts = body.shape.verts;
-		var segmentsWidth = 12;
-		var segmentsHeight = 6;
 		var RADIUS  = 32;
+		var segmentsWidth = 4;//12;//3;//
+		var segmentsHeight = 2;//6;//
 
 		var geometry = new THREE.SphereGeometry( RADIUS, segmentsWidth, segmentsHeight );
 	    var material = new THREE.MeshBasicMaterial( {
 			color: 0xff0000, wireframe: true
 	    } );
 
+	    var mesh =
 	    this.mesh = new THREE.Mesh( geometry, material );
+	    mesh.matrixAutoUpdate = false;
+	    mesh.frustumCulled = false;
+	    //mesh.renderDepth
 
-	    scene.add( this.mesh );
+	    scene.add( mesh );
 
 	    this.update = this.updateMesh;
 	    this.update(body, scene);
 	};
 
 	ec.ThreeJsSphereView.prototype.updateMesh = function(shape, scene) {
-	    this.mesh.position.x = shape.body.p.x;
-		this.mesh.position.y = shape.body.p.y;
-		this.mesh.rotation.z = shape.body.a;
+		if (shape.body && !shape.body.isSleeping()) {
+		    this.mesh.position.x = shape.body.p.x;
+			this.mesh.position.y = shape.body.p.y;
+			this.mesh.position.z = shape.body.z;
+			this.mesh.rotation.z = shape.body.a;
+			// TODO: mesh.renderDepth - custom (faster) depth sorting
+			this.mesh.updateMatrix();
+		}
 	};
 
 })();
