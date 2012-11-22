@@ -25,6 +25,8 @@ var ec = ec || {};
 	var paused = false;
 	var delta, deltaTime, remainder;
 
+	var createWaitCount = 0;
+
 	var userInput;
 
 	var core = ec.core = {
@@ -60,8 +62,8 @@ var ec = ec || {};
 			}
 
 			// GUI Settings
-			//	debugView.worldGui(world);
-			//	debugView.viewGui(view);
+			// debugView.worldGui(world);
+			// debugView.viewGui(view);
 		},
 
 		animate: function(time) {
@@ -88,7 +90,8 @@ var ec = ec || {};
 				if (world.space.activeShapes.count > 0 || redraw) {
 				    world.space.eachShape(updateShapeView);
 				    redraw = false;
-				} else {
+				} else if (createWaitCount++ > 5 * 60) {
+					createWaitCount = 0;
 					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 				}
