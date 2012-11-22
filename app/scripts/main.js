@@ -61,6 +61,8 @@ var ec = ec || {};
 				window.scrollTo( 0, 1 );
 			}
 
+			ec.view = view;
+			ec.world = world;
 			// GUI Settings
 			// debugView.worldGui(world);
 			// debugView.viewGui(view);
