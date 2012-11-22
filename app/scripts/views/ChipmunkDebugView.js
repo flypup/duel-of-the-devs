@@ -22,7 +22,7 @@ var cp = cp;
 		canvas.style.position = 'absolute';
 		this.ctx = canvas.getContext('2d');
 		this.resize();
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(v(0, 400));
+		this.orthoPos = v.mult(this.orthoSize, 0.5).add(v(400, 0));
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
