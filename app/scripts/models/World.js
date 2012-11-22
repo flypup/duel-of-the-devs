@@ -7,15 +7,32 @@ var cp = cp;
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
+	var WORLD_BOUNDS = 800;
+
 	ec.World = function() {
 		var space =
 		this.space = new cp.Space();
-		space.gravity = v(0, -300);
-		space.iterations = 8;
+		space.gravity = v(0, 0);
+		space.iterations = 10;
 		space.sleepTimeThreshold = ec.TIME_STEP * 9;
-		space.idleSpeedThreshold = 5;
+		space.idleSpeedThreshold = 0.01;//1;//5;//
 		space.collisionSlop = 0.1;
-		space.damping = 0.99;
+		space.damping = 0.75;//0.99;//
+	};
+
+	ec.World.prototype.addWalls = function() {
+		this.addLineSegment(v( WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS,  WORLD_BOUNDS ));
+		this.addLineSegment(v( WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS,  WORLD_BOUNDS ));
+		this.addLineSegment(v(-WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS, -WORLD_BOUNDS ));
+		this.addLineSegment(v(-WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS, -WORLD_BOUNDS ));
+	};
+
+	ec.World.prototype.addLineSegment = function(v1, v2) {
+		var wall = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
+		wall.setElasticity(0);
+		wall.setFriction(1);
+		wall.setLayers(NOT_GRABABLE_MASK);
+		return wall;
 	};
 
 	ec.World.prototype.add = function(bodyShape) {
@@ -30,14 +47,6 @@ var cp = cp;
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
 		return body;
-	};
-
-	ec.World.prototype.addFloor = function() {
-		var floor = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v(-10000, 0), v(10000, 0), 0));
-		floor.setElasticity(1);
-		floor.setFriction(1);
-		floor.setLayers(NOT_GRABABLE_MASK);
-		return floor; // Floor.js / Wall.js
 	};
 
 	ec.World.prototype.step = function(time) {

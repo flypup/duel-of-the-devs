@@ -37,7 +37,7 @@ var ec = ec || {};
 		    requestAnimationFrame( core.animate );
 
 			world = new ec.World();
-			world.addFloor();
+			world.addWalls();
 			world.add(new ec.Box(world.createStaticBody()).setPos(-1000, 32)).setView(new ec.ThreeJsBoxView());
 			world.add(new ec.Box(world.createStaticBody()).setPos( 1000, 32)).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
