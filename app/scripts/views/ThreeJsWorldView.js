@@ -22,6 +22,23 @@ var ec = ec || {};
 	    var scene =
 	    this.scene = new THREE.Scene();
 
+		var texture = new THREE.ImageUtils.loadTexture('img/tile/floor_8888_32.png');//THREE.Texture();//
+		texture.wrapS =
+		texture.wrapT = THREE.RepeatWrapping;
+		texture.repeat.x = 10;
+		texture.repeat.y = 10;
+		var floor = new THREE.Mesh(new THREE.PlaneGeometry(640, 640, 4, 4), new THREE.MeshBasicMaterial({
+			//color: 0x666666,
+			map: texture,
+			wireframe: false,
+			wireframeLinewidth: 16,
+			shading: THREE.NoShading
+		}));
+		floor.matrixAutoUpdate = false;
+		floor.frustumCulled = false;
+		floor.renderDepth = -1000;
+		scene.add(floor);
+
 	    var renderer;
 	    try {
 			renderer = this.renderer = ec.webgl ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
