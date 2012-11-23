@@ -16,6 +16,15 @@
 		};
 	};
 
+	var pv = (function() {
+		var pooledVect = v(0,0);
+		return function(x, y) {
+			pooledVect.x = x;
+			pooledVect.y = y;
+			return pooledVect;
+		};
+	})();
+
 	var ChipmunkDebugView = ec.ChipmunkDebugView = function(space) {
 		this.space = space;
 
@@ -23,7 +32,7 @@
 		canvas.style.position = 'absolute';
 		this.ctx = canvas.getContext('2d');
 		this.resize();
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(v(400, 0));
+		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(400, 0));
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -50,7 +59,7 @@
 		this.canvas.onmousemove = function(e) {
 			self.mouse = canvas2point(e.offsetX, e.offsetY);
 			if (self.mouseDown && !self.mouseJoint) {
-				var mv = v(e.offsetX - self.mouseDown.x, e.offsetY - self.mouseDown.y).mult(1/self.scale);
+				var mv = pv(e.offsetX - self.mouseDown.x, e.offsetY - self.mouseDown.y).mult(1/self.scale);
 				self.mouseDown.x = e.offsetX;
 				self.mouseDown.y = e.offsetY;
 				self.orthoPos.add(mv);
@@ -106,7 +115,7 @@
 		this.canvas.onmousewheel = function(e) {
 			var value = e.detail ? e.detail * -1 : (e.wheelDeltaY ? e.wheelDeltaY : e.wheelDelta) / 40;
 			self.scale = Math.min(Math.max(0.005, self.scale + value / (-999*self.scale + 1000)), 1);
-			var sizeDiff = v.sub(self.orthoSize, v(self.width, self.height).mult(1/self.scale));
+			var sizeDiff = v.sub(self.orthoSize, pv(self.width, self.height).mult(1/self.scale));
 			self.orthoSize.sub(sizeDiff);
 			self.orthoPos.sub(sizeDiff.mult(0.5));
 		};
@@ -288,7 +297,7 @@
 
 		for(var i = 1; i < springPoints.length; i++) {
 
-			var p = v.add(a, v.rotate(v(springPoints[i].x * len, springPoints[i].y * scale), rot));
+			var p = v.add(a, v.rotate(pv(springPoints[i].x * len, springPoints[i].y * scale), rot));
 
 			//var p = v.add(a, v.rotate(springPoints[i], delta));
 			
@@ -307,11 +316,11 @@
 
 		var verts = this.tVerts;
 		var len = verts.length;
-		var lastPoint = point2canvas(new cp.Vect(verts[len - 2], verts[len - 1]));
+		var lastPoint = point2canvas(pv(verts[len - 2], verts[len - 1]));
 		ctx.moveTo(lastPoint.x, lastPoint.y);
 
 		for(var i = 0; i < len; i+=2){
-			var p = point2canvas(new cp.Vect(verts[i], verts[i+1]));
+			var p = point2canvas(pv(verts[i], verts[i+1]));
 			ctx.lineTo(p.x, p.y);
 		}
 		ctx.fill();
@@ -329,7 +338,7 @@
 		drawCircle(ctx, scale, point2canvas, this.tc, this.r);
 
 		// And draw a little radian so you can see the circle roll.
-		drawLine(ctx, point2canvas, this.tc, cp.v.mult(this.body.rot, this.r).add(this.tc));
+		drawLine(ctx, point2canvas, this.tc, v.mult(this.body.rot, this.r).add(this.tc));
 	};
 
 
