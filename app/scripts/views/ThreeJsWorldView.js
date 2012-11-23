@@ -13,6 +13,7 @@
 		//this.camera = new THREE.PerspectiveCamera( 75, ec.width / ec.height, 1, 10000 );
 		this.camera = new THREE.OrthographicCamera( -halfwidth, halfwidth, 320, -320, -1000, 5000 );
 		//this.camera = new THREE.CombinedCamera( halfwidth*2, halfwidth*2, 75, 1, 10000, -1000, 5000 );
+		camera.matrixAutoUpdate = false;
 	    camera.position.x = -320;//-1000;
 	    camera.position.y = -320;//-1000;
 	    camera.position.z = 262;
@@ -107,6 +108,16 @@
 		this.renderer.render( this.scene, this.camera );
 	};
 
+	ThreeJsWorldView.prototype.pause = function() {
+		this.renderer.autoUpdateScene =
+		this.renderer.autoUpdateObjects = false;
+	};
+
+	ThreeJsWorldView.prototype.resume = function() {
+		this.renderer.autoUpdateScene =
+		this.renderer.autoUpdateObjects = true;
+	};
+
 	ThreeJsWorldView.prototype.resize = function() {
 		var ratioX = ec.pixelRatio;
 		var ratioY = ec.pixelRatioY || ratioX;
@@ -117,5 +128,7 @@
         if (renderer.domElement.getContext( '2d' )) {
 			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
         }
+        //this.camera.updateMatrixWorld();
 	};
+
 })(window);

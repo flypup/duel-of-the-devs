@@ -118,10 +118,12 @@ var ec = ec || {};
 
 		pause: function() {
 			paused = true;
+			view.pause();
 		},
 
 		resume: function() {
 			paused = false;
+			view.resume();
 		},
 
 		paused: function() {
