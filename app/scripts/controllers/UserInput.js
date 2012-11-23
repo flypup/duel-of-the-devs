@@ -1,8 +1,7 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
 
+	var ec = $.ec;
 	var dummyGamePadList = [undefined, undefined, undefined, undefined];
 
 	var UserInput = ec.UserInput = function(index) {
@@ -70,4 +69,4 @@ var ec = ec || {};
 		}
 	};
 
-})();
+})(window);
