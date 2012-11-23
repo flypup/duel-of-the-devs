@@ -14,9 +14,9 @@
 		space.gravity = v(0, 0);
 		space.iterations = 10;
 		space.sleepTimeThreshold = $.ec.TIME_STEP * 9;
-		space.idleSpeedThreshold = 0.01;//1;//5;//
+		space.idleSpeedThreshold = 1;//5;//0.01;//
 		space.collisionSlop = 0.1;
-		space.damping = 0.75;//0.99;//
+		space.damping = 0.5;//0.99;//
 	};
 
 	World.prototype.addWalls = function() {
