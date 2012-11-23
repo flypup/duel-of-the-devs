@@ -1,9 +1,12 @@
 var ec = ec || {};
 
-(function() {
+(function($) {
 	'use strict';
-	var requestAnimationFrame = window.requestAnimationFrame;
-	var Modernizr = window.Modernizr;
+
+	$.ec = ec;
+	var document = $.document;
+	var requestAnimationFrame =  $.requestAnimationFrame;
+	var Modernizr =  $.Modernizr;
 
 	ec.webgl = Modernizr.webgl;
 	ec.mobile = Modernizr.mobile;
@@ -58,7 +61,7 @@ var ec = ec || {};
 
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
-				window.scrollTo( 0, 1 );
+				$.scrollTo( 0, 1 );
 			}
 
 			ec.view = view;
@@ -162,4 +165,4 @@ var ec = ec || {};
 
 	requestAnimationFrame( core.init );
 
-})();
+})(window);

@@ -1,14 +1,13 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
-	var THREE = window.THREE;
+	
+	var THREE = $.THREE;
 
-	ec.ThreeJsBoxView = function() {
+	var ThreeJsBoxView = $.ec.ThreeJsBoxView = function() {
 		this.update = this.createMesh;
 	};
 
-	ec.ThreeJsBoxView.prototype.createMesh = function(body, scene) {
+	ThreeJsBoxView.prototype.createMesh = function(body, scene) {
 
 		//var verts = body.shape.verts;
 		var BOX_WIDTH  = 64;
@@ -31,7 +30,7 @@ var ec = ec || {};
 	    this.update(body, scene);
 	};
 
-	ec.ThreeJsBoxView.prototype.updateMesh = function(shape, scene) {
+	ThreeJsBoxView.prototype.updateMesh = function(shape, scene) {
 		if (shape.body && !shape.body.isSleeping()) {
 			this.mesh.position.x = shape.body.p.x;
 			this.mesh.position.y = shape.body.p.y;
@@ -42,4 +41,4 @@ var ec = ec || {};
 		}
 	};
 
-})();
+})(window);

@@ -1,13 +1,12 @@
-var ec = ec || {};
-var cp = cp;
-(function() {
+(function($) {
 	'use strict';
 
+	var cp = $.cp;
 	var v = cp.v;
 
 	var RADIUS = 32;
 
-	ec.Circle = function() {
+	var Circle = $.ec.Circle = function() {
 		this.z = 0;
 		
 		var mass = 1;
@@ -26,16 +25,16 @@ var cp = cp;
 		this.setPos(64, 64, 32);
 	};
 
-	ec.Circle.prototype.setView = function(view) {
+	Circle.prototype.setView = function(view) {
 		this.view = this.shape.view = view;
 		this.body.z = this.z;
 		return this;
 	};
 
-	ec.Circle.prototype.setPos = function(x, y, z) {
+	Circle.prototype.setPos = function(x, y, z) {
 		this.body.setPos(v(x, y));
 		this.z = this.body.z = z;
 		return this;
 	};
 
-})();
+})(window);

@@ -1,14 +1,13 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
-	var THREE = window.THREE;
 
-	ec.ThreeJsSphereView = function() {
+	var THREE = $.THREE;
+
+	var ThreeJsSphereView = $.ec.ThreeJsSphereView = function() {
 		this.update = this.createMesh;
 	};
 
-	ec.ThreeJsSphereView.prototype.createMesh = function(body, scene) {
+	ThreeJsSphereView.prototype.createMesh = function(body, scene) {
 
 		//var verts = body.shape.verts;
 		var RADIUS  = 32;
@@ -32,7 +31,7 @@ var ec = ec || {};
 	    this.update(body, scene);
 	};
 
-	ec.ThreeJsSphereView.prototype.updateMesh = function(shape, scene) {
+	ThreeJsSphereView.prototype.updateMesh = function(shape, scene) {
 		if (shape.body && !shape.body.isSleeping()) {
 		    this.mesh.position.x = shape.body.p.x;
 			this.mesh.position.y = shape.body.p.y;
@@ -43,4 +42,4 @@ var ec = ec || {};
 		}
 	};
 
-})();
+})(window);

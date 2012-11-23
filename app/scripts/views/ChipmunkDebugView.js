@@ -1,7 +1,8 @@
-var ec = ec || {};
-var cp = cp;
-(function() {
+(function($) {
 	'use strict';
+
+	var ec = $.ec;
+	var cp = $.cp;
 	var v = cp.v;
 
 	var GRABABLE_MASK_BIT = 1<<31;
@@ -408,4 +409,4 @@ var cp = cp;
 	    }
 	  }
 	};
-})();
+})(window);

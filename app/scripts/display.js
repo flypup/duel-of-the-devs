@@ -1,59 +1,68 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
 
-	ec.resizeDisplay = function() {
-		//console.log('inner', window.innerWidth, window.innerHeight);
-		//console.log('screen', window.screen.width, window.screen.height, 'x', window.devicePixelRatio);
+	var ec = $.ec;
+	var document = $.document;
 
-		ec.pixelRatioY =
-		ec.pixelRatio = window.devicePixelRatio || 1;
+	ec.resizeDisplay = function() {
+		
+		// pixel ratio (x2 = retina, reduce scale to improve performance of canvas rendering)
+		var pixelRatioX, pixelRatioY;
+
+		// viewport width and height
+		var width, height;
+
+
+		pixelRatioX =
+		pixelRatioY = ec.forcePixelRatio || $.devicePixelRatio || 1;
+		
 		/* iPad 3 does not render full resultion well */
 		// TODO: do same for iPhone 4
 		if (ec.ipad && !ec.webgl) {
-			ec.pixelRatioY = Math.min(1.333333, ec.pixelRatio);
-			ec.pixelRatio  = Math.min(1, ec.pixelRatio);
+			pixelRatioY = Math.min(1.333333, pixelRatioX);
+			pixelRatioX = Math.min(1,        pixelRatioX);
 		}
 
-		var screenWidth  = Math.max(window.screen.width, window.screen.height);
-		var screenHeight = Math.min(window.screen.width, window.screen.height);
-
-		var width, height, maxWidth, maxHeight;
-
+		
 		if (ec.mobile) {
+			// fit to screen
+			var screenWidth  = Math.max($.screen.width, $.screen.height);
+			var screenHeight = Math.min($.screen.width, $.screen.height);
 			width  = screenWidth;
 			height = screenHeight;
 
 		} else {
+			// fit to browser window
 			var x = 16;
 			var y = 9;
+			var maxWidth, maxHeight;
 
 			width  = x;
 			height = y;
-			maxWidth  = window.innerWidth;
-			maxHeight = window.innerHeight;
+			maxWidth  = $.innerWidth;
+			maxHeight = $.innerHeight;
 
 			while(width + x <= maxWidth && height + y <= maxHeight) {
 				width  += x;
 				height += y;
 			}
-		}
-
-		if (!ec.mobile) {
+			//center display in browser window
 			document.body.style.left = Math.floor((maxWidth - width)/2) + 'px';
 			document.body.style.top  = Math.floor((maxHeight - height)/2) + 'px';
 		}
-		if (ec.width === width && ec.height === height) {
-			return false;
-		}
-		ec.width  = width;
-		ec.height = height;
-		document.body.style.width  = width + 'px';
-        document.body.style.height = height + 'px';
 
-        //console.log('display', width, height);
-        return true;
+		if (ec.width !== width || ec.height !== height || ec.pixelRatio !== pixelRatioX || ec.pixelRatioY !== pixelRatioY) {
+			ec.pixelRatio = pixelRatioX;
+			ec.pixelRatioY = pixelRatioY;
+			ec.width  = width;
+			ec.height = height;
+			document.body.style.width  = width + 'px';
+	        document.body.style.height = height + 'px';
+
+	        return true;
+	    }
+
+	    return false;
 	};
 
-})();
+})(window);

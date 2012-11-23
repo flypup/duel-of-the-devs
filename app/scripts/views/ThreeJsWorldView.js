@@ -1,8 +1,8 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
-	var THREE = window.THREE;
+
+	var ec = $.ec;
+	var THREE = $.THREE;
 	var v3 = function(x, y, z) {
 		return new THREE.Vector3(x, y, z);
 	};
@@ -118,5 +118,4 @@ var ec = ec || {};
 			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
         }
 	};
-
-})();
+})(window);

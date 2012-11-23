@@ -1,7 +1,8 @@
-var ec = ec || {};
-
-(function() {
+(function($) {
 	'use strict';
+	
+	var ec = $.ec;
+	var document = $.document;
 
 	var preventDefault = function(e) {
 		 e.preventDefault();
@@ -12,15 +13,15 @@ var ec = ec || {};
 	};
 
 	ec.addBrowserListeners = function() {
-		this.bind(window, 'blur',  this.core.pause,  false);
-		this.bind(window, 'focus', this.core.resume, false);
+		this.bind($, 'blur',  this.core.pause,  false);
+		this.bind($, 'focus', this.core.resume, false);
 		if (ec.mobile) {
 			// prevent scrolling
 			this.bind(document, 'touchmove', preventDefault, false);
 			this.bind(ec.core.getViewDom(), 'touchstart', cycleDebug, false);
 		} else {
 			// resize window
-			this.bind(window, 'resize', this.core.resize, false);
+			this.bind($, 'resize', this.core.resize, false);
 		}
 		this.bind(document, 'keyup', this.keyup, false);
 	};
@@ -53,4 +54,4 @@ var ec = ec || {};
 		}
 	};
 
-})();
+})(window);

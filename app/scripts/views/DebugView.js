@@ -1,9 +1,10 @@
-var ec = ec || {};
-var Stats = Stats;
-var dat = dat;
-(function() {
+(function($) {
 	'use strict';
-	var THREE = window.THREE;
+
+	var ec = $.ec;
+	var Stats = $.Stats;
+	var dat = $.dat;
+	var THREE = $.THREE;
 
 	var DebugView = ec.DebugView = function() {
 		var stats =
@@ -148,4 +149,4 @@ var dat = dat;
 	    ]);
 	};
 
-})();
+})(window);
