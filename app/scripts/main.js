@@ -28,7 +28,8 @@ var ec = ec || {};
 	var paused = false;
 	var delta, deltaTime, remainder;
 
-	var createWaitCount = 0;
+	var createWaitTime = 0;
+	var CREATE_WAIT_SECONDS = 5;
 
 	var userInput;
 
@@ -92,11 +93,12 @@ var ec = ec || {};
 					world.step(TIME_STEP);
 				}
 
+				createWaitTime+=delta;
 				if (world.space.activeShapes.count > 0 || redraw) {
 				    world.space.eachShape(updateShapeView);
 				    redraw = false;
-				} else if (createWaitCount++ > 5 * 60) {
-					createWaitCount = 0;
+				} else if (createWaitTime > CREATE_WAIT_SECONDS) {
+					createWaitTime -= CREATE_WAIT_SECONDS;
 					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 				}
