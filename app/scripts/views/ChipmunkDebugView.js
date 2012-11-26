@@ -32,7 +32,7 @@
 		canvas.style.position = 'absolute';
 		this.ctx = canvas.getContext('2d');
 		this.resize();
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(0, 0));
+		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(50 / this.scale, 0));
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -134,7 +134,7 @@
 		var ratio = this.ratio = ec.pixelRatio || 1;
 		this.width  = Math.max(160 / ratio, Math.round(ec.width * scale));
 		this.height = Math.max(90  / ratio, Math.round(ec.height * scale));
-		this.scale = this.width * scale * 0.5 / ec.width;
+		this.scale = this.width * scale / ec.width;
 		this.orthoSize = v(this.width, this.height).mult(1/this.scale);
 		var canvas = this.canvas;
 		canvas.width = this.width * ratio;
