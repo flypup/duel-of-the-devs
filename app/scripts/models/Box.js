@@ -8,8 +8,6 @@
 	var BOX_HEIGHT = 64;
 
 	var Box = $.ec.Box = function(body) {
-		this.z = 0;
-
 		if (body) {
 			this.body = body;
 		} else {
@@ -25,7 +23,7 @@
 		shape.setElasticity(0);
 		shape.setFriction(0.6);
 		
-		this.setView({});
+		//this.setView({});
 		this.setPos(-64, 0, 32);
 	};
 
@@ -35,8 +33,12 @@
 	};
 
 	Box.prototype.setPos = function(x, y, z) {
-		this.body.setPos(v(x, y));
-		this.z = this.body.z = z;
+		this.body.activate();
+		this.body.p.x = x;
+		this.body.p.y = y;
+		if (z !== undefined) {
+			this.z = this.body.z = z;
+		}
 		if (this.body.isStatic()) {
 			//space.reindexShapesForBody(this.body);
 			for(var i = 0; i < this.body.shapeList.length; i++){

@@ -35,7 +35,7 @@
 		texture.wrapT = THREE.RepeatWrapping;
 		texture.repeat.x = 10;
 		texture.repeat.y = 10;
-		var floor = new THREE.Mesh(new THREE.PlaneGeometry(640, 640, 4, 4), new THREE.MeshBasicMaterial({
+		var floor = new THREE.Mesh(new THREE.PlaneGeometry(1280, 1280, 4, 4), new THREE.MeshBasicMaterial({
 			//color: 0x666666,
 			map: texture,
 			wireframe: false,

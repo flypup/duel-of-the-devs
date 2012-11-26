@@ -58,18 +58,18 @@ var ec = ec || {};
 
 		    world = new ec.World();
 			world.addWalls();
-			world.add(new ec.Player().setPos(-200, 400)).setInput(userInput);//.setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 32));//.setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 32));//.setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Circle());//.setView(new ec.ThreeJsSphereView());
+			world.add(new ec.Player().setPos(-200, 400, 32)).setInput(userInput).setView(new ec.ThreeJsSphereView());
+			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32)).setView(new ec.ThreeJsBoxView());
+			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32)).setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 			redraw = true;
 
 			ec.resizeDisplay();
 
 			// THREE.js View
-		    //view = new ec.ThreeJsWorldView();
-		    //updateShapeView = view.updateShape();
+		    view = new ec.ThreeJsWorldView();
+		    updateShapeView = view.updateShape();
 
 		    // Dummy View
 		    // view = {};
@@ -77,8 +77,8 @@ var ec = ec || {};
 		    // updateShapeView = function(){};
 
 		    // Canvas 2d Context View
-		    view = new ec.Canvas2dView();
-		    updateShapeView = view.updateShape();
+		    // view = new ec.Canvas2dView();
+		    // updateShapeView = view.updateShape();
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -119,8 +119,8 @@ var ec = ec || {};
 				createWaitTime+=delta;
 				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
-					world.add(new ec.Circle());//.setView(new ec.ThreeJsSphereView());
+					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
+					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 				}
 			}
 			if (ec.debug < 3) {

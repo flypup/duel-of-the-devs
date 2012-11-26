@@ -7,7 +7,7 @@
 		this.update = this.createMesh;
 	};
 
-	ThreeJsBoxView.prototype.createMesh = function(body, scene) {
+	ThreeJsBoxView.prototype.createMesh = function(shape, scene) {
 
 		//var verts = body.shape.verts;
 		var BOX_WIDTH  = 64;
@@ -27,7 +27,7 @@
 	    scene.add( mesh );
 
 	    this.update = this.updateMesh;
-	    this.update(body, scene);
+	    this.update(shape, scene);
 	};
 
 	ThreeJsBoxView.prototype.updateMesh = function(shape, scene) {
