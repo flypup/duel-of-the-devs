@@ -32,17 +32,27 @@ var ec = ec || {};
 
 	var userInput;
 
+	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput').split(',');
+
 	var core = ec.core = {
 
-		init: function(time) {
-			if (!ec.UserInput || !ec.ChipmunkDebugView || !ec.DebugView || !ec.World || !ec.Player || !ec.Box || !ec.Circle || !ec.Canvas2dView) {
-				console.log('loading');
-				requestAnimationFrame( core.init );
-				return;
+		load: function(time) {
+			for (var i = 0, len = required.length; i < len; i++) {
+				if (!ec[required[i]]) {
+					console.log('loading');
+					requestAnimationFrame( core.load );
+					return;
+				}
 			}
+			console.log('init');
+			core.init(time);
+		},
+
+		init: function(time) {
 			deltaTime = time;
 		    remainder = 0;
-		    requestAnimationFrame( core.animate );
+		    
+			requestAnimationFrame( core.animate );
 
 			userInput = new ec.UserInput();
 
@@ -204,6 +214,6 @@ var ec = ec || {};
 	}
 
 	//$.onReady(core.init);
-	requestAnimationFrame( core.init );
+	requestAnimationFrame( core.load );
 
 })(window);
