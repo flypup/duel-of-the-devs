@@ -107,7 +107,7 @@ var ec = ec || {};
 				}
 
 				createWaitTime+=delta;
-				if (world.space.shapes < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
+				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
 					world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
 					world.add(new ec.Circle());//.setView(new ec.ThreeJsSphereView());
