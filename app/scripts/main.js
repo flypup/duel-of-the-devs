@@ -5,7 +5,6 @@ var ec = ec || {};
 
 	$.ec = ec;
 	var document = $.document;
-	var requestAnimationFrame =  $.requestAnimationFrame;
 	var Modernizr =  $.Modernizr;
 
 	ec.webgl = Modernizr.webgl;
@@ -177,6 +176,30 @@ var ec = ec || {};
 		}
 	};
 
+	// polyfills
+
+	if (!Date.now) {
+		Date.now = function now() {
+	        return +(new Date());
+	    };
+	}
+
+	// requestAnimationFrame polyfill by Erik Möller
+	// fixes from Paul Irish and Tino Zijdel
+	// vendor prefix checks using Modernizr
+	var requestAnimationFrame = $.requestAnimationFrame || Modernizr.prefixed('RequestAnimationFrame', $);
+	// var cancelAnimationFrame = $.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', $) || Modernizr.prefixed('CancelRequestAnimationFrame', $) || function ( id ) { $.clearTimeout( id ); };
+	if (!requestAnimationFrame) {
+		var lastTime = 0;
+		requestAnimationFrame = function ( callback, element ) {
+			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
+			var id = $.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
+			lastTime = currTime + timeToCall;
+			return id;
+		};
+	}
+
+	//$.onReady(core.init);
 	requestAnimationFrame( core.init );
 
 })(window);
