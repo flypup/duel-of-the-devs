@@ -6,7 +6,7 @@
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
-	var WORLD_BOUNDS = 800;
+	var WORLD_BOUNDS = 640;
 
 	var World = $.ec.World = function() {
 		var space =
@@ -14,9 +14,12 @@
 		space.gravity = v(0, 0);
 		space.iterations = 10;
 		space.sleepTimeThreshold = $.ec.TIME_STEP * 9;
-		space.idleSpeedThreshold = 1;//5;//0.01;//
-		space.collisionSlop = 0.1;
+		space.idleSpeedThreshold = 0.1;//5;//0.01;//
+		space.collisionSlop = 0.025;
+		space.collisionBias = Math.pow(1 - 0.75, 60);
 		space.damping = 0.5;//0.99;//
+
+		this.entities = [];
 	};
 
 	World.prototype.addWalls = function() {
@@ -39,7 +42,21 @@
 			this.space.addBody(bodyShape.body);
 		}
 		this.space.addShape(bodyShape.shape);
+		this.entities.push(bodyShape);
 		return bodyShape;
+	};
+
+	World.prototype.remove = function(bodyShape) {
+		var index = this.entities.indexOf(bodyShape);
+		if (index > -1) {
+			if (!bodyShape.body.isStatic()) {
+				this.space.removeBody(bodyShape.body);
+			}
+			this.space.removeShape(bodyShape.shape);
+			this.entities.splice(index, 1);
+			return true;
+		}
+		return false;
 	};
 
 	World.prototype.createStaticBody = function() {
@@ -49,6 +66,9 @@
 	};
 
 	World.prototype.step = function(time) {
+		for(var i = 0, len = this.entities.length; i < len; i++) {
+			this.entities[i].step(time);
+		}
 		this.space.step(time);
 	};
 

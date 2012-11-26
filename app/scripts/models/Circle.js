@@ -21,19 +21,22 @@
 		shape.setElasticity(0);
 		shape.setFriction(0.6);
 
-		this.setView(function(){});
+		this.setView({});
 		this.setPos(64, 64, 32);
 	};
 
 	Circle.prototype.setView = function(view) {
 		this.view = this.shape.view = view;
-		this.body.z = this.z;
 		return this;
 	};
 
 	Circle.prototype.setPos = function(x, y, z) {
 		this.body.setPos(v(x, y));
 		this.z = this.body.z = z;
+		return this;
+	};
+
+	Circle.prototype.step = function(time) {
 		return this;
 	};
 

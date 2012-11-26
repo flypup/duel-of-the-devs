@@ -25,13 +25,12 @@
 		shape.setElasticity(0);
 		shape.setFriction(0.6);
 		
-		this.setView(function(){});
+		this.setView({});
 		this.setPos(-64, 0, 32);
 	};
 
 	Box.prototype.setView = function(view) {
 		this.view = this.shape.view = view;
-		this.body.z = this.z;
 		return this;
 	};
 
@@ -48,6 +47,10 @@
 				}
 			}
 		}
+		return this;
+	};
+
+	Box.prototype.step = function(time) {
 		return this;
 	};
 
