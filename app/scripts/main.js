@@ -35,7 +35,7 @@ var ec = ec || {};
 	var core = ec.core = {
 
 		init: function(time) {
-			if (!ec.UserInput || !ec.ChipmunkDebugView || !ec.DebugView || !ec.World || !ec.Box || !ec.Circle || !ec.Canvas2dView) {
+			if (!ec.UserInput || !ec.ChipmunkDebugView || !ec.DebugView || !ec.World || !ec.Player || !ec.Box || !ec.Circle || !ec.Canvas2dView) {
 				console.log('loading');
 				requestAnimationFrame( core.init );
 				return;
@@ -48,6 +48,7 @@ var ec = ec || {};
 
 		    world = new ec.World();
 			world.addWalls();
+			world.add(new ec.Player().setPos(-200, 400)).setInput(userInput);//.setView(new ec.ThreeJsBoxView());
 			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 32));//.setView(new ec.ThreeJsBoxView());
 			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 32));//.setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
@@ -97,8 +98,6 @@ var ec = ec || {};
 			deltaTime = time;
 
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
-
-			userInput.poll();
 
 			if (!paused) {
 				remainder += delta;
