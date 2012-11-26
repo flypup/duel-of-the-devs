@@ -32,7 +32,7 @@
 		canvas.style.position = 'absolute';
 		this.ctx = canvas.getContext('2d');
 		this.resize();
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(400, 0));
+		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(0, 0));
 		document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -129,11 +129,12 @@
 		this.canvas.style.display = 'none';
 	};
 
-	ChipmunkDebugView.prototype.resize = function() {
+	ChipmunkDebugView.prototype.resize = function(scale) {
+		scale = scale || 0.33;//0.93;//
 		var ratio = this.ratio = ec.pixelRatio || 1;
-		this.width  = Math.max(160 / ratio, Math.round(ec.width / 3));
-		this.height = Math.max(90  / ratio, Math.round(ec.height / 3));
-		this.scale = this.width  * 0.33 / ec.width;
+		this.width  = Math.max(160 / ratio, Math.round(ec.width * scale));
+		this.height = Math.max(90  / ratio, Math.round(ec.height * scale));
+		this.scale = this.width * scale * 0.5 / ec.width;
 		this.orthoSize = v(this.width, this.height).mult(1/this.scale);
 		var canvas = this.canvas;
 		canvas.width = this.width * ratio;
