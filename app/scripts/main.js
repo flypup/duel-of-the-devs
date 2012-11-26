@@ -35,6 +35,11 @@ var ec = ec || {};
 	var core = ec.core = {
 
 		init: function(time) {
+			if (!ec.UserInput || !ec.ChipmunkDebugView || !ec.DebugView || !ec.World || !ec.Box || !ec.Circle || !ec.Canvas2dView) {
+				console.log('loading');
+				requestAnimationFrame( core.init );
+				return;
+			}
 			deltaTime = time;
 		    remainder = 0;
 		    requestAnimationFrame( core.animate );
