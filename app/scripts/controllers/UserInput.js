@@ -24,6 +24,17 @@
 		this.pollGamePad = (navigator.webkitGetGamepads !== undefined) ? this.pollGamePadList : this.pollDummyGamePadList;
 	};
 
+	UserInput.prototype.setAxes1 = function(x, y) {
+		this.axes[0] = x;
+		this.axes[1] = y;
+		// console.log(this.axes);
+	};
+
+	UserInput.prototype.setButton = function(index, value) {
+		this.buttons[index] = value;
+		// console.log(this.buttons);
+	};
+
 	UserInput.prototype.poll = function() {
 		var gamepad = this.pollGamePad()[this.index];
 		if (gamepad && this.gamepadTime !== gamepad.timestamp) {

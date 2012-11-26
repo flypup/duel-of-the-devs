@@ -40,7 +40,9 @@ var ec = ec || {};
 		    remainder = 0;
 		    requestAnimationFrame( core.animate );
 
-			world = new ec.World();
+			userInput = new ec.UserInput();
+
+		    world = new ec.World();
 			world.addWalls();
 			world.add(new ec.Box(world.createStaticBody()).setPos(-1000, 32)).setView(new ec.ThreeJsBoxView());
 			world.add(new ec.Box(world.createStaticBody()).setPos( 1000, 32)).setView(new ec.ThreeJsBoxView());
@@ -56,9 +58,7 @@ var ec = ec || {};
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
 
-		    ec.addBrowserListeners();
-
-		    userInput = new ec.UserInput();
+		    ec.addBrowserListeners(userInput);
 
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
