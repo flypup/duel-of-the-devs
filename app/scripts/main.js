@@ -69,7 +69,7 @@ var ec = ec || {};
 			ec.world = world;
 			// GUI Settings
 			// debugView.worldGui(world);
-			// debugView.viewGui(view);
+			view.debugGui(debugView);
 		},
 
 		animate: function(time) {

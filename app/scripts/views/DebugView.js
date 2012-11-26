@@ -12,7 +12,7 @@
 		stats.domElement.style.position = 'absolute';
 		stats.domElement.style.left = '0px';
 		stats.domElement.style.top = '0px';
-	    document.body.appendChild( stats.domElement );
+	    $.document.body.appendChild( stats.domElement );
 	};
 
 	DebugView.prototype.show = function() {
@@ -89,62 +89,6 @@
 					{name: 'x', params:{step: 10, min: -1000, max: 1000}},
 					{name: 'y', params:{step: 10, min: -1000, max: 1000}}
 				]
-			}
-	    ]);
-	};
-
-	DebugView.prototype.viewGui = function(view) {
-		var lookAtCenter = function() {//e) {//e.object, e.property
-			view.lookAt(0, 0, 0);
-			//view.camera.position.y = view.camera.position.x;
-		};
-		var updateMatrix = function() {
-			view.camera.updateProjectionMatrix();
-		};
-		var cameraProps = [];
-		if (view.camera instanceof THREE.PerspectiveCamera || view.camera instanceof THREE.CombinedCamera) {
-			cameraProps.push({name: 'fov',    listen: true, onChange: updateMatrix});
-			cameraProps.push({name: 'aspect', listen: true, onChange: updateMatrix});
-			cameraProps.push({name: 'near', onChange: updateMatrix, params:{step: 10, min: 1, max: 1000}});
-			cameraProps.push({name: 'far',  onChange: updateMatrix, params:{step: 100, min: 1000, max: 10000}});
-		}
-		if (view.camera instanceof THREE.OrthographicCamera || view.camera instanceof THREE.CombinedCamera) {
-			cameraProps.push({name: 'left',  onChange: updateMatrix, params:{min: -10000, max: -100}});
-			cameraProps.push({name: 'right', onChange: updateMatrix, params:{min: 100, max: 10000}});
-			cameraProps.push({name: 'bottom',  onChange: updateMatrix, params:{min: -10000, max: -100}});
-			cameraProps.push({name: 'top', onChange: updateMatrix, params:{min: 100, max: 10000}});
-			cameraProps.push({name: 'near', onChange: updateMatrix, params:{step: 10, min: -10000, max: 10000}});
-			cameraProps.push({name: 'far',  onChange: updateMatrix, params:{step: 100, min: 1000, max: 10000}});
-		}
-
-		this.addGui([
-			{
-				name: 'camera position',
-				remember: true,
-				target: view.camera.position,
-				props: [
-					{name: 'x', listen: true, onChange: lookAtCenter, params:{step: 1, min: -320, max: -160}},
-					{name: 'y', listen: true, onChange: lookAtCenter, params:{step: 1, min: -320, max: -160}},
-					{name: 'z', listen: true, onChange: lookAtCenter, params:{step: 1, min: 240, max: 320}}
-				]
-			},
-			{
-				name: 'camera rotation',
-				remember: true,
-				target: view.camera.rotation,
-				props: [
-					{name: 'x', listen: true, onChange: lookAtCenter, params:{step: 0.01, min: -6, max: 6}},
-					{name: 'y', listen: true, onChange: lookAtCenter, params:{step: 0.01, min: -6, max: 6}},
-					{name: 'z', listen: true, onChange: lookAtCenter, params:{step: 0.01, min: -6, max: 6}}
-				]
-			}
-		]);
-		this.addGui([
-			{
-				name: 'camera',
-				remember: true,
-				target: view.camera,
-				props: cameraProps
 			}
 	    ]);
 	};
