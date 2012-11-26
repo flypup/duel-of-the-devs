@@ -118,6 +118,10 @@
 		this.renderer.autoUpdateObjects = true;
 	};
 
+	ThreeJsWorldView.prototype.getDom = function() {
+		return this.renderer.domElement;
+	};
+
 	ThreeJsWorldView.prototype.resize = function() {
 		var ratioX = ec.pixelRatio;
 		var ratioY = ec.pixelRatioY || ratioX;

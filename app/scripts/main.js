@@ -44,15 +44,25 @@ var ec = ec || {};
 
 		    world = new ec.World();
 			world.addWalls();
-			world.add(new ec.Box(world.createStaticBody()).setPos(-1000, 32)).setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos( 1000, 32)).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 32));//.setView(new ec.ThreeJsBoxView());
+			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 32));//.setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
+		    world.add(new ec.Circle());//.setView(new ec.ThreeJsSphereView());
 			redraw = true;
 
 			ec.resizeDisplay();
 
-		    view = new ec.ThreeJsWorldView();
+			// THREE.js View
+		    //view = new ec.ThreeJsWorldView();
+		    //updateShapeView = view.updateShape();
+
+		    // Dummy View
+		    // view = {};
+		    // view.pause = view.resume = view.draw =
+		    // updateShapeView = function(){};
+
+		    // Canvas 2d Context View
+		    view = new ec.Canvas2dView();
 		    updateShapeView = view.updateShape();
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
@@ -73,12 +83,12 @@ var ec = ec || {};
 		},
 
 		animate: function(time) {
+			requestAnimationFrame( core.animate );
+			
 			if (ec.debug > 0) {
 				debugView.stats.begin();
 			}
-			// note: three.js includes requestAnimationFrame shim
-		    requestAnimationFrame( core.animate );
-
+			
 			delta = (time - deltaTime) / 1000;
 			deltaTime = time;
 
@@ -94,17 +104,17 @@ var ec = ec || {};
 				}
 
 				createWaitTime+=delta;
-				if (world.space.activeShapes.count > 0 || redraw) {
-				    world.space.eachShape(updateShapeView);
-				    redraw = false;
-				} else if (createWaitTime > CREATE_WAIT_SECONDS) {
+				if (world.space.shapes < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+					world.add(new ec.Box());//.setView(new ec.ThreeJsBoxView());
+					world.add(new ec.Circle());//.setView(new ec.ThreeJsSphereView());
 				}
 			}
-
 			if (ec.debug < 3) {
+				if (world.space.activeShapes.count > 0 || redraw) {
+					world.space.eachShape(updateShapeView);
+					redraw = false;
+				}
 				view.draw();
 			}
 
@@ -146,7 +156,7 @@ var ec = ec || {};
 		},
 
 		getViewDom: function() {
-			return view.renderer.domElement;
+			return view.getDom();
 		},
 
 		setDebugLevel: function(level) {
