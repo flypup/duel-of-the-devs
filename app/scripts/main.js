@@ -18,8 +18,6 @@ var ec = ec || {};
 	
 	var world;
 	var view;
-	var updateShapeView;
-	var redraw;
 	var debugView;
 	var cpDebugView;
 	
@@ -63,22 +61,18 @@ var ec = ec || {};
 			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32)).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
-			redraw = true;
 
 			ec.resizeDisplay();
 
 			// THREE.js View
 		    view = new ec.ThreeJsWorldView();
-		    updateShapeView = view.updateShape();
 
 		    // Dummy View
 		    // view = {};
-		    // view.pause = view.resume = view.draw =
-		    // updateShapeView = function(){};
+		    // view.pause = view.resume = view.draw = function(){};
 
 		    // Canvas 2d Context View
 		    // view = new ec.Canvas2dView();
-		    // updateShapeView = view.updateShape();
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -124,11 +118,7 @@ var ec = ec || {};
 				}
 			}
 			if (ec.debug < 3) {
-				if (world.space.activeShapes.count > 0 || redraw) {
-					world.space.eachShape(updateShapeView);
-					redraw = false;
-				}
-				view.draw();
+				view.draw(world);
 			}
 
 		    if (ec.debug > 0) {

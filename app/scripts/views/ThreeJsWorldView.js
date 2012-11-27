@@ -89,6 +89,8 @@
 		renderer.domElement.style.top = '0px';
 		this.resize();
 	    document.body.appendChild( renderer.domElement );
+
+	    this.updateShapeView = this.updateShape();
 	};
 
 	ThreeJsWorldView.prototype.updateShape = function() {
@@ -104,7 +106,11 @@
 		this.camera.lookAt(v3(x, y, z));
 	};
 
-	ThreeJsWorldView.prototype.draw = function() {
+	ThreeJsWorldView.prototype.draw = function(world) {
+		if (world.space.activeShapes.count > 0) {// || redraw
+			world.space.eachShape(this.updateShapeView);
+			//redraw = false;
+		}
 		this.renderer.render( this.scene, this.camera );
 	};
 
