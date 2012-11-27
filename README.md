@@ -1,6 +1,6 @@
 Working Title 'Will'
 
-A very rough demo can be played at [flypup.github.com/game-off-2012](http://flypup.github.com/game-off-2012/). It's a gh-pages branch of this repo containing just the distrobution files built with [yeoman](https://github.com/yeoman).
+A very rough demo can be played [here](http://flypup.github.com/game-off-2012/). It's a [gh-pages](http://pages.github.com/) branch of this repo containing just the distribution files built with [yeoman](https://github.com/yeoman).
 
 We're also using:
 * [Chipmunk-js](https://github.com/josephg/Chipmunk-js) 2D physics model
