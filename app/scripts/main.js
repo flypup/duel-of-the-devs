@@ -31,16 +31,25 @@ var ec = ec || {};
 	var userInput;
 
 	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput').split(',');
+	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
+	//'SpriteSheet,Rectangle'
+
+	var hasProperties = function(obj, props) {
+		for (var i = 0, len = props.length; i < len; i++) {
+			if (obj[props[i]] === undefined) {
+				return false;
+			}
+		}
+		return true;
+	};
 
 	var core = ec.core = {
 
 		load: function(time) {
-			for (var i = 0, len = required.length; i < len; i++) {
-				if (!ec[required[i]]) {
-					console.log('loading');
-					requestAnimationFrame( core.load );
-					return;
-				}
+			if (!hasProperties(window, globalRequired) || !hasProperties(ec, required)) {
+				console.log('loading');
+				requestAnimationFrame( core.load );
+				return;
 			}
 			console.log('init');
 			core.init(time);
