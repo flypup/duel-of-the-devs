@@ -29,6 +29,7 @@ var ec = ec || {};
 	var CREATE_WAIT_SECONDS = 5;
 
 	var userInput;
+	var player;
 
 	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
@@ -51,6 +52,8 @@ var ec = ec || {};
 				requestAnimationFrame( core.load );
 				return;
 			}
+			// TODO: preload sprite sheets
+
 			console.log('init');
 			core.init(time);
 		},
@@ -65,6 +68,7 @@ var ec = ec || {};
 
 		    world = new ec.World();
 			world.addWalls();
+			player =
 			world.add(new ec.Player().setPos(-200, 400, 32)).setInput(userInput).setView(new ec.ThreeJsSphereView());
 			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32)).setView(new ec.ThreeJsBoxView());
 			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32)).setView(new ec.ThreeJsBoxView());
@@ -74,14 +78,14 @@ var ec = ec || {};
 			ec.resizeDisplay();
 
 			// THREE.js View
-		    view = new ec.ThreeJsWorldView();
+		    // view = new ec.ThreeJsWorldView();
 
 		    // Dummy View
 		    // view = {};
 		    // view.pause = view.resume = view.draw = function(){};
 
 		    // Canvas 2d Context View
-		    // view = new ec.Canvas2dView();
+		    view = new ec.Canvas2dView();
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -97,7 +101,7 @@ var ec = ec || {};
 			ec.world = world;
 			// GUI Settings
 			// debugView.worldGui(world);
-			view.debugGui(debugView);
+			// view.debugGui(debugView);
 		},
 
 		animate: function(time) {
@@ -125,6 +129,8 @@ var ec = ec || {};
 					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
 					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
 				}
+
+				view.lookAt(player.body.p.x, -player.body.p.y);
 			}
 			if (ec.debug < 3) {
 				view.draw(world);

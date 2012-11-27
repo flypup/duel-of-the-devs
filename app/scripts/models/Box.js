@@ -22,17 +22,19 @@
 
 		shape.setElasticity(0);
 		shape.setFriction(0.6);
-		
-		//this.setView({});
+
 		this.setPos(-64, 0, 32);
 	};
 
-	Box.prototype.setView = function(view) {
+	var proto = Box.prototype;
+	proto.z = 0;
+
+	proto.setView = function(view) {
 		this.view = this.shape.view = view;
 		return this;
 	};
 
-	Box.prototype.setPos = function(x, y, z) {
+	proto.setPos = function(x, y, z) {
 		this.body.activate();
 		this.body.p.x = x;
 		this.body.p.y = y;
@@ -52,7 +54,7 @@
 		return this;
 	};
 
-	Box.prototype.step = function(time) {
+	proto.step = function(time) {
 		return this;
 	};
 

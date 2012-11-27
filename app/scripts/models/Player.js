@@ -23,18 +23,20 @@
 		shape.setElasticity(0);
 		shape.setFriction(0);
 
-		//this.setView({});
 		this.setPos(64, 64, 32);
 
 		this.speed = 8;
 	};
 
-	Player.prototype.setView = function(view) {
+	var proto = Player.prototype;
+	proto.z = 0;
+
+	proto.setView = function(view) {
 		this.view = this.shape.view = view;
 		return this;
 	};
 
-	Player.prototype.setPos = function(x, y, z) {
+	proto.setPos = function(x, y, z) {
 		this.body.activate();
 		this.body.p.x = x;
 		this.body.p.y = y;
@@ -44,12 +46,12 @@
 		return this;
 	};
 
-	Player.prototype.setInput = function(input) {
+	proto.setInput = function(input) {
 		this.input = input;
 		return this;
 	};
 
-	Player.prototype.step = function(time) {
+	proto.step = function(time) {
 		this.input.poll();
 		this.body.resetForces();
 		direction.x =  this.input.axes[0];

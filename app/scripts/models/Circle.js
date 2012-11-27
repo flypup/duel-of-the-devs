@@ -19,16 +19,18 @@
 		shape.setElasticity(0);
 		shape.setFriction(0.6);
 
-		//this.setView({});
 		this.setPos(64, 64, 32);
 	};
 
-	Circle.prototype.setView = function(view) {
+	var proto = Circle.prototype;
+	proto.z = 0;
+
+	proto.setView = function(view) {
 		this.view = this.shape.view = view;
 		return this;
 	};
 
-	Circle.prototype.setPos = function(x, y, z) {
+	proto.setPos = function(x, y, z) {
 		this.body.activate();
 		this.body.p.x = x;
 		this.body.p.y = y;
@@ -38,7 +40,7 @@
 		return this;
 	};
 
-	Circle.prototype.step = function(time) {
+	proto.step = function(time) {
 		return this;
 	};
 
