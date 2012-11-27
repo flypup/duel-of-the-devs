@@ -1,3 +1,16 @@
+Working Title 'Will'
+
+A very rough demo can be played at [flypup.github.com/game-off-2012](http://flypup.github.com/game-off-2012/). It's a gh-pages branch of this repo containing just the distrobution files built with [yeoman](https://github.com/yeoman).
+
+We're also using:
+* [Chipmunk-js](https://github.com/josephg/Chipmunk-js) 2D physics model
+* [EaselJS](https://github.com/CreateJS/EaselJS) SpriteSheet class
+* [three.js](http://threejs.org/) 3D rendering (although you might see a simpler renderer being used)
+* [stats.js](https://github.com/mrdoob/stats.js) guess I'm a fan of [@mrdoob](https://github.com/mrdoob)
+* [dat-gui](http://code.google.com/p/dat-gui/) for testing and tuning a variety of things
+
+## GitHub Game-Off-2012
+
 Here at GitHub, we're no strangers to hosting or sponsoring hackathons. With the growing number of games and game development resources on GitHub, we thought it was about time to throw our very own game jam!
 
 ## The Challenge
