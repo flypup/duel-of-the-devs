@@ -1,4 +1,4 @@
-Working Title 'Will'
+## Working Title 'Will'
 
 A very rough demo can be played [here](http://flypup.github.com/game-off-2012/). It's a [gh-pages](http://pages.github.com/) branch of this repo containing just the distribution files built with [yeoman](https://github.com/yeoman).
 
@@ -8,6 +8,12 @@ We're also using:
 * [three.js](http://threejs.org/) 3D rendering (although you might see a simpler renderer being used)
 * [stats.js](https://github.com/mrdoob/stats.js) guess I'm a fan of [@mrdoob](https://github.com/mrdoob)
 * [dat-gui](http://code.google.com/p/dat-gui/) for testing and tuning a variety of things
+
+** Controls **
+
+* Move using WASD/Arrows, gamepad L stick or touch the left side of the screen
+* Push/Pull/Punch using ... TBD
+* Shadow Clone ... TBD
 
 ## GitHub Game-Off-2012
 
