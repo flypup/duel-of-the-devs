@@ -1,12 +1,12 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var cp = $.cp;
+	var cp = window.cp;
 	var v = cp.v;
 
 	var RADIUS = 32;
 
-	var Circle = $.ec.Circle = function() {
+	var Circle = window.ec.Circle = function() {
 		var mass = 1;
 		var moment = cp.momentForCircle(mass, 0, RADIUS, v(0, 0));//cp.vzero);
 		

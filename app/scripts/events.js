@@ -1,8 +1,8 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
-	var document = $.document;
+	var ec = window.ec;
+	var document = window.document;
 	var KEY = {
 		'LEFT' : 37,
 		'UP' : 38,
@@ -72,15 +72,15 @@
 
 	ec.addBrowserListeners = function(input) {
 		userInput = input;
-		this.bind($, 'blur',  this.core.pause,  false);
-		this.bind($, 'focus', this.core.resume, false);
+		this.bind(window, 'blur',  this.core.pause,  false);
+		this.bind(window, 'focus', this.core.resume, false);
 		if (ec.mobile) {
 			// prevent scrolling
 			this.bind(document, 'touchmove', preventDefault, false);
 			this.bind(ec.core.getViewDom(), 'touchstart', cycleDebug, false);
 		} else {
 			// resize window
-			this.bind($, 'resize', this.core.resize, false);
+			this.bind(window, 'resize', this.core.resize, false);
 		}
 		this.bind(document, 'keydown', this.keydown, false);
 		this.bind(document, 'keyup', this.keyup, false);

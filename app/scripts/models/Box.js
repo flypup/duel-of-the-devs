@@ -1,13 +1,13 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var cp = $.cp;
+	var cp = window.cp;
 	var v = cp.v;
 
 	var BOX_WIDTH = 64;
 	var BOX_HEIGHT = 64;
 
-	var Box = $.ec.Box = function(body) {
+	var Box = window.ec.Box = function(body) {
 		if (body) {
 			this.body = body;
 		} else {

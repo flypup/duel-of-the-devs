@@ -1,8 +1,8 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
-	var document = $.document;
+	var ec = window.ec;
+	var document = window.document;
 
 	ec.resizeDisplay = function() {
 		
@@ -14,7 +14,7 @@
 
 
 		pixelRatioX =
-		pixelRatioY = ec.forcePixelRatio || $.devicePixelRatio || 1;
+		pixelRatioY = ec.forcePixelRatio || window.devicePixelRatio || 1;
 		
 		/* iPad 3 does not render full resultion well */
 		// TODO: do same for iPhone 4
@@ -26,8 +26,8 @@
 		
 		if (ec.mobile) {
 			// fit to screen
-			var screenWidth  = Math.max($.screen.width, $.screen.height);
-			var screenHeight = Math.min($.screen.width, $.screen.height);
+			var screenWidth  = Math.max(window.screen.width, window.screen.height);
+			var screenHeight = Math.min(window.screen.width, window.screen.height);
 			width  = screenWidth;
 			height = screenHeight;
 
@@ -39,8 +39,8 @@
 
 			width  = x;
 			height = y;
-			maxWidth  = $.innerWidth;
-			maxHeight = $.innerHeight;
+			maxWidth  = window.innerWidth;
+			maxHeight = window.innerHeight;
 
 			while(width + x <= maxWidth && height + y <= maxHeight) {
 				width  += x;

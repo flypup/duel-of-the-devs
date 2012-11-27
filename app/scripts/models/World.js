@@ -1,19 +1,19 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var cp = $.cp;
+	var cp = window.cp;
 	var v = cp.v;
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
 	var WORLD_BOUNDS = 640;
 
-	var World = $.ec.World = function() {
+	var World = window.ec.World = function() {
 		var space =
 		this.space = new cp.Space();
 		space.gravity = v(0, 0);
 		space.iterations = 10;
-		space.sleepTimeThreshold = $.ec.TIME_STEP * 9;
+		space.sleepTimeThreshold = window.ec.TIME_STEP * 9;
 		space.idleSpeedThreshold = 0.1;//5;//0.01;//
 		space.collisionSlop = 0.025;
 		space.collisionBias = Math.pow(1 - 0.75, 60);

@@ -1,24 +1,25 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
+	var ec = window.ec;
+	var cp = window.cp;
 
 	var Canvas2dView = ec.Canvas2dView = function() {
 		this.x = this.y = -16;
 		this.scale = 1;
 		var canvas =
-		this.canvas = $.document.createElement( 'canvas' );
+		this.canvas = window.document.createElement( 'canvas' );
 		canvas.style.position = 'absolute';
 		this.context = canvas.getContext('2d');
 		this.resize();
-		$.document.body.appendChild( canvas );
+		window.document.body.appendChild( canvas );
 
 		//floor view
 		this.map = {
 			draw: function(context) {
 				context.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.width);
 			},
-			canvas: $.document.createElement('canvas'),
+			canvas: window.document.createElement('canvas'),
 			tile: new Image()
 		};
 		this.map.canvas.width  = 1280;

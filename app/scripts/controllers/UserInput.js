@@ -1,7 +1,7 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
+	var ec = window.ec;
 	var dummyGamePadList = [undefined, undefined, undefined, undefined];
 
 	var UserInput = ec.UserInput = function(index) {

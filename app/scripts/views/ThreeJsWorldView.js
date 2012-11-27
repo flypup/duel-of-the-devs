@@ -1,8 +1,8 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
-	var THREE = $.THREE;
+	var ec = window.ec;
+	var THREE = window.THREE;
 	var v3 = function(x, y, z) {
 		return new THREE.Vector3(x, y, z);
 	};

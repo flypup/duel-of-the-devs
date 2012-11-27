@@ -1,9 +1,9 @@
-(function($) {
+(function(window) {
 	'use strict';
 	
-	var THREE = $.THREE;
+	var THREE = window.THREE;
 
-	var ThreeJsBoxView = $.ec.ThreeJsBoxView = function() {
+	var ThreeJsBoxView = window.ec.ThreeJsBoxView = function() {
 		this.update = this.createMesh;
 	};
 

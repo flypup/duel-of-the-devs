@@ -1,14 +1,14 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var cp = $.cp;
+	var cp = window.cp;
 	var v = cp.v;
 	var abs = Math.abs;
 
 	var RADIUS = 32;
 	var direction = v(0,0);
 
-	var Player = $.ec.Player = function() {
+	var Player = window.ec.Player = function() {
 		var mass = 1;
 		var moment = cp.momentForCircle(mass, 0, RADIUS, v(0, 0));//cp.vzero);
 		

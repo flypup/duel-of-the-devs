@@ -1,8 +1,8 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
-	var cp = $.cp;
+	var ec = window.ec;
+	var cp = window.cp;
 	var v = cp.v;
 
 	var GRABABLE_MASK_BIT = 1<<31;

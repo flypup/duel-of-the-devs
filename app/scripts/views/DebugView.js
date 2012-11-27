@@ -1,10 +1,10 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var ec = $.ec;
-	var Stats = $.Stats;
-	var dat = $.dat;
-	var THREE = $.THREE;
+	var ec = window.ec;
+	var Stats = window.Stats;
+	var dat = window.dat;
+	var THREE = window.THREE;
 
 	var DebugView = ec.DebugView = function() {
 		var stats =
@@ -12,7 +12,7 @@
 		stats.domElement.style.position = 'absolute';
 		stats.domElement.style.left = '0px';
 		stats.domElement.style.top = '0px';
-	    $.document.body.appendChild( stats.domElement );
+	    window.document.body.appendChild( stats.domElement );
 	};
 
 	DebugView.prototype.show = function() {

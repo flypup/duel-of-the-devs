@@ -1,14 +1,14 @@
-(function($) {
+(function(window) {
 	'use strict';
 
-	var TextField = $.ec.TextField = function(context, x, y, width) {
+	var TextField = window.ec.TextField = function(context, x, y, width) {
 		this.ctx = context;
 		this.text = '';
 		this.x = x || 0;
 		this.y = y || 0;
 		this.width = width || 100;
 		this.height = 16;
-		var ratio = this.ratio = $.ec.pixelRatio || 1;
+		var ratio = this.ratio = window.ec.pixelRatio || 1;
 		
 		var canvas = this.canvas = document.createElement('canvas');
 		canvas.width  = this.width * ratio;

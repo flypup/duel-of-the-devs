@@ -1,11 +1,11 @@
 var ec = ec || {};
 
-(function($) {
+(function(window) {
 	'use strict';
 
-	$.ec = ec;
-	var document = $.document;
-	var Modernizr =  $.Modernizr;
+	window.ec = ec;
+	var document = window.document;
+	var Modernizr =  window.Modernizr;
 
 	ec.webgl = Modernizr.webgl;
 	ec.mobile = Modernizr.mobile;
@@ -81,7 +81,7 @@ var ec = ec || {};
 
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
-				$.scrollTo( 0, 1 );
+				window.scrollTo( 0, 1 );
 			}
 
 			ec.view = view;
@@ -191,19 +191,19 @@ var ec = ec || {};
 	// requestAnimationFrame polyfill by Erik Möller
 	// fixes from Paul Irish and Tino Zijdel
 	// vendor prefix checks using Modernizr
-	var requestAnimationFrame = $.requestAnimationFrame || Modernizr.prefixed('RequestAnimationFrame', $);
-	// var cancelAnimationFrame = $.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', $) || Modernizr.prefixed('CancelRequestAnimationFrame', $) || function ( id ) { $.clearTimeout( id ); };
+	var requestAnimationFrame = window.requestAnimationFrame || Modernizr.prefixed('RequestAnimationFrame', window);
+	// var cancelAnimationFrame = window.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', window) || Modernizr.prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
 	if (!requestAnimationFrame) {
 		var lastTime = 0;
 		requestAnimationFrame = function ( callback, element ) {
 			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
-			var id = $.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
+			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
 			lastTime = currTime + timeToCall;
 			return id;
 		};
 	}
 
-	//$.onReady(core.init);
+	//window.onReady(core.init);
 	requestAnimationFrame( core.load );
 
 })(window);
