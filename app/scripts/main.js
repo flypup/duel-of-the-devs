@@ -121,6 +121,8 @@ var ec = ec || {'version': '0.1.105'};
 			// GUI Settings
 			// debugView.worldGui(world);
 			// view.debugGui(debugView);
+
+			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
 
 		animate: function(time) {
