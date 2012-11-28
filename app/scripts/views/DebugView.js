@@ -4,7 +4,6 @@
 	var ec = window.ec;
 	var Stats = window.Stats;
 	var dat = window.dat;
-	var THREE = window.THREE;
 
 	var DebugView = ec.DebugView = function() {
 		var stats =
@@ -12,15 +11,19 @@
 		stats.domElement.style.position = 'absolute';
 		stats.domElement.style.left = '0px';
 		stats.domElement.style.top = '0px';
-	    window.document.body.appendChild( stats.domElement );
+	    //window.document.body.appendChild( stats.domElement );
 	};
 
 	DebugView.prototype.show = function() {
 		this.stats.domElement.style.display = 'block';
+		window.document.body.appendChild( this.stats.domElement );
 	};
 
 	DebugView.prototype.hide = function() {
 		this.stats.domElement.style.display = 'none';
+		try {
+			window.document.body.appendChild( this.stats.domElement );
+		} catch (e) {}
 	};
 
 	DebugView.prototype.addGui = function(settings) {

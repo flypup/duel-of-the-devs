@@ -8,6 +8,7 @@ var ec = ec || {'version': '0.1.105'};
 	var Modernizr =  window.Modernizr;
 
 	ec.webgl = Modernizr.webgl;
+	ec.touch = Modernizr.touch;
 	ec.mobile = Modernizr.mobile;
 	ec.ios = Modernizr.ios;
 	ec.ipad = Modernizr.ipad;
@@ -89,8 +90,26 @@ var ec = ec || {'version': '0.1.105'};
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
+		    if (ec.debug) {
+				ec.core.setDebugLevel(ec.debug);
+			}
 
+		    userInput.setView(view);
 		    ec.addBrowserListeners(userInput);
+
+		    if (ec.touch) {
+				var leftStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 128,    y: 488, radius: 150}));
+				var rightStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152,  y: 488, radius: 150}));
+				ec.bind(leftStick, 'touchstart', userInput.leftTouchStart, false);
+				ec.bind(leftStick, 'touchend',   userInput.leftTouchEnd, false);
+				ec.bind(rightStick, 'touchstart', userInput.rightTouchStart, false);
+				ec.bind(rightStick, 'touchend',   userInput.rightTouchEnd, false);
+
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152, y: 0,   radius: 150}));
+				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
+				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
+				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
+		    }
 
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
@@ -145,13 +164,23 @@ var ec = ec || {'version': '0.1.105'};
 		},
 
 		pause: function() {
+			console.log('pause');
 			paused = true;
 			view.pause();
 		},
 
 		resume: function() {
+			console.log('resume');
 			paused = false;
 			view.resume();
+		},
+
+		togglePause: function() {
+			if (ec.core.paused()) {
+				ec.core.resume();
+			} else {
+				ec.core.pause();
+			}
 		},
 
 		paused: function() {
@@ -210,6 +239,11 @@ var ec = ec || {'version': '0.1.105'};
 					debugView.show();
 			}
 			ec.debug = level;
+			console.log('debug level', level);
+		},
+
+		cycleDebug: function() {
+			ec.core.setDebugLevel(ec.debug-1);
 		}
 	};
 

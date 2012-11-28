@@ -1,6 +1,8 @@
 (function(window) {
 	'use strict';
 
+	var document = window.document;
+
 	var ec = window.ec;
 	var cp = window.cp;
 	var v = cp.v;
@@ -33,7 +35,7 @@
 		this.ctx = canvas.getContext('2d');
 		this.resize();
 		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(50 / this.scale, 0));
-		document.body.appendChild( canvas );
+		//document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
 
@@ -123,10 +125,15 @@
 
 	ChipmunkDebugView.prototype.show = function() {
 		this.canvas.style.display = 'block';
+		document.body.appendChild( this.canvas );
 	};
 
 	ChipmunkDebugView.prototype.hide = function() {
 		this.canvas.style.display = 'none';
+		try {
+			document.body.removeChild( this.canvas );
+		} catch (e) {}
+		
 	};
 
 	ChipmunkDebugView.prototype.resize = function(scale) {
