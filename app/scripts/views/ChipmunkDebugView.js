@@ -130,10 +130,9 @@
 
 	ChipmunkDebugView.prototype.hide = function() {
 		this.canvas.style.display = 'none';
-		try {
+		if (this.canvas.parentNode) {
 			document.body.removeChild( this.canvas );
-		} catch (e) {}
-		
+		}
 	};
 
 	ChipmunkDebugView.prototype.resize = function(scale) {

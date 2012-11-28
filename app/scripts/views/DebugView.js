@@ -21,9 +21,9 @@
 
 	DebugView.prototype.hide = function() {
 		this.stats.domElement.style.display = 'none';
-		try {
+		if (this.stats.domElement.parentNode) {
 			window.document.body.appendChild( this.stats.domElement );
-		} catch (e) {}
+		}
 	};
 
 	DebugView.prototype.addGui = function(settings) {
