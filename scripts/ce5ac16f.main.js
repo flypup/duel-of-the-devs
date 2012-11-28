@@ -1,4 +1,4 @@
-var ec = ec || {'version': ''};
+var ec = ec || {'version': '0.1.105'};
 
 (function(window) {
 	'use strict';
@@ -70,11 +70,11 @@ var ec = ec || {'version': ''};
 		    world = new ec.World();
 			world.addWalls();
 			player =
-			world.add(new ec.Player().setPos(-200, 400, 32)).setInput(userInput).setView(new ec.ThreeJsSphereView());
-			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32)).setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32)).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+			world.add(new ec.Player().setPos(-200, 400, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
+			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
 
 			ec.resizeDisplay();
 
@@ -90,8 +90,26 @@ var ec = ec || {'version': ''};
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
+		    if (ec.debug) {
+				ec.core.setDebugLevel(ec.debug);
+			}
 
+		    userInput.setView(view);
 		    ec.addBrowserListeners(userInput);
+
+		    if (ec.touch) {
+				var leftStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 128,    y: 488, radius: 150}));
+				var rightStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152,  y: 488, radius: 150}));
+				ec.bind(leftStick, 'touchstart', userInput.leftTouchStart, false);
+				ec.bind(leftStick, 'touchend',   userInput.leftTouchEnd, false);
+				ec.bind(rightStick, 'touchstart', userInput.rightTouchStart, false);
+				ec.bind(rightStick, 'touchend',   userInput.rightTouchEnd, false);
+
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152, y: 0,   radius: 150}));
+				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
+				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
+				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
+		    }
 
 		    // hideUrlBarOnLoad
 			if (ec.mobile) {
@@ -129,8 +147,8 @@ var ec = ec || {'version': ''};
 				createWaitTime+=delta;
 				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+					world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
+					world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
 				}
 
 				view.lookAt(player.body.p.x, -player.body.p.y);
@@ -148,13 +166,23 @@ var ec = ec || {'version': ''};
 		},
 
 		pause: function() {
+			console.log('pause');
 			paused = true;
 			view.pause();
 		},
 
 		resume: function() {
+			console.log('resume');
 			paused = false;
 			view.resume();
+		},
+
+		togglePause: function() {
+			if (ec.core.paused()) {
+				ec.core.resume();
+			} else {
+				ec.core.pause();
+			}
 		},
 
 		paused: function() {
@@ -213,6 +241,11 @@ var ec = ec || {'version': ''};
 					debugView.show();
 			}
 			ec.debug = level;
+			console.log('debug level', level);
+		},
+
+		cycleDebug: function() {
+			ec.core.setDebugLevel(ec.debug-1);
 		}
 	};
 

@@ -30,7 +30,7 @@
 
 		this.speed = 8;
 
-		ec.core.trackCustom(1, 'Player Interacted', 'No', 1);
+		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 
 	var proto = Player.prototype;
@@ -85,7 +85,7 @@
 
 			if (!ec.playerInteracted) {
 				ec.playerInteracted = true;
-				ec.core.trackCustom(1, 'Player Interacted', 'Yes', 1);
+				ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
 			}
 
 		} else {

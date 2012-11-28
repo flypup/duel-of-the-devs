@@ -93,7 +93,9 @@
 	    this.updateShapeView = this.updateShape();
 	};
 
-	ThreeJsWorldView.prototype.updateShape = function() {
+	var proto = ThreeJsWorldView.prototype;
+	
+	proto.updateShape = function() {
 		var scene = this.scene;
 		return function(shape) {
 			if (shape.view) {
@@ -102,11 +104,11 @@
 		};
 	};
 
-	ThreeJsWorldView.prototype.lookAt = function(x, y, z) {
+	proto.lookAt = function(x, y, z) {
 		this.camera.lookAt(v3(x, y, z));
 	};
 
-	ThreeJsWorldView.prototype.draw = function(world) {
+	proto.draw = function(world) {
 		if (world.space.activeShapes.count > 0) {// || redraw
 			world.space.eachShape(this.updateShapeView);
 			//redraw = false;
@@ -114,21 +116,21 @@
 		this.renderer.render( this.scene, this.camera );
 	};
 
-	ThreeJsWorldView.prototype.pause = function() {
+	proto.pause = function() {
 		this.renderer.autoUpdateScene =
 		this.renderer.autoUpdateObjects = false;
 	};
 
-	ThreeJsWorldView.prototype.resume = function() {
+	proto.resume = function() {
 		this.renderer.autoUpdateScene =
 		this.renderer.autoUpdateObjects = true;
 	};
 
-	ThreeJsWorldView.prototype.getDom = function() {
+	proto.getDom = function() {
 		return this.renderer.domElement;
 	};
 
-	ThreeJsWorldView.prototype.resize = function() {
+	proto.resize = function() {
 		var ratioX = ec.pixelRatio;
 		var ratioY = ec.pixelRatioY || ratioX;
 		var renderer = this.renderer;
@@ -141,7 +143,7 @@
         //this.camera.updateMatrixWorld();
 	};
 
-	ThreeJsWorldView.prototype.debugGui = function(debugView) {
+	proto.debugGui = function(debugView) {
 		var view = this;
 		var lookAtCenter = function() {//e) {//e.object, e.property
 			view.lookAt(0, 0, 0);

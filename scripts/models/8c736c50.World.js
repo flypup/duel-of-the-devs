@@ -38,12 +38,17 @@
 	};
 
 	World.prototype.add = function(bodyShape) {
-		if (!bodyShape.body.isStatic()) {
-			this.space.addBody(bodyShape.body);
+		var index = this.entities.indexOf(bodyShape);
+		if (index < 0) {
+			if (!bodyShape.body.isStatic()) {
+				this.space.addBody(bodyShape.body);
+			}
+			this.space.addShape(bodyShape.shape);
+			this.entities.push(bodyShape);
+			return bodyShape;
 		}
-		this.space.addShape(bodyShape.shape);
-		this.entities.push(bodyShape);
-		return bodyShape;
+		console.error('entity already a child of world', bodyShape);
+		return null;
 	};
 
 	World.prototype.remove = function(bodyShape) {
@@ -54,9 +59,10 @@
 			}
 			this.space.removeShape(bodyShape.shape);
 			this.entities.splice(index, 1);
-			return true;
+			return bodyShape;
 		}
-		return false;
+		console.error('entity not a child of world', bodyShape);
+		return null;
 	};
 
 	World.prototype.createStaticBody = function() {
