@@ -1,12 +1,12 @@
 {
   "author": "Rob Walch",
-  "name": "b3",
-  "version": "0.0.1",
-  "homepage" : "",
+  "name": "Will",
+  "version": "0.1.105",
+  "homepage" : "http://flypup.github.com/game-off-2012/",
   "dependencies": {},
   "devDependencies": {},
   "repository" : {
   	"type" : "git",
-  	"url" : ""
+  	"url" : "https://github.com/flypup/game-off-2012.git"
   }
 }

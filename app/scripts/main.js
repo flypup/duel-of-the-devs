@@ -1,4 +1,4 @@
-var ec = ec || {};
+var ec = ec || {'version': '0.1.105'};
 
 (function(window) {
 	'use strict';
@@ -177,6 +177,24 @@ var ec = ec || {};
 			return view.getDom();
 		},
 
+		trackPage: function(route) {
+			if (window._gaq) {
+				window._gaq.push(['_trackPageview', route]);
+			}
+		},
+
+		trackEvent: function(category, action, label, value, nonInteraction) {
+			if (window._gaq) {
+				window._gaq.push(['_trackEvent', category, action, label, value, nonInteraction]);
+			}
+		},
+
+		trackCustom: function(index, name, value, scope) {
+			if (window._gaq) {
+				window._gaq.push(['_setCustomVar', index, name, value, scope]);
+			}
+		},
+
 		setDebugLevel: function(level) {
 			if (level < 0) {
 				level = 3;
@@ -220,5 +238,8 @@ var ec = ec || {};
 
 	//window.onReady(core.init);
 	requestAnimationFrame( core.load );
+
+	ec.core.trackEvent('core', 'preload', ec.version, undefined, true);
+	//ec.core.trackCustom(2, 'version', ec.version, 3);
 
 })(window);

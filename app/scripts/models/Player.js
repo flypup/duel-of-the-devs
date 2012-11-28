@@ -1,6 +1,7 @@
 (function(window) {
 	'use strict';
 
+	var ec = window.ec;
 	var cp = window.cp;
 	var v = cp.v;
 	var abs = Math.abs;
@@ -8,6 +9,8 @@
 	var RADIUS = 32;
 	var direction = v(0,0);
 
+	ec.playerInteracted = false;
+	
 	var Player = window.ec.Player = function() {
 		var mass = 1;
 		var moment = cp.momentForCircle(mass, 0, RADIUS, v(0, 0));//cp.vzero);
@@ -26,6 +29,8 @@
 		this.setPos(64, 64, 32);
 
 		this.speed = 8;
+
+		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 
 	var proto = Player.prototype;
@@ -77,6 +82,11 @@
 
 			this.body.w = 0;
 			this.body.a = Math.atan2(direction.y, direction.x);
+
+			if (!ec.playerInteracted) {
+				ec.playerInteracted = true;
+				ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
+			}
 
 		} else {
 			this.body.vx = 0;
