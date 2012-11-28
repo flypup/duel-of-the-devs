@@ -31,7 +31,7 @@
 				var x = (i % 20)*64;
 				var y = Math.floor(i/20)*64;
 				mapContext.drawImage(this, x, y, this.width, this.height);
-				mapContext.fillText(i+'', x, y+9, 64);
+				//mapContext.fillText(i+'', x, y+9, 64);
 			}
 		};
 		this.map.tile.src = 'img/tile/floor_8888_64.png';
