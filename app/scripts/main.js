@@ -70,11 +70,11 @@ var ec = ec || {'version': '0.1.105'};
 		    world = new ec.World();
 			world.addWalls();
 			player =
-			world.add(new ec.Player().setPos(-200, 400, 32)).setInput(userInput).setView(new ec.ThreeJsSphereView());
-			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32)).setView(new ec.ThreeJsBoxView());
-			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32)).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-		    world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+			world.add(new ec.Player().setPos(-200, 400, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
+			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
 
 			ec.resizeDisplay();
 
@@ -147,8 +147,8 @@ var ec = ec || {'version': '0.1.105'};
 				createWaitTime+=delta;
 				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Box()).setView(new ec.ThreeJsBoxView());
-					world.add(new ec.Circle()).setView(new ec.ThreeJsSphereView());
+					world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
+					world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
 				}
 
 				view.lookAt(player.body.p.x, -player.body.p.y);
