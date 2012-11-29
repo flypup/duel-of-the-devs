@@ -9,11 +9,14 @@ We're also using:
 * [stats.js](https://github.com/mrdoob/stats.js) guess I'm a fan of [@mrdoob](https://github.com/mrdoob)
 * [dat-gui](http://code.google.com/p/dat-gui/) for testing and tuning a variety of things
 
-** Controls **
+__Controls__
 
 * Move using WASD/Arrows, gamepad L stick or if you're playing on a touch device, use the virtual L stick
 * Push/Pull/Punch using ... TBD
 * Shadow Clone ... TBD
+
+
+![Screenshot](http://flypup.github.com/game-off-2012/img/ui/screenshot.jpg)
 
 ## GitHub Game-Off-2012
 
