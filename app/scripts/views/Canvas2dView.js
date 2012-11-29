@@ -64,6 +64,7 @@
 			}
 			return frameData;
 		};
+		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
 
 		return function(entity) {
 			// if (entity.view) {
@@ -78,7 +79,15 @@
 				context.fillStyle = '#888888';
 
 				//context.arc(in float x, in float y, in float radius, in float startAngle, in float endAngle, in boolean anticlockwise Optional);
-				context.fillRect(x-32, y-32, 64, 64);
+				//context.fillRect(x-32, y-32, 64, 64);
+				o = lionSprite;
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				} else {
+					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
+
 			} else if (entity instanceof ec.Player) {
 
 				o = spriteSheetFrame(entity.body.a, monkSheet);
