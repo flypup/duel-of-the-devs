@@ -3,10 +3,6 @@
 
 	var ec = window.ec;
 
-	//coordinates are relative to a container of this size:
-	var REF_WIDTH  = 1136;
-	var REF_HEIGHT = 640;
-
 	var defaults = {
 		type: 'circle',
 		x: 0,
@@ -35,16 +31,20 @@
 		this.vy = 0;
 	};
 
+	//coordinates are relative to a container of this size:
+	ButtonOverlay.viewWidth = 1280;
+	ButtonOverlay.viewHeight = 720;
+
 	var proto = ButtonOverlay.prototype;
-	proto.containerWidth = REF_WIDTH;
-	proto.containerHeight = REF_HEIGHT;
+	proto.containerWidth = ButtonOverlay.viewWidth;
+	proto.containerHeight = ButtonOverlay.viewHeight;
 
 	proto.hitTest = function(x, y, width, height) {
 		this.containerWidth = width;
 		this.containerHeight = height;
 		if (this.type === 'circle') {
-			var vx = x * REF_WIDTH  / width - this.x;
-			var vy = y * REF_HEIGHT / height - this.y;
+			var vx = x * ButtonOverlay.viewWidth  / width - this.x;
+			var vy = y * ButtonOverlay.viewHeight / height - this.y;
 			if (vx*vx + vy*vy <= this.radiusSq) {
 				return true;
 			}
@@ -78,8 +78,8 @@
 	};
 
 	proto.updateTouch = function(id, x, y) {
-		var vx = x * REF_WIDTH  / this.containerWidth - this.x;
-		var vy = y * REF_HEIGHT / this.containerHeight -this.y;
+		var vx = x * ButtonOverlay.viewWidth  / this.containerWidth - this.x;
+		var vy = y * ButtonOverlay.viewHeight / this.containerHeight -this.y;
 		//normalize and cap at 100 ?//
 		var length = Math.sqrt(vx*vx + vy*vy);
 		if (Math.abs(vx) > Math.abs(vx*100/length)) {
@@ -112,12 +112,18 @@
 		if (this.type === 'circle') {
 			context.beginPath();
 			context.setFillColor(0, 0.05);
-			context.arc(this.x * REF_WIDTH/width, this.y * REF_HEIGHT/height, this.radius * REF_WIDTH/width, 0, 2*Math.PI, false);
+			context.arc(
+				this.x * ButtonOverlay.viewWidth/width,
+				this.y * ButtonOverlay.viewHeight/height,
+				this.radius * ButtonOverlay.viewWidth/width, 0, 2*Math.PI, false);
 			context.fill();
 			if (this.pressed) {
 				context.beginPath();
 				context.setFillColor(0, 0.1);
-				context.arc((this.x + this.vx) * REF_WIDTH/width, (this.y + this.vy) * REF_HEIGHT/height, 80*REF_WIDTH/width, 0, 2*Math.PI, false);
+				context.arc(
+					(this.x + this.vx) * ButtonOverlay.viewWidth/width,
+					(this.y + this.vy) * ButtonOverlay.viewHeight/height,
+					80*ButtonOverlay.viewWidth/width, 0, 2*Math.PI, false);
 				context.fill();
 			}
 		}

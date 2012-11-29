@@ -98,10 +98,14 @@ var ec = ec || {'version': '0.1.106'};
 		    ec.addBrowserListeners(userInput);
 
 		    if (ec.touch) {
-				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 192,    y: 640-160, radius: 150})));
-				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1132-192,  y: 640-160, radius: 150})));
+				var scaledWidth = view.width * ec.pixelRatio;
+				var scaledHeight = view.height * ec.pixelRatioY || ec.pixelRatio;
+				ec.ButtonOverlay.viewWidth = scaledWidth;
+				ec.ButtonOverlay.viewHeight = scaledHeight;
+				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 160,    y: scaledHeight-160, radius: 150})));
+				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth-160,  y: scaledHeight-160, radius: 150})));
 
-				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1132, y: 0,   radius: 150}));
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 0,   radius: 150}));
 				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
 				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
 				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
