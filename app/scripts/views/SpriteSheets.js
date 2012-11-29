@@ -21,6 +21,11 @@
 				//animations: {'standing': [first, last, next, frequency]}
 				//animations: {'standing': {next: '', frequency: 1, frames: NumberOrArray}
 			});
+
+			ec.SpriteSheets.lion = new window.createjs.SpriteSheet({
+				images: ['img/sprite/lion_64.png'],
+				frames: [[0,0,80,212,0,40,180]]
+			});
 		}
 	};
 

@@ -160,6 +160,10 @@
 
 	proto.touchstart = function(e) {
 		//console.log(e.type, e);
+		if (ec.core.paused()) {
+			ec.core.resume();
+			return;
+		}
 		for (var i=0, len=e.changedTouches.length; i<len; i++) {
 			self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
 		}
@@ -190,6 +194,10 @@
 
 	proto.mousedown = function(e) {
 		//console.log(e.type, e);
+		if (ec.core.paused()) {
+			ec.core.resume();
+			return;
+		}
 		self.testOverlays(e.type, e, -1);
 	};
 

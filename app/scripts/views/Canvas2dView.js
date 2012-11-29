@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var cp = window.cp;
 
 	var Canvas2dView = ec.Canvas2dView = function() {
 		this.x = this.y = -16;
@@ -65,6 +64,7 @@
 			}
 			return frameData;
 		};
+		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
 
 		return function(entity) {
 			// if (entity.view) {
@@ -79,7 +79,15 @@
 				context.fillStyle = '#888888';
 
 				//context.arc(in float x, in float y, in float radius, in float startAngle, in float endAngle, in boolean anticlockwise Optional);
-				context.fillRect(x-32, y-32, 64, 64);
+				//context.fillRect(x-32, y-32, 64, 64);
+				o = lionSprite;
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				} else {
+					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
+
 			} else if (entity instanceof ec.Player) {
 
 				o = spriteSheetFrame(entity.body.a, monkSheet);
@@ -139,7 +147,7 @@
 		context.save();
 
 		context.setTransform(1, 0, 0, 1, 0, 0);
-		context.fillStyle = '#888888';
+		context.setFillColor(0.5, 1);
 		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		context.save();
@@ -167,6 +175,29 @@
 
 		if (this.input) {
 			this.input.draw(context, this.canvas.width, this.canvas.height);
+        }
+
+        if (ec.core.paused()) {
+			context.setFillColor(0, 0.33);
+			context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			context.setFillColor(1, 0.8);
+			context.beginPath();
+			context.moveTo(this.canvas.width -15, 35);
+			context.lineTo(this.canvas.width -50, 15);
+			context.lineTo(this.canvas.width -50, 55);
+			context.fill();
+        } else if (ec.touch) {
+			context.setFillColor(1, 0.8);
+			context.fillRect(this.canvas.width-43, 15, 10, 40);
+			context.fillRect(this.canvas.width-25, 15, 10, 40);
+        }
+
+        var overlay = ec.core.getOverlay();
+        if (overlay) {
+			var scale = this.canvas.height / overlay.height;
+			var x = this.canvas.width - overlay.width * scale;
+			var y = this.canvas.height - overlay.height * scale;
+			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
         }
 
 		// restore initial context
