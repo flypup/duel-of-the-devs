@@ -147,7 +147,8 @@
 		context.save();
 
 		context.setTransform(1, 0, 0, 1, 0, 0);
-		context.setFillColor(0.5, 1);
+		context.fillStyle = '#888888';
+		context.globalAlpha = 1;
 		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		context.save();
@@ -178,16 +179,19 @@
         }
 
         if (ec.core.paused()) {
-			context.setFillColor(0, 0.33);
+			context.fillStyle = '#000000';
+			context.globalAlpha = 0.33;
 			context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-			context.setFillColor(1, 0.8);
+			context.fillStyle = '#ffffff';
+			context.globalAlpha = 0.8;
 			context.beginPath();
 			context.moveTo(this.canvas.width -15, 35);
 			context.lineTo(this.canvas.width -50, 15);
 			context.lineTo(this.canvas.width -50, 55);
 			context.fill();
         } else if (ec.touch) {
-			context.setFillColor(1, 0.8);
+			context.fillStyle = '#ffffff';
+			context.globalAlpha = 0.8;
 			context.fillRect(this.canvas.width-43, 15, 10, 40);
 			context.fillRect(this.canvas.width-25, 15, 10, 40);
         }

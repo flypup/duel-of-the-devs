@@ -109,7 +109,8 @@
 		//if (context instanceof window.CanvasRenderingContext2D) {
 		if (this.type === 'circle') {
 			context.beginPath();
-			context.setFillColor(0, 0.05);
+			context.fillStyle = '#000000';
+			context.globalAlpha = 0.05;
 			context.arc(
 				this.x * ButtonOverlay.viewWidth/width,
 				this.y * ButtonOverlay.viewHeight/height,
@@ -117,7 +118,8 @@
 			context.fill();
 			if (this.pressed) {
 				context.beginPath();
-				context.setFillColor(0, 0.1);
+				context.fillStyle = '#000000';
+				context.globalAlpha = 0.1;
 				context.arc(
 					(this.x + this.vx) * ButtonOverlay.viewWidth/width,
 					(this.y + this.vy) * ButtonOverlay.viewHeight/height,
