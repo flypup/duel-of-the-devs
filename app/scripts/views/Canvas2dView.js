@@ -117,6 +117,12 @@
 		//this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	};
 
+	proto.setInput = function(input) {
+		this.input = input;
+		input.resize(this.width, this.height);
+		return this;
+	};
+	
 	proto.draw = function(world) {
 		var context = this.context;
 		// save the current context
@@ -136,6 +142,12 @@
 			world.space.eachShape(this.updateShapeView);
 			//redraw = false;
 		}
+
+		context.restore();
+
+		if (this.input) {
+			this.input.draw(context, this.canvas.width, this.canvas.height);
+        }
 
 		// restore initial context
 		context.restore();
@@ -164,6 +176,9 @@
 		canvas.style.width  = this.width  + 'px';
 		canvas.style.height = this.height + 'px';
 		this.zoom(this.scale);
+		if (this.input) {
+			this.input.resize(this.width, this.height);
+        }
 	};
 
 	proto.debugGui = function(debugView) {

@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.105'};
+var ec = ec || {'version': '0.1.106'};
 
 (function(window) {
 	'use strict';
@@ -94,18 +94,14 @@ var ec = ec || {'version': '0.1.105'};
 				ec.core.setDebugLevel(ec.debug);
 			}
 
-		    userInput.setView(view);
+		    view.setInput(userInput);
 		    ec.addBrowserListeners(userInput);
 
 		    if (ec.touch) {
-				var leftStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 128,    y: 488, radius: 150}));
-				var rightStick = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152,  y: 488, radius: 150}));
-				ec.bind(leftStick, 'touchstart', userInput.leftTouchStart, false);
-				ec.bind(leftStick, 'touchend',   userInput.leftTouchEnd, false);
-				ec.bind(rightStick, 'touchstart', userInput.rightTouchStart, false);
-				ec.bind(rightStick, 'touchend',   userInput.rightTouchEnd, false);
+				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 192,    y: 640-160, radius: 150})));
+				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1132-192,  y: 640-160, radius: 150})));
 
-				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1152, y: 0,   radius: 150}));
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 1132, y: 0,   radius: 150}));
 				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
 				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
 				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);

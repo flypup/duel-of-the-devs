@@ -108,6 +108,12 @@
 		this.camera.lookAt(v3(x, y, z));
 	};
 
+	proto.setInput = function(input) {
+		this.input = input;
+		input.resize(ec.width, ec.height);
+		return this;
+	};
+	
 	proto.draw = function(world) {
 		if (world.space.activeShapes.count > 0) {// || redraw
 			world.space.eachShape(this.updateShapeView);
@@ -141,6 +147,9 @@
 			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
         }
         //this.camera.updateMatrixWorld();
+        if (this.input) {
+			this.input.resize(ec.width, ec.height); //ec.width * ratioX, ec.height * ratioY );
+        }
 	};
 
 	proto.debugGui = function(debugView) {

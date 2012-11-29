@@ -27,14 +27,12 @@
 		}
 
 		this.pollGamePad = (navigator.webkitGetGamepads !== undefined) ? this.pollGamePadList : this.pollDummyGamePadList;
+		this.keyboardAxes1 = false;
+		this.keyboardAxes2 = false;
 		this.overlays = [];
 	};
 
 	var proto = UserInput.prototype;
-
-	proto.setView = function(view) {
-		this.view = view;
-	};
 
 	proto.addButtonOverlay = function(overlay) {
 		var index = this.overlays.indexOf(overlay);
@@ -50,21 +48,40 @@
 		var index = this.overlays.indexOf(overlay);
 		if (index > -1) {
 			this.overlays.splice(index, 1);
+			ec.unbind(overlay, 'touchstart', overlay.touchStart, false);
+			ec.unbind(overlay, 'touchend',   overlay.touchEnd, false);
 			return overlay;
 		}
 		console.error('overlay not a child of input', overlay);
 		return null;
 	};
 	
-	proto.testOverlays = function(type, data, id) {
-		var width  = this.view.width;
-		var height = this.view.height;
+	proto.draw = function(context, width, height) {
 		for (var i=0, len=this.overlays.length; i<len; i++) {
 			var overlay = this.overlays[i];
-			if (overlay.hitTest(data.clientX, data.clientY, width, height)) {//offsetX,Y ?
+			overlay.draw(context, width, height);
+		}
+	};
+
+	proto.resize = function(width, height) {
+		this.width  = width;
+		this.height = height;
+	};
+
+	proto.testOverlays = function(type, data, id) {
+		var width  = this.width;
+		var height = this.height;
+		for (var i=0, len=this.overlays.length; i<len; i++) {
+			var overlay = this.overlays[i];
+			if (type === 'touchend' || type === 'mouseup') {
+				if (overlay['on'+type] !== undefined) {
+					overlay['on'+type].apply(overlay, [data, id]);
+				}
+			}
+			else if (overlay.hitTest(data.clientX, data.clientY, width, height)) {//offsetX,Y ?
 				//console.log('hit overlay:', overlay, id);
 				if (overlay['on'+type] !== undefined) {
-					overlay['on'+type].apply(overlay);
+					overlay['on'+type].apply(overlay, [data, id]);
 				}
 				return overlay;
 			}
@@ -73,25 +90,27 @@
 		return null;
 	};
 
-	proto.leftTouchStart = function() {
-		console.log('leftTouchStart', this);
+	proto.setLeftStickOverlay = function(overlay) {
+		this.leftStickOverlay = overlay;
+		ec.bind(overlay, 'touchstart', overlay.touchStart, false);
+		ec.bind(overlay, 'touchend',   overlay.touchEnd, false);
 	};
 
-	proto.leftTouchEnd = function() {
-		console.log('leftTouchEnd', this);
+	proto.setRightStickOverlay = function(overlay) {
+		this.rightStickOverlay = overlay;
+		ec.bind(overlay, 'touchstart', overlay.touchStart, false);
+		ec.bind(overlay, 'touchend',   overlay.touchEnd, false);
 	};
-
-	proto.rightTouchStart = function() {
-		console.log('rightTouchStart', this);
-	};
-
-	proto.rightTouchEnd = function() {
-		console.log('rightTouchEnd', this);
-	};
-
+	
 	proto.setAxes1 = function(x, y) {
 		this.axes[0] = x;
 		this.axes[1] = y;
+		// console.log(this.axes);
+	};
+
+	proto.setAxes2 = function(x, y) {
+		this.axes[3] = x;
+		this.axes[4] = y;
 		// console.log(this.axes);
 	};
 
@@ -104,6 +123,39 @@
 		BUTTON[name] = index;
 	};
 
+	// game loop
+
+	proto.poll = function() {
+		// virtial gamepad
+		if (this.leftStickOverlay && !this.keyboardAxes1) {
+			this.setAxes1(this.leftStickOverlay.vx/100, this.leftStickOverlay.vy/100);
+		}
+
+		if (this.rightStickOverlay && !this.keyboardAxes2) {
+			this.setAxes2(this.rightStickOverlay.vx/100, this.rightStickOverlay.vy/100);
+		}
+
+		// gamepad
+		var gamepad = this.pollGamePad()[this.index];
+		if (gamepad && this.gamepadTime !== gamepad.timestamp) {
+			this.gamepadTime = gamepad.timestamp || 1;
+			//pause button
+			if (gamepad.buttons[9] === 1 && this.buttons[9] !== 1) {
+				ec.core.togglePause();
+			}
+			if (gamepad.buttons.join('') !== this.buttons.join('')) {
+				console.log('gamepad button change', gamepad.buttons.indexOf(1), this.buttons.indexOf(1), gamepad.axes);
+			}
+			this.buttons = gamepad.buttons.slice(0);
+			if (!this.keyboardAxes1) {
+				this.setAxes1(gamepad.axes[0], gamepad.axes[1]);
+			}
+			if (!this.keyboardAxes2) {
+				this.setAxes2(gamepad.axes[3], gamepad.axes[4]);
+			}
+		}
+	};
+
 	// Touch / Mouse
 
 	proto.touchstart = function(e) {
@@ -113,6 +165,14 @@
 
 	proto.touchmove = function(e) {
 		//console.log(e.type, e.changedTouches[0].identifier, e.changedTouches);
+		var id = e.changedTouches[0].identifier;
+		for (var i=0, len=self.overlays.length; i<len; i++) {
+			var overlay = self.overlays[i];
+			if (overlay.hasTouch(id)) {
+				overlay.updateTouch(id, e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+				break;
+			}
+		}
 
 		// prevent scrolling
 		e.preventDefault();
@@ -218,26 +278,11 @@
 	proto.updateAxes1FromKeys = function() {
 		var x = ((ec.keyPressed[KEY.LEFT] || ec.keyPressed[KEY.A]) ? -1 : 0) + ((ec.keyPressed[KEY.RIGHT] || ec.keyPressed[KEY.D]) ? 1 : 0);
 		var y = ((ec.keyPressed[KEY.UP] || ec.keyPressed[KEY.W]) ? -1 : 0) + ((ec.keyPressed[KEY.DOWN] || ec.keyPressed[KEY.S]) ? 1 : 0);
+		this.keyboardAxes1 = x || y;
 		this.setAxes1(x, y);
 	};
 
 	// GamePad
-
-	proto.poll = function() {
-		var gamepad = this.pollGamePad()[this.index];
-		if (gamepad && this.gamepadTime !== gamepad.timestamp) {
-			this.gamepadTime = gamepad.timestamp || 1;
-			//pause button
-			if (gamepad.buttons[9] === 1 && this.buttons[9] !== 1) {
-				ec.core.togglePause();
-			}
-			if (gamepad.buttons.join('') !== this.buttons.join('')) {
-				console.log('gamepad button change', gamepad.buttons.indexOf(1), this.buttons.indexOf(1), gamepad.axes);
-			}
-			this.buttons = gamepad.buttons.slice(0);
-			this.axes = gamepad.axes.slice(0);
-		}
-	};
 
 	proto.pollDummyGamePadList = function() {
 		return dummyGamePadList;
