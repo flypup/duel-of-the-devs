@@ -48,25 +48,6 @@
 
         <!-- build:js scripts/utils.js -->
         <script src="scripts/vendor/modernizr.min.js"></script>
-        <script>
-            Modernizr.addTest({
-                mobile: function(){
-                    return (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
-                },
-                ios: function(){
-                    return (/iPhone|iPad|iPod/).test(navigator.userAgent);
-                },
-                ipad: function(){
-                    return (/iPad/).test(navigator.userAgent);
-                },
-                android: function(){
-                    return (/Android/).test(navigator.userAgent);
-                },
-                standalone:function(){
-                    return !!navigator.standalone;
-                }
-            });
-        </script>
         <!-- endbuild -->
     </head>
     <body>

@@ -7,6 +7,25 @@ var ec = ec || {'version': '0.1.106'};
 	var document = window.document;
 	var Modernizr =  window.Modernizr;
 
+	Modernizr.addTest({
+        mobile: function(){
+            // TODO: add Windows Mobile, FireFoxOS - Anything with multi-touch, no mouse and fixed screen size
+            return (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
+        },
+        ios: function(){
+            return (/iPhone|iPad|iPod/).test(navigator.userAgent);
+        },
+        ipad: function(){
+            return (/iPad/).test(navigator.userAgent);
+        },
+        android: function(){
+            return (/Android/).test(navigator.userAgent);
+        },
+        standalone:function(){
+            return !!navigator.standalone;
+        }
+    });
+
 	ec.webgl = Modernizr.webgl;
 	ec.touch = Modernizr.touch;
 	ec.mobile = Modernizr.mobile;
@@ -105,8 +124,8 @@ var ec = ec || {'version': '0.1.106'};
 				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 160,    y: scaledHeight-160, radius: 150})));
 				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth-160,  y: scaledHeight-160, radius: 150})));
 
-				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 0,   radius: 150}));
-				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 50, radius: 150}));
+				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 50,   radius: 150}));
 				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
 				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
 		    }
