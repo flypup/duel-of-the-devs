@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var cp = window.cp;
 
 	var Canvas2dView = ec.Canvas2dView = function() {
 		this.x = this.y = -16;
@@ -178,12 +177,18 @@
 			context.lineTo(this.canvas.width -50, 15);
 			context.lineTo(this.canvas.width -50, 55);
 			context.fill();
-			// context.fillRect(halfWidth-40, halfHeight-64, 32, 128);
-			// context.fillRect(halfWidth+8, halfHeight-64, 32, 128);
         } else if (ec.touch) {
 			context.setFillColor(1, 0.8);
 			context.fillRect(this.canvas.width-43, 15, 10, 40);
 			context.fillRect(this.canvas.width-25, 15, 10, 40);
+        }
+
+        var overlay = ec.core.getOverlay();
+        if (overlay) {
+			var scale = this.canvas.height / overlay.height;
+			var x = this.canvas.width - overlay.width * scale;
+			var y = this.canvas.height - overlay.height * scale;
+			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
         }
 
 		// restore initial context
