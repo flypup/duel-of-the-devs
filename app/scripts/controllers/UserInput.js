@@ -160,17 +160,20 @@
 
 	proto.touchstart = function(e) {
 		//console.log(e.type, e);
-		self.testOverlays(e.type, e.changedTouches[0], e.changedTouches[0].identifier);
+		for (var i=0, len=e.changedTouches.length; i<len; i++) {
+			self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
+		}
 	};
 
 	proto.touchmove = function(e) {
 		//console.log(e.type, e.changedTouches[0].identifier, e.changedTouches);
-		var id = e.changedTouches[0].identifier;
 		for (var i=0, len=self.overlays.length; i<len; i++) {
 			var overlay = self.overlays[i];
-			if (overlay.hasTouch(id)) {
-				overlay.updateTouch(id, e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-				break;
+			for (var j=0, jlen=e.changedTouches.length; j<jlen; j++) {
+				if (overlay.hasTouch(e.changedTouches[j].identifier)) {
+					overlay.updateTouch(e.changedTouches[j].identifier, e.changedTouches[j].clientX, e.changedTouches[j].clientY);
+					break;
+				}
 			}
 		}
 
@@ -180,7 +183,9 @@
 
 	proto.touchend = function(e) {
 		//console.log(e.type, e);
-		self.testOverlays(e.type, e.changedTouches[0], e.changedTouches[0].identifier);
+		for (var i=0, len=e.changedTouches.length; i<len; i++) {
+			self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
+		}
 	};
 
 	proto.mousedown = function(e) {
