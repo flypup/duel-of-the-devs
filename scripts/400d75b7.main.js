@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.106'};
+var ec = ec || {'version': '0.1.107'};
 
 (function(window) {
 	'use strict';
@@ -34,7 +34,7 @@ var ec = ec || {'version': '0.1.106'};
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
 	ec.gamepads = Modernizr.gamepads;
-	ec.debug = ec.mobile ? 1 : 2;
+	ec.debug = 1;//ec.mobile ? 1 : 2;
 	
 	var world;
 	var view;
@@ -50,6 +50,7 @@ var ec = ec || {'version': '0.1.106'};
 
 	var userInput;
 	var player;
+	var overlay = null;
 
 	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
@@ -98,7 +99,7 @@ var ec = ec || {'version': '0.1.106'};
 			ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
-			
+
 			// THREE.js View
 		    // view = new ec.ThreeJsWorldView();
 
@@ -139,13 +140,28 @@ var ec = ec || {'version': '0.1.106'};
 
 			ec.view = view;
 			ec.world = world;
+
+			paused = true;
+			overlay = new Image();
+			overlay.src = 'img/ui/startscreen.png';
+			view.lookAt(player.body.p.x, -player.body.p.y);
+			if (ec.touch) {
+				ec.bind(ec.core.getViewDom(), 'touchstart', ec.core.start, false);
+			} else {
+				ec.bind(ec.core.getViewDom(), 'mousedown', ec.core.start, false);
+			}
+
 			// GUI Settings
 			if (!ec.touch) {
 				// debugView.worldGui(world);
-				view.debugGui(debugView);
+				// view.debugGui(debugView);
 			}
 
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
+		},
+
+		start: function() {
+			overlay = null;
 		},
 
 		animate: function(time) {
@@ -186,6 +202,10 @@ var ec = ec || {'version': '0.1.106'};
 			    }
 				debugView.stats.end();
 			}
+		},
+
+		getOverlay: function() {
+			return overlay;
 		},
 
 		pause: function() {

@@ -6,7 +6,6 @@
 
 	ec.addBrowserListeners = function(input) {
 		this.bind(window, 'blur',  this.core.pause,  false);
-		this.bind(window, 'focus', this.core.resume, false);
 		if (ec.touch) {
 			this.bind(ec.core.getViewDom(), 'touchstart', input.touchstart, false);
 			this.bind(ec.core.getViewDom(), 'touchmove', input.touchmove, false);
