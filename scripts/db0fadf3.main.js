@@ -6,7 +6,7 @@ var ec = ec || {'version': '0.1.106'};
 	window.ec = ec;
 	var document = window.document;
 	var Modernizr =  window.Modernizr;
-	
+
 	Modernizr.addTest({
         mobile: function(){
             // TODO: add Windows Mobile, FireFoxOS - Anything with multi-touch, no mouse and fixed screen size
@@ -51,7 +51,7 @@ var ec = ec || {'version': '0.1.106'};
 	var userInput;
 	var player;
 
-	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput').split(',');
+	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -97,6 +97,8 @@ var ec = ec || {'version': '0.1.106'};
 
 			ec.resizeDisplay();
 
+			ec.SpriteSheets.init();
+			
 			// THREE.js View
 		    // view = new ec.ThreeJsWorldView();
 
@@ -124,8 +126,8 @@ var ec = ec || {'version': '0.1.106'};
 				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 160,    y: scaledHeight-160, radius: 150})));
 				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth-160,  y: scaledHeight-160, radius: 150})));
 
-				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 0,   radius: 150}));
-				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 0,   radius: 150}));
+				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 50, radius: 150}));
+				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 50,   radius: 150}));
 				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
 				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
 		    }

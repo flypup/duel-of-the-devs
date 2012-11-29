@@ -93,7 +93,6 @@
 	};
 
 	proto.touchStart = function(data, id) {
-		console.log('touchStart', this);
 		this.addTouch(id);
 		this.pressed = true;
 		this.updateTouch(id, data.clientX, data.clientY);
@@ -101,7 +100,6 @@
 
 	proto.touchEnd = function(data, id) {
 		if (this.hasTouch(id)) {
-			console.log('touchEnd', this);
 			this.removeTouch(id);
 			this.pressed = false;
 		}

@@ -35,64 +35,65 @@
 			}
 		};
 		this.map.tile.src = 'img/tile/floor_8888_64.png';
-		this.updateShapeView = this.updateShape();
+		this.drawEntities = this.drawEntity();
 	};
 
 	var proto = Canvas2dView.prototype;
 
-	proto.spriteSheet = new window.createjs.SpriteSheet({
-		images: ['img/sprite/minimonk_64.png'],
-		frames: [[0,152,96,143,0,47.5,131.4],[96,0,62,141,0,33.5,124.4],[96,0,62,141,0,33.5,124.4],[0,295,69,139,0,35.5,124.4],[0,0,96,152,0,47.5,140.4],[69,295,69,139,0,32.5,124.4],[96,141,62,141,0,27.5,124.4],[96,141,62,141,0,27.5,124.4]],
-		animations: {'standing': 0}
-		//animations: {'standing': [first, last, next, frequency]}
-		//animations: {'standing': {next: '', frequency: 1, frames: NumberOrArray}
-	});
-
-	proto.updateShape = function() {
+	proto.drawEntity = function() {
 		//var scene = this.scene;
 		var context = this.context;
-		var spriteSheet = this.spriteSheet;
-		var numFrames = spriteSheet.getNumFrames();
+		var monkSheet = ec.SpriteSheets.monk;
+		var ninjaSheet = ec.SpriteSheets.ninja;
+		
+		var pi = Math.PI;
+		var round = Math.round;
+		var spriteSheetFrame = function(a, spriteSheet) {
+			var numFrames = spriteSheet.getNumFrames();
+			var radians = a;
+			var frame = (6 - round(radians * 4 / pi)) % 8;
+			//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
+			while (frame < 0) {
+				frame += numFrames;
+			}
+			var frameData = spriteSheet.getFrame(frame);
+			if (frameData === null) {
+				if (spriteSheet.complete) {
+					console.error('SpriteSheet null frame. Complete:', spriteSheet.complete, frame, '/', spriteSheet.getNumFrames(), spriteSheet.getAnimations());
+				}
+				return null;
+			}
+			return frameData;
+		};
 
-		return function(shape) {
-			// if (shape.view) {
-			//	shape.view.update(shape, scene);
+		return function(entity) {
+			// if (entity.view) {
+			//	entity.view.update(entity, scene);
 			// }
-			var x = shape.body.p.x;
-			var y = -shape.body.p.y;
+			var x =  entity.body.p.x;
+			var y = -entity.body.p.y;
+			var o;
+			var rect;
 
-			var pi = Math.PI;
-			var round = Math.round;
-
-			if (shape instanceof cp.PolyShape) {
+			if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
 
 				//context.arc(in float x, in float y, in float radius, in float startAngle, in float endAngle, in boolean anticlockwise Optional);
 				context.fillRect(x-32, y-32, 64, 64);
-			} else if (shape instanceof cp.CircleShape) {
-				context.fillStyle = '#880000';
-				//context.fillRect(x, y, 64, 64);
+			} else if (entity instanceof ec.Player) {
 
-				var radians = shape.body.a;
-				var frame = (6 - round(radians * 4 / pi)) % 8;
-				//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
-				while (frame < 0) {
-					frame += numFrames;
+				o = spriteSheetFrame(entity.body.a, monkSheet);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
-				var o = spriteSheet.getFrame(frame);
-				if (o === null) {
-					if (spriteSheet.complete) {
-						console.error('SpriteSheet null frame. Complete:', spriteSheet.complete, frame, '/', spriteSheet.getNumFrames(), spriteSheet.getAnimations());
-					}
-					return;
-				}
-				var rect = o.rect;
-				context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-		
-			} else if (shape instanceof cp.SegmentShape) {
-				//context.moveTo();
-				//context.lineTo();
 
+			} else if (entity instanceof ec.Circle) {
+				o = spriteSheetFrame(entity.body.a, ninjaSheet);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				}
 			} else {
 				context.fillStyle = '#000088';
 				context.fillRect(x-32, y-32, 64, 64);
@@ -122,7 +123,16 @@
 		input.resize(this.width, this.height);
 		return this;
 	};
-	
+
+	var sortEntities = function(a, b) {
+		if ( a.body.p.y > b.body.p.y ) {
+			return -1;
+		} else if ( b.body.p.y > a.body.p.y ) {
+			return 1;
+		}
+		return 0;
+	};
+
 	proto.draw = function(world) {
 		var context = this.context;
 		// save the current context
@@ -141,9 +151,16 @@
 		
 		this.map.draw(context);
 
-		if (world.space.activeShapes.count > 0) {// || redraw
-			world.space.eachShape(this.updateShapeView);
-			//redraw = false;
+		var entities = world.entities;
+		if (world.space.activeShapes.count > 0) {
+			entities.sort(sortEntities);
+		}
+		//draw each entity
+		var i = 0;
+		var len = entities.length;
+		while (i < len) {
+			this.drawEntities(entities[i]);
+			i++;
 		}
 
 		context.restore();
