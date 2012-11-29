@@ -1,4 +1,4 @@
-## Working Title 'Will'
+## Working Title 'Duel to the Devs'
 
 A very rough demo can be played [here](http://flypup.github.com/game-off-2012/). It's a [gh-pages](http://pages.github.com/) branch of this repo containing just the distribution files built with [yeoman](https://github.com/yeoman).
 
@@ -11,7 +11,7 @@ We're also using:
 
 ** Controls **
 
-* Move using WASD/Arrows, gamepad L stick or touch the left side of the screen
+* Move using WASD/Arrows, gamepad L stick or if you're playing on a touch device, use the virtual L stick
 * Push/Pull/Punch using ... TBD
 * Shadow Clone ... TBD
 
