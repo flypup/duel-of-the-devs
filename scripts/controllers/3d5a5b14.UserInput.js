@@ -73,12 +73,14 @@
 		var height = this.height;
 		for (var i=0, len=this.overlays.length; i<len; i++) {
 			var overlay = this.overlays[i];
-			if (type === 'touchend' || type === 'mouseup') {
-				if (overlay['on'+type] !== undefined) {
-					overlay['on'+type].apply(overlay, [data, id]);
+			if (type === 'touchend') {
+				if (overlay === this.leftStickOverlay || overlay === this.rightStickOverlay) {
+					if (overlay['on'+type] !== undefined) {
+						overlay['on'+type].apply(overlay, [data, id]);
+					}
 				}
 			}
-			else if (overlay.hitTest(data.clientX, data.clientY, width, height)) {//offsetX,Y ?
+			if (overlay.hitTest(data.clientX, data.clientY, width, height)) {//offsetX,Y ?
 				//console.log('hit overlay:', overlay, id);
 				if (overlay['on'+type] !== undefined) {
 					overlay['on'+type].apply(overlay, [data, id]);
@@ -93,13 +95,13 @@
 	proto.setLeftStickOverlay = function(overlay) {
 		this.leftStickOverlay = overlay;
 		ec.bind(overlay, 'touchstart', overlay.touchStart, false);
-		ec.bind(overlay, 'touchend',   overlay.touchEnd, false);
+		ec.bind(overlay, 'touchend',  overlay.touchEnd, false);
 	};
 
 	proto.setRightStickOverlay = function(overlay) {
 		this.rightStickOverlay = overlay;
 		ec.bind(overlay, 'touchstart', overlay.touchStart, false);
-		ec.bind(overlay, 'touchend',   overlay.touchEnd, false);
+		ec.bind(overlay, 'touchend',  overlay.touchEnd, false);
 	};
 	
 	proto.setAxes1 = function(x, y) {
@@ -161,7 +163,6 @@
 	proto.touchstart = function(e) {
 		//console.log(e.type, e);
 		if (ec.core.paused()) {
-			ec.core.resume();
 			return;
 		}
 		for (var i=0, len=e.changedTouches.length; i<len; i++) {
@@ -187,6 +188,10 @@
 
 	proto.touchend = function(e) {
 		//console.log(e.type, e);
+		if (ec.core.paused()) {
+			ec.core.resume();
+			return;
+		}
 		for (var i=0, len=e.changedTouches.length; i<len; i++) {
 			self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
 		}
@@ -195,7 +200,6 @@
 	proto.mousedown = function(e) {
 		//console.log(e.type, e);
 		if (ec.core.paused()) {
-			ec.core.resume();
 			return;
 		}
 		self.testOverlays(e.type, e, -1);
@@ -207,6 +211,10 @@
 
 	proto.mouseup = function(e) {
 		////console.log(e.type, e);
+		if (ec.core.paused()) {
+			ec.core.resume();
+			return;
+		}
 		self.testOverlays(e.type, e, -1);
 	};
 
