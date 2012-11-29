@@ -20,9 +20,9 @@
 	 */
 
 	var ButtonOverlay = ec.ButtonOverlay = function(options) {
-		options = extend( options || {}, defaults );
+		options = ec.extend( options || {}, defaults );
 
-		extend(this, options);
+		ec.extend(this, options);
 		this.radiusSq = this.radius ? this.radius*this.radius : 0;
 
 		this.touches = [];
@@ -128,15 +128,5 @@
 			}
 		}
 	};
-
-	var extend = function( target, source ) {
-        for ( var prop in source ) {
-			//if ( target[ prop ] === undefined ) {
-            if ( !target.hasOwnProperty( prop ) ) {
-                target[ prop ] = source[ prop ];
-            }
-        }
-        return target;
-    };
 
 })(window);
