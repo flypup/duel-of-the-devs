@@ -17,7 +17,7 @@
 		//floor view
 		this.map = {
 			draw: function(context) {
-				context.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height);
+				context.drawImage(this.canvas, -640, -640, this.canvas.width, this.canvas.height);
 			},
 			canvas: window.document.createElement('canvas'),
 			tile: new Image()
@@ -58,8 +58,8 @@
 			// if (shape.view) {
 			//	shape.view.update(shape, scene);
 			// }
-			var x = shape.body.p.x + 640;
-			var y = -shape.body.p.y + 640;
+			var x = shape.body.p.x;
+			var y = -shape.body.p.y;
 
 			var pi = Math.PI;
 			var round = Math.round;
@@ -102,8 +102,8 @@
 	};
 
 	proto.lookAt = function(x, y) {
-		this.x = x;
-		this.y = y+288;
+		this.x = -this.canvas.width/this.scaleX/2 + x;
+		this.y = -this.canvas.height/this.scaleY/2 + y - 64;
 	};
 
 	proto.zoom = function(scale) {
@@ -132,10 +132,13 @@
 		context.fillStyle = '#888888';
 		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-		// translate by default to screen coordinates
-		context.translate(-this.x * this.scaleX, -this.y * this.scaleY);
-		context.scale(this.scaleX, this.scaleY);
+		context.save();
 
+		// translate by default to screen coordinates
+		context.scale(this.scaleX, this.scaleY);
+		context.translate(-this.x, -this.y);
+		//context.setTransform(this.scaleX, 0, 0, this.scaleY, -this.x*this.scaleX, -this.y*this.scaleY);
+		
 		this.map.draw(context);
 
 		if (world.space.activeShapes.count > 0) {// || redraw
@@ -183,6 +186,14 @@
 
 	proto.debugGui = function(debugView) {
 		var view = this;
+		var resize = function() {
+			var pixelRatioX = ec.pixelRatio;
+			var pixelRatioY = ec.pixelRatioY;
+			ec.resizeDisplay();
+			ec.pixelRatio = pixelRatioX;
+			ec.pixelRatioY = pixelRatioY;
+			view.resize();
+		};
 		debugView.addGui([
 			{
 				name: 'view',
@@ -192,6 +203,14 @@
 					{name: 'x', params:{min: -480, max: 1600}},
 					{name: 'y', params:{min: -320, max: 1600}},
 					{name: 'scale', onChange: function(value){view.zoom(value);}, params:{step: 0.01, min: 0.25, max: 4}}
+				]
+			},
+			{
+				name: 'pixelRatio',
+				target: ec,
+				props: [
+					{name: 'pixelRatio',  params:{min: 1, max: 2, step: 0.5}, onChange: resize},
+					{name: 'pixelRatioY', params:{min: 1, max: 2, step: 0.5}, onChange: resize}
 				]
 			}
 		]);

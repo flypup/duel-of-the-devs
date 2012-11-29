@@ -115,8 +115,10 @@ var ec = ec || {'version': '0.1.106'};
 			ec.view = view;
 			ec.world = world;
 			// GUI Settings
-			// debugView.worldGui(world);
-			// view.debugGui(debugView);
+			if (!ec.touch) {
+				// debugView.worldGui(world);
+				view.debugGui(debugView);
+			}
 
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
