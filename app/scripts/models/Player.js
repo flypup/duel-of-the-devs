@@ -12,50 +12,22 @@
 	ec.playerInteracted = false;
 	
 	var Player = window.ec.Player = function() {
-		var mass = 1;
-		var moment = cp.momentForCircle(mass, 0, RADIUS, v(0, 0));//cp.vzero);
+		this.assignCircleShape(RADIUS, 1);
 		
-		var body =
-		this.body = new cp.Body(mass, moment);
-
-		var shape =
-		this.shape = new cp.CircleShape(body, RADIUS, v(0, 0));
-		
-		this.input = function(){};
-
-		shape.setElasticity(0);
-		shape.setFriction(0);
+		this.shape.setElasticity(0);
+		this.shape.setFriction(0);
 
 		this.setPos(64, 64, 32);
 
+		this.input = function(){};
 		this.speed = 8;
 
 		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 
 	var proto = Player.prototype;
-	proto.z = 0;
-
-	proto.setView = function(view) {
-		this.view = this.shape.view = view;
-		return this;
-	};
-
-	proto.setPos = function(x, y, z) {
-		this.body.activate();
-		this.body.p.x = x;
-		this.body.p.y = y;
-		if (z !== undefined) {
-			this.z = this.body.z = z;
-		}
-		return this;
-	};
-
-	proto.setInput = function(input) {
-		this.input = input;
-		return this;
-	};
-
+	ec.extend(proto, ec.Entity.prototype);
+	
 	proto.step = function(time) {
 		this.input.poll();
 		this.body.resetForces();

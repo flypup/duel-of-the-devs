@@ -52,7 +52,7 @@ var ec = ec || {'version': '0.1.107'};
 	var player;
 	var overlay = null;
 
-	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -91,8 +91,8 @@ var ec = ec || {'version': '0.1.107'};
 			world.addWalls();
 			player =
 			world.add(new ec.Player().setPos(-200, 400, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
-			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
 		    world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
 		    world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
 
@@ -109,6 +109,9 @@ var ec = ec || {'version': '0.1.107'};
 
 		    // Canvas 2d Context View
 		    view = new ec.Canvas2dView();
+
+			// ec.view = view;
+			// ec.world = world;
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -137,9 +140,6 @@ var ec = ec || {'version': '0.1.107'};
 			if (ec.mobile) {
 				window.scrollTo( 0, 1 );
 			}
-
-			ec.view = view;
-			ec.world = world;
 
 			paused = true;
 			overlay = new Image();
