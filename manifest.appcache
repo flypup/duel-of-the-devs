@@ -2,7 +2,7 @@
 # debug level 2 (undefined, #undefined)
 CACHE MANIFEST
 
-# Time: Wed Nov 28 2012 20:11:16 GMT-0500 (EST)
+# Time: Wed Nov 28 2012 20:33:08 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -23,7 +23,7 @@ CACHE MANIFEST
 #  configFile: /usr/local/share/npm/lib/node_modules/yeoman/lib/support/confess.json
 
 CACHE:
-scripts/07a41952.scripts.js
+scripts/1e3fb367.scripts.js
 scripts/482d6bab.libs.js
 scripts/822cf796.utils.js
 styles/4d0ce6f1.main.css
