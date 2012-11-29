@@ -51,7 +51,7 @@ var ec = ec || {'version': '0.1.106'};
 	var userInput;
 	var player;
 
-	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput').split(',');
+	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -97,6 +97,8 @@ var ec = ec || {'version': '0.1.106'};
 
 			ec.resizeDisplay();
 
+			ec.SpriteSheets.init();
+			
 			// THREE.js View
 		    // view = new ec.ThreeJsWorldView();
 
