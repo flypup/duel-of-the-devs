@@ -129,8 +129,8 @@ var ec = ec || {'version': '0.1.107'};
 
 				var pauseButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth, y: 50, radius: 150}));
 				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 50,   radius: 150}));
-				ec.bind(pauseButton, 'touchstart', ec.core.togglePause, false);
-				ec.bind(debugButton, 'touchstart', ec.core.cycleDebug, false);
+				ec.bind(pauseButton, 'touchend', ec.core.togglePause, false);
+				ec.bind(debugButton, 'touchend', ec.core.cycleDebug, false);
 		    }
 
 		    // hideUrlBarOnLoad
@@ -146,9 +146,9 @@ var ec = ec || {'version': '0.1.107'};
 			overlay.src = 'img/ui/startscreen.png';
 			view.lookAt(player.body.p.x, -player.body.p.y);
 			if (ec.touch) {
-				ec.bind(ec.core.getViewDom(), 'touchstart', ec.core.start, false);
+				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
 			} else {
-				ec.bind(ec.core.getViewDom(), 'mousedown', ec.core.start, false);
+				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.start, false);
 			}
 
 			// GUI Settings
@@ -212,12 +212,14 @@ var ec = ec || {'version': '0.1.107'};
 			console.log('pause');
 			paused = true;
 			view.pause();
+			ec.allowPinchZoom();
 		},
 
 		resume: function() {
 			console.log('resume');
 			paused = false;
 			view.resume();
+			ec.preventPinchZoom();
 		},
 
 		togglePause: function() {
