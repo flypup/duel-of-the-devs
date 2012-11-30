@@ -1,6 +1,8 @@
 # Duel to the Devs
 
-A very rough demo can be played [here](http://flypup.github.com/game-off-2012/). It's a [gh-pages](http://pages.github.com/) branch of this repo containing just the distribution files built with [yeoman](https://github.com/yeoman).
+Play the game [here](http://flypup.github.com/game-off-2012/). It's a [gh-pages](http://pages.github.com/) branch of this repo containing just the distribution files built with [yeoman](https://github.com/yeoman).
+
+The title and game are inspired by the 1983 kung-fu classic [Duel to the Death](http://www.youtube.com/watch?v=8utvOMioMro). We have not yet implemented all 72 techniques or 36 chambers featured in this film :expressionless: We've been expecting you!
 
 ## What We Use
 
