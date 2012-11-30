@@ -20,12 +20,11 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.shape.group = this.groupId;
-
 		this.setPos(0, 0, 32);
 		this.body.a = -1.57;
 
 		// TODO: better states!
+		this.shape.group = this.groupId;
 		this.state = 'standing';
 		this.walkCount = 0;
 		this.speed = 8;
