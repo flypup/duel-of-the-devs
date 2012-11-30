@@ -34,7 +34,7 @@ var ec = ec || {'version': '0.1.108'};
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
 	ec.gamepads = Modernizr.gamepads;
-	ec.debug = 2;//ec.mobile ? 1 : 2;
+	ec.debug = 1;//ec.mobile ? 1 : 2;
 	
 	var world;
 	var view;

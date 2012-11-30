@@ -14,7 +14,7 @@ A very rough demo can be played [here](http://flypup.github.com/game-off-2012/).
 
 ### Desktop Browser
 * w-a-s-d | arrow keys to move
-* space key or mouse to attack (push/pull)
+* space key or mouse (click/hold) to attack (push/pull)
 * f key fullscreen
 * p key pause
 * o key toggle debug
