@@ -14,14 +14,14 @@ A very rough demo can be played [here](http://flypup.github.com/game-off-2012/).
 
 ### Desktop Browser
 * w-a-s-d | arrow keys to move
-* space key or mouse (click/hold) to attack (push/pull)
+* space key or mouse (click/hold) to fight (push/pull)
 * f key fullscreen
 * p key pause
 * o key toggle debug
 
 ### Gamepad API Enabled
 * left stick to move
-* right stick to attack (push/pull)
+* right stick to fight (push/pull)
 
 ### Mobile (Touch Enabled)
 * virtual left stick to move
