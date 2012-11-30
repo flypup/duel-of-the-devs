@@ -72,12 +72,27 @@
 	};
 
 	proto.addWalls = function() {
-		this.addLineSegment(v( WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS,  WORLD_BOUNDS ));
-		this.addLineSegment(v( WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS,  WORLD_BOUNDS ));
-		this.addLineSegment(v(-WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS, -WORLD_BOUNDS ));
-		this.addLineSegment(v(-WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS, -WORLD_BOUNDS ));
+		this.addBox(v( 0, -WORLD_BOUNDS -64), WORLD_BOUNDS*2 + 256, 128);
+		this.addBox(v( 0,  WORLD_BOUNDS +64), WORLD_BOUNDS*2 + 256, 128);
+		this.addBox(v( WORLD_BOUNDS +64,  0 ), 128, WORLD_BOUNDS*2 + 256);
+		this.addBox(v(-WORLD_BOUNDS -64,  0 ), 128, WORLD_BOUNDS*2 + 256);
+
+		// this.addLineSegment(v( WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS,  WORLD_BOUNDS ));
+		// this.addLineSegment(v( WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS,  WORLD_BOUNDS ));
+		// this.addLineSegment(v(-WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS, -WORLD_BOUNDS ));
+		// this.addLineSegment(v(-WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS, -WORLD_BOUNDS ));
 	};
 
+	proto.addBox = function(v1, w, h) {
+		var body = new cp.Body(Infinity, Infinity);
+		body.nodeIdleTime = Infinity;
+		body.p = v1;
+		var wall = this.space.addShape(new cp.BoxShape(body, w, h));
+		wall.setElasticity(0);
+		wall.setFriction(1);
+		wall.setLayers(NOT_GRABABLE_MASK);
+		return wall;
+	};
 	proto.addLineSegment = function(v1, v2) {
 		var wall = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
 		wall.setElasticity(0);
