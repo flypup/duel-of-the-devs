@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.150'};
+var ec = ec || {'version': '0.1.155'};
 
 (function(window) {
 	'use strict';
@@ -34,7 +34,7 @@ var ec = ec || {'version': '0.1.150'};
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
 	ec.gamepads = Modernizr.gamepads;
-	ec.debug = 1;//ec.mobile ? 1 : 2;
+	ec.debug = 0;//ec.mobile ? 1 : 2;
 	
 	var world;
 	var view;
@@ -153,9 +153,10 @@ var ec = ec || {'version': '0.1.150'};
 				window.scrollTo( 0, 1 );
 			}
 
-			// paused = true;
-			// overlay = new Image();
-			// overlay.src = 'img/ui/startscreen.png';
+			paused = true;
+			overlay = new Image();
+			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
+
 			view.lookAt(player.body.p.x, -player.body.p.y);
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
@@ -172,7 +173,28 @@ var ec = ec || {'version': '0.1.150'};
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
 
-		start: function() {
+		start: function(e) {
+			overlay = null;
+			overlay = new Image();
+			if (!ec.touch) {
+				overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
+			} else {
+				overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
+			}
+			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
+		},
+
+		userReady: function() {
+			if (overlay) {
+				if (!ec.touch) {
+					overlay = null;
+					overlay = new Image();
+					overlay.src = 'img/ui/guide-fight-desktop.png?v=' + ec.version;
+				}
+			}
+		},
+
+		userPlaying: function() {
 			overlay = null;
 		},
 

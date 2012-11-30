@@ -120,11 +120,6 @@
 				this.body.w = 0;
 				this.body.a = Math.atan2(direction.y, direction.x);
 
-				if (!ec.playerInteracted) {
-					ec.playerInteracted = true;
-					ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
-				}
-
 			} else {
 				this.body.vx = 0;
 				this.body.vy = 0;

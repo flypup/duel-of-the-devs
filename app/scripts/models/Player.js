@@ -10,7 +10,7 @@
 	var direction = v(0,0);
 	var pushpull = v(0,0);
 
-	ec.playerInteracted = false;
+	ec.playerInteractions = 0;
 	
 	var Player = window.ec.Player = function() {
 		this.groupId = ec.Entity.groupId++;
@@ -91,6 +91,11 @@
 		if (world.contains(attack)) {
 			world.remove(attack);
 		}
+		// TODO: short cool down
+		if (ec.playerInteractions === 2) {
+			ec.playerInteractions = 3;
+			ec.core.userPlaying();
+		}
 	};
 
 	proto.passive = function() {
@@ -131,8 +136,8 @@
 				this.body.w = 0;
 				this.body.a = Math.atan2(direction.y, direction.x);
 
-				if (!ec.playerInteracted) {
-					ec.playerInteracted = true;
+				if (ec.playerInteractions === 0) {
+					ec.playerInteractions = 1;
 					ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
 				}
 
@@ -144,6 +149,11 @@
 				// if(!this.body.isSleeping() && this.body.space) {
 				//	this.body.space.deactivateBody(this.body);
 				// }
+
+				if (ec.playerInteractions === 1) {
+					ec.playerInteractions = 2;
+					ec.core.userReady();
+				}
 			}
 		}
 		pushpull.x =  this.input.axes[2];
