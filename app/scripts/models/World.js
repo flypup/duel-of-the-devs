@@ -40,6 +40,21 @@
 
 	var proto = World.prototype;
 
+	proto.term = function() {
+		// TODO: call remove on all entities > bodies > shapes
+		this.entities.length = 0;
+		var space = this.space;
+		space.locked = 0;
+		space.removeCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE);
+		space.removeCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE);
+		space.bodies.length = 0;
+		space.sleepingComponents.length = 0;
+		space.constraints.length = 0;
+		space.arbiters.length = 0;
+		space.constraints.length = 0;
+		delete this.space;
+	};
+
 	var DAMAGE = 10;
 	proto.pushCollision = function(arbiter, space) {
 		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
@@ -76,11 +91,6 @@
 		this.addBox(v( 0,  WORLD_BOUNDS +64), WORLD_BOUNDS*2 + 256, 128);
 		this.addBox(v( WORLD_BOUNDS +64,  0 ), 128, WORLD_BOUNDS*2 + 256);
 		this.addBox(v(-WORLD_BOUNDS -64,  0 ), 128, WORLD_BOUNDS*2 + 256);
-
-		// this.addLineSegment(v( WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS,  WORLD_BOUNDS ));
-		// this.addLineSegment(v( WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS,  WORLD_BOUNDS ));
-		// this.addLineSegment(v(-WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS, -WORLD_BOUNDS ));
-		// this.addLineSegment(v(-WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS, -WORLD_BOUNDS ));
 	};
 
 	proto.addBox = function(v1, w, h) {
@@ -93,6 +103,7 @@
 		wall.setLayers(NOT_GRABABLE_MASK);
 		return wall;
 	};
+
 	proto.addLineSegment = function(v1, v2) {
 		var wall = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
 		wall.setElasticity(0);

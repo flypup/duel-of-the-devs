@@ -50,6 +50,10 @@ var ec = ec || {'version': '0.1.155'};
 	var boss;
 	var overlay = null;
 
+	var rafId;
+
+	var WATCH_DEAD_BOSS_DURATION = 2000;
+
 	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,ShadowClone,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
@@ -81,7 +85,7 @@ var ec = ec || {'version': '0.1.155'};
 			deltaTime = time;
 		    remainder = 0;
 		    
-			requestAnimationFrame( core.animate );
+			rafId = requestAnimationFrame( core.animate );
 
 			userInput = new ec.UserInput();
 
@@ -175,11 +179,15 @@ var ec = ec || {'version': '0.1.155'};
 
 		start: function(e) {
 			overlay = null;
-			overlay = new Image();
-			if (!ec.touch) {
-				overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
-			} else {
-				overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
+			if (ec.playerInteractions < 1) {
+				overlay = new Image();
+				if (!ec.touch) {
+					overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
+					ec.core.trackEvent('game', 'guide', 'guide-move-desktop');
+				} else {
+					overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
+					ec.core.trackEvent('game', 'guide', 'guide-touch');
+				}
 			}
 			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
 		},
@@ -190,6 +198,7 @@ var ec = ec || {'version': '0.1.155'};
 					overlay = null;
 					overlay = new Image();
 					overlay.src = 'img/ui/guide-fight-desktop.png?v=' + ec.version;
+					ec.core.trackEvent('game', 'guide', 'guide-fight-desktop');
 				}
 			}
 		},
@@ -198,8 +207,51 @@ var ec = ec || {'version': '0.1.155'};
 			overlay = null;
 		},
 
+		rollCredits: function() {
+			ec.playerInteractions = 36;
+			overlay = new Image();
+			overlay.src = 'img/ui/credits.png?v=' + ec.version;
+			ec.core.trackEvent('game', 'credits', ec.version);
+
+			if (ec.touch) {
+				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.restart, false);
+			} else {
+				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.restart, false);
+			}
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame( core.animateCredits );
+			view.initCredits();
+			world.term();
+		},
+
+		restart: function(e) {
+			overlay = null;
+
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame( core.init );
+
+			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
+		},
+
+		animateCredits: function(time) {
+			rafId = requestAnimationFrame( core.animateCredits );
+
+			if (ec.debug > 0) {
+				debugView.stats.begin();
+			}
+
+			delta = (time - deltaTime);
+			deltaTime = time;
+			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+			view.drawCredits(delta);
+
+			if (ec.debug > 0) {
+				debugView.stats.end();
+			}
+		},
+
 		animate: function(time) {
-			requestAnimationFrame( core.animate );
+			rafId = requestAnimationFrame( core.animate );
 			
 			if (ec.debug > 0) {
 				debugView.stats.begin();
@@ -218,6 +270,15 @@ var ec = ec || {'version': '0.1.155'};
 				}
 
 				view.lookAt(player.body.p.x, -player.body.p.y);
+			}
+			if (boss.state === 'dead') {
+				boss.decomposed = boss.decomposed || 0;
+				boss.decomposed += delta;
+				if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
+					delete boss.decomposed;
+					ec.core.rollCredits();
+				}
+				return;
 			}
 			if (ec.debug < 3) {
 				view.draw(world);
@@ -361,7 +422,7 @@ var ec = ec || {'version': '0.1.155'};
 	// fixes from Paul Irish and Tino Zijdel
 	// vendor prefix checks using Modernizr
 	var requestAnimationFrame = window.requestAnimationFrame || Modernizr.prefixed('RequestAnimationFrame', window);
-	// var cancelAnimationFrame = window.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', window) || Modernizr.prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
+	var cancelAnimationFrame = window.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', window) || Modernizr.prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
 	if (!requestAnimationFrame) {
 		var lastTime = 0;
 		requestAnimationFrame = function ( callback, element ) {

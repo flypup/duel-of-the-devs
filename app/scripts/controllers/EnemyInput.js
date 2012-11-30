@@ -23,6 +23,9 @@
 	// N - goal sub-steps
 
 	proto.poll = function(entity) {
+		if (this.state === 'dead') {
+			return;
+		}
 		var goal = this.goal;
 		if (!goal || goal.met) {
 			goal = this.selectGoal(goal, entity);

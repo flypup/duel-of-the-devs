@@ -42,8 +42,8 @@
 			console.error('shadow clone tried to clone itself!');
 			return;
 		}
+		// use ShadowClone class and prototype or something cool to inherit stuff
 		var shadowClone = new ec.Ninja().setPos(this.body.p.x, this.body.p.y, 32).setInput(new ec.EnemyInput());
-		// TODO: use ShadowClone class and prototype or something cool to inherit stuff
 		shadowClone.isShadowClone = true;
 		shadowClone.master = this;
 		ec.world.add(shadowClone);
@@ -52,17 +52,22 @@
 	proto.hit = function(arbiter, world, damage) {
 		var energy = arbiter.totalKE();
 		//console.log('HIT', this, 'KE', energy);
-		if (energy > 0) {
+		if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
 			this.state = 'hit';
-			this.hitTime =
-			this.hitDuration = 1000;
 			if (this.isShadowClone) {
+				//hit a clone
+				this.hitTime = 400;
 				this.hitPoints = damage ? 0 : this.hitPoints;
 			} else {
+				//hit ninja
 				this.hitPoints -= damage;
+				this.hitTime = 600;
 			}
-			// TODO: Apply impulse
+			this.hitDuration = this.hitTime;
+			// apply impulse
 			this.body.w = energy/10000;
+			this.body.vx *= 2;
+			this.body.vy *= 2;
 		}
 		return this;
 	};
@@ -82,14 +87,18 @@
 						// TODO: POOF!
 						ec.world.remove(this);
 					} else {
-						// TODO: remove all shadow clones
-
+						this.body.vx = 0;
+						this.body.vy = 0;
+						this.body.w *= 0.5;
 					}
 				} else {
 					this.state = 'standing'; //getting up
 				}
 			}
 			return;
+		} else if (this.isShadowClone && this.master.hitPoints <= 0) {
+			// TODO: POOF!
+			ec.world.remove(this);
 		}
 
 		this.body.resetForces();
