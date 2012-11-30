@@ -111,8 +111,8 @@
 	};
 
 	proto.setAxes2 = function(x, y) {
-		this.axes[3] = x;
-		this.axes[4] = y;
+		this.axes[2] = x;
+		this.axes[3] = y;
 		// console.log(this.axes);
 	};
 
