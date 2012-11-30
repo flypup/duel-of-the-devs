@@ -47,13 +47,32 @@
 		
 		var pi = Math.PI;
 		var round = Math.round;
-		var spriteSheetFrame = function(a, spriteSheet) {
-			var numFrames = spriteSheet.getNumFrames();
-			var radians = a;
-			var frame = (6 - round(radians * 4 / pi)) % 8;
+		var spriteSheetFrame = function(entity, spriteSheet) {
+			//var numFrames = spriteSheet.getNumFrames();
+			var a = entity.body.a;
+			var degrees = 6;
+			var radians = a + pi/6;
+			if (a === 0) {
+				radians -= 0.1;
+			}
+			var frame = (5 - round(radians * 3 / pi)) % 6;
+			// 0 = down, 1-5 clockwise
+
 			//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
 			while (frame < 0) {
-				frame += numFrames;
+				frame += degrees;
+			}
+			if (entity.state === 'walking') {
+				var velocity = Math.sqrt(entity.body.vx * entity.body.vx + entity.body.vy * entity.body.vy);
+				//console.log(velocity);
+				entity.walkCount += Math.max(0.15, velocity/2500);
+				var walkStep = Math.floor(entity.walkCount) % 4;
+				var animation = spriteSheet.getAnimation('walk_'+ frame);
+				if (animation) {
+					frame = animation.frames[0] + walkStep;
+				} else {
+					console.error('no walk_'+ frame);
+				}
 			}
 			var frameData = spriteSheet.getFrame(frame);
 			if (frameData === null) {
@@ -86,14 +105,14 @@
 				}
 
 			} else if (entity instanceof ec.Player) {
-				o = spriteSheetFrame(entity.body.a, monkSheet);
+				o = spriteSheetFrame(entity, monkSheet);
 				if (o) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
-			} else if (entity instanceof ec.Circle) {
-				o = spriteSheetFrame(entity.body.a, ninjaSheet);
+			} else if (entity instanceof ec.Ninja) {
+				o = spriteSheetFrame(entity, ninjaSheet);
 				if (o) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);

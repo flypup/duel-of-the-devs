@@ -1,8 +1,11 @@
 # init (undefined, #undefined)
 # debug level 1 (undefined, #undefined)
+# Enemy goal:  surround (undefined, #undefined)
+# found nearest (undefined, #undefined)
+# loaded 64 64 (undefined, #undefined)
 CACHE MANIFEST
 
-# Time: Fri Nov 30 2012 02:18:00 GMT-0500 (EST)
+# Time: Fri Nov 30 2012 05:56:17 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -24,10 +27,9 @@ CACHE MANIFEST
 
 CACHE:
 scripts/482d6bab.libs.js
+scripts/56167960.scripts.js
 scripts/822cf796.utils.js
-scripts/da3fc3ec.scripts.js
 styles/4d0ce6f1.main.css
 
 NETWORK:
 *
-# loaded 64 64 (undefined, #undefined)
