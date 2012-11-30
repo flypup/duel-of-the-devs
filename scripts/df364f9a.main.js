@@ -197,6 +197,10 @@ var ec = ec || {'version': '0.1.150'};
 
 				view.lookAt(player.body.p.x, -player.body.p.y);
 			}
+			if (boss.state === 'dead') {
+				// YOU WIN
+				// TODO: Credits
+			}
 			if (ec.debug < 3) {
 				view.draw(world);
 			}

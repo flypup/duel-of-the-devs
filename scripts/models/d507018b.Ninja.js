@@ -21,6 +21,8 @@
 		this.setPos(0, 0, 32);
 		this.body.a = 3;
 
+		this.shape.collision_type = ec.World.MONSTER_TYPE;
+
 		// TODO: better states!
 		this.shape.group = this.groupId;
 		this.state = 'standing';
@@ -29,7 +31,7 @@
 		this.attack = new ec.EmptyHand(RADIUS-4, 1); // Ninja Star
 
 		this.isShadowClone = false;
-
+		this.hitPoints = 100;
 	};
 
 	var proto = Ninja.prototype;
@@ -47,11 +49,50 @@
 		ec.world.add(shadowClone);
 	};
 
+	proto.hit = function(arbiter, world, damage) {
+		var energy = arbiter.totalKE();
+		//console.log('HIT', this, 'KE', energy);
+		if (energy > 0) {
+			this.state = 'hit';
+			this.hitTime =
+			this.hitDuration = 1000;
+			if (this.isShadowClone) {
+				this.hitPoints = damage ? 0 : this.hitPoints;
+			} else {
+				this.hitPoints -= damage;
+			}
+			// TODO: Apply impulse
+			this.body.w = energy/10000;
+		}
+		return this;
+	};
+
 	proto.step = function(delta) {
 		this.input.poll(this);
-		this.body.resetForces();
-
+		
 		//this.attackStep(ec.world.time, ec.world);
+		if (this.hitTime > 0) {
+			this.hitTime -= delta;
+			//hit animation
+			if (this.hitTime <= 0) {
+				this.hitTime = 0;
+				if (this.hitPoints <= 0) {
+					this.state = 'dead';
+					if (this.isShadowClone) {
+						// TODO: POOF!
+						ec.world.remove(this);
+					} else {
+						// TODO: remove all shadow clones
+
+					}
+				} else {
+					this.state = 'standing'; //getting up
+				}
+			}
+			return;
+		}
+
+		this.body.resetForces();
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
 			direction.x =  this.input.axes[0];

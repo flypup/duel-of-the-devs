@@ -28,6 +28,11 @@
 		return this;
 	};
 
+	proto.hit = function(arbiter) {
+		console.log('HIT', this);
+		return this;
+	};
+
 	// Physics
 
 	proto.setPos = function(x, y, z) {
