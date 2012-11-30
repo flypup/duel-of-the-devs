@@ -11,6 +11,8 @@
 	var intent = v(0,0);
 
 	var Ninja = ec.Ninja = function() {
+		this.groupId = ec.Entity.groupId++;
+
 		this.assignCircleShape(RADIUS, 1);
 		
 		this.shape.setElasticity(0);
@@ -19,8 +21,14 @@
 		this.setPos(0, 0, 32);
 		this.body.a = 3;
 
+		// TODO: better states!
+		this.shape.group = this.groupId;
+		this.state = 'standing';
+		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(RADIUS-4, 1); // Ninja Star
+
+		this.isShadowClone = false;
 
 	};
 
@@ -28,9 +36,17 @@
 	ec.extend(proto, ec.Entity.prototype);
 
 	proto.shadowClone = function() {
-
+		if (this.isShadowClone) {
+			console.error('shadow clone tried to clone itself!');
+			return;
+		}
+		var shadowClone = new ec.Ninja().setPos(this.body.p.x, this.body.p.y, 32).setInput(new ec.EnemyInput());
+		// TODO: use ShadowClone class and prototype or something cool to inherit stuff
+		shadowClone.isShadowClone = true;
+		shadowClone.master = this;
+		ec.world.add(shadowClone);
 	};
-	
+
 	proto.step = function(delta) {
 		this.input.poll(this);
 		this.body.resetForces();
