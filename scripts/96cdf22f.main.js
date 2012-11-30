@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.108'};
+var ec = ec || {'version': '0.1.150'};
 
 (function(window) {
 	'use strict';
