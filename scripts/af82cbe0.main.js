@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.107'};
+var ec = ec || {'version': '0.1.108'};
 
 (function(window) {
 	'use strict';
@@ -41,18 +41,18 @@ var ec = ec || {'version': '0.1.107'};
 	var debugView;
 	var cpDebugView;
 	
-	var TIME_STEP = ec.TIME_STEP = 1/60;
+	var TIME_STEP = ec.TIME_STEP = 1000/60;
 	var paused = false;
 	var delta, deltaTime, remainder;
 
 	var createWaitTime = 0;
-	var CREATE_WAIT_SECONDS = 5;
+	var CREATE_WAIT_SECONDS = 5 * 1000;
 
 	var userInput;
 	var player;
 	var overlay = null;
 
-	var required = ('resizeDisplay,addBrowserListeners,Box,Circle,Player,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,ShadowClone,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -87,14 +87,26 @@ var ec = ec || {'version': '0.1.107'};
 
 			userInput = new ec.UserInput();
 
+		    ec.world =
 		    world = new ec.World();
 			world.addWalls();
 			player =
 			world.add(new ec.Player().setPos(-200, 400, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
-			world.add(new ec.Box(world.createStaticBody()).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(world.createStaticBody()).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
+			
+			//statues
+			world.add(new ec.Box(0).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
+		    
+		    //ninja
 		    world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
+		    //heavy ninja
+		    world.add(new ec.Circle(3).setPos(-100, 400, 32).setView(new ec.ThreeJsSphereView()));
+
+		    //movable statues
+		    world.add(new ec.Box(100).setPos(-500, -500, 32).setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos(-500,  500, 32).setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos( 500, -500, 32).setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos( 500,  500, 32).setView(new ec.ThreeJsBoxView()));
 
 			ec.resizeDisplay();
 
@@ -109,6 +121,9 @@ var ec = ec || {'version': '0.1.107'};
 
 		    // Canvas 2d Context View
 		    view = new ec.Canvas2dView();
+
+			// ec.view = view;
+			// ec.world = world;
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -137,9 +152,6 @@ var ec = ec || {'version': '0.1.107'};
 			if (ec.mobile) {
 				window.scrollTo( 0, 1 );
 			}
-
-			ec.view = view;
-			ec.world = world;
 
 			paused = true;
 			overlay = new Image();
@@ -171,7 +183,7 @@ var ec = ec || {'version': '0.1.107'};
 				debugView.stats.begin();
 			}
 			
-			delta = (time - deltaTime) / 1000;
+			delta = (time - deltaTime);
 			deltaTime = time;
 
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
@@ -186,8 +198,7 @@ var ec = ec || {'version': '0.1.107'};
 				createWaitTime+=delta;
 				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Box().setView(new ec.ThreeJsBoxView()));
-					world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
+					world.add(new ec.Circle().setPos(Math.random() * 64, Math.random() * 64, 32).setView(new ec.ThreeJsSphereView()));
 				}
 
 				view.lookAt(player.body.p.x, -player.body.p.y);

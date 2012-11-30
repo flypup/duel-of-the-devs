@@ -77,9 +77,6 @@
 
 			if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
-
-				//context.arc(in float x, in float y, in float radius, in float startAngle, in float endAngle, in boolean anticlockwise Optional);
-				//context.fillRect(x-32, y-32, 64, 64);
 				o = lionSprite;
 				if (o) {
 					rect = o.rect;
@@ -89,7 +86,6 @@
 				}
 
 			} else if (entity instanceof ec.Player) {
-
 				o = spriteSheetFrame(entity.body.a, monkSheet);
 				if (o) {
 					rect = o.rect;
@@ -102,9 +98,28 @@
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
+
+			} else if (entity instanceof ec.EmptyHand) {
+				context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
+				context.beginPath();
+				context.arc(x, y-40, entity.radius, 0, 2*pi, false);
+				context.fill();
+
 			} else {
-				context.fillStyle = '#000088';
-				context.fillRect(x-32, y-32, 64, 64);
+				if (entity.radius) {
+					context.fillStyle = '#ff8000';
+					context.beginPath();
+					context.arc(x, y, entity.radius, 0, 2*pi, false);
+					context.fill();
+				} else if (entity.width && entity.height) {
+					context.fillStyle = '#0008ff';
+					context.beginPath();
+					context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
+				} else {
+					context.fillStyle = '#000088';
+					context.beginPath();
+					context.fillRect(x-32, y-32, 64, 64);
+				}
 			}
 			
 		};

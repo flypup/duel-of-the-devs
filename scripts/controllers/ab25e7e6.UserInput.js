@@ -111,8 +111,8 @@
 	};
 
 	proto.setAxes2 = function(x, y) {
-		this.axes[3] = x;
-		this.axes[4] = y;
+		this.axes[2] = x;
+		this.axes[3] = y;
 		// console.log(this.axes);
 	};
 
@@ -202,11 +202,28 @@
 		if (ec.core.paused()) {
 			return;
 		}
-		self.testOverlays(e.type, e, -1);
+		if (!self.testOverlays(e.type, e, -1)) {
+			ec.bind(ec.core.getViewDom(), 'mousemove', self.mouseRightStick, false);
+			ec.bind(window, 'mouseup', self.mouseRightStickEnd, false);
+			self.mouseRightStick(e);
+		}
 	};
 
-	proto.mousemove = function(e) {
+	proto.mouseRightStick = function(e) {
 		//console.log(e.type, e);
+		var halfWidth  = e.target.width /2;
+		var halfHeight = e.target.height/2 + 100;
+		var x = e.clientX - halfWidth;
+		var y = e.clientY - halfHeight;
+		var length = Math.sqrt(x*x + y*y);
+		x /= length;
+		y /= length;
+		self.setAxes2(x, y);
+	};
+
+	proto.mouseRightStickEnd = function(e) {
+		ec.unbind(ec.core.getViewDom(), 'mousemove', self.mouseRightStick, false);
+		self.setAxes2(0, 0);
 	};
 
 	proto.mouseup = function(e) {
