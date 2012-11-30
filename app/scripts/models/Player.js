@@ -22,9 +22,9 @@
 
 		this.shape.group = this.groupId;
 
-		this.setPos(64, 64, 32);
-
-		this.input = function(){};
+		this.setPos(0, 0, 32);
+		this.body.a = -1.57;
+		
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(RADIUS-4, 1);
 

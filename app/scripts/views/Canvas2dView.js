@@ -92,7 +92,7 @@
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
-			} else if (entity instanceof ec.Circle) {
+			} else if (entity instanceof ec.Ninja) {
 				o = spriteSheetFrame(entity.body.a, ninjaSheet);
 				if (o) {
 					rect = o.rect;

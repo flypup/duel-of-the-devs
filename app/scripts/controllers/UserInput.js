@@ -12,11 +12,11 @@
 		self = this;
 		this.index = index || 0;
 		this.gamepadTime = 1;
-		var buttons = this.buttons = new Array(17);
+		var buttons = this.buttons = [];
 		for (var i = 0; i < 17; i++) {
 			buttons[i] = 0;
 		}
-		var axes = this.axes = new Array(4);
+		var axes = this.axes = [];
 		for (i = 0; i < 4; i++) {
 			axes[i] = 0;
 		}

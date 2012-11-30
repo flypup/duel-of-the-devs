@@ -50,9 +50,10 @@ var ec = ec || {'version': '0.1.108'};
 
 	var userInput;
 	var player;
+	var boss;
 	var overlay = null;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,ShadowClone,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,SpriteSheets,ButtonOverlay').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,ShadowClone,World,ThreeJsBoxView,ThreeJsSphereView,ThreeJsWorldView,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -90,18 +91,20 @@ var ec = ec || {'version': '0.1.108'};
 		    ec.world =
 		    world = new ec.World();
 			world.addWalls();
+
+			ec.player =
 			player =
-			world.add(new ec.Player().setPos(-200, 400, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
+			world.add(new ec.Player().setPos(-2, -155, 32).setInput(userInput).setView(new ec.ThreeJsSphereView()));
 			
 			//statues
 			world.add(new ec.Box(0).setPos(-250, 0, 32).setView(new ec.ThreeJsBoxView()));
 			world.add(new ec.Box(0).setPos( 250, 0, 32).setView(new ec.ThreeJsBoxView()));
 		    
 		    //ninja
-		    world.add(new ec.Circle().setView(new ec.ThreeJsSphereView()));
-		    //heavy ninja
-		    world.add(new ec.Circle(3).setPos(-100, 400, 32).setView(new ec.ThreeJsSphereView()));
-
+		    var bossInput = new ec.EnemyInput();
+		    boss =
+		    world.add(new ec.Ninja().setPos(250, 64, 32).setInput(bossInput).setView(new ec.ThreeJsSphereView()));
+		    
 		    //movable statues
 		    world.add(new ec.Box(100).setPos(-500, -500, 32).setView(new ec.ThreeJsBoxView()));
 		    world.add(new ec.Box(100).setPos(-500,  500, 32).setView(new ec.ThreeJsBoxView()));
@@ -153,9 +156,9 @@ var ec = ec || {'version': '0.1.108'};
 				window.scrollTo( 0, 1 );
 			}
 
-			paused = true;
-			overlay = new Image();
-			overlay.src = 'img/ui/startscreen.png';
+			// paused = true;
+			// overlay = new Image();
+			// overlay.src = 'img/ui/startscreen.png';
 			view.lookAt(player.body.p.x, -player.body.p.y);
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
@@ -198,7 +201,7 @@ var ec = ec || {'version': '0.1.108'};
 				createWaitTime+=delta;
 				if (world.entities.length < 100 && createWaitTime > CREATE_WAIT_SECONDS) {
 					createWaitTime -= CREATE_WAIT_SECONDS;
-					world.add(new ec.Circle().setPos(Math.random() * 64, Math.random() * 64, 32).setView(new ec.ThreeJsSphereView()));
+					//world.add(new ec.Ninja().setPos(Math.random() * 64, Math.random() * 64, 32).setView(new ec.ThreeJsSphereView()));
 				}
 
 				view.lookAt(player.body.p.x, -player.body.p.y);
