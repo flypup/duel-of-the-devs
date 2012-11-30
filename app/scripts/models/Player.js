@@ -24,7 +24,10 @@
 
 		this.setPos(0, 0, 32);
 		this.body.a = -1.57;
-		
+
+		// TODO: better states!
+		this.state = 'standing';
+		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(RADIUS-4, 1);
 
@@ -171,6 +174,8 @@
 					direction.mult(1/v.len(direction));
 				}
 
+				this.state = 'walking';
+
 				// console.log(this.input.axes, direction.x, direction.y);
 				// console.log('v', this.body.vx, this.body.vy);
 
@@ -194,6 +199,7 @@
 				}
 
 			} else {
+				this.state = 'standing';
 				this.body.vx = 0;
 				this.body.vy = 0;
 				this.body.w *= 0.99;
