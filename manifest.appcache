@@ -2,7 +2,7 @@
 # loaded 64 64 (undefined, #undefined)
 CACHE MANIFEST
 
-# Time: Fri Nov 30 2012 11:01:17 GMT-0500 (EST)
+# Time: Fri Nov 30 2012 18:05:43 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -24,8 +24,8 @@ CACHE MANIFEST
 
 CACHE:
 scripts/482d6bab.libs.js
+scripts/5cf6894c.scripts.js
 scripts/822cf796.utils.js
-scripts/e902c8d9.scripts.js
 styles/4d0ce6f1.main.css
 
 NETWORK:
