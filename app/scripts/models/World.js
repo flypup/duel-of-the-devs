@@ -9,6 +9,8 @@
 	var WORLD_BOUNDS = 640;
 
 	var World = window.ec.World = function() {
+		this.time = 0;
+
 		var space =
 		this.space = new cp.Space();
 		space.gravity = v(0, 0);
@@ -22,14 +24,16 @@
 		this.entities = [];
 	};
 
-	World.prototype.addWalls = function() {
+	var proto = World.prototype;
+
+	proto.addWalls = function() {
 		this.addLineSegment(v( WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS,  WORLD_BOUNDS ));
 		this.addLineSegment(v( WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS,  WORLD_BOUNDS ));
 		this.addLineSegment(v(-WORLD_BOUNDS,  WORLD_BOUNDS ), v(-WORLD_BOUNDS, -WORLD_BOUNDS ));
 		this.addLineSegment(v(-WORLD_BOUNDS, -WORLD_BOUNDS ), v( WORLD_BOUNDS, -WORLD_BOUNDS ));
 	};
 
-	World.prototype.addLineSegment = function(v1, v2) {
+	proto.addLineSegment = function(v1, v2) {
 		var wall = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
 		wall.setElasticity(0);
 		wall.setFriction(1);
@@ -37,45 +41,49 @@
 		return wall;
 	};
 
-	World.prototype.add = function(bodyShape) {
-		var index = this.entities.indexOf(bodyShape);
-		if (index < 0) {
-			if (!bodyShape.body.isStatic()) {
-				this.space.addBody(bodyShape.body);
+	proto.add = function(entity) {
+		if (this.entities.indexOf(entity) < 0) {
+			if (!entity.body.isStatic()) {
+				this.space.addBody(entity.body);
 			}
-			this.space.addShape(bodyShape.shape);
-			this.entities.push(bodyShape);
-			return bodyShape;
+			this.space.addShape(entity.shape);
+			this.entities.push(entity);
+			return entity;
 		}
-		console.error('entity already a child of world', bodyShape);
+		console.error('entity already a child of world', entity);
 		return null;
 	};
 
-	World.prototype.remove = function(bodyShape) {
-		var index = this.entities.indexOf(bodyShape);
+	proto.remove = function(entity) {
+		var index = this.entities.indexOf(entity);
 		if (index > -1) {
-			if (!bodyShape.body.isStatic()) {
-				this.space.removeBody(bodyShape.body);
+			if (!entity.body.isStatic()) {
+				this.space.removeBody(entity.body);
 			}
-			this.space.removeShape(bodyShape.shape);
+			this.space.removeShape(entity.shape);
 			this.entities.splice(index, 1);
-			return bodyShape;
+			return entity;
 		}
-		console.error('entity not a child of world', bodyShape);
+		console.error('entity not a child of world', entity);
 		return null;
 	};
 
-	World.prototype.createStaticBody = function() {
+	proto.contains = function(entity) {
+		return (this.entities.indexOf(entity) > -1);
+	};
+
+	proto.createStaticBody = function() {
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
 		return body;
 	};
 
-	World.prototype.step = function(time) {
-		for(var i = 0, len = this.entities.length; i < len; i++) {
-			this.entities[i].step(time);
+	proto.step = function(delta) {
+		for(var i = this.entities.length; i-- > 0;) {
+			this.entities[i].step(delta);
 		}
-		this.space.step(time);
+		this.space.step(delta / 1000);
+		this.time += delta;
 	};
 
 })(window);

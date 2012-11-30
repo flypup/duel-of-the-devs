@@ -5,11 +5,14 @@
 	var v = cp.v;
 
 	var Entity = window.ec.Entity = function Entity() {
-
+		console.log('new Entity', this);
 	};
+
+	Entity.groupId = 1;
 
 	var proto = Entity.prototype;
 	proto.z = 0;
+	proto.groupId = cp.NO_GROUP;
 
 	proto.setView = function(view) {
 		this.view = view;
@@ -21,7 +24,7 @@
 		return this;
 	};
 
-	proto.step = function(time) {
+	proto.step = function(delta) {
 		return this;
 	};
 
@@ -62,6 +65,7 @@
 
 	proto.assignCircleShape = function(radius, mass, moment) {
 		moment = moment || cp.momentForCircle(mass, 0, radius, v(0, 0));//cp.vzero);
+		this.radius = radius;
 		this.body = getBody(mass, moment);
 		this.shape = new cp.CircleShape(this.body, radius, v(0, 0));
 		return this;
@@ -69,6 +73,8 @@
 
 	proto.assignBoxShape = function(width, height, mass, moment) {
 		moment = moment || cp.momentForBox(mass, width, height);
+		this.width = width;
+		this.height = height;
 		this.body = getBody(mass, moment);
 		this.shape = new cp.BoxShape(this.body, width, height);
 		return this;
