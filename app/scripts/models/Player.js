@@ -23,6 +23,8 @@
 		this.setPos(0, 0, 32);
 		this.body.a = -1.57;
 
+		this.shape.collision_type = ec.World.PLAYER_TYPE;
+
 		// TODO: better states!
 		this.shape.group = this.groupId;
 		this.state = 'standing';
@@ -35,10 +37,6 @@
 
 	var proto = Player.prototype;
 	ec.extend(proto, ec.Entity.prototype);
-	
-	var pushDuration = 1000 * 5/60;
-	var grabDuration = 1000 * 10/60;
-	var punchDuration = pushDuration + grabDuration/2;
 
 	proto.punch = function(time, world, delta) {
 		if (this.passive()) {
@@ -83,66 +81,7 @@
 
 		world.add(attack);
 
-		console.log('punching');
-	};
-
-	proto.attackStep = function(time, world) {
-		var attack = this.attack;
-		if (attack && attack.phase) {
-			var punchTime = time - attack.time;
-
-			if (attack.phase === ec.EmptyHand.PUSHING) {
-				if (punchTime < punchDuration) {
-					//punching
-
-					// TODO: check for early hit - GRAB/PUSH
-
-				} else if (this.passive()) {
-					//done punching
-					this.attackEnd(time, world);
-					console.log('punch ended passively');
-
-				} else if (punchTime > pushDuration) {
-					attack.phase = ec.EmptyHand.GRABBING;
-					console.log('grabbing');
-				}
-
-			} else if (attack.phase === ec.EmptyHand.GRABBING) {
-				//attack.body.resetForces();
-				attack.body.vx *= 0.9;
-				attack.body.vy *= 0.9;
-				if (this.passive()) {
-					//done punching
-					this.attackEnd(time, world);
-					console.log('grab ended passively');
-
-				} else if (punchTime > pushDuration + grabDuration) {
-					// TODO: did we grab anyone?
-					var grabbedTarget = false;
-					if (!grabbedTarget) {
-						//done punching
-						this.attackEnd(time, world);
-						console.log('grab ended empty handed');
-					} else {
-
-						// TODO: attack.phase = ec.EmptyHand.PULLING;
-
-						// add constraints
-						//world.space.addConstraint(new cp.GrooveJoint(this.body, attack.body, v(40, 0), v(80 , 0), v(0,0)));
-					}
-				}
-
-			} else if (attack.phase === ec.EmptyHand.PULLING) {
-				// TODO: how long can we keep this up?
-
-				if (this.passive()) {
-					//done punching
-					this.attackEnd(time, world);
-					console.log('pull ended passively');
-				}
-
-			}
-		}
+		//console.log('punching');
 	};
 
 	proto.attackEnd = function(time, world) {
@@ -162,7 +101,7 @@
 		this.input.poll();
 		this.body.resetForces();
 
-		this.attackStep(ec.world.time, ec.world);
+		this.attack.entityStep(ec.world.time, ec.world, this);
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
 			direction.x =  this.input.axes[0];

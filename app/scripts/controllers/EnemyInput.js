@@ -61,6 +61,7 @@
 		} else if (currentGoal === goalTree.throwStars) {
 			if (Math.random() > 0.8) { // in Danger - real ninja / hurt
 				goal = goalTree.avoid;
+				//entity.speed = 6; //depends on distance
 			} else {
 				goal = goalTree.rush;
 			}
@@ -96,7 +97,7 @@
 	// 4. avoid attack (real ninja)
 	// 5. rush in groups (1-5 clones)
 
-	var NUMBER_OF_CLONES_AT_ONCE = 2;
+	var NUMBER_OF_CLONES_AT_ONCE = 4;
 	var MAX_ENTITIES = 36;//72;
 	var SURROUND_DISTANCE = 250;
 	var GOAL_DISTANCE_SQ = 64*64;
@@ -140,7 +141,7 @@
 	proto.scramble = function scramble(entity) {
 		//console.log('scramble');
 		this.targetPos = v(Math.random() * 1000 - 500, Math.random() * 1000 - 500);
-		entity.speed = 8;
+		entity.speed = 6;
 		this.goal.task.complete = true;
 	};
 
@@ -187,6 +188,7 @@
 
 	proto.shuv = function shuv(entity) {
 		//console.log('shuv');
+		entity.speed = 6;
 		this.targetNearestEnemy(entity);
 		this.moveTo(entity);
 	};

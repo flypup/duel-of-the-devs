@@ -7,7 +7,7 @@
 
 	var RADIUS = 32;
 
-	var ShadowClone = ec.ShadowClone = function() {
+	var ShadowClone = ec.ShadowClone = function(entity) {
 		this.assignCircleShape(RADIUS, 1);
 		
 		this.shape.setElasticity(0);
@@ -17,6 +17,8 @@
 
 		// this.input = function(){};
 		// this.speed = 8;
+		
+		this.shape.collision_type = ec.World.MONSTER_TYPE;
 	};
 
 	var proto = ShadowClone.prototype;
