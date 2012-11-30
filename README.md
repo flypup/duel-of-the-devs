@@ -25,7 +25,7 @@ A very rough demo can be played [here](http://flypup.github.com/game-off-2012/).
 
 ### Mobile (Touch Enabled)
 * virtual left stick to move
-* virtual right stick to attack (push/pull)
+* virtual right stick to fight (push/pull)
 * tap upper right corner to pause
 * tap upper left corner to toggle debug
 
