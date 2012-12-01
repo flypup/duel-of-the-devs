@@ -94,6 +94,7 @@
 			var o;
 			var rect;
 
+			context.save();
 			if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
 				o = lionSprite;
@@ -114,6 +115,17 @@
 			} else if (entity instanceof ec.Ninja) {
 				o = spriteSheetFrame(entity, ninjaSheet);
 				if (o) {
+					if (entity.state === 'dead') {
+						context.translate( x-o.regX, y-o.regY-32);
+						context.rotate(Math.PI/2);
+						context.translate( -(x-o.regX), -(y-o.regY-32) );
+						y -= 32;
+					} else if (entity.hitPoints <= 0) {//entity.state === 'hit') {
+						var progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+						context.translate( x-o.regX, y-o.regY+2);
+						context.rotate( (Math.PI/2) * progress);
+						context.translate( -(x-o.regX), -(y-o.regY+2) );
+					}
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
@@ -140,7 +152,7 @@
 					context.fillRect(x-32, y-32, 64, 64);
 				}
 			}
-			
+			context.restore();
 		};
 	};
 
@@ -235,11 +247,39 @@
 			var scale = this.canvas.height / overlay.height;
 			var x = this.canvas.width - overlay.width * scale;
 			var y = this.canvas.height - overlay.height * scale;
+			context.globalAlpha = 1;
 			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
         }
 
 		// restore initial context
 		context.restore();
+	};
+
+	proto.initCredits = function() {
+		var context = this.context;
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		context.fillStyle = '#000';
+		context.globalAlpha = 0.1;
+		this.creditsTime = 0;
+	};
+
+	proto.drawCredits = function(delta) {
+		var context = this.context;
+
+		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		context.globalAlpha = Math.min(1, context.globalAlpha + 0.1);
+
+		this.creditsTime += delta;
+		var scrollPx = Math.floor(this.creditsTime * 24 / 1000) * 4;
+
+		var overlay = ec.core.getOverlay();
+		var scale = this.canvas.height / overlay.height;
+
+		var x = this.canvas.width - overlay.width * scale;
+		//var y = this.canvas.height - overlay.height * scale;
+		var y = Math.max(-258 * scale, this.canvas.height - scrollPx);
+
+		context.drawImage(overlay, x/2, y, overlay.width * scale, overlay.height * scale);
 	};
 
 	proto.pause = function() {

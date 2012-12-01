@@ -15,10 +15,15 @@
 
 		this.setPos(64, 64, 32);
 
+		this.shape.collision_type = ec.World.MONSTER_TYPE;
+
 		// this.input = function(){};
 		// this.speed = 8;
 		
-		this.shape.collision_type = ec.World.MONSTER_TYPE;
+		this.isShadowClone = true;
+		this.master = entity;
+
+		this.prototype = entity;
 	};
 
 	var proto = ShadowClone.prototype;
