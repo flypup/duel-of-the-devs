@@ -2,8 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	//var cp = window.cp;
-	//var v = cp.v;
 
 	var RADIUS = 50;
 
@@ -17,13 +15,11 @@
 
 		this.shape.sensor = true;
 		
-		//this.joint = ec.world.space.addConstraint(new cp.DampedSpring(entity.body, this.body, v(0, 1), v(0,0), 10, 20, 5));
-
 		this.time =
-		this.duration = 1000;
+		this.duration = 500;
 
 		this.master = entity;
-		this.setPos(entity.body.p.x, entity.body.p.y-1, 40);
+		this.setPos(entity.body.p.x, entity.body.p.y-1, 0);
 	};
 
 	var proto = Puff.prototype;
@@ -33,7 +29,6 @@
 		this.time -= delta;
 		if (this.time <= 0) {
 			this.time = 0;
-			//ec.world.space.removeConstraint(this.joint);
 			ec.world.remove(this);
 			delete this.master;
 		} else {

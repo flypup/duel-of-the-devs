@@ -114,10 +114,17 @@
 				}
 
 			} else if (entity instanceof ec.Puff) {
-				context.fillStyle = '#ff8000';
-				context.beginPath();
-				context.arc(x, y, entity.radius, 0, 2*pi, false);
-				context.fill();
+				var animation = ninjaSheet.getAnimation('puff');
+				if (animation) {
+					var frame = animation.frames[0] + Math.floor(4.9 * (entity.duration-entity.time) / entity.duration);
+					o = ninjaSheet.getFrame(frame);
+					if (o) {
+						rect = o.rect;
+						context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					}
+				} else {
+					console.error('no puff');
+				}
 
 			} else if (entity instanceof ec.Player) {
 				o = spriteSheetFrame(entity, monkSheet);

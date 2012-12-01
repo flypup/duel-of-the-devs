@@ -74,11 +74,9 @@
 	};
 
 	proto.step = function(delta) {
-		this.input.poll(this);
-		
 		//this.attackStep(ec.world.time, ec.world);
 		if (this.hitTime > 0) {
-			if (this.isShadowClone && this.hitTime === this.hitDuration) {
+			if (this.isShadowClone && this.hitTime === this.hitDuration && this.hitPoints === 0) {
 				ec.world.add(new ec.Puff(this));
 			}
 			this.hitTime -= delta;
@@ -89,21 +87,25 @@
 					this.state = 'dead';
 					if (this.isShadowClone) {
 						ec.world.remove(this);
-					} else {
-						this.body.vx = 0;
-						this.body.vy = 0;
-						this.body.w *= 0.5;
 					}
 				} else {
 					this.state = 'standing'; //getting up
 				}
 			}
-			return;
+			return this;
+
 		} else if (this.isShadowClone && this.master.hitPoints <= 0) {
 			ec.world.add(new ec.Puff(this));
 			this.hit(null, ec.world, 1);
+
+		} else if (this.state === 'dead') {
+			this.body.vx = 0;
+			this.body.vy = 0;
+			this.body.w *= 0.5;
+			return this;
 		}
 
+		this.input.poll(this);
 		this.body.resetForces();
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
