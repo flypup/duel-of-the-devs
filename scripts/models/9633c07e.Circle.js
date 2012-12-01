@@ -11,7 +11,7 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0.6);
 
-		this.setPos(64, 64, 32);
+		this.setPos(64, 64, 0);
 		
 		this.shape.collision_type = ec.World.PROP_TYPE;
 	};

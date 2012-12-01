@@ -90,29 +90,12 @@
 			//	entity.view.update(entity, scene);
 			// }
 			var x =  entity.body.p.x;
-			var y = -entity.body.p.y;
+			var y = -entity.body.p.y -entity.z;
 			var o;
 			var rect;
 
 			context.save();
-			if (entity instanceof ec.Box) {
-				context.fillStyle = '#888888';
-				o = lionSprite;
-				if (o) {
-					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				} else {
-					lionSprite = ec.SpriteSheets.lion.getFrame(0);
-				}
-
-			} else if (entity instanceof ec.Player) {
-				o = spriteSheetFrame(entity, monkSheet);
-				if (o) {
-					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				}
-
-			} else if (entity instanceof ec.Ninja) {
+			if (entity instanceof ec.Ninja) {
 				o = spriteSheetFrame(entity, ninjaSheet);
 				if (o) {
 					if (entity.state === 'dead') {
@@ -130,11 +113,41 @@
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
+			} else if (entity instanceof ec.Puff) {
+				var animation = ninjaSheet.getAnimation('puff');
+				if (animation) {
+					var frame = animation.frames[0] + Math.floor(4.9 * (entity.duration-entity.time) / entity.duration);
+					o = ninjaSheet.getFrame(frame);
+					if (o) {
+						rect = o.rect;
+						context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					}
+				} else {
+					console.error('no puff');
+				}
+
+			} else if (entity instanceof ec.Player) {
+				o = spriteSheetFrame(entity, monkSheet);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				}
+
 			} else if (entity instanceof ec.EmptyHand) {
 				context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
 				context.beginPath();
 				context.arc(x, y-40, entity.radius, 0, 2*pi, false);
 				context.fill();
+
+			} else if (entity instanceof ec.Box) {
+				context.fillStyle = '#888888';
+				o = lionSprite;
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				} else {
+					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
 
 			} else {
 				if (entity.radius) {
