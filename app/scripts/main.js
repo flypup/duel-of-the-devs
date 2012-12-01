@@ -277,8 +277,8 @@ var ec = ec || {'version': '0.1.162'};
 				if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
 					delete boss.decomposed;
 					ec.core.rollCredits();
+					return;
 				}
-				return;
 			}
 			if (ec.debug < 3) {
 				view.draw(world);
