@@ -19,8 +19,7 @@
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
-
-		this.setPos(0, 0, 32);
+		
 		this.body.a = -1.57;
 
 		this.shape.collision_type = ec.World.PLAYER_TYPE;

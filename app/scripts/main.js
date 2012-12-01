@@ -1,4 +1,4 @@
-var ec = ec || {'version': '0.1.161'};
+var ec = ec || {'version': '0.1.162'};
 
 (function(window) {
 	'use strict';
@@ -54,7 +54,7 @@ var ec = ec || {'version': '0.1.161'};
 
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,ShadowClone,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -95,22 +95,22 @@ var ec = ec || {'version': '0.1.161'};
 
 			ec.player =
 			player =
-			world.add(new ec.Player().setPos(-2, -155, 32).setInput(userInput));//.setView(new ec.ThreeJsSphereView()));
+			world.add(new ec.Player().setPos(-2, -155, 0).setInput(userInput));//.setView(new ec.ThreeJsSphereView()));
 			
 			//statues
-			world.add(new ec.Box(0).setPos(-250, 0, 32));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos( 250, 0, 32));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos(-250, 0, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250, 0, 0));//.setView(new ec.ThreeJsBoxView()));
 		    
 		    //ninja
 		    var bossInput = new ec.EnemyInput();
 		    boss =
-		    world.add(new ec.Ninja().setPos(250, 64, 32).setInput(bossInput));//.setView(new ec.ThreeJsSphereView()));
+		    world.add(new ec.Ninja().setPos(250, 64, 0).setInput(bossInput));//.setView(new ec.ThreeJsSphereView()));
 		    
 		    //movable statues
-		    world.add(new ec.Box(100).setPos(-500, -500, 32));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos(-500,  500, 32));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos( 500, -500, 32));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos( 500,  500, 32));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos(-500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos(-500,  500, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos( 500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(100).setPos( 500,  500, 0));//.setView(new ec.ThreeJsBoxView()));
 
 			ec.resizeDisplay();
 

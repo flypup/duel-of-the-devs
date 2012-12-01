@@ -18,7 +18,6 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.setPos(0, 0, 32);
 		this.body.a = 3;
 
 		this.shape.collision_type = ec.World.MONSTER_TYPE;
@@ -43,14 +42,16 @@
 			return;
 		}
 		// use ShadowClone class and prototype or something cool to inherit stuff
-		var shadowClone = new ec.Ninja().setPos(this.body.p.x, this.body.p.y, 32).setInput(new ec.EnemyInput());
+		var shadowClone = new ec.Ninja().setPos(this.body.p.x, this.body.p.y, 0).setInput(new ec.EnemyInput());
 		shadowClone.isShadowClone = true;
 		shadowClone.master = this;
 		ec.world.add(shadowClone);
+		ec.world.add(new ec.Puff(this));
+		ec.world.add(new ec.Puff(shadowClone));
 	};
 
 	proto.hit = function(arbiter, world, damage) {
-		var energy = arbiter.totalKE();
+		var energy = (arbiter && arbiter.totalKE()) || 1000;
 		//console.log('HIT', this, 'KE', energy);
 		if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
 			this.state = 'hit';
@@ -77,6 +78,9 @@
 		
 		//this.attackStep(ec.world.time, ec.world);
 		if (this.hitTime > 0) {
+			if (this.isShadowClone && this.hitTime === this.hitDuration) {
+				ec.world.add(new ec.Puff(this));
+			}
 			this.hitTime -= delta;
 			//hit animation
 			if (this.hitTime <= 0) {
@@ -84,7 +88,6 @@
 				if (this.hitPoints <= 0) {
 					this.state = 'dead';
 					if (this.isShadowClone) {
-						// TODO: POOF!
 						ec.world.remove(this);
 					} else {
 						this.body.vx = 0;
@@ -97,8 +100,8 @@
 			}
 			return;
 		} else if (this.isShadowClone && this.master.hitPoints <= 0) {
-			// TODO: POOF!
-			ec.world.remove(this);
+			ec.world.add(new ec.Puff(this));
+			this.hit(null, ec.world, 1);
 		}
 
 		this.body.resetForces();
