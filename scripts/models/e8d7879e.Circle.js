@@ -5,8 +5,13 @@
 
 	var RADIUS = 32;
 
-	var Circle = window.ec.Circle = function() {
-		this.assignCircleShape(RADIUS, 1);
+	var Circle = window.ec.Circle = function(mass, radius) {
+		radius = radius || RADIUS;
+		if (mass === undefined) {
+			mass = 1;
+		}
+		
+		this.assignCircleShape(radius, mass);
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0.6);

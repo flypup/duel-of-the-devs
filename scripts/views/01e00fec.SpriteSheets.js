@@ -41,6 +41,16 @@
 				images: ['img/sprite/lion_64.png?v=' + ec.version],
 				frames: [[0,0,80,212,0,40,180]]
 			});
+
+			ec.SpriteSheets.shadow = new window.createjs.SpriteSheet({
+				images: ['img/sprite/shadow_64.png?v=' + ec.version],
+				frames: [[0,0,80,54,0,40,26]]
+			});
+
+			ec.SpriteSheets.cauldron = new window.createjs.SpriteSheet({
+				images: ['img/sprite/cauldron_64.png?v=' + ec.version],
+				frames: [[0,0,256,255,0,128,148]]
+			});
 		}
 	};
 

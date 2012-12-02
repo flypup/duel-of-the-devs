@@ -95,6 +95,7 @@
 			return frameData;
 		};
 		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
+		var cauldronSprite = ec.SpriteSheets.cauldron.getFrame(0);
 
 		return function(entity) {
 			// if (entity.view) {
@@ -152,12 +153,18 @@
 
 			} else if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
-				o = lionSprite;
+				o = lionSprite || ec.SpriteSheets.lion.getFrame(0);
 				if (o) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				} else {
-					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
+
+			} else if (entity instanceof ec.Circle) {
+				context.fillStyle = '#888888';
+				o = cauldronSprite || ec.SpriteSheets.cauldron.getFrame(0);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
 			} else {
@@ -178,6 +185,24 @@
 			}
 			context.restore();
 		};
+	};
+
+	proto.drawShadow = function(entity) {
+		var o = ec.SpriteSheets.shadow.getFrame(0);
+		if (o) {
+			var x =  entity.body.p.x;
+			var y = -entity.body.p.y -entity.z;
+			var rect = o.rect;
+				
+			var context = this.context;
+			context.save();
+
+			if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
+				context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+			}
+			context.restore();
+		}
+
 	};
 
 	proto.lookAt = function(x, y) {
@@ -238,6 +263,7 @@
 		var i = 0;
 		var len = entities.length;
 		while (i < len) {
+			this.drawShadow(entities[i]);
 			this.drawEntities(entities[i]);
 			i++;
 		}

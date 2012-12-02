@@ -73,7 +73,9 @@
 		}
 		goal.met = false;
 		goal.task = null;
-		//console.log('Enemy goal: ', goal.name);
+		if (ec.debug && !entity.isShadowClone) {
+			console.log('Enemy goal: ', goal.name);
+		}
 		return goal;
 	};
 
@@ -87,7 +89,9 @@
 		task = goal.tasks[i];
 		task.complete = false;
 		goal.task = task;
-		//console.log('Enemy task: ', i);
+		if (ec.debug && !entity.isShadowClone) {
+			console.log('Enemy task: ', i);
+		}
 		return task;
 	};
 
@@ -100,7 +104,7 @@
 	// 4. avoid attack (real ninja)
 	// 5. rush in groups (1-5 clones)
 
-	var NUMBER_OF_CLONES_AT_ONCE = 4;
+	var NUMBER_OF_CLONES_AT_ONCE = 7;
 	var MAX_ENTITIES = 36;//72;
 	var SURROUND_DISTANCE = 250;
 	var GOAL_DISTANCE_SQ = 64*64;
@@ -164,6 +168,10 @@
 			this.goal.task.complete = true;
 			this.targetPos = null;
 			this.setAxes1(0, 0);
+			//main ninja idles less after moving
+			if (!entity.isShadowClone) {
+				this.idleTick = 220;
+			}
 			return;
 		}
 		direction = v.mult(direction, 1/v.len(direction));
@@ -238,7 +246,7 @@
 	proto.idle = function idle(entity) {
 		this.idleTick = this.idleTick || 0;
 		this.idleTick++;
-		if (this.idleTick > 120 + 120 * Math.random()) {
+		if (this.idleTick > 40 + 200 * Math.random()) {
 			this.idleTick = 0;
 			this.goal.task.complete = true;
 		}
