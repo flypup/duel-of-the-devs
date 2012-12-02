@@ -54,6 +54,7 @@
 			var radians = a + pi/6;
 			var animation;
 			var animationFrame;
+			var progress;
 			if (a === 0) {
 				radians -= 0.1;
 			}
@@ -78,13 +79,40 @@
 			} else if (entity.state === 'punching') {
 				animation = spriteSheet.getAnimation('punch_'+ frame);
 				if (animation) {
-					var progress = entity.attack.time / entity.attack.pushDuration;
+					progress = entity.attack.time / entity.attack.pushDuration;
 					animationFrame = Math.min(3, Math.floor(progress * 3));
 					frame = animation.frames[0] + animationFrame;
 				} else {
 					console.error('no walk_'+ frame);
 				}
+			} else if (entity.state === 'hit' || entity.state === 'dead') {//entity.hitPoints <= 0) {//entity.state === 'hit') {
+				animation = spriteSheet.getAnimation('fall');
+				if (animation) {
+					if (entity.state === 'dead') {
+						animationFrame = 3;
+					} else {
+						if (entity.isShadowClone) {
+							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+							animationFrame = Math.min(3, Math.floor(progress * 2));
+						} else {
+							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+							if (progress < 0.33) {
+								animationFrame = -1;
+							} else {
+								progress = (progress - 0.33) * 3 /2;
+								animationFrame = Math.min(3, Math.floor(progress * 3));
+							}
+						}
+						// context.translate( x-o.regX, y-o.regY+2);
+					    // context.rotate( (Math.PI/2) * progress);
+					   // context.translate( -(x-o.regX), -(y-o.regY+2) );
+					}
+					frame = (animationFrame === -1) ? frame : animation.frames[0] + animationFrame;
+				} else {
+					console.error('no fall');
+				}
 			}
+
 			var frameData = spriteSheet.getFrame(frame);
 			if (frameData === null) {
 				if (spriteSheet.complete) {
@@ -95,6 +123,7 @@
 			return frameData;
 		};
 		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
+		var cauldronSprite = ec.SpriteSheets.cauldron.getFrame(0);
 
 		return function(entity) {
 			// if (entity.view) {
@@ -109,17 +138,6 @@
 			if (entity instanceof ec.Ninja) {
 				o = spriteSheetFrame(entity, ninjaSheet);
 				if (o) {
-					if (entity.state === 'dead') {
-						context.translate( x-o.regX, y-o.regY-32);
-						context.rotate(Math.PI/2);
-						context.translate( -(x-o.regX), -(y-o.regY-32) );
-						y -= 32;
-					} else if (entity.hitPoints <= 0) {//entity.state === 'hit') {
-						var progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
-						context.translate( x-o.regX, y-o.regY+2);
-						context.rotate( (Math.PI/2) * progress);
-						context.translate( -(x-o.regX), -(y-o.regY+2) );
-					}
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
@@ -152,12 +170,18 @@
 
 			} else if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
-				o = lionSprite;
+				o = lionSprite || ec.SpriteSheets.lion.getFrame(0);
 				if (o) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				} else {
-					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
+
+			} else if (entity instanceof ec.Circle) {
+				context.fillStyle = '#888888';
+				o = cauldronSprite || ec.SpriteSheets.cauldron.getFrame(0);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
 			} else {
