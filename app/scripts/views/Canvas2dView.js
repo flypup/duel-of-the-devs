@@ -180,6 +180,24 @@
 		};
 	};
 
+	proto.drawShadow = function(entity) {
+		var o = ec.SpriteSheets.shadow.getFrame(0);
+		if (o) {
+			var x =  entity.body.p.x;
+			var y = -entity.body.p.y -entity.z;
+			var rect = o.rect;
+				
+			var context = this.context;
+			context.save();
+
+			if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
+				context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+			}
+			context.restore();
+		}
+
+	};
+
 	proto.lookAt = function(x, y) {
 		this.x = -this.canvas.width/this.scaleX/2 + x;
 		this.y = -this.canvas.height/this.scaleY/2 + y - 64;
@@ -238,6 +256,7 @@
 		var i = 0;
 		var len = entities.length;
 		while (i < len) {
+			this.drawShadow(entities[i]);
 			this.drawEntities(entities[i]);
 			i++;
 		}
