@@ -1,8 +1,14 @@
 # init (undefined, #undefined)
+TypeError: 'undefined' is not an object (evaluating 'this.sources.game')
+
+  http://localhost:3501/scripts/a9b828de.scripts.js:1
+  http://localhost:3501/scripts/a9b828de.scripts.js:1
+  http://localhost:3501/scripts/a9b828de.scripts.js:1
+  http://localhost:3501/scripts/482d6bab.libs.js:1
 # loaded 64 64 (undefined, #undefined)
 CACHE MANIFEST
 
-# Time: Sat Dec 01 2012 23:08:13 GMT-0500 (EST)
+# Time: Sun Dec 02 2012 00:22:37 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -24,8 +30,8 @@ CACHE MANIFEST
 
 CACHE:
 scripts/482d6bab.libs.js
-scripts/4e3f6715.scripts.js
 scripts/822cf796.utils.js
+scripts/a9b828de.scripts.js
 styles/4d0ce6f1.main.css
 
 NETWORK:

@@ -91,13 +91,23 @@
 					if (entity.state === 'dead') {
 						animationFrame = 3;
 					} else {
-						progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
-						animationFrame = Math.min(3, Math.floor(progress * 2));
+						if (entity.isShadowClone) {
+							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+							animationFrame = Math.min(3, Math.floor(progress * 2));
+						} else {
+							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+							if (progress < 0.33) {
+								animationFrame = -1;
+							} else {
+								progress = (progress - 0.33) * 3 /2;
+								animationFrame = Math.min(3, Math.floor(progress * 3));
+							}
+						}
 						// context.translate( x-o.regX, y-o.regY+2);
 					    // context.rotate( (Math.PI/2) * progress);
 					   // context.translate( -(x-o.regX), -(y-o.regY+2) );
 					}
-					frame = animation.frames[0] + animationFrame;
+					frame = (animationFrame === -1) ? frame : animation.frames[0] + animationFrame;
 				} else {
 					console.error('no fall');
 				}
