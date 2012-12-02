@@ -23,6 +23,9 @@ var ec = ec || {'version': '0.1.164'};
         },
         standalone:function(){
             return !!navigator.standalone;
+        },
+        webaudio:function(){
+            return !!(window.webkitAudioContext || window.AudioContext);
         }
     });
 
@@ -33,6 +36,7 @@ var ec = ec || {'version': '0.1.164'};
 	ec.ipad = Modernizr.ipad;
 	ec.android = Modernizr.android;
 	ec.fullscreen = Modernizr.fullscreen;
+	ec.webaudio = Modernizr.webaudio;
 	ec.gamepads = Modernizr.gamepads;
 	ec.debug = 0;//ec.mobile ? 1 : 2;
 	
@@ -52,9 +56,11 @@ var ec = ec || {'version': '0.1.164'};
 
 	var rafId;
 
+	var sound;
+
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -75,7 +81,10 @@ var ec = ec || {'version': '0.1.164'};
 				requestAnimationFrame( core.load );
 				return;
 			}
+
 			// TODO: preload sprite sheets
+
+			sound = new ec.Sound();
 
 			console.log('init');
 			core.init(time);
@@ -178,6 +187,8 @@ var ec = ec || {'version': '0.1.164'};
 				// view.debugGui(debugView);
 			}
 
+			sound.stop();
+
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
 
@@ -194,6 +205,7 @@ var ec = ec || {'version': '0.1.164'};
 				}
 			}
 			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
+			sound.playGameMusic();
 		},
 
 		userReady: function() {
@@ -226,6 +238,8 @@ var ec = ec || {'version': '0.1.164'};
 			rafId = requestAnimationFrame( core.animateCredits );
 			view.initCredits();
 			world.term();
+
+			sound.playEndingMusic();
 		},
 
 		restart: function(e) {
