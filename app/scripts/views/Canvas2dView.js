@@ -95,6 +95,7 @@
 			return frameData;
 		};
 		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
+		var cauldronSprite = ec.SpriteSheets.cauldron.getFrame(0);
 
 		return function(entity) {
 			// if (entity.view) {
@@ -152,12 +153,18 @@
 
 			} else if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
-				o = lionSprite;
+				o = lionSprite || ec.SpriteSheets.lion.getFrame(0);
 				if (o) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				} else {
-					lionSprite = ec.SpriteSheets.lion.getFrame(0);
+				}
+
+			} else if (entity instanceof ec.Circle) {
+				context.fillStyle = '#888888';
+				o = cauldronSprite || ec.SpriteSheets.cauldron.getFrame(0);
+				if (o) {
+					rect = o.rect;
+					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 
 			} else {

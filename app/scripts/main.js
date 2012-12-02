@@ -97,21 +97,25 @@ var ec = ec || {'version': '0.1.164'};
 			player =
 			world.add(new ec.Player().setPos(-2, -155, 0).setInput(userInput));//.setView(new ec.ThreeJsSphereView()));
 			
+			//cauldron
+			world.add(new ec.Circle(0, 96).setPos(-384, -208, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Circle(0, 96).setPos( 384, -208, 0));//.setView(new ec.ThreeJsBoxView()));
+
 			//statues
-			world.add(new ec.Box(0).setPos(-250, 0, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos( 250, 0, 0));//.setView(new ec.ThreeJsBoxView()));
-		    
+			world.add(new ec.Box(0).setPos(-250,    0, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250,    0, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos(-250,  250, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250,  250, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(0).setPos(-250,  500, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos( 250,  500, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(0).setPos(-500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
+		    world.add(new ec.Box(0).setPos( 500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
+		   
 		    //ninja
 		    var bossInput = new ec.EnemyInput();
 		    boss =
 		    world.add(new ec.Ninja().setPos(250, 64, 0).setInput(bossInput));//.setView(new ec.ThreeJsSphereView()));
 		    
-		    //movable statues
-		    world.add(new ec.Box(100).setPos(-500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos(-500,  500, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos( 500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(100).setPos( 500,  500, 0));//.setView(new ec.ThreeJsBoxView()));
-
 			ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
