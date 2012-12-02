@@ -52,6 +52,8 @@
 			var a = entity.body.a;
 			var degrees = 6;
 			var radians = a + pi/6;
+			var animation;
+			var animationFrame;
 			if (a === 0) {
 				radians -= 0.1;
 			}
@@ -66,10 +68,19 @@
 				var velocity = Math.sqrt(entity.body.vx * entity.body.vx + entity.body.vy * entity.body.vy);
 				//console.log(velocity);
 				entity.walkCount += Math.max(0.15, velocity/2500);
-				var walkStep = Math.floor(entity.walkCount) % 4;
-				var animation = spriteSheet.getAnimation('walk_'+ frame);
+				animation = spriteSheet.getAnimation('walk_'+ frame);
 				if (animation) {
-					frame = animation.frames[0] + walkStep;
+					animationFrame = Math.floor(entity.walkCount) % 4;
+					frame = animation.frames[0] + animationFrame;
+				} else {
+					console.error('no walk_'+ frame);
+				}
+			} else if (entity.state === 'punching') {
+				animation = spriteSheet.getAnimation('punch_'+ frame);
+				if (animation) {
+					var progress = entity.attack.time / entity.attack.pushDuration;
+					animationFrame = Math.min(3, Math.floor(progress * 3));
+					frame = animation.frames[0] + animationFrame;
 				} else {
 					console.error('no walk_'+ frame);
 				}
@@ -134,10 +145,10 @@
 				}
 
 			} else if (entity instanceof ec.EmptyHand) {
-				context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
-				context.beginPath();
-				context.arc(x, y-40, entity.radius, 0, 2*pi, false);
-				context.fill();
+				// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
+				// context.beginPath();
+				// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
+				// context.fill();
 
 			} else if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';

@@ -19,7 +19,12 @@
 		this.setPos(64, 64, 64);
 
 		this.time = 0;
+		this.startTime = -1;
 		this.phase = EmptyHand.PASSIVE;
+
+		this.pushDuration = 1000 * 5/60;
+		this.grabDuration = 1000 * 10/60;
+		this.punchDuration = this.pushDuration + this.grabDuration/2;
 	};
 
 	EmptyHand.PASSIVE = 0;
@@ -30,16 +35,12 @@
 	var proto = EmptyHand.prototype;
 	ec.extend(proto, ec.Entity.prototype);
 
-	var pushDuration = 1000 * 5/60;
-	var grabDuration = 1000 * 10/60;
-	var punchDuration = pushDuration + grabDuration/2;
-
 	proto.entityStep = function(time, world, entity) {
 		if (this.phase) {
-			var punchTime = time - this.time;
+			this.time = time - this.startTime;
 
 			if (this.phase === ec.EmptyHand.PUSHING) {
-				if (punchTime < punchDuration) {
+				if (this.time < this.punchDuration) {
 					//punching
 					// TODO: check for early hit - GRAB/PUSH
 
@@ -48,7 +49,7 @@
 					entity.attackEnd(time, world);
 					//console.log('punch ended passively');
 
-				} else if (punchTime > pushDuration) {
+				} else if (this.time > this.pushDuration) {
 					this.phase = ec.EmptyHand.GRABBING;
 					//console.log('grabbing');
 				}
@@ -62,7 +63,7 @@
 					entity.attackEnd(time, world);
 					//console.log('grab ended passively');
 
-				} else if (punchTime > pushDuration + grabDuration) {
+				} else if (this.time > this.pushDuration + this.grabDuration) {
 					// TODO: did we grab anyone?
 					var grabbedTarget = false;
 					if (!grabbedTarget) {

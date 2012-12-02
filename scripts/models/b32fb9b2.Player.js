@@ -51,10 +51,12 @@
 			//console.log('punch in progress', attack.time, 'now', time, 'dur', punchDuration);
 			return;
 		}
+		// restart attack
 		if (world.contains(attack)) {
 			world.remove(attack);
 		}
-		attack.time = time;
+		attack.time = 0;
+		attack.startTime = time;
 		attack.phase = ec.EmptyHand.PUSHING;
 		attack.setPos(this.body.p.x, this.body.p.y, this.z);
 
@@ -86,6 +88,7 @@
 	proto.attackEnd = function(time, world) {
 		var attack = this.attack;
 		attack.time = 0;
+		attack.startTime = -1;
 		attack.phase = ec.EmptyHand.PASSIVE;
 		if (world.contains(attack)) {
 			world.remove(attack);
@@ -142,6 +145,7 @@
 
 			} else {
 				this.state = 'standing';
+				this.walkCount = 0;
 				this.body.vx = 0;
 				this.body.vy = 0;
 				this.body.w *= 0.99;
@@ -169,6 +173,8 @@
 			//}
 
 			this.punch(ec.world.time, ec.world, delta);
+			this.state = 'punching';
+
 		} else {
 			pushpull.x = 0;
 			pushpull.y = 0;
