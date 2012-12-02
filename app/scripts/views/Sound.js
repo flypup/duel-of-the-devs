@@ -23,7 +23,7 @@
 
 	proto.playGameMusic = function() {
 		if (this.context) {
-			this.playSound('audio/game.ogg', 'game');
+			this.playSound('audio/game.ogg?v='+ec.version, 'game');
 
 			if (this.sources.ending) {
 				this.sources.ending.disconnect(0);
@@ -33,7 +33,7 @@
 
 	proto.playEndingMusic = function() {
 		if (this.context) {
-			this.playSound('audio/ending.ogg', 'ending');
+			this.playSound('audio/ending.ogg?v='+ec.version, 'ending');
 
 			if (this.sources.game) {
 				this.sources.game.disconnect(0);
@@ -46,7 +46,7 @@
 		if (buffer) {
 			var source = this.sources[name] = this.context.createBufferSource();
 			source.buffer = buffer;
-			
+
 			// FIXME: hackalicious
 			source.loop = (name === 'game');
 
