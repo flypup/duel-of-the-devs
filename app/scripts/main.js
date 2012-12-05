@@ -32,7 +32,7 @@ var ec = ec || {
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
 	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
-	var globalRequired = ('cp,THREE,createjs,Stats,dat').split(',');
+	var globalRequired = ('cp,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
 	var hasProperties = function(obj, props) {
