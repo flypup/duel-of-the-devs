@@ -45,10 +45,13 @@
         <meta name="apple-mobile-web-app-title" content="Duel to the Devs">
 
         <link rel="stylesheet" href="styles/main.css"/>
-
-        <!-- build:js scripts/utils.js -->
-        <script src="scripts/vendor/modernizr.min.js"></script>
-        <!-- endbuild -->
+        <script>
+            // Modernizr stand-in
+            (function( window, document, undefined ) {
+                var docElement = document.documentElement;
+                docElement.className = docElement.className.replace(/(^|\s)no-js(\s|$)/, '$1js$2');
+            })(this, this.document);
+        </script>
     </head>
     <body>
 
@@ -58,18 +61,14 @@
 
         <!-- Add your site or application content here -->
 
-        <!-- build:js scripts/libs.js -->
+        <!-- build:js scripts/scripts.js -->
         <script src="components/Chipmunk-js/cp.js"></script>
-        <script src="components/threejs/build/three.js"></script>
         <script src="components/CreateJS/EaselJS/src/easeljs/display/SpriteSheet.js"></script>
         <script src="components/CreateJS/EaselJS/src/easeljs/geom/Rectangle.js"></script>
         <script src="components/stats.js/build/stats.min.js"></script>
         <script src="components/dat-gui/build/dat.gui.js"></script>
-        <!-- endbuild -->
-
-        <!-- build:js scripts/scripts.js -->
+        
         <script src="scripts/main.js"></script>
-        <script src="scripts/utils.js"></script>
         <script src="scripts/events.js"></script>
         <script src="scripts/display.js"></script>
         

@@ -1,43 +1,14 @@
-var ec = ec || {'version': '0.1.196'};
+var ec = ec || {
+	version: '0.1.196',
+	debug: 0 //ec.mobile ? 1 : 2;
+};
 
 (function(window) {
 	'use strict';
 
 	window.ec = ec;
 	var document = window.document;
-	var Modernizr =  window.Modernizr;
-
-	Modernizr.addTest({
-        mobile: function(){
-            // TODO: add Windows Mobile, FireFoxOS - Anything with multi-touch, no mouse and fixed screen size
-            return (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
-        },
-        ios: function(){
-            return (/iPhone|iPad|iPod/).test(navigator.userAgent);
-        },
-        ipad: function(){
-            return (/iPad/).test(navigator.userAgent);
-        },
-        android: function(){
-            return (/Android/).test(navigator.userAgent);
-        },
-        standalone:function(){
-            return !!navigator.standalone;
-        },
-        webaudio:function(){
-            return !!(window.webkitAudioContext || window.AudioContext);
-        }
-    });
-
-	ec.webgl = Modernizr.webgl;
-	ec.touch = Modernizr.touch;
-	ec.mobile = Modernizr.mobile;
-	ec.ios = Modernizr.ios;
-	ec.ipad = Modernizr.ipad;
-	ec.android = Modernizr.android;
-	ec.fullscreen = Modernizr.fullscreen;
-	ec.webaudio = Modernizr.webaudio;
-	ec.gamepads = Modernizr.gamepads;
+	
 	ec.debug = 0;//ec.mobile ? 1 : 2;
 	
 	var world;
@@ -104,26 +75,26 @@ var ec = ec || {'version': '0.1.196'};
 
 			ec.player =
 			player =
-			world.add(new ec.Player().setPos(-2, -155, 0).setInput(userInput));//.setView(new ec.ThreeJsSphereView()));
+			world.add(new ec.Player().setPos(-2, -155, 0).setInput(userInput));
 			
 			//cauldron
-			world.add(new ec.Circle(0, 96).setPos(-384, -208, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Circle(0, 96).setPos( 384, -208, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Circle(0, 96).setPos(-384, -208, 0));
+			world.add(new ec.Circle(0, 96).setPos( 384, -208, 0));
 
 			//statues
-			world.add(new ec.Box(0).setPos(-250,    0, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos( 250,    0, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos(-250,  250, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos( 250,  250, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(0).setPos(-250,  500, 0));//.setView(new ec.ThreeJsBoxView()));
-			world.add(new ec.Box(0).setPos( 250,  500, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(0).setPos(-500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
-		    world.add(new ec.Box(0).setPos( 500, -500, 0));//.setView(new ec.ThreeJsBoxView()));
+			world.add(new ec.Box(0).setPos(-250,    0, 0));
+			world.add(new ec.Box(0).setPos( 250,    0, 0));
+			world.add(new ec.Box(0).setPos(-250,  250, 0));
+			world.add(new ec.Box(0).setPos( 250,  250, 0));
+		    world.add(new ec.Box(0).setPos(-250,  500, 0));
+			world.add(new ec.Box(0).setPos( 250,  500, 0));
+		    world.add(new ec.Box(0).setPos(-500, -500, 0));
+		    world.add(new ec.Box(0).setPos( 500, -500, 0));
 		   
 		    //ninja
 		    var bossInput = new ec.EnemyInput();
 		    boss =
-		    world.add(new ec.Ninja().setPos(250, 64, 0).setInput(bossInput));//.setView(new ec.ThreeJsSphereView()));
+		    world.add(new ec.Ninja().setPos(250, 64, 0).setInput(bossInput));
 		    
 			ec.resizeDisplay();
 
@@ -428,6 +399,24 @@ var ec = ec || {'version': '0.1.196'};
 		};
 	};
 
+	// tests
+
+	var prefixed = function(str, obj) {
+		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
+	};
+
+	ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
+	ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
+	ec.ios = (/iPhone|iPad|iPod/).test(navigator.userAgent);
+	ec.ipad = (/iPad/).test(navigator.userAgent);
+	ec.android = (/Android/).test(navigator.userAgent);
+	ec.standalone = !!navigator.standalone;
+	ec.webgl = !!window.WebGLRenderingContext;
+	ec.fullscreen = !!prefixed('cancelFullScreen', document);
+	ec.webaudio   = !!prefixed('AudioContext', window);
+	ec.gamepads   = !!prefixed('getGamepads', navigator);
+
+
 	// polyfills
 
 	if (!Date.now) {
@@ -438,9 +427,8 @@ var ec = ec || {'version': '0.1.196'};
 
 	// requestAnimationFrame polyfill by Erik Möller
 	// fixes from Paul Irish and Tino Zijdel
-	// vendor prefix checks using Modernizr
-	var requestAnimationFrame = window.requestAnimationFrame || Modernizr.prefixed('RequestAnimationFrame', window);
-	var cancelAnimationFrame = window.cancelAnimationFrame || Modernizr.prefixed('CancelAnimationFrame', window) || Modernizr.prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
+	var requestAnimationFrame = window.requestAnimationFrame || prefixed('RequestAnimationFrame', window);
+	var cancelAnimationFrame = window.cancelAnimationFrame || prefixed('CancelAnimationFrame', window) || prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
 	if (!requestAnimationFrame) {
 		var lastTime = 0;
 		requestAnimationFrame = function ( callback, element ) {
@@ -450,6 +438,7 @@ var ec = ec || {'version': '0.1.196'};
 			return id;
 		};
 	}
+
 
 	//window.onReady(core.init);
 	requestAnimationFrame( core.load );
