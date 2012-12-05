@@ -161,9 +161,9 @@ var ec = ec || {
 				// view.debugGui(debugView);
 			}
 
-			sound.stop();
-
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
+
+			sound.stop();
 		},
 
 		start: function(e) {
@@ -180,6 +180,7 @@ var ec = ec || {
 					ec.core.trackEvent('game', 'guide', 'guide-touch');
 				}
 			}
+			
 			sound.playGameMusic();
 		},
 
@@ -210,15 +211,15 @@ var ec = ec || {
 			view.removeAll();
 			view.add(creditsView);
 
-			world.term();
-
-			sound.playEndingMusic();
-
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.restart, false);
 			} else {
 				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.restart, false);
 			}
+
+			world.term();
+
+			sound.playEndingMusic();
 		},
 
 		restart: function(e) {
