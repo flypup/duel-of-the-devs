@@ -56,11 +56,45 @@
 		return null;
 	};
 	
-	proto.draw = function(context, width, height) {
+	proto.draw = function(context, delta) {
+		// TODO: Canvas2dOverlayView ------------
+		context.save();
+		
+		var overlay;
 		for (var i=0, len=this.overlays.length; i<len; i++) {
-			var overlay = this.overlays[i];
-			overlay.draw(context, width, height);
+			overlay = this.overlays[i];
+			overlay.draw(this.width, this.height);
 		}
+
+		if (ec.core.paused()) {
+			context.fillStyle = '#000000';
+			context.globalAlpha = 0.33;
+			context.fillRect(0, 0, this.width, this.height);
+			context.fillStyle = '#ffffff';
+			context.globalAlpha = 0.8;
+			context.beginPath();
+			context.moveTo(this.width -15, 35);
+			context.lineTo(this.width -50, 15);
+			context.lineTo(this.width -50, 55);
+			context.fill();
+
+        } else if (ec.touch) {
+			context.fillStyle = '#ffffff';
+			context.globalAlpha = 0.8;
+			context.fillRect(this.width-43, 15, 10, 40);
+			context.fillRect(this.width-25, 15, 10, 40);
+        }
+        
+        overlay = ec.core.getOverlay();
+        if (overlay) {
+			var scale = this.height / overlay.height;
+			var x = this.width - overlay.width * scale;
+			var y = this.height - overlay.height * scale;
+			context.globalAlpha = 1;
+			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
+        }
+
+        context.restore();
 	};
 
 	proto.resize = function(width, height) {

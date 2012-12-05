@@ -1,6 +1,6 @@
 var ec = ec || {
-	version: '0.1.196',
-	debug: 0 //ec.mobile ? 1 : 2;
+	version: '0.1.200',
+	debug: 0
 };
 
 (function(window) {
@@ -13,6 +13,8 @@ var ec = ec || {
 	
 	var world;
 	var view;
+	var worldView;
+	var creditsView;
 	var debugView;
 	var cpDebugView;
 	
@@ -31,7 +33,7 @@ var ec = ec || {
 
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,createjs,Stats,dat').split(',');
 	//'SpriteSheet,Rectangle'
 
@@ -98,6 +100,7 @@ var ec = ec || {
 		    
 			ec.resizeDisplay();
 
+
 			ec.SpriteSheets.init();
 
 			// THREE.js View
@@ -108,10 +111,11 @@ var ec = ec || {
 		    // view.pause = view.resume = view.draw = function(){};
 
 		    // Canvas 2d Context View
-		    view = new ec.Canvas2dView();
-
-			// ec.view = view;
-			// ec.world = world;
+		    view = view || new ec.Canvas2dView();
+		    view.removeAll();
+		    worldView = new ec.Canvas2dWorldView(world);
+		    view.add(worldView);
+		    view.add(userInput);
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -119,7 +123,6 @@ var ec = ec || {
 				ec.core.setDebugLevel(ec.debug);
 			}
 
-		    view.setInput(userInput);
 		    ec.addBrowserListeners(userInput);
 
 		    if (ec.touch) {
@@ -145,7 +148,7 @@ var ec = ec || {
 			overlay = new Image();
 			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
 
-			view.lookAt(player.body.p.x, -player.body.p.y);
+			worldView.lookAt(player.body.p.x, -player.body.p.y);
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
 			} else {
@@ -164,6 +167,8 @@ var ec = ec || {
 		},
 
 		start: function(e) {
+			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
+
 			overlay = null;
 			if (ec.playerInteractions < 1) {
 				overlay = new Image();
@@ -175,7 +180,6 @@ var ec = ec || {
 					ec.core.trackEvent('game', 'guide', 'guide-touch');
 				}
 			}
-			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
 			sound.playGameMusic();
 		},
 
@@ -196,30 +200,38 @@ var ec = ec || {
 
 		rollCredits: function() {
 			ec.playerInteractions = 36;
-			overlay = new Image();
-			overlay.src = 'img/ui/credits.png?v=' + ec.version;
 			ec.core.trackEvent('game', 'credits', ec.version);
+
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame( core.animateCredits );
+
+			creditsView = creditsView || new ec.Canvas2dCreditsView();
+			creditsView.init(view.context);
+			view.removeAll();
+			view.add(creditsView);
+
+			world.term();
+
+			sound.playEndingMusic();
 
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.restart, false);
 			} else {
 				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.restart, false);
 			}
-			cancelAnimationFrame(rafId);
-			rafId = requestAnimationFrame( core.animateCredits );
-			view.initCredits();
-			world.term();
-
-			sound.playEndingMusic();
 		},
 
 		restart: function(e) {
+			if (creditsView.creditsTime < creditsView.skipAfter) {
+				return;
+			}
+			ec.unbind(ec.core.getViewDom(), e.type, ec.core.restart, false);
+
+			view.remove(creditsView);
 			overlay = null;
 
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.init );
-
-			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
 		},
 
 		animateCredits: function(time) {
@@ -232,7 +244,10 @@ var ec = ec || {
 			delta = (time - deltaTime);
 			deltaTime = time;
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
-			view.drawCredits(delta);
+
+			if (ec.debug < 3) {
+				view.draw(delta);
+			}
 
 			if (ec.debug > 0) {
 				debugView.stats.end();
@@ -258,7 +273,7 @@ var ec = ec || {
 					world.step(TIME_STEP);
 				}
 
-				view.lookAt(player.body.p.x, -player.body.p.y);
+				worldView.lookAt(player.body.p.x, -player.body.p.y);
 			}
 			if (boss.state === 'dead') {
 				boss.decomposed = boss.decomposed || 0;
@@ -270,7 +285,7 @@ var ec = ec || {
 				}
 			}
 			if (ec.debug < 3) {
-				view.draw(world);
+				view.draw(delta);
 			}
 
 		    if (ec.debug > 0) {
@@ -321,7 +336,7 @@ var ec = ec || {
 
 		resize: function() {
 			if (ec.resizeDisplay()) {
-				view.resize();
+				view.resize(ec.width, ec.height);
 				cpDebugView.resize();
 			}
 		},
