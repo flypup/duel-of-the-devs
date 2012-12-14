@@ -5,7 +5,7 @@
 
 	var RADIUS = 32;
 
-	var Circle = window.ec.Circle = function(mass, radius) {
+	var Circle = ec.Circle = function(mass, radius) {
 		radius = radius || RADIUS;
 		if (mass === undefined) {
 			mass = 1;

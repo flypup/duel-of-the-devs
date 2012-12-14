@@ -1,10 +1,11 @@
 (function(window) {
 	'use strict';
 
+	var ec = window.ec;
 	var cp = window.cp;
 	var v = cp.v;
 
-	var Entity = window.ec.Entity = function Entity() {
+	var Entity = ec.Entity = function Entity() {
 		console.log('new Entity', this);
 	};
 

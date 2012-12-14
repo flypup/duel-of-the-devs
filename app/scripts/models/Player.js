@@ -12,7 +12,7 @@
 
 	ec.playerInteractions = 0;
 	
-	var Player = window.ec.Player = function() {
+	var Player = ec.Player = function() {
 		this.groupId = ec.Entity.groupId++;
 
 		this.assignCircleShape(RADIUS, 1);

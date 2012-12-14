@@ -3,8 +3,7 @@
 
 	var ec = window.ec;
 	var cp = window.cp;
-	var v = cp.v;
-
+	
 	var EmptyHand = ec.EmptyHand = function(radius, mass) {
 		radius = radius || 24;
 		mass = mass || 1;

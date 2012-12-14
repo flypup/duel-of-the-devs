@@ -1,9 +1,10 @@
 (function(window) {
 	'use strict';
 	
+	var ec = window.ec;
 	var THREE = window.THREE;
 
-	var ThreeJsBoxView = window.ec.ThreeJsBoxView = function() {
+	var ThreeJsBoxView = ec.ThreeJsBoxView = function() {
 		this.update = this.createMesh;
 	};
 

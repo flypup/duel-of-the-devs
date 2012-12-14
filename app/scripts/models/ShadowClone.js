@@ -3,8 +3,8 @@
 
 	var ec = window.ec;
 	var cp = window.cp;
-	var v = cp.v;
 
+	
 	var RADIUS = 32;
 
 	var ShadowClone = ec.ShadowClone = function(entity) {

@@ -22,6 +22,9 @@
     "globals": {
         "ec": true,
         "cp": true,
+        "THREE": true,
+        "Stats": true,
+        "dat": false,
         "jQuery": false,
         "exports": false,
         "module": false

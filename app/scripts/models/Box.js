@@ -6,7 +6,7 @@
 	var BOX_WIDTH = 64;
 	var BOX_HEIGHT = 64;
 
-	var Box = window.ec.Box = function(mass, width, height) {
+	var Box = ec.Box = function(mass, width, height) {
 		width  = width  || BOX_WIDTH;
 		height = height || BOX_HEIGHT;
 		if (mass === undefined) {
