@@ -18,5 +18,12 @@
     "unused": true,
     "strict": true,
     "trailing": true,
-    "smarttabs": true
+    "smarttabs": true,
+    "globals": {
+        "ec": true,
+        "cp": true,
+        "jQuery": false,
+        "exports": false,
+        "module": false
+      }
 }
