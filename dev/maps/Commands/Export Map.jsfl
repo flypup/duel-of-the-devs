@@ -209,6 +209,8 @@ var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
 var exportDir = dirUri +'/'+ fileName;
 
 var data = {};
+data.name = fileName;
+data.path = "data/"+ fileName;
 data.layers = [];
 
 // fl.getDocumentDOM().getTimeline().layers

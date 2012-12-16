@@ -86,11 +86,11 @@
 		return true;
 	};
 
-	proto.addWalls = function() {
-		this.addBox(v( 0, -WORLD_BOUNDS -64), WORLD_BOUNDS*2 + 256, 128);
-		this.addBox(v( 0,  WORLD_BOUNDS +64), WORLD_BOUNDS*2 + 256, 128);
-		this.addBox(v( WORLD_BOUNDS +64,  0 ), 128, WORLD_BOUNDS*2 + 256);
-		this.addBox(v(-WORLD_BOUNDS -64,  0 ), 128, WORLD_BOUNDS*2 + 256);
+	proto.addWalls = function(left, top, right, bottom) {
+		this.addBox(v( 0, top    -64), right*2 + 256, 128);
+		this.addBox(v( 0, bottom +64), right*2 + 256, 128);
+		this.addBox(v(right +64,  0 ), 128, bottom*2 + 256);
+		this.addBox(v(left  -64,  0 ), 128, bottom*2 + 256);
 	};
 
 	proto.addBox = function(v1, w, h) {

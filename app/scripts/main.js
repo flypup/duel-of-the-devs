@@ -12,6 +12,7 @@ var ec = ec || {
 	ec.debug = 0;//ec.mobile ? 1 : 2;
 	
 	var world;
+	var maps;
 	var view;
 	var worldView;
 	var creditsView;
@@ -73,7 +74,6 @@ var ec = ec || {
 
 		    ec.world =
 		    world = new ec.World();
-			world.addWalls();
 
 			ec.player =
 			player =
@@ -116,6 +116,10 @@ var ec = ec || {
 		    worldView = new ec.Canvas2dWorldView(world);
 		    view.add(worldView);
 		    view.add(userInput);
+
+		    if (maps && maps.courtyard) {
+				worldView.setMapData(maps.courtyard);
+		    }
 
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
@@ -384,6 +388,16 @@ var ec = ec || {
 
 		cycleDebug: function() {
 			ec.core.setDebugLevel(ec.debug-1);
+		}
+	};
+
+	// loadMap JSONp callback
+
+	ec.loadMap = function(data) {
+		maps = maps || {};
+		maps[data.name] = data;
+		if (worldView) {
+			worldView.setMapData(data);
 		}
 	};
 

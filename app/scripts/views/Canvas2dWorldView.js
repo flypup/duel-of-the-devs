@@ -19,21 +19,29 @@
 	};
 
 	var proto = Canvas2dWorldView.prototype;
+
+	proto.setMapData = function(data) {
+		// TODO: remember / remove walls
+		this.world.addWalls(-data.width/2, -data.height/2, data.width/2, data.height/2);
+		this.mapRenderer.setMapData(data);
+	};
+
 	
+
 	proto.draw = function(context) {
 		context.setTransform(1, 0, 0, 1, 0, 0);
 		context.fillStyle = '#888888';
 		context.globalAlpha = 1;
-		context.fillRect(0, 0, this.width, this.height);
+		context.fillRect(0, 0, this.camera.width, this.camera.height);
 
 		context.save();
 		
 		// translate by default to screen coordinates
-		context.scale(this.scaleX, this.scaleY);
-		context.translate(-this.camera.x, -this.camera.y);
-		//context.setTransform(this.scaleX, 0, 0, this.scaleY, -this.x*this.scaleX, -this.y*this.scaleY);
+		//context.scale(this.camera.scaleX, this.camera.scaleY);
+		//context.translate(-this.camera.x, -this.camera.y);
+		context.setTransform(this.camera.scaleX, 0, 0, this.camera.scaleY, -this.camera.x*this.camera.scaleX, -this.camera.y*this.camera.scaleY);
 		
-		this.mapRenderer.draw(context);
+		this.mapRenderer.draw(context, this.camera);
 
 		// sort and draw entities
 		var entities = this.world.entities;
@@ -50,15 +58,15 @@
 	};
 
 	proto.lookAt = function(x, y) {
-		this.camera.x = -this.width/this.scaleX/2 + x;
-		this.camera.y = -this.height/this.scaleY/2 + y - 64;
+		this.camera.x = -this.camera.width/this.camera.scaleX/2 + x;
+		this.camera.y = -this.camera.height/this.camera.scaleY/2 + y - 64;
 	};
 
 	proto.resize = function(width, height) {
 		var ratioX = ec.pixelRatio;
 		var ratioY = ec.pixelRatioY || ratioX;
-		this.width  = width  * ratioX;
-		this.height = height * ratioY;
+		this.camera.width  = width  * ratioX;
+		this.camera.height = height * ratioY;
 		this.zoom(this.camera.zoom);
 	};
 
@@ -67,9 +75,9 @@
 		var ratioY = ec.pixelRatioY || ratioX;
 		this.camera.zoom = amount;
 		amount = amount * ec.height / 640; // TODO: use device screen height for native pixel scale
-		this.scaleX = ratioX * amount;
-		this.scaleY = ratioY * amount;
-		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.scaleX, this.scaleY);
+		this.camera.scaleX = ratioX * amount;
+		this.camera.scaleY = ratioY * amount;
+		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY);
 	};
 
 	var sortEntities = function(a, b) {
