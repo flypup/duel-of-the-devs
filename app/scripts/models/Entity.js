@@ -14,6 +14,7 @@
 	var proto = Entity.prototype;
 	proto.z = 0;
 	proto.groupId = cp.NO_GROUP;
+	proto.pos = {x:0, y:0, z:0};
 
 	proto.setView = function(view) {
 		this.view = view;
@@ -36,10 +37,17 @@
 
 	// Physics
 
+	proto.getPos = function() {
+		this.pos.x =  this.body.p.x;
+		this.pos.y = -this.body.p.y;
+		this.pos.z =  this.z;
+		return this.pos;
+	};
+
 	proto.setPos = function(x, y, z) {
 		this.body.activate();
-		this.body.p.x = x;
-		this.body.p.y = y;
+		this.body.p.x =  x;
+		this.body.p.y = -y;
 		if (z !== undefined) {
 			this.z = this.body.z = z;
 		}

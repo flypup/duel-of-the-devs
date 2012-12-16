@@ -19,7 +19,9 @@
 		this.duration = 500;
 
 		this.master = entity;
-		this.setPos(entity.body.p.x, entity.body.p.y-1, 0);
+
+		var pos = entity.getPos();
+		this.setPos(pos.x, pos.y+1, pos.z+1);
 	};
 
 	var proto = Puff.prototype;
@@ -32,7 +34,8 @@
 			ec.world.remove(this);
 			delete this.master;
 		} else {
-			this.setPos(this.master.body.p.x, this.master.body.p.y-1, this.z+1);
+			var pos = this.master.getPos();
+			this.setPos(pos.x, pos.y+1, pos.z+1);
 		}
 	};
 

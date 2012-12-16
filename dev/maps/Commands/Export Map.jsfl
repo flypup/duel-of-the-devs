@@ -211,6 +211,8 @@ var exportDir = dirUri +'/'+ fileName;
 var data = {};
 data.name = fileName;
 data.path = "data/"+ fileName;
+data.width  = document.width;
+data.height = document.height;
 data.layers = [];
 
 // fl.getDocumentDOM().getTimeline().layers
@@ -379,7 +381,7 @@ FLfile.createFolder(exportDir);
 // fl.outputPanel.save(exportDir +'/data.json');
 
 fl.trace('ec.loadMap('+output+');');
-fl.outputPanel.save(exportDir +'/data.js');
+fl.outputPanel.save(exportDir +'/data.js', false, true);
 
 /* -------------------------------------------------------------------------
 	Parse Component Instance Parameters

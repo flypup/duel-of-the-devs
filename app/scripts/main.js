@@ -75,28 +75,15 @@ var ec = ec || {
 		    ec.world =
 		    world = new ec.World();
 
+		    // monk
 			ec.player =
 			player =
-			world.add(new ec.Player().setPos(-2, -155, 0).setInput(userInput));
-			
-			//cauldron
-			world.add(new ec.Circle(0, 96).setPos(-384, -208, 0));
-			world.add(new ec.Circle(0, 96).setPos( 384, -208, 0));
+			world.add(new ec.Player().setPos(-2, 155, 0).setInput(userInput));
 
-			//statues
-			world.add(new ec.Box(0).setPos(-250,    0, 0));
-			world.add(new ec.Box(0).setPos( 250,    0, 0));
-			world.add(new ec.Box(0).setPos(-250,  250, 0));
-			world.add(new ec.Box(0).setPos( 250,  250, 0));
-		    world.add(new ec.Box(0).setPos(-250,  500, 0));
-			world.add(new ec.Box(0).setPos( 250,  500, 0));
-		    world.add(new ec.Box(0).setPos(-500, -500, 0));
-		    world.add(new ec.Box(0).setPos( 500, -500, 0));
-		   
-		    //ninja
+		    // ninja
 		    var bossInput = new ec.EnemyInput();
 		    boss =
-		    world.add(new ec.Ninja().setPos(250, 64, 0).setInput(bossInput));
+		    world.add(new ec.Ninja().setPos(250, -64, 0).setInput(bossInput));
 		    
 			ec.resizeDisplay();
 

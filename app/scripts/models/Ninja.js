@@ -42,7 +42,8 @@
 			return;
 		}
 		// use ShadowClone class and prototype or something cool to inherit stuff
-		var shadowClone = new ec.Ninja().setPos(this.body.p.x, this.body.p.y, 0).setInput(new ec.EnemyInput());
+		var pos = this.getPos();
+		var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.EnemyInput());
 		shadowClone.isShadowClone = true;
 		shadowClone.master = this;
 		ec.world.add(shadowClone);

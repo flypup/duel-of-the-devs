@@ -23,6 +23,18 @@
 	proto.setMapData = function(data) {
 		// TODO: remember / remove walls
 		this.world.addWalls(-data.width/2, -data.height/2, data.width/2, data.height/2);
+
+		// add entities
+		var layers = data.layers;
+		for (var i=layers.length; i-- > 0;) {
+			var layer = layers[i];
+			if (layer.entities) {
+				for (var j=layer.entities.length; j-- > 0;) {
+					this.world.addMapElement(layer.entities[j], -data.width/2, -data.height/2);
+				}
+			}
+		}
+
 		this.mapRenderer.setMapData(data);
 	};
 

@@ -58,7 +58,8 @@
 		attack.time = 0;
 		attack.startTime = time;
 		attack.phase = ec.EmptyHand.PUSHING;
-		attack.setPos(this.body.p.x, this.body.p.y, this.z);
+		var pos = this.getPos();
+		attack.setPos(pos.x, pos.y, pos.z);
 
 		// face direction of punch
 		// TODO: tween angular motion

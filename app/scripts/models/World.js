@@ -86,6 +86,21 @@
 		return true;
 	};
 
+	proto.addMapElement = function(element, offsetX, offsetY) {
+		if (element.mapType === 'entity') {
+			var x = element.x + offsetX;
+			var y = element.y + offsetY;
+			var z = element.mZ;
+			var EntityClass = ec[element.type];
+			//console.log('map entity', element, x, y, z);
+			this.add(new EntityClass(
+				element.mass,
+				element.mWidth,
+				element.mHeight
+			).setPos(x, y, z));
+		}
+	};
+
 	proto.addWalls = function(left, top, right, bottom) {
 		this.addBox(v( 0, top    -64), right*2 + 256, 128);
 		this.addBox(v( 0, bottom +64), right*2 + 256, 128);
