@@ -206,7 +206,7 @@ fl.drawingLayer.endDraw();
 var document = fl.getDocumentDOM();
 var fileName = document.name.replace(/\.[^\.]+$/, '');
 var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
-var exportDir = dirUri +'/'+ fileName;
+var exportDir = dirUri +'/../../app/data/'+ fileName;
 
 var data = {};
 data.name = fileName;
@@ -247,6 +247,7 @@ for (var i=0;  i<layers.length;  i++) {
 		for (var j=0;  j<elements.length;  j++) {
 			var el = elements[j];
 			var eData = {};
+			var libItem;
 			// fl.trace('//     Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
 
 			if (el.elementType === "shape") {
@@ -279,6 +280,18 @@ for (var i=0;  i<layers.length;  i++) {
 
 				extend(eData, contoursToFills(el.contours));
 
+				//export fill image
+				if (eData.fillImage) {
+					if (document.library.itemExists(eData.fillImage)) {
+						var libIndex = document.library.findItemIndex(eData.fillImage);
+						libItem = document.library.items[libIndex];
+						libItem.exportToFile(exportDir +'/'+ eData.fillImage);
+
+					} else {
+						fl.trace('// ERROR: Library Bitmap Item not found  "'+ eData.fillImage +'" (fillImage)');
+					}
+				}
+
 				shapes.push(eData);
 
 			} else if (el.elementType === "instance") {
@@ -298,7 +311,7 @@ for (var i=0;  i<layers.length;  i++) {
 					//eData.matrix = el.matrix;
 					entities.push(eData);
 
-					var libItem = el.libraryItem;
+					libItem = el.libraryItem;
 					//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
 					// fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 					if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
@@ -311,8 +324,10 @@ for (var i=0;  i<layers.length;  i++) {
 						if (!eData.notes) eData.notes = undefined;
 
 						if (eData.mapType !== "entity") {
-							libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
-							eData.image = libItem.name +'.png';
+							if (libItem.name !== 'empty') {
+								libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
+								eData.image = libItem.name +'.png';
+							}
 						}
 
 						if (el.bitmapRenderMode === "export") {
@@ -346,12 +361,15 @@ for (var i=0;  i<layers.length;  i++) {
 					eData.height = el.height;
 					images.push(eData);
 
-					var libItem = el.libraryItem;
+					libItem = el.libraryItem;
 					fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 					if (libItem.itemType === "bitmap") {
 
-						eData.image = libItem.sourceFilePath; //File name
-						//libItem.exportToFile(url);
+						if (libItem.name !== 'empty') {
+							//libItem.sourceFilePath;
+							libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
+							eData.image = libItem.name +'.png';
+						}
 
 					} else {
 						fl.trace('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');

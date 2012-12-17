@@ -87,23 +87,36 @@
 	};
 
 	proto.addMapElement = function(element, offsetX, offsetY) {
+		var x = element.x + offsetX;
+		var y = element.y + offsetY;
+		var z = element.mZ;
 		if (element.mapType === 'entity') {
-			var x = element.x + offsetX;
-			var y = element.y + offsetY;
-			var z = element.mZ;
 			var EntityClass = ec[element.type];
 			//console.log('map entity', element, x, y, z);
-			this.add(new EntityClass(
+			var entity = this.add(new EntityClass(
 				element.mass,
 				element.mWidth,
 				element.mHeight
 			).setPos(x, y, z));
+			entity.depth = element.mDepth;
+
+		} else if (element.mapType === 'wall') {
+
+			var wall = this.addBox(v(x, y-element.mHeight/2+z), element.mWidth, element.mHeight);
+			wall.depth = element.mDepth;
+
+		} else if (element.mapType === 'floor') {
+
+
+		} else if (element.mapType === 'steps') {
+
+
 		}
 	};
 
 	proto.addWalls = function(left, top, right, bottom) {
-		this.addBox(v( 0, top    -64), right*2 + 256, 128);
-		this.addBox(v( 0, bottom +64), right*2 + 256, 128);
+		this.addBox(v( 0, -top   +64), right*2 + 256, 128);
+		this.addBox(v( 0, -bottom-64), right*2 + 256, 128);
 		this.addBox(v(right +64,  0 ), 128, bottom*2 + 256);
 		this.addBox(v(left  -64,  0 ), 128, bottom*2 + 256);
 	};
@@ -111,6 +124,7 @@
 	proto.addBox = function(v1, w, h) {
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
+		v1.y = -v1.y;
 		body.p = v1;
 		var wall = this.space.addShape(new cp.BoxShape(body, w, h));
 		wall.setElasticity(0);
