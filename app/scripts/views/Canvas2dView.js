@@ -80,6 +80,10 @@
 		}
 	};
 
+	proto.copy  = function(otherView) {
+		this.context.drawImage(otherView.canvas, parseInt(otherView.canvas.style.left, 10), parseInt(otherView.canvas.style.top, 10));
+	};
+
 	proto.debugGui = function(debugView) {
 		var view = this;
 		var resize = function() {

@@ -283,6 +283,7 @@ var ec = ec || {
 		    if (ec.debug > 0) {
 			    if (ec.debug > 1) {
 					cpDebugView.step();
+					//view.copy(cpDebugView);
 			    }
 				debugView.stats.end();
 			}
