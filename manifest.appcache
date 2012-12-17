@@ -1,29 +1,6 @@
-# init (undefined, #undefined)
-# zoom 1 factor 0.3515625 x,y: 0.3515625 0.3515625 (undefined, #undefined)
-TypeError: 'undefined' is not an object (evaluating 'this.sources.game')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-TypeError: 'undefined' is not a function (evaluating 'a.beginPath()')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-TypeError: 'undefined' is not a function (evaluating 'a.beginPath()')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-# loaded 64 64 (undefined, #undefined)
 CACHE MANIFEST
 
-# Time: Thu Dec 06 2012 22:48:02 GMT-0500 (EST)
+# Time: Mon Dec 17 2012 04:02:59 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -39,34 +16,14 @@ CACHE MANIFEST
 #   urlsFromDocument: true
 #   urlsFromRequests: false
 #   cacheFilter: .*
-#   networkFilter: http(s)?://*
+#   networkFilter: null
 #  url: http://localhost:3501
 #  configFile: /usr/local/share/npm/lib/node_modules/yeoman/lib/support/confess.json
 
 CACHE:
-scripts/b849f5f4.scripts.js
+http://www.google-analytics.com/ga.js
+scripts/7d85df2a.scripts.js
 styles/4d0ce6f1.main.css
 
 NETWORK:
 *
-TypeError: 'undefined' is not a function (evaluating 'a.beginPath()')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-TypeError: 'undefined' is not a function (evaluating 'a.beginPath()')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-TypeError: 'undefined' is not a function (evaluating 'a.beginPath()')
-
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
-  http://localhost:3501/scripts/b849f5f4.scripts.js:1
