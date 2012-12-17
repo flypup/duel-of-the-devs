@@ -102,15 +102,16 @@
 
 		} else if (element.mapType === 'wall') {
 
-			var wall = this.addBox(v(x, y-element.mHeight/2+z), element.mWidth, element.mHeight);
+			var wall = this.addBox(v(x, y-(element.mHeight/2)+z), element.mWidth, element.mHeight);
 			wall.depth = element.mDepth;
 
 		} else if (element.mapType === 'floor') {
-
+			var floor = this.addBox(v(x, y+element.mDepth+z), element.mWidth, element.mHeight);
+			floor.depth = element.mDepth;
 
 		} else if (element.mapType === 'steps') {
-
-
+			var steps = this.addBox(v(x, y-(element.mHeight/2)+z), element.mWidth, element.mHeight);
+			steps.depth = element.mDepth;
 		}
 	};
 

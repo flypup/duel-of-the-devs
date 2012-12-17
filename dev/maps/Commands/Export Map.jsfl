@@ -324,7 +324,7 @@ for (var i=0;  i<layers.length;  i++) {
 						if (!eData.notes) eData.notes = undefined;
 
 						if (eData.mapType !== "entity") {
-							if (libItem.name !== 'empty') {
+							if (el.width && el.height) {
 								libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
 								eData.image = libItem.name +'.png';
 							}
@@ -365,11 +365,9 @@ for (var i=0;  i<layers.length;  i++) {
 					fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 					if (libItem.itemType === "bitmap") {
 
-						if (libItem.name !== 'empty') {
-							//libItem.sourceFilePath;
-							libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
-							eData.image = libItem.name +'.png';
-						}
+						//libItem.sourceFilePath;
+						libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
+						eData.image = libItem.name +'.png';
 
 					} else {
 						fl.trace('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
