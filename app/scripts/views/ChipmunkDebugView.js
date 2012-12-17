@@ -152,36 +152,23 @@
 		this.ctx.scale(ratio, ratio);
 	};
 
-	ChipmunkDebugView.prototype.drawInfo = function() {
-		var space = this.space;
-		var infoFields = this.infoFields;
-		var index = 0;
-		this.ctx.textAlign = 'start';
-		this.ctx.textBaseline = 'alphabetic';
-		this.ctx.fillStyle = 'black';
+	ChipmunkDebugView.prototype.step = function(mainView) {
+		// Move mouse body toward the mouse
+		var newPoint = v.lerp(this.mouseBody.p, this.mouse, 0.25);
+		this.mouseBody.v = v.mult(v.sub(newPoint, this.mouseBody.p), 60);
+		this.mouseBody.p = newPoint;
 
-		infoFields[index++].setText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio);
-		//infoFields[index++].setText('Step: ' + space.stamp);
+		// var lastNumActiveShapes = this.space.activeShapes.count;
 
-		var arbiters = space.arbiters.length;
-		this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;
-		infoFields[index++].setText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')');
-
-		var contacts = 0;
-		for(var i = 0; i < arbiters; i++) {
-			contacts += space.arbiters[i].contacts.length;
-		}
-		this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
-		infoFields[index++].setText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')');
-
-		infoFields[index++].setText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0));
-
-		if (this.message) {
-			infoFields[5].setText(this.message);
-		}
+		// Only redraw if the simulation isn't asleep.
+		// if (lastNumActiveShapes > 0 || ChipmunkDebugView.resized) {
+		//	this.draw();
+		//	ChipmunkDebugView.resized = false;
+		// }
+		this.draw(mainView);
 	};
 
-	ChipmunkDebugView.prototype.draw = function() {
+	ChipmunkDebugView.prototype.draw = function(mainView) {
 		var ctx = this.ctx;
 
 		var self = this;
@@ -236,23 +223,40 @@
 			}
 		});
 
-		this.drawInfo();
+		this.drawInfo(mainView);
+		//mainView.copy(this);
 	};
 
-	ChipmunkDebugView.prototype.step = function() {
-		// Move mouse body toward the mouse
-		var newPoint = v.lerp(this.mouseBody.p, this.mouse, 0.25);
-		this.mouseBody.v = v.mult(v.sub(newPoint, this.mouseBody.p), 60);
-		this.mouseBody.p = newPoint;
+	ChipmunkDebugView.prototype.drawInfo = function(mainView) {
+		var space = this.space;
+		var infoFields = this.infoFields;
+		var index = 0;
+		this.ctx.textAlign = 'start';
+		this.ctx.textBaseline = 'alphabetic';
+		this.ctx.fillStyle = 'black';
 
-		// var lastNumActiveShapes = this.space.activeShapes.count;
+		infoFields[index++].setText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio);
+		//infoFields[index++].setText('Step: ' + space.stamp);
 
-		// Only redraw if the simulation isn't asleep.
-		// if (lastNumActiveShapes > 0 || ChipmunkDebugView.resized) {
-		//	this.draw();
-		//	ChipmunkDebugView.resized = false;
-		// }
-		this.draw();
+		var worldView = mainView.children[0];
+		infoFields[index++].setText(mainView.width+', '+mainView.height+' x '+worldView.camera.zoom+' : '+worldView.camera.width+','+worldView.camera.height+' : '+worldView.camera.scaleX+','+worldView.camera.scaleY);
+
+		var arbiters = space.arbiters.length;
+		this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;
+		infoFields[index++].setText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')');
+
+		var contacts = 0;
+		for(var i = 0; i < arbiters; i++) {
+			contacts += space.arbiters[i].contacts.length;
+		}
+		this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
+		infoFields[index++].setText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')');
+
+		infoFields[index++].setText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0));
+
+		if (this.message) {
+			infoFields[5].setText(this.message);
+		}
 	};
 
 	// Drawing helper methods

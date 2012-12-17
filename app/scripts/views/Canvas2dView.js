@@ -98,11 +98,11 @@
 			{
 				name: 'view',
 				remember: true,
-				target: view,
+				target: view[0], //worldView
 				props: [
-					{name: 'x', params:{min: -480, max: 1600}},
-					{name: 'y', params:{min: -320, max: 1600}},
-					{name: 'scale', onChange: function(value){view.zoom(value);}, params:{step: 0.01, min: 0.25, max: 4}}
+					{name: 'x', params:{min: -480, max: 1600}}, //lookAt()
+					{name: 'y', params:{min: -320, max: 1600}}, //lookAt()
+					{name: 'zoom', onChange: function(value){view.zoom(value);}, params:{step: 0.01, min: 0.25, max: 4}}
 				]
 			},
 			{
