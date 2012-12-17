@@ -63,7 +63,7 @@
 		var overlay;
 		for (var i=0, len=this.overlays.length; i<len; i++) {
 			overlay = this.overlays[i];
-			overlay.draw(this.width, this.height);
+			overlay.draw(context, this.width, this.height);
 		}
 
 		if (ec.core.paused()) {
