@@ -83,10 +83,12 @@
 	};
 
 	proto.zoom = function(amount) {
+		// TODO: use device screen height for native pixel scale
+		var verticalPixels = ec.mobile ? 640 : 720;
 		var ratioX = ec.pixelRatio;
 		var ratioY = ec.pixelRatioY || ratioX;
 		this.camera.zoom = amount;
-		amount = amount * ec.height / 640; // TODO: use device screen height for native pixel scale
+		amount = amount * ec.height / verticalPixels;
 		this.camera.scaleX = ratioX * amount;
 		this.camera.scaleY = ratioY * amount;
 		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY);
