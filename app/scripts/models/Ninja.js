@@ -65,6 +65,7 @@
 				this.hitPoints -= damage;
 				this.hitTime = 600;
 			}
+			this.input.completeTask();
 			this.hitDuration = this.hitTime;
 			// apply impulse
 			this.body.w = energy/10000;

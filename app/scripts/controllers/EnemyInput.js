@@ -95,6 +95,12 @@
 		return task;
 	};
 
+	proto.completeTask = function() {
+		if (this.goal && this.goal.task) {
+			this.goal.task.complete = true;
+		}
+	};
+
 	// goals:
 	// 1. surround player
 	// 1a. wait
@@ -120,7 +126,7 @@
 		// TODO: raycast or query line-of-sight to make this more difficult
 		// TODO: search task
 		//console.log('found nearest');
-		this.goal.task.complete = true;
+		this.completeTask();
 	};
 
 	proto.targetNearestEnemyBorder = function targetNearestEnemyBorder(entity) {
@@ -142,14 +148,14 @@
 		this.targetPos = v.add(entity.body.p, direction);
 		entity.speed = 4;
 
-		this.goal.task.complete = true;
+		this.completeTask();
 	};
 
 	proto.scramble = function scramble(entity) {
 		//console.log('scramble');
 		this.targetPos = v(Math.random() * 1000 - 500, Math.random() * 1000 - 500);
 		entity.speed = 6;
-		this.goal.task.complete = true;
+		this.completeTask();
 	};
 
 	// MOVING  ----------------------
@@ -157,7 +163,7 @@
 		//console.log('moveTo', this.targetPos, this);
 		if (!this.targetPos) {
 			//nowhere to go
-			this.goal.task.complete = true;
+			this.completeTask();
 			return;
 		}
 		// from me to target
@@ -165,7 +171,7 @@
 		if (lengthSq(direction) < GOAL_DISTANCE_SQ) {
 			//reached target
 			//console.log('moved to target');
-			this.goal.task.complete = true;
+			this.completeTask();
 			this.targetPos = null;
 			this.setAxes1(0, 0);
 			//main ninja idles less after moving
@@ -181,14 +187,14 @@
 	proto.moveAway = function moveAway(entity) {
 		if (!this.targetPos) {
 			//nothing to run from
-			this.goal.task.complete = true;
+			this.completeTask();
 			return;
 		}
 		var direction = v.sub(entity.body.p, this.targetPos);
 		if (lengthSq(direction) > AVOID_DISTANCE_SQ) {
 			//evaded target
 			//console.log('evaded target');
-			this.goal.task.complete = true;
+			this.completeTask();
 			this.targetPos = null;
 			this.setAxes1(0, 0);
 			return;
@@ -206,10 +212,10 @@
 
 	proto.kageNoBunshin = function kageNoBunshin(entity) {
 		if (entity.isShadowClone) {
-			this.goal.task.complete = true;
+			this.completeTask();
 			return;
 		} else if (ec.world.entities.length > MAX_ENTITIES) {
-			this.goal.task.complete = true;
+			this.completeTask();
 			this.goal.met = true;
 			return;
 		}
@@ -219,7 +225,7 @@
 		if (this.turns > 11) {
 			this.turns = 0;
 			//console.log('kage No Bunshin!!!');
-			this.goal.task.complete = true;
+			this.completeTask();
 		}
 	};
 
@@ -227,7 +233,7 @@
 		this.clones = this.clones || 0;
 		if (++this.clones > NUMBER_OF_CLONES_AT_ONCE || ec.world.entities.length > MAX_ENTITIES) {
 			this.clones = 0;
-			this.goal.task.complete = true;
+			this.completeTask();
 			//console.log('made all clones');
 		} else {
 			entity.shadowClone();
@@ -239,7 +245,7 @@
 		this.throwTick++;
 		if (this.throwTick > Math.random() * 300) {
 			this.throwTick = 0;
-			this.goal.task.complete = true;
+			this.completeTask();
 		}
 	};
 
@@ -248,7 +254,7 @@
 		this.idleTick++;
 		if (this.idleTick > 40 + 200 * Math.random()) {
 			this.idleTick = 0;
-			this.goal.task.complete = true;
+			this.completeTask();
 		}
 	};
 
