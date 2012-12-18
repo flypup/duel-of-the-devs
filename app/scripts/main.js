@@ -78,12 +78,12 @@ var ec = ec || {
 		    // monk
 			ec.player =
 			player =
-			world.add(new ec.Player().setPos(-2, 155, 0).setInput(userInput));
+			world.add(new ec.Player().setPos(1280, 2930, 0).setInput(userInput));
 
 		    // ninja
 		    var bossInput = new ec.EnemyInput();
 		    boss =
-		    world.add(new ec.Ninja().setPos(250, -64, 0).setInput(bossInput));
+		    world.add(new ec.Ninja().setPos(1424, 2632, 0).setInput(bossInput));
 		    
 			ec.resizeDisplay();
 

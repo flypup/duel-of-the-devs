@@ -18,10 +18,9 @@
 			return;
 		}
 		context.save();
-		context.translate(-this.data.width/2, -this.data.height/2);
 
-		this.viewport.l = camera.x + this.data.width/2;
-		this.viewport.t = camera.y + this.data.height/2;
+		this.viewport.l = camera.x;
+		this.viewport.t = camera.y;
 		this.viewport.r = this.viewport.l + camera.width/camera.scaleX;
 		this.viewport.b = this.viewport.t + camera.height/camera.scaleY;
 

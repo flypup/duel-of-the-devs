@@ -22,7 +22,7 @@
 
 	proto.setMapData = function(data) {
 		// TODO: remember / remove walls
-		this.world.addWalls(-data.width/2, -data.height/2, data.width/2, data.height/2);
+		this.world.addWalls(0, 0, data.width, data.height);
 
 		// add entities
 		var layers = data.layers;
@@ -30,7 +30,7 @@
 			var layer = layers[i];
 			if (layer.entities) {
 				for (var j=layer.entities.length; j-- > 0;) {
-					this.world.addMapElement(layer.entities[j], -data.width/2, -data.height/2);
+					this.world.addMapElement(layer.entities[j], 0, 0);
 				}
 			}
 		}
@@ -90,7 +90,7 @@
 		this.camera.scaleY = this.camera.pixelRatio * amount;
 		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY);
 	};
-	
+
 	var sortEntities = function(a, b) {
 		if ( a.body.p.y > b.body.p.y ) {
 			return -1;

@@ -116,10 +116,10 @@
 	};
 
 	proto.addWalls = function(left, top, right, bottom) {
-		this.addBox(v( 0, -top   +64), right*2 + 256, 128);
-		this.addBox(v( 0, -bottom-64), right*2 + 256, 128);
-		this.addBox(v(right +64,  0 ), 128, bottom*2 + 256);
-		this.addBox(v(left  -64,  0 ), 128, bottom*2 + 256);
+		this.addBox(v( (right-left)/2, top   -64), 256+right-left, 128);
+		this.addBox(v( (right-left)/2, bottom+64), 256+right-left, 128);
+		this.addBox(v(right +64,  (bottom-top)/2 ), 128, bottom-top);
+		this.addBox(v(left  -64,  (bottom-top)/2 ), 128, bottom-top);
 	};
 
 	proto.addBox = function(v1, w, h) {
