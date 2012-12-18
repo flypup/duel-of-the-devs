@@ -117,9 +117,9 @@ var ec = ec || {
 		    ec.addBrowserListeners(userInput);
 
 		    if (ec.touch) {
-				var scaledWidth = view.width * ec.pixelRatio;
-				var scaledHeight = view.height * ec.pixelRatioY || ec.pixelRatio;
-				ec.ButtonOverlay.viewWidth = scaledWidth;
+				var scaledWidth  = view.width  * ec.pixelRatio;
+				var scaledHeight = view.height * ec.pixelRatio;
+				ec.ButtonOverlay.viewWidth  = scaledWidth;
 				ec.ButtonOverlay.viewHeight = scaledHeight;
 				userInput.setLeftStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: 160,    y: scaledHeight-160, radius: 150})));
 				userInput.setRightStickOverlay(userInput.addButtonOverlay(new ec.ButtonOverlay({x: scaledWidth-160,  y: scaledHeight-160, radius: 150})));
@@ -328,7 +328,7 @@ var ec = ec || {
 
 		resize: function() {
 			if (ec.resizeDisplay()) {
-				view.resize(ec.width, ec.height);
+				view.resize(ec.width, ec.height, ec.pixelRatio);
 				cpDebugView.resize();
 			}
 		},

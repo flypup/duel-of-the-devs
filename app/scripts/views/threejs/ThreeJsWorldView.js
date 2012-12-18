@@ -87,7 +87,7 @@
 	    renderer.domElement.style.position = 'absolute';
 		renderer.domElement.style.left =
 		renderer.domElement.style.top = '0px';
-		this.resize();
+		this.resize(this.width, this.height, ec.pixelRatio);
 	    document.body.appendChild( renderer.domElement );
 
 	    this.updateShapeView = this.updateShape();
@@ -110,7 +110,7 @@
 
 	proto.setInput = function(input) {
 		this.input = input;
-		input.resize(ec.width, ec.height);
+		input.resize(ec.width, ec.height, ec.pixelRatio);
 		return this;
 	};
 	
@@ -136,19 +136,17 @@
 		return this.renderer.domElement;
 	};
 
-	proto.resize = function() {
-		var ratioX = ec.pixelRatio;
-		var ratioY = ec.pixelRatioY || ratioX;
+	proto.resize = function(width, height, ratio) {
 		var renderer = this.renderer;
-		renderer.setSize( ec.width * ratioX, ec.height * ratioY );
-	    renderer.domElement.style.width = ec.width + 'px';
-        renderer.domElement.style.height = ec.height + 'px';
+		renderer.setSize( width * ratio, height * ratio );
+	    renderer.domElement.style.width = width + 'px';
+        renderer.domElement.style.height = height + 'px';
         if (renderer.domElement.getContext( '2d' )) {
-			renderer.domElement.getContext( '2d' ).scale(ratioX, ratioY);
+			renderer.domElement.getContext( '2d' ).scale(ratio, ratio);
         }
         //this.camera.updateMatrixWorld();
         if (this.input) {
-			this.input.resize(ec.width, ec.height); //ec.width * ratioX, ec.height * ratioY );
+			this.input.resize(width, height, ratio);
         }
 	};
 

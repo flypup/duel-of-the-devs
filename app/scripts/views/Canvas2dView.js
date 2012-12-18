@@ -11,7 +11,7 @@
 
 		this.context = canvas.getContext('2d');
 
-		this.resize(ec.width, ec.height);
+		this.resize(ec.width, ec.height, ec.pixelRatio);
 
 		window.document.body.appendChild( this.canvas );
 	};
@@ -41,7 +41,7 @@
 
 	proto.add = function(child) {
 		if (this.children.indexOf(child) < 0) {
-			child.resize(this.width, this.height);
+			child.resize(this.width, this.height, this.pixelRatio);
 			this.children.push(child);
 			return child;
 		}
@@ -63,20 +63,19 @@
 		this.children.length = 0;
 	};
 
-	proto.resize = function(width, height) {
-		var ratioX = ec.pixelRatio;
-		var ratioY = ec.pixelRatioY || ratioX;
+	proto.resize = function(width, height, ratio) {
 		var canvas = this.canvas;
 		this.width = width;
 		this.height = height;
-		canvas.width  = width  * ratioX;
-		canvas.height = height * ratioY;
+		this.pixelRatio = ratio;
+		canvas.width  = width  * ratio;
+		canvas.height = height * ratio;
 		canvas.style.width  = this.width  + 'px';
 		canvas.style.height = this.height + 'px';
 
 		var children = this.children;
 		for (var i = 0, len = children.length; i < len; i++) {
-			children[i].resize(width, height);
+			children[i].resize(width, height, ratio);
 		}
 	};
 
@@ -87,12 +86,10 @@
 	proto.debugGui = function(debugView) {
 		var view = this;
 		var resize = function() {
-			var pixelRatioX = ec.pixelRatio;
-			var pixelRatioY = ec.pixelRatioY;
+			var pixelRatio = ec.pixelRatio;
 			ec.resizeDisplay();
-			ec.pixelRatio = pixelRatioX;
-			ec.pixelRatioY = pixelRatioY;
-			view.resize();
+			ec.pixelRatio = pixelRatio;
+			view.resize(ec.width, ec.height, pixelRatio);
 		};
 		debugView.addGui([
 			{
@@ -109,8 +106,7 @@
 				name: 'pixelRatio',
 				target: ec,
 				props: [
-					{name: 'pixelRatio',  params:{min: 1, max: 2, step: 0.5}, onChange: resize},
-					{name: 'pixelRatioY', params:{min: 1, max: 2, step: 0.5}, onChange: resize}
+					{name: 'pixelRatio',  params:{min: 1, max: 2, step: 0.5}, onChange: resize}
 				]
 			}
 		]);

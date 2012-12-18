@@ -235,11 +235,11 @@
 		this.ctx.textBaseline = 'alphabetic';
 		this.ctx.fillStyle = 'black';
 
-		infoFields[index++].setText(document.body.clientWidth+', '+document.body.clientHeight+' x '+this.ratio);
+		infoFields[index++].setText(document.body.clientWidth+','+document.body.clientHeight+' x '+ec.pixelRatio);
 		//infoFields[index++].setText('Step: ' + space.stamp);
 
 		var worldView = mainView.children[0];
-		infoFields[index++].setText(mainView.width+', '+mainView.height+' x '+worldView.camera.zoom+' : '+worldView.camera.width+','+worldView.camera.height+' : '+worldView.camera.scaleX+','+worldView.camera.scaleY);
+		infoFields[index++].setText(mainView.canvas.width+','+mainView.canvas.height+' x '+worldView.camera.zoom+' : '+worldView.camera.width+','+worldView.camera.height+' : '+worldView.camera.scaleX+','+worldView.camera.scaleY);
 
 		var arbiters = space.arbiters.length;
 		this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;

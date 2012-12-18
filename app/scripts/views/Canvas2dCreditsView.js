@@ -41,11 +41,9 @@
 		}
 	};
 
-	proto.resize = function(width, height) {
-		var ratioX = ec.pixelRatio;
-		var ratioY = ec.pixelRatioY || ratioX;
-		this.width  = width  * ratioX;
-		this.height = height * ratioY;
+	proto.resize = function(width, height, ratio) {
+		this.width  = width  * ratio;
+		this.height = height * ratio;
 	};
 
 })(window);

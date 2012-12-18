@@ -87,24 +87,24 @@
         
         overlay = ec.core.getOverlay();
         if (overlay) {
-			var scale = this.height / overlay.height;
-			var x = this.width - overlay.width * scale;
+			var scale = Math.min(this.height / overlay.height, this.width / overlay.width);
+			var x = this.width  - overlay.width * scale;
 			var y = this.height - overlay.height * scale;
 			context.globalAlpha = 1;
 			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
         }
-
         context.restore();
 	};
 
-	proto.resize = function(width, height) {
-		this.width  = width;
-		this.height = height;
+	proto.resize = function(width, height, ratio) {
+		this.width  = width * ratio;
+		this.height = height * ratio;
+		this.pixelRatio = ratio;
 	};
 
 	proto.testOverlays = function(type, data, id) {
-		var width  = this.width;
-		var height = this.height;
+		var width  = this.width / this.pixelRatio;
+		var height = this.height / this.pixelRatio;
 		for (var i=0, len=this.overlays.length; i<len; i++) {
 			var overlay = this.overlays[i];
 			if (type === 'touchend') {

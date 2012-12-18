@@ -7,22 +7,13 @@
 	ec.resizeDisplay = function() {
 		
 		// pixel ratio (x2 = retina, reduce scale to improve performance of canvas rendering)
-		var pixelRatioX, pixelRatioY;
+		var pixelRatio;
 
 		// viewport width and height
 		var width, height;
 
 
-		pixelRatioX =
-		pixelRatioY = ec.forcePixelRatio || window.devicePixelRatio || 1;
-		
-		/* iPad 3 does not render full resultion well */
-		// TODO: do same for iPhone 4
-		if (ec.ipad && !ec.webgl) {
-			pixelRatioY = Math.min(1.333333, pixelRatioX);
-			pixelRatioX = Math.min(1,        pixelRatioX);
-		}
-
+		pixelRatio = ec.forcePixelRatio || window.devicePixelRatio || 1;
 		
 		if (ec.mobile) {
 			// fit to screen
@@ -30,6 +21,16 @@
 			var screenHeight = Math.min(window.screen.width, window.screen.height);
 			width  = screenWidth;
 			height = screenHeight;
+
+			/* iPad 3 does not render full resultion well */
+			// TODO: do same for iPhone 4
+			if (ec.ipad) {//} && !ec.webgl) {
+				pixelRatio = Math.min(1, pixelRatio);
+
+				if (!ec.standalone) {
+					height -= 96;
+				}
+			}
 
 		} else {
 			// fit to browser window
@@ -51,9 +52,8 @@
 			document.body.style.top  = Math.floor((maxHeight - height)/2) + 'px';
 		}
 
-		if (ec.width !== width || ec.height !== height || ec.pixelRatio !== pixelRatioX || ec.pixelRatioY !== pixelRatioY) {
-			ec.pixelRatio = pixelRatioX;
-			ec.pixelRatioY = pixelRatioY;
+		if (ec.width !== width || ec.height !== height || ec.pixelRatio !== pixelRatio) {
+			ec.pixelRatio = pixelRatio;
 			ec.width  = width;
 			ec.height = height;
 			document.body.style.width  = width + 'px';

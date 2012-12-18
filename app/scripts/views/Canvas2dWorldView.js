@@ -74,26 +74,23 @@
 		this.camera.y = -this.camera.height/this.camera.scaleY/2 + y - 64;
 	};
 
-	proto.resize = function(width, height) {
-		var ratioX = ec.pixelRatio;
-		var ratioY = ec.pixelRatioY || ratioX;
-		this.camera.width  = width  * ratioX;
-		this.camera.height = height * ratioY;
+	proto.resize = function(width, height, ratio) {
+		this.camera.width  = width  * ratio;
+		this.camera.height = height * ratio;
+		this.camera.pixelRatio = ratio;
 		this.zoom(this.camera.zoom);
 	};
 
 	proto.zoom = function(amount) {
 		// TODO: use device screen height for native pixel scale
-		var verticalPixels = ec.mobile ? 640 : 720;
-		var ratioX = ec.pixelRatio;
-		var ratioY = ec.pixelRatioY || ratioX;
+		var verticalPixels = (ec.height <= 640) ? 640 : 720;
 		this.camera.zoom = amount;
 		amount = amount * ec.height / verticalPixels;
-		this.camera.scaleX = ratioX * amount;
-		this.camera.scaleY = ratioY * amount;
+		this.camera.scaleX = this.camera.pixelRatio * amount;
+		this.camera.scaleY = this.camera.pixelRatio * amount;
 		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY);
 	};
-
+	
 	var sortEntities = function(a, b) {
 		if ( a.body.p.y > b.body.p.y ) {
 			return -1;
