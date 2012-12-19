@@ -5,12 +5,12 @@
 
 	var Sound = ec.Sound = function() {
 		this.volume = 0.0;
+		this.buffers = {};
+		this.sources = {};
 		if (ec.webaudio) {
 			try {
 				this.context = new (window.webkitAudioContext || window.AudioContext)();
 				this.volume = 1.0;
-				this.buffers = {};
-				this.sources = {};
 			} catch(e) {
 				console.error('Web Audio API not supported');
 			}
