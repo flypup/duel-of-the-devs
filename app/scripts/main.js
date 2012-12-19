@@ -34,7 +34,7 @@ var ec = ec || {
 
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,World,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,createjs,Stats').split(',');
 	//'SpriteSheet,Rectangle'
 
