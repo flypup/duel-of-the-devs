@@ -207,6 +207,7 @@ var document = fl.getDocumentDOM();
 var fileName = document.name.replace(/\.[^\.]+$/, '');
 var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
 var exportDir = dirUri +'/../../app/data/'+ fileName;
+var exported = [];
 
 var data = {};
 data.name = fileName;
@@ -283,9 +284,12 @@ for (var i=0;  i<layers.length;  i++) {
 				//export fill image
 				if (eData.fillImage) {
 					if (document.library.itemExists(eData.fillImage)) {
-						var libIndex = document.library.findItemIndex(eData.fillImage);
-						libItem = document.library.items[libIndex];
-						libItem.exportToFile(exportDir +'/'+ eData.fillImage);
+						if (exported.indexOf(exportDir +'/'+ eData.fillImage) < 0) {
+							var libIndex = document.library.findItemIndex(eData.fillImage);
+							libItem = document.library.items[libIndex];
+							libItem.exportToFile(exportDir +'/'+ eData.fillImage);
+							exported.push(exportDir +'/'+ eData.fillImage);
+						}
 
 					} else {
 						fl.trace('// ERROR: Library Bitmap Item not found  "'+ eData.fillImage +'" (fillImage)');
@@ -308,7 +312,7 @@ for (var i=0;  i<layers.length;  i++) {
 					if (!el.visible) {
 						eData.visible = false;
 					}
-					//eData.matrix = el.matrix;
+					eData.matrix = el.matrix;
 					entities.push(eData);
 
 					libItem = el.libraryItem;
@@ -325,7 +329,10 @@ for (var i=0;  i<layers.length;  i++) {
 
 						if (eData.mapType !== "entity") {
 							if (el.width && el.height) {
-								libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
+								if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+									libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
+									exported.push(exportDir +'/'+ libItem.name +'.png');
+								}
 								eData.image = libItem.name +'.png';
 							}
 						}
@@ -364,9 +371,10 @@ for (var i=0;  i<layers.length;  i++) {
 					libItem = el.libraryItem;
 					fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 					if (libItem.itemType === "bitmap") {
-
-						//libItem.sourceFilePath;
-						libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
+						if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+							libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
+							exported.push(exportDir +'/'+ libItem.name +'.png');
+						}
 						eData.image = libItem.name +'.png';
 
 					} else {
