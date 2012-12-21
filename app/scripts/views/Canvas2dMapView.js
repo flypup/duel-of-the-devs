@@ -22,14 +22,8 @@
 		if (layer.visible !== false) {
 			layer.visible = true;
 		}
-		var i;
-		for (i=layer.elements.length; i-- > 0;) {
-			// TODO: refactor loadImagessss
+		for (var i=layer.elements.length; i-- > 0;) {
 			layer.elements[i].loadImages(path);
-		}
-		for (i=layer.shapes.length; i-- > 0;) {
-			// TODO: refactor loadImagessss
-			layer.shapes[i].loadImages(path);
 		}
 	};
 
@@ -47,6 +41,9 @@
 			var j;
 			for (j=elements.length; j-- > 0;) {
 				var element = elements[j];
+				if (element.mapType === 'container') {
+					continue;
+				}
 				var mapBounds = element.getSortBounds();
 				if (element.mapType === 'floor') {
 					if (entity.z >= mapBounds.top) {
@@ -61,7 +58,7 @@
 						entity.layerNum = layer.layerNum;
 					}
 				} else {
-					console.error('can\'t test is element contains entity', element.mapType, element);
+					throw('can\'t test if element contains entity '+ element.mapType);
 				}
 				if (entity.layerNum === layer.layerNum) {//} && entityBounds.front > mapBounds.front) {
 					entities.splice(i, 1);
@@ -85,17 +82,47 @@
 			return false;
 		}
 		var elements = layer.elements;
-		var shapes = layer.shapes;
-		var i;
-		for (i=shapes.length; i-- > 0;) {
-			if (this.intersects(shapes[i], viewport)) {
-				this.drawShape(shapes[i], context);
+		for (var i=elements.length; i-- > 0;) {
+			this.drawElement(elements[i], context, viewport);
+		}
+		return true;
+	};
+
+	proto.drawElement = function(element, context, viewport) {
+		if (!element.visible) {
+			return false;
+		}
+		if (element.width && !this.intersects(element, viewport)) {
+			return false;
+		}
+		var matrix = element.matrix;
+		if (matrix) {
+			context.save();
+			context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX*matrix.a, matrix.ty - element.regY*matrix.d);
+		} else {
+			context.transform(1, 0, 0, 1, element.drawX, element.drawY);
+		}
+
+		if (element.children) {
+			var rendered = false;
+			var children = element.children;
+			for (var i=0; i<children.length; i++) {
+				var child = children[i];
+				if (element.width || this.intersects(child, viewport)) {
+					if (child.image && child.imageData) {
+						rendered |= this.drawImage(child, context);
+					} else {
+						rendered |= this.drawShape(child, context);
+					}
+				}
 			}
 		}
-		for (i=elements.length; i-- > 0;) {
-			if (this.intersects(elements[i], viewport)) {
-				this.drawElement(elements[i], context);
-			}
+		if (element.imageData) {
+			context.drawImage(element.imageData, 0, 0);
+		}
+
+		if (matrix) {
+			context.restore();
 		}
 		return true;
 	};
@@ -104,12 +131,16 @@
 		if (shape.fillImage) {
 			context.fillStyle = context.createPattern(shape.imageData, 'repeat') ;
 		} else {
-			context.fillStyle = shape.fillColor;
+			context.fillStyle = shape.fillColor || '#00f';
 		}
 
-		if (shape.rectangle) {
-			// TODO: clip to context bounds
-			context.fillRect(shape.x, shape.y, shape.width, shape.height);
+		if (shape.polygons) {
+			context.save();
+			context.translate(shape.x, shape.y);
+			for (var i=0; i<shape.polygons.length; i++) {
+				this.drawPolygon(shape.polygons[i], context);
+			}
+			context.restore();
 
 		} else if (shape.oval) {
 			// TODO: oval and center x, y
@@ -117,13 +148,11 @@
 			context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);
 			context.fill();
 
-		} else if (shape.polygons) {
-			context.save();
-			context.translate(shape.x, shape.y);
-			for (var i=0; i<shape.polygons.length; i++) {
-				this.drawPolygon(shape.polygons[i], context);
-			}
-			context.restore();
+		} else if (shape.rectangle) {
+			// TODO: clip to context bounds
+			context.fillRect(shape.x, shape.y, shape.width, shape.height);
+		} else {
+			throw('what kind of shape is this? '+ shape);
 		}
 		return true;
 	};
@@ -145,37 +174,20 @@
 		return true;
 	};
 
-	proto.drawElement = function(entity, context) {
-		if (!entity.visible) {
-			return false;
-		}
-		//entity.mapType === "wall", "floor", "steps", "parallax", "entity" (prop)
-		//console.log('drawing', entity.name);
-		if (entity.matrix.a !== 1) {
-			context.save();
-			context.transform(entity.matrix.a, entity.matrix.b, entity.matrix.c, entity.matrix.d, entity.matrix.tx + entity.regX, entity.matrix.ty - entity.regY);
-			context.drawImage(entity.imageData, 0, 0);
-			context.restore();
-		} else {
-			context.drawImage(entity.imageData, entity.drawX*entity.matrix.a, entity.drawY);//, entity.width, entity.height);
-		}
-		return true;
-	};
-
-	proto.intersects = function(entity, viewport) {
+	proto.intersects = function(element, viewport) {
 		//return true;
-		return (entity.drawX <= viewport.r && viewport.l <= (entity.drawX + entity.width) &&
-				entity.drawY <= viewport.b && viewport.t <= (entity.drawY + entity.height));
+		return (element.drawX <= viewport.r && viewport.l <= (element.drawX + element.width) &&
+				element.drawY <= viewport.b && viewport.t <= (element.drawY + element.height));
 	};
 
-	proto.containsViewPort = function(entity, viewport) {
-		return (entity.drawX <= viewport.l && viewport.r >= (entity.drawX + entity.width) &&
-				entity.drawY <= viewport.t && viewport.b >= (entity.drawY + entity.height));
+	proto.containsViewPort = function(element, viewport) {
+		return (element.drawX <= viewport.l && viewport.r >= (element.drawX + element.width) &&
+				element.drawY <= viewport.t && viewport.b >= (element.drawY + element.height));
 	};
 
-	proto.insideViewPort = function(entity, viewport) {
-		return (viewport.l <= entity.drawX && (entity.drawX + entity.width) >= viewport.r &&
-				viewport.t <= entity.drawY && (entity.drawY + entity.height) >= viewport.b);
+	proto.insideViewPort = function(element, viewport) {
+		return (viewport.l <= element.drawX && (element.drawX + element.width) >= viewport.r &&
+				viewport.t <= element.drawY && (element.drawY + element.height) >= viewport.b);
 	};
 
 })(window);

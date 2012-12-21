@@ -115,8 +115,6 @@
 		// console.log('mapCollisionSeparate', arbiter, mapElement);
 
 		// TODO: Remove Map Element from Entity's Checklist
-
-		return true;
 	};
 
 	proto.mapCollisionPreSolve = function(arbiter, space) {
@@ -202,9 +200,11 @@
 			mapElement.body = steps.body;
 			this.elements.push(mapElement);
 
+		} else if (mapElement.mapType === 'container' || mapElement.mapType === 'parallax') {
+			// we're good here
+
 		} else {
-			// parallax
-			console.log('can\'t make cp shape for map shape:', mapElement);
+			throw('can\'t make cp shape for map shape: '+ mapElement.mapType);
 		}
 
 		return mapElement;

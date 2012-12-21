@@ -43,7 +43,7 @@
 					// entity
 					elements.splice(j, 1);
 				} else {
-					mapElement.visible = !!mapElement.image;
+					mapElement.visible = !!mapElement.image || !!mapElement.children;
 					// ew!
 					elements[j] = mapElement;
 				}

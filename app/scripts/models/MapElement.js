@@ -18,12 +18,23 @@
 			this.drawX = this.x - this.regX;
 			this.drawY = this.y - this.regY;
 		} else {
-			this.drawX = this.x;
-			this.drawY = this.y;
+			this.drawX = this.x || 0;
+			this.drawY = this.y || 0;
+			this.regX = 0;
+			this.regY = 0;
 		}
 		// TODO: just use z and depth in MapComponent/editor
 		this.z = this.mZ || this.z;
 		this.depth = this.mDepth || this.depth;
+		//visible
+		
+		if (this.children) {
+			for (var i=this.children.length; i-- > 0;) {
+				var child = this.children[i];
+				child.drawX = child.x;
+				child.drawY = child.y;
+			}
+		}
 	};
 
 	proto.loadImages = function(path) {
@@ -35,6 +46,11 @@
 			if (this.fillColor.length === 9) {
 				this.fillAlpha = 255 / parseInt(this.fillColor.substr(7), 16);
 				this.fillColor = this.fillColor.substr(0, 7);
+			}
+		}
+		if (this.children) {
+			for (var i=this.children.length; i-- > 0;) {
+				this.loadImages.apply(this.children[i], [path]);
 			}
 		}
 	};
