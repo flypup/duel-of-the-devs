@@ -34,7 +34,8 @@
 		canvas.style.position = 'absolute';
 		this.ctx = canvas.getContext('2d');
 		this.resize();
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(50 / this.scale, 0));
+		this.scale = 0.08;
+		this.orthoPos = v.mult(this.orthoSize, 0.3).add(pv(100 / this.scale, -100 / this.scale));
 		//document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -417,13 +418,13 @@
 	cp.Shape.prototype.style = function() {
 	  var body;
 	  if (this.sensor) {
-	    return 'rgba(255,255,255,0)';
+	    return 'rgba(255,255,255,0.1)';
 	  } else {
 	    body = this.body;
 	    if (body.isSleeping()) {
-	      return 'rgb(50,50,50)';
+	      return 'rgba(50,50,50,0.5)';
 	    } else if (body.nodeIdleTime > this.space.sleepTimeThreshold) {
-	      return 'rgb(170,170,170)';
+	      return 'rgba(170,170,170,0.5)';
 	    } else {
 	      return styles[this.hashid % styles.length];
 	    }
