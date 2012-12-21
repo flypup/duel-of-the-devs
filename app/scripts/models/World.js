@@ -25,10 +25,17 @@
 		//space.addCollisionHandler(a, b, begin, preSolve, postSolve, separate)
 		var pushHandler = ec.delegate(this, this.pushCollision);
 		var bumpHandler = ec.delegate(this, this.bumpCollision);
+		var mapBeginHandler  = ec.delegate(this, this.mapCollisionBegin);
+		var mapPreSolveHandler = ec.delegate(this, this.mapCollisionPreSolve);
+		var mapSeparateHandler = ec.delegate(this, this.mapCollisionSeparate);
 		space.addCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE, null, null, pushHandler, null);
 		space.addCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE, bumpHandler, null, bumpHandler, null);
-
+		space.addCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
+		space.addCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
+		space.addCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE, returnFalse, null, null, null);
+		
 		this.entities = [];
+		this.elements = [];
 	};
 
 	World.PLAYER_TYPE = 1;
@@ -36,10 +43,16 @@
 
 	World.MONSTER_TYPE = 10;
 
+	World.MAP_TYPE = 50;
+
 	World.PROP_TYPE = 100;
 
 	var proto = World.prototype;
 
+	var returnFalse = function() {
+		return false;
+	};
+	
 	proto.term = function() {
 		// TODO: call remove on all entities > bodies > shapes
 		this.entities.length = 0;
@@ -86,33 +99,115 @@
 		return true;
 	};
 
+	proto.mapCollisionBegin = function(arbiter, space) {
+		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		var mapElement = this.elementForBody(mapBody);
+		console.log('mapCollisionBegin', arbiter, mapElement);
+
+		// TODO: Add Map Element to Entity's Checklist
+
+		return true;
+	};
+
+	proto.mapCollisionSeparate = function(arbiter, space) {
+		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		var mapElement = this.elementForBody(mapBody);
+		console.log('mapCollisionSeparate', arbiter, mapElement);
+
+		// TODO: Remove Map Element from Entity's Checklist
+
+		return true;
+	};
+
+	proto.mapCollisionPreSolve = function(arbiter, space) {
+		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
+		// if (contact) {
+		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
+		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		var entity = this.entityForBody(entityBody);
+		var mapElement = this.elementForBody(mapBody);
+		//console.log('mapCollision', arbiter, mapElement);
+
+		// TODO: Don't use this callback. Apply rules only based on Entity's Checklist - which element it's over - after step, pre draw
+
+		if (entity && mapElement) {
+			var entityBounds = entity.getSortBounds();
+			//standing under
+			if ( entityBounds.top < mapElement.z ) {
+				return false;
+			}
+			var mapBounds = mapElement.getSortBounds();
+			//standing over - fall
+			if ( entity.z > mapBounds.top) {
+				entity.z -= 4;
+				return false;
+			}
+			//standing on
+			if ( entity.z === mapBounds.top) {
+				return false;
+			}
+			// able to climb
+			if ( entity.z >= mapElement.z ) {
+				if ((mapBounds.top - entity.z) <=128) { //mapBounds.top ) {
+					//entity.z = Math.min(entity.z+4, mapBounds.top);
+				}
+			}
+
+			//arbiter.ignore();
+		}
+		return true;
+	};
+
 	proto.addMapElement = function(element, offsetX, offsetY) {
 		var x = element.x + offsetX;
 		var y = element.y + offsetY;
 		var z = element.mZ;
+
 		if (element.mapType === 'entity') {
 			var EntityClass = ec[element.type];
-			//console.log('map entity', element, x, y, z);
+			
+			console.log('map entity', element, x, y, z);
 			var entity = this.add(new EntityClass(
 				element.mass,
 				element.mWidth,
 				element.mHeight
 			).setPos(x, y, z));
 			entity.depth = element.mDepth;
-
-		} else if (element.mapType === 'wall') {
-
-			var wall = this.addBox(v(x, y-(element.mHeight/2)+z), element.mWidth, element.mHeight);
-			wall.depth = element.mDepth;
-
-		} else if (element.mapType === 'floor') {
-			var floor = this.addBox(v(x, y+element.mDepth+z), element.mWidth, element.mHeight);
-			floor.depth = element.mDepth;
-
-		} else if (element.mapType === 'steps') {
-			var steps = this.addBox(v(x, y-(element.mHeight/2)+z), element.mWidth, element.mHeight);
-			steps.depth = element.mDepth;
+			return entity;
 		}
+
+		var mapElement = new ec.MapElement();
+		ec.extend(mapElement, element);
+		mapElement.init();
+		
+		if (mapElement.mapType === 'wall') {
+			var wall = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
+			wall.depth = mapElement.mDepth;
+			wall.collision_type = World.MAP_TYPE;
+			mapElement.body = wall.body;
+			this.elements.push(mapElement);
+
+		} else if (mapElement.mapType === 'floor') {
+			var floor = this.addBox(v(x, y+mapElement.mDepth+z), mapElement.mWidth, mapElement.mHeight);
+			floor.depth = mapElement.mDepth;
+			floor.collision_type = World.MAP_TYPE;
+			//floor.isSensor = true;
+			mapElement.body = floor.body;
+			this.elements.push(mapElement);
+
+		} else if (mapElement.mapType === 'steps') {
+			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
+			steps.depth = mapElement.mDepth;
+			steps.collision_type = World.MAP_TYPE;
+			mapElement.body = steps.body;
+			this.elements.push(mapElement);
+
+		} else {
+			// parallax
+			console.log('can\'t make cp shape for map shape:', mapElement);
+		}
+
+		return mapElement;
 	};
 
 	proto.addWalls = function(left, top, right, bottom) {
@@ -183,6 +278,16 @@
 		return null;
 	};
 
+	proto.elementForBody = function(body) {
+		for(var i = this.elements.length; i-- > 0;) {
+			if (this.elements[i].body === body) {
+				return this.elements[i];
+			}
+		}
+		console.error('no elements for body', body);
+		return null;
+	};
+
 	proto.createStaticBody = function() {
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
@@ -194,6 +299,9 @@
 			this.entities[i].step(delta);
 		}
 		this.space.step(delta / 1000);
+		for(var i = this.entities.length; i-- > 0;) {
+			this.entities[i].postStep(delta);
+		}
 		this.time += delta;
 	};
 

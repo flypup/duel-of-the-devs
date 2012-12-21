@@ -13,8 +13,9 @@
 
 	var proto = Entity.prototype;
 	proto.z = 0;
+	proto.depth = 32;
 	proto.groupId = cp.NO_GROUP;
-	proto.pos = {x:0, y:0, z:0};
+	proto.isEntity = true;
 
 	proto.setView = function(view) {
 		this.view = view;
@@ -30,14 +31,27 @@
 		return this;
 	};
 
+	proto.postStep = function(delta) {
+		// TODO: update z
+		return this;
+	};
+
 	proto.hit = function(arbiter) {
 		console.log('HIT', this);
 		return this;
 	};
 
+	proto.getSortBounds = function() {
+		this.sortBounds = this.sortBounds || {top:0, front:0};
+		this.sortBounds.top = this.z + this.depth;
+		this.sortBounds.front = -this.body.p.y; // - height/2;
+		return this.sortBounds;
+	};
+
 	// Physics
 
 	proto.getPos = function() {
+		this.pos = this.pos || {x:0, y:0, z:0};
 		this.pos.x =  this.body.p.x;
 		this.pos.y = -this.body.p.y;
 		this.pos.z =  this.z;

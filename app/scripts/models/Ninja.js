@@ -28,7 +28,8 @@
 		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(RADIUS-4, 1); // Ninja Star
-
+		this.depth = 64;
+		
 		this.isShadowClone = false;
 		this.hitPoints = 100;
 	};
