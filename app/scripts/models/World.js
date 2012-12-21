@@ -52,7 +52,7 @@
 	var returnFalse = function() {
 		return false;
 	};
-	
+
 	proto.term = function() {
 		// TODO: call remove on all entities > bodies > shapes
 		this.entities.length = 0;
@@ -102,7 +102,7 @@
 	proto.mapCollisionBegin = function(arbiter, space) {
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var mapElement = this.elementForBody(mapBody);
-		console.log('mapCollisionBegin', arbiter, mapElement);
+		// console.log('mapCollisionBegin', arbiter, mapElement);
 
 		// TODO: Add Map Element to Entity's Checklist
 
@@ -112,7 +112,7 @@
 	proto.mapCollisionSeparate = function(arbiter, space) {
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var mapElement = this.elementForBody(mapBody);
-		console.log('mapCollisionSeparate', arbiter, mapElement);
+		// console.log('mapCollisionSeparate', arbiter, mapElement);
 
 		// TODO: Remove Map Element from Entity's Checklist
 
