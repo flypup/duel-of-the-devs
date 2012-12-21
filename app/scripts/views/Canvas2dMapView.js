@@ -5,9 +5,6 @@
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
 		this.data = null;
-		this.viewport = {
-			l: 0, t: 0, r: 0, b: 0
-		};
 	};
 
 	var proto = Canvas2dMapView.prototype;
@@ -36,84 +33,102 @@
 		}
 	};
 
-	proto.getLayers = function() { //InViewPort(camera) {
+	proto.getLayers = function() {
 		return this.data.layers;
 	};
 
-	proto.draw = function(context, camera) {
-		if (!this.data) {
-			return;
+	proto.getItemsInLayer = function(layer, entities) {
+		var inLayer = [];
+		var elements = layer.elements;
+		for (var i = entities.length; i-- > 0;) {
+			var entity = entities[i];
+			entity.layerNum = -1;
+			var entityBounds = entity.getSortBounds();
+			var j;
+			for (j=elements.length; j-- > 0;) {
+				var element = elements[j];
+				var mapBounds = element.getSortBounds();
+				if (element.mapType === 'floor') {
+					if (entity.z >= mapBounds.top) {
+						entity.layerNum = layer.layerNum;
+					}
+				} else if (element.mapType === 'wall') {
+					if ( entityBounds.front > mapBounds.front) {
+						entity.layerNum = layer.layerNum;
+					}
+				} else if (element.mapType === 'steps') {
+					if (entity.z >= element.z && entityBounds.front > mapBounds.back) {
+						entity.layerNum = layer.layerNum;
+					}
+				} else {
+					console.error('can\'t test is element contains entity', element.mapType, element);
+				}
+				if (entity.layerNum === layer.layerNum) {//} && entityBounds.front > mapBounds.front) {
+					entities.splice(i, 1);
+					inLayer.push(entity);
+					break;
+				}
+			}
 		}
-		context.save();
+		return inLayer;
+	};
 
-		this.viewport.l = camera.x;
-		this.viewport.t = camera.y;
-		this.viewport.r = this.viewport.l + camera.width/camera.scaleX;
-		this.viewport.b = this.viewport.t + camera.height/camera.scaleY;
-
+	proto.draw = function(context, viewport) {
 		var layers = this.data.layers;
 		for (var i=layers.length; i-- > 0;) {
-			this.drawLayer(layers[i], context, this.viewport);
+			this.drawLayer(layers[i], context, viewport);
 		}
-
-		context.restore();
 	};
 
 	proto.drawLayer = function(layer, context, viewport) {
 		if (!layer.visible) {
-			return;
+			return false;
 		}
-		var entities = layer.entities;
+		var elements = layer.elements;
 		var shapes = layer.shapes;
-		var images = layer.images;
 		var i;
-		if (shapes) {
-			for (i=shapes.length; i-- > 0;) {
-				this.drawShape(shapes[i], context, viewport);
+		for (i=shapes.length; i-- > 0;) {
+			if (this.intersects(shapes[i], viewport)) {
+				this.drawShape(shapes[i], context);
 			}
 		}
-		if (images) {
-			for (i=images.length; i-- > 0;) {
-				this.drawImage(images[i], context, viewport);
+		for (i=elements.length; i-- > 0;) {
+			if (this.intersects(elements[i], viewport)) {
+				this.drawElement(elements[i], context);
 			}
 		}
-		if (entities) {
-			for (i=entities.length; i-- > 0;) {
-				this.drawEntity(entities[i], context, viewport);
-			}
-		}
+		return true;
 	};
 
-	proto.drawShape = function(shape, context, viewport) {
-		if (this.intersects(shape, viewport)) {
-			if (shape.fillImage) {
-				context.fillStyle = context.createPattern(shape.imageData, 'repeat') ;
-			} else {
-				context.fillStyle = shape.fillColor;
-			}
-
-			if (shape.rectangle) {
-				// TODO: clip to context bounds
-				context.fillRect(shape.x, shape.y, shape.width, shape.height);
-
-			} else if (shape.oval) {
-				// TODO: oval and center x, y
-				context.beginPath();
-				context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);
-				context.fill();
-
-			} else if (shape.polygons) {
-				context.save();
-				context.translate(shape.x, shape.y);
-				for (var i=0; i<shape.polygons.length; i++) {
-					this.drawPolygon(shape.polygons[i], context, viewport);
-				}
-				context.restore();
-			}
+	proto.drawShape = function(shape, context) {
+		if (shape.fillImage) {
+			context.fillStyle = context.createPattern(shape.imageData, 'repeat') ;
+		} else {
+			context.fillStyle = shape.fillColor;
 		}
+
+		if (shape.rectangle) {
+			// TODO: clip to context bounds
+			context.fillRect(shape.x, shape.y, shape.width, shape.height);
+
+		} else if (shape.oval) {
+			// TODO: oval and center x, y
+			context.beginPath();
+			context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);
+			context.fill();
+
+		} else if (shape.polygons) {
+			context.save();
+			context.translate(shape.x, shape.y);
+			for (var i=0; i<shape.polygons.length; i++) {
+				this.drawPolygon(shape.polygons[i], context);
+			}
+			context.restore();
+		}
+		return true;
 	};
 
-	proto.drawPolygon = function(polygon, context, viewport) {
+	proto.drawPolygon = function(polygon, context) {
 		// TODO: clip to context bounds
 		context.beginPath();
 		var i = 0;
@@ -122,23 +137,29 @@
 			context.lineTo(polygon[i][0], polygon[i][1]);
 		}
 		context.fill();
+		return true;
 	};
 
-	proto.drawImage = function(image, context, viewport) {
-		if (this.intersects(image, viewport)) {
-			context.drawImage(image.imageData, image.x, image.y, image.width, image.height);
+	proto.drawImage = function(image, context) {
+		context.drawImage(image.imageData, image.x, image.y, image.width, image.height);
+		return true;
+	};
+
+	proto.drawElement = function(entity, context) {
+		if (!entity.visible) {
+			return false;
 		}
-	};
-
-	proto.drawEntity = function(entity, context, viewport) {
 		//entity.mapType === "wall", "floor", "steps", "parallax", "entity" (prop)
-		if (entity.imageData) {
-			if (this.intersects(entity, viewport)) {
-				//console.log('drawing', entity.name);
-				context.drawImage(entity.imageData, entity.drawX, entity.drawY);//, entity.width, entity.height);
-			}
+		//console.log('drawing', entity.name);
+		if (entity.matrix.a !== 1) {
+			context.save();
+			context.transform(entity.matrix.a, entity.matrix.b, entity.matrix.c, entity.matrix.d, entity.matrix.tx + entity.regX, entity.matrix.ty - entity.regY);
+			context.drawImage(entity.imageData, 0, 0);
+			context.restore();
+		} else {
+			context.drawImage(entity.imageData, entity.drawX*entity.matrix.a, entity.drawY);//, entity.width, entity.height);
 		}
-		
+		return true;
 	};
 
 	proto.intersects = function(entity, viewport) {
