@@ -221,18 +221,17 @@ data.layers = [];
 var layers = document.getTimeline().layers;
 
 // fl.getDocumentDOM().selection
-var elements;
+var layerFrameElements;
 
-for (var i=0;  i<layers.length;  i++) {
+for (var i = layers.length; i-- > 0;) {
 	var layer = layers[i];
-	var group = layer.parentLayer && layer.parentLayer.name;
 	// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
 
 	if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
-		elements = layer.frames[0].elements;
-
-		var lData = {}; 
-		var entities = [];
+		
+		var group = layer.parentLayer && layer.parentLayer.name;
+		var lData = {};
+		var elements = [];
 		var images = [];
 		var shapes = [];
 
@@ -245,8 +244,9 @@ for (var i=0;  i<layers.length;  i++) {
 		}
 		data.layers.push(lData);
 
-		for (var j=0;  j<elements.length;  j++) {
-			var el = elements[j];
+		layerFrameElements = layer.frames[0].elements;
+		for (var j=0;  j<layerFrameElements.length;  j++) {
+			var el = layerFrameElements[j];
 			var eData = {};
 			var libItem;
 			// fl.trace('//     Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
@@ -313,7 +313,7 @@ for (var i=0;  i<layers.length;  i++) {
 						eData.visible = false;
 					}
 					eData.matrix = el.matrix;
-					entities.push(eData);
+					elements.push(eData);
 
 					libItem = el.libraryItem;
 					//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
@@ -390,7 +390,7 @@ for (var i=0;  i<layers.length;  i++) {
 			}
 		}
 
-		if (entities.length) lData.entities = entities;
+		if (elements.length) lData.elements = elements;
 		if (images.length) lData.images = images;
 		if (shapes.length) lData.shapes = shapes;
 	}
@@ -405,7 +405,7 @@ FLfile.createFolder(exportDir);
 // fl.outputPanel.save(exportDir +'/data.json');
 
 fl.trace('ec.loadMap('+output+');');
-fl.outputPanel.save(exportDir +'/data.js', false, true);
+fl.outputPanel.save(exportDir +'/data.js', false, false);
 
 /* -------------------------------------------------------------------------
 	Parse Component Instance Parameters
@@ -503,7 +503,7 @@ function contoursToPolygons(contours, offsetX, offsetY) {
 				
 				he = he.getNext();
 				id = he.id;
-			}			
+			}
 			
 			fl.drawingLayer.beginDraw(true);
 			fl.drawingLayer.beginFrame();

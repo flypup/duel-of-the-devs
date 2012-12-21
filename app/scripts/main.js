@@ -265,7 +265,7 @@ var ec = ec || {
 					world.step(TIME_STEP);
 				}
 
-				worldView.lookAt(player.body.p.x, -player.body.p.y);
+				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z);
 			}
 			if (boss.state === 'dead') {
 				boss.decomposed = boss.decomposed || 0;

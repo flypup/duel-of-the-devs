@@ -21,21 +21,44 @@
 	var proto = Canvas2dWorldView.prototype;
 
 	proto.setMapData = function(data) {
-		// TODO: remember / remove walls
+		// TODO: remember / remove walls - AKA ViewPort Bounds
 		this.world.addWalls(0, 0, data.width, data.height);
 
-		// add entities
+		// add entities / mapElements
 		var layers = data.layers;
-		for (var i=layers.length; i-- > 0;) {
+		for (var i=0; i<layers.length; i++) {
 			var layer = layers[i];
-			if (layer.entities) {
-				for (var j=layer.entities.length; j-- > 0;) {
-					this.world.addMapElement(layer.entities[j], 0, 0);
+			layer.layerNum = i;
+
+			var elements = layer.elements || [];
+			var shapes = layer.shapes || [];
+
+			var j, mapElement;
+			for (j=elements.length; j-- > 0;) {
+				mapElement = this.world.addMapElement(elements[j], 0, 0);
+				mapElement.layerNum = i;
+				if (mapElement.isEntity) {
+					// entity
+					elements.splice(j, 1);
+				} else {
+					mapElement.visible = !!mapElement.image;
+					// ew!
+					elements[j] = mapElement;
 				}
+
 			}
+			for (j=shapes.length; j-- > 0;) {
+				mapElement = this.world.addMapElement(shapes[j], 0, 0);
+				mapElement.layerNum = i;
+				mapElement.name = layer.name +'_'+ j;
+				// ew!
+				shapes[j] = mapElement;
+			}
+			layer.elements = elements;
+			layer.shapes = shapes;
 		}
 
-		this.mapRenderer.setMapData(data);
+		this.mapRenderer.loadLayers(data);
 	};
 
 	

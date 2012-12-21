@@ -5,13 +5,40 @@
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
 		this.data = null;
-		this.path = '';
 		this.viewport = {
 			l: 0, t: 0, r: 0, b: 0
 		};
 	};
 
 	var proto = Canvas2dMapView.prototype;
+
+	proto.loadLayers = function(data) {
+		this.data = data;
+		// TODO: preload images
+		var layers = data.layers;
+		for (var i=layers.length; i-- > 0;) {
+			this.loadLayer(layers[i], data.path);
+		}
+	};
+
+	proto.loadLayer = function(layer, path) {
+		if (layer.visible !== false) {
+			layer.visible = true;
+		}
+		var i;
+		for (i=layer.elements.length; i-- > 0;) {
+			// TODO: refactor loadImagessss
+			layer.elements[i].loadImages(path);
+		}
+		for (i=layer.shapes.length; i-- > 0;) {
+			// TODO: refactor loadImagessss
+			layer.shapes[i].loadImages(path);
+		}
+	};
+
+	proto.getLayers = function() { //InViewPort(camera) {
+		return this.data.layers;
+	};
 
 	proto.draw = function(context, camera) {
 		if (!this.data) {
@@ -128,61 +155,6 @@
 	proto.insideViewPort = function(entity, viewport) {
 		return (viewport.l <= entity.drawX && (entity.drawX + entity.width) >= viewport.r &&
 				viewport.t <= entity.drawY && (entity.drawY + entity.height) >= viewport.b);
-	};
-
-	proto.setMapData = function(data) {
-		this.data = data;
-		// TODO: preload images
-		this.path = data.path;
-		var layers = data.layers;
-		for (var i=layers.length; i-- > 0;) {
-			this.preloadLayer(layers[i]);
-		}
-	};
-
-	proto.preloadLayer = function(layer) {
-		if (layer.visible !== false) {
-			layer.visible = true;
-		}
-		var entities = layer.entities;
-		var shapes = layer.shapes;
-		var images = layer.images;
-		var i;
-		if (entities) {
-			for (i=entities.length; i-- > 0;) {
-				this.preloadImages(entities[i]);
-			}
-		}
-		if (shapes) {
-			for (i=shapes.length; i-- > 0;) {
-				this.preloadImages(shapes[i]);
-			}
-		}
-		if (images) {
-			for (i=images.length; i-- > 0;) {
-				this.preloadImages(images[i]);
-			}
-		}
-	};
-
-	proto.preloadImages = function(element) {
-		if (element.image || element.fillImage) {
-			element.imageData = new Image();
-			element.imageData.src = this.path +'/'+ (element.image || element.fillImage);
-		}
-		if (element.fillColor) {
-			if (element.fillColor.length === 9) {
-				element.fillAlpha = 255 / parseInt(element.fillColor.substr(7), 16);
-				element.fillColor = element.fillColor.substr(0, 7);
-			}
-		}
-		if (element.regX) {
-			element.drawX = element.x - element.regX;
-			element.drawY = element.y - element.regY;
-		} else {
-			element.drawX = element.x;
-			element.drawY = element.y;
-		}
 	};
 
 })(window);
