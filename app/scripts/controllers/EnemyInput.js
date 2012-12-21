@@ -73,9 +73,9 @@
 		}
 		goal.met = false;
 		goal.task = null;
-		if (ec.debug && !entity.isShadowClone) {
-			console.log('Enemy goal: ', goal.name);
-		}
+		// if (ec.debug && !entity.isShadowClone) {
+		//	console.log('Enemy goal: ', goal.name);
+		// }
 		return goal;
 	};
 
@@ -89,9 +89,9 @@
 		task = goal.tasks[i];
 		task.complete = false;
 		goal.task = task;
-		if (ec.debug && !entity.isShadowClone) {
-			console.log('Enemy task: ', i);
-		}
+		// if (ec.debug && !entity.isShadowClone) {
+		//	console.log('Enemy task: ', i);
+		// }
 		return task;
 	};
 

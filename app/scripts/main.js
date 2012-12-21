@@ -75,16 +75,6 @@ var ec = ec || {
 		    ec.world =
 		    world = new ec.World();
 
-		    // monk
-			ec.player =
-			player =
-			world.add(new ec.Player().setPos(1280, 2930, 0).setInput(userInput));
-
-		    // ninja
-		    var bossInput = new ec.EnemyInput();
-		    boss =
-		    world.add(new ec.Ninja().setPos(1424, 2632, 0).setInput(bossInput));
-		    
 			ec.resizeDisplay();
 
 
@@ -103,11 +93,22 @@ var ec = ec || {
 		    worldView = new ec.Canvas2dWorldView(world);
 		    view.add(worldView);
 		    view.add(userInput);
+		    ec.view = view;
 
 		    if (maps && maps.courtyard) {
 				worldView.setMapData(maps.courtyard);
 		    }
 
+		    // monk
+			ec.player =
+			player =
+			world.add(new ec.Player().setPos(1280, 2930, 0).setInput(userInput));
+
+		    // ninja
+		    var bossInput = new ec.EnemyInput();
+		    boss =
+		    world.add(new ec.Ninja().setPos(1424, 2632, 0).setInput(bossInput));
+		    
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
 		    if (ec.debug) {
@@ -139,7 +140,9 @@ var ec = ec || {
 			overlay = new Image();
 			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
 
+			//worldView.zoom(0.5);
 			worldView.lookAt(player.body.p.x, -player.body.p.y);
+
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
 			} else {
@@ -331,6 +334,10 @@ var ec = ec || {
 				view.resize(ec.width, ec.height, ec.pixelRatio);
 				cpDebugView.resize();
 			}
+		},
+
+		zoom: function(value) {
+			return worldView.zoom(value);
 		},
 
 		getViewDom: function() {
