@@ -4,15 +4,14 @@
 	var ec = window.ec;
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
-		this.data = null;
+		this.layers = [];
 	};
 
 	var proto = Canvas2dMapView.prototype;
 
 	proto.loadLayers = function(data) {
-		this.data = data;
+		var layers = this.layers = data.layers;
 		// TODO: preload images
-		var layers = data.layers;
 		for (var i=layers.length; i-- > 0;) {
 			this.loadLayer(layers[i], data.path);
 		}
@@ -28,7 +27,7 @@
 	};
 
 	proto.getLayers = function() {
-		return this.data.layers;
+		return this.layers || [];
 	};
 
 	proto.getItemsInLayer = function(layer, entities) {
@@ -71,7 +70,7 @@
 	};
 
 	proto.draw = function(context, viewport) {
-		var layers = this.data.layers;
+		var layers = this.layers;
 		for (var i=layers.length; i-- > 0;) {
 			this.drawLayer(layers[i], context, viewport);
 		}
