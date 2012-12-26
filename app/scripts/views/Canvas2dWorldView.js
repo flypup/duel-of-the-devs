@@ -37,7 +37,7 @@
 
 			var j, mapElement;
 			for (j=elements.length; j-- > 0;) {
-				mapElement = this.world.addMapElement(elements[j], 0, 0);
+				mapElement = this.world.addMapElement(elements[j]);
 				mapElement.layerNum = i;
 				if (mapElement.isEntity) {
 					// entity
@@ -50,7 +50,7 @@
 
 			}
 			for (j=shapes.length; j-- > 0;) {
-				mapElement = this.world.addMapElement(shapes[j], 0, 0);
+				mapElement = this.world.addMapElement(shapes[j]);
 				mapElement.layerNum = i;
 				mapElement.name = layer.name +'_'+ j;
 				// ew!
@@ -98,7 +98,7 @@
 		}
 		// test
 		if (entities.length) {
-			throw(entities.length + 'elements did not get placed in a layer');
+			throw(entities.length + ' elements did not get placed in a layer');
 		}
 
 		var viewport = this.updateViewport(this.camera);

@@ -49,10 +49,6 @@
 
 	var proto = World.prototype;
 
-	var returnFalse = function() {
-		return false;
-	};
-
 	proto.term = function() {
 		// TODO: call remove on all entities > bodies > shapes
 		this.entities.length = 0;
@@ -66,6 +62,10 @@
 		space.arbiters.length = 0;
 		space.constraints.length = 0;
 		delete this.space;
+	};
+
+	var returnFalse = function(arbiter, space) {
+		return false;
 	};
 
 	var DAMAGE = 10;
@@ -156,9 +156,9 @@
 		return true;
 	};
 
-	proto.addMapElement = function(element, offsetX, offsetY) {
-		var x = element.x + offsetX;
-		var y = element.y + offsetY;
+	proto.addMapElement = function(element) {
+		var x = element.x;
+		var y = element.y;
 		var z = element.mZ;
 
 		if (element.mapType === 'entity') {
@@ -177,20 +177,69 @@
 		var mapElement = new ec.MapElement();
 		ec.extend(mapElement, element);
 		mapElement.init();
-		
+		var shapes, shape, verts, o, i;
+
 		if (mapElement.mapType === 'wall') {
-			var wall = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
-			wall.depth = mapElement.mDepth;
-			wall.collision_type = World.MAP_TYPE;
-			mapElement.body = wall.body;
+			var wall;
+			shapes = mapElement.shapes;
+			if (mapElement.shape === 'polygons' && shapes) {
+				mapElement.body = new cp.Body(Infinity, Infinity);
+				//poly to verts
+				for (o in shapes) {
+					verts = [];
+					shape = shapes[o];
+					verts = verts.concat.apply(verts, shape.polygons[0]);
+					// reverse y
+					for (i=1; i<verts.length; i+=2) {
+						verts[i] = -verts[i];
+					}
+					try {
+						wall = this.addPolygons(v(x, y+z), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+						wall.depth = mapElement.mDepth;
+						wall.collision_type = World.MAP_TYPE;
+						console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regX+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
+					} catch (err) {
+						console.error('Bad Wall Polygon in "'+mapElement.name+'". '+err +' '+ verts);
+					}
+				}
+			} else {
+				wall = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
+				wall.depth = mapElement.mDepth;
+				wall.collision_type = World.MAP_TYPE;
+				mapElement.body = wall.body;
+			}
 			this.elements.push(mapElement);
 
 		} else if (mapElement.mapType === 'floor') {
-			var floor = this.addBox(v(x, y+mapElement.mDepth+z), mapElement.mWidth, mapElement.mHeight);
-			floor.depth = mapElement.mDepth;
-			floor.collision_type = World.MAP_TYPE;
-			//floor.isSensor = true;
-			mapElement.body = floor.body;
+			var floor;
+			shapes = mapElement.shapes;
+			if (mapElement.shape === 'polygons' && shapes) {
+				mapElement.body = new cp.Body(Infinity, Infinity);
+				//poly to verts... 2d array to flat array
+				for (o in shapes) {
+					verts = [];
+					shape = shapes[o];
+					verts = verts.concat.apply(verts, shape.polygons[0]);//.reverse()
+					// reverse y
+					for (i=1; i<verts.length; i+=2) {
+						verts[i] = -verts[i];
+					}
+					try {
+						floor = this.addPolygons(v(x, y+mapElement.mDepth+z), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+						floor.depth = mapElement.mDepth;
+						floor.collision_type = World.MAP_TYPE;
+						console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
+					} catch (err) {
+						console.error('Bad Floor Polygon in "'+mapElement.name+'". '+err +' '+ verts);
+					}
+				}
+
+			} else {
+				floor = this.addBox(v(x, y+mapElement.mDepth+z), mapElement.mWidth, mapElement.mHeight);
+				floor.depth = mapElement.mDepth;
+				floor.collision_type = World.MAP_TYPE;
+				mapElement.body = floor.body;
+			}
 			this.elements.push(mapElement);
 
 		} else if (mapElement.mapType === 'steps') {
@@ -222,19 +271,33 @@
 		body.nodeIdleTime = Infinity;
 		v1.y = -v1.y;
 		body.p = v1;
-		var wall = this.space.addShape(new cp.BoxShape(body, w, h));
-		wall.setElasticity(0);
-		wall.setFriction(1);
-		wall.setLayers(NOT_GRABABLE_MASK);
-		return wall;
+		var shape = this.space.addShape(new cp.BoxShape(body, w, h));
+		shape.setElasticity(0);
+		shape.setFriction(1);
+		shape.setLayers(NOT_GRABABLE_MASK);
+		return shape;
+	};
+
+	proto.addPolygons = function(v1, verts, body, offset) {
+		body = body || new cp.Body(Infinity, Infinity);
+		offset = offset || v(0,0);
+		body.nodeIdleTime = Infinity;
+		v1.y = -v1.y;
+		body.p = v1;
+		var shape = this.space.addShape(new cp.PolyShape(body, verts, offset));
+		shape.setElasticity(0);
+		shape.setFriction(1);
+		shape.setLayers(NOT_GRABABLE_MASK);
+
+		return shape;
 	};
 
 	proto.addLineSegment = function(v1, v2) {
-		var wall = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
-		wall.setElasticity(0);
-		wall.setFriction(1);
-		wall.setLayers(NOT_GRABABLE_MASK);
-		return wall;
+		var shape = this.space.addShape(new cp.SegmentShape(this.space.staticBody, v1, v2, 0));
+		shape.setElasticity(0);
+		shape.setFriction(1);
+		shape.setLayers(NOT_GRABABLE_MASK);
+		return shape;
 	};
 
 	proto.add = function(entity) {
