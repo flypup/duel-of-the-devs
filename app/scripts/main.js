@@ -463,6 +463,16 @@ var ec = ec || {
 		};
 	}
 
+	var applicationCache = window.applicationCache;
+	if (applicationCache) {
+		applicationCache.addEventListener('updateready', function(e) {
+			if (applicationCache.status === applicationCache.UPDATEREADY) {
+				console.log('cache updated', e);
+				applicationCache.swapCache();
+				// TODO: reload images
+			}
+		}, false);
+	}
 
 	//window.onReady(core.init);
 	requestAnimationFrame( core.load );

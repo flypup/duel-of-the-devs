@@ -34,7 +34,7 @@ module.exports = function( grunt ) {
         options: {
           css_dir: 'temp/styles',
           sass_dir: 'app/styles',
-          images_dir: 'app/images',
+          images_dir: 'app/img',
           javascripts_dir: 'temp/scripts',
           force: true
         }
@@ -68,7 +68,7 @@ module.exports = function( grunt ) {
           'app/*.html',
           'app/styles/**/*.css',
           'app/scripts/**/*.js',
-          'app/images/**/*',
+          'app/img/**/*',
           'app/data/**/*'
         ],
         tasks: 'reload'
