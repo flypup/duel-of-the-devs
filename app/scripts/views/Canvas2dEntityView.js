@@ -115,7 +115,7 @@
 			return frameData;
 		};
 
-		return function(context, entity, viewport) {
+		return function drawEntityFn(context, entity, viewport) {
 			// if (entity.view) {
 			//	entity.view.update(entity, scene);
 			// }

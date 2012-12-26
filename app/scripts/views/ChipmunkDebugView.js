@@ -10,6 +10,8 @@
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
+	var PI2 = 2*Math.PI;
+
 	var verticalSpacer = function(y, lineSpace) {
 		y -= lineSpace;
 		return function() {
@@ -35,7 +37,7 @@
 		this.ctx = canvas.getContext('2d');
 		this.resize();
 		this.scale = 0.08;
-		this.orthoPos = v.mult(this.orthoSize, 0.3).add(pv(100 / this.scale, -100 / this.scale));
+		this.orthoPos = v.mult(this.orthoSize, 0.3).add(pv(80 / this.scale, -10 / this.scale));
 		//document.body.appendChild( canvas );
 
 		this.mouse = v(0,0);
@@ -181,9 +183,9 @@
 		ctx.strokeStyle = 'black';
 		//ctx.clearRect(0, 0, this.width, this.height);
 		
-		this.ctx.lineCap = 'round';
+		//this.ctx.lineCap = 'round';
 
-		this.space.eachShape(function(shape) {
+		this.space.eachShape(function drawShape(shape) {
 			ctx.fillStyle = shape.style();
 			shape.draw(ctx, self.scale, self.point2canvas);
 		});
@@ -213,7 +215,7 @@
 		if (this.mouseJoint) {
 			ctx.beginPath();
 			var c = this.point2canvas(this.mouseBody.p);
-			ctx.arc(c.x, c.y, this.scale * 5, 0, 2*Math.PI, false);
+			ctx.arc(c.x, c.y, this.scale * 5, 0, PI2, false);
 			ctx.fill();
 			ctx.stroke();
 		}
@@ -262,15 +264,15 @@
 
 	// Drawing helper methods
 
-	var drawCircle = function(ctx, scale, point2canvas, c, radius) {
+	var drawCircle = function drawCircle(ctx, scale, point2canvas, c, radius) {
 		c = point2canvas(c);
 		ctx.beginPath();
-		ctx.arc(c.x, c.y, scale * radius, 0, 2*Math.PI, false);
+		ctx.arc(c.x, c.y, scale * radius, 0, PI2, false);
 		ctx.fill();
 		ctx.stroke();
 	};
 
-	var drawLine = function(ctx, point2canvas, a, b) {
+	var drawLine = function drawLine(ctx, point2canvas, a, b) {
 		a = point2canvas(a); b = point2canvas(b);
 
 		ctx.beginPath();
@@ -297,7 +299,7 @@
 		v(1.00, 0.0)
 	];
 
-	var drawSpring = function(ctx, scale, point2canvas, a, b) {
+	var drawSpring = function drawSpring(ctx, scale, point2canvas, a, b) {
 		a = point2canvas(a); b = point2canvas(b);
 		
 		ctx.beginPath();
