@@ -28,6 +28,7 @@
 		var mapBeginHandler  = ec.delegate(this, this.mapCollisionBegin);
 		var mapPreSolveHandler = ec.delegate(this, this.mapCollisionPreSolve);
 		var mapSeparateHandler = ec.delegate(this, this.mapCollisionSeparate);
+
 		space.addCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE, null, null, pushHandler, null);
 		space.addCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE, bumpHandler, null, bumpHandler, null);
 		space.addCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
@@ -100,21 +101,27 @@
 	};
 
 	proto.mapCollisionBegin = function(arbiter, space) {
+		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		var entity     = this.entityForBody(entityBody);
 		var mapElement = this.elementForBody(mapBody);
 		// console.log('mapCollisionBegin', arbiter, mapElement);
-
-		// TODO: Add Map Element to Entity's Checklist
+		
+		// Add Map Element to Entity's Checklist
+		entity.addMapCollision(mapElement);
 
 		return true;
 	};
 
 	proto.mapCollisionSeparate = function(arbiter, space) {
+		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		var entity     = this.entityForBody(entityBody);
 		var mapElement = this.elementForBody(mapBody);
 		// console.log('mapCollisionSeparate', arbiter, mapElement);
-
-		// TODO: Remove Map Element from Entity's Checklist
+		
+		// Remove Map Element from Entity's Checklist
+		entity.removeMapCollision(mapElement);
 	};
 
 	proto.mapCollisionPreSolve = function(arbiter, space) {

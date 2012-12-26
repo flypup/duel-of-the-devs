@@ -95,8 +95,8 @@ var ec = ec || {
 		    view.add(userInput);
 		    ec.view = view;
 
-		    if (maps && maps.courtyard) {
-				worldView.setMapData(maps.courtyard);
+		    if (maps && maps.testmap) {
+				worldView.setMapData(maps.testmap);
 		    }
 
 		    // monk
@@ -141,6 +141,9 @@ var ec = ec || {
 			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
 
 			//worldView.zoom(0.5);
+			player.setPos(640, 1012, 0);
+			boss.setPos(240, 1012, 0);
+
 			worldView.lookAt(player.body.p.x, -player.body.p.y);
 
 			if (ec.touch) {
@@ -390,7 +393,7 @@ var ec = ec || {
 	ec.loadMap = function(data) {
 		maps = maps || {};
 		maps[data.name] = data;
-		if (worldView) {
+		if (worldView && data.name === 'testmap') {
 			worldView.setMapData(data);
 		}
 	};

@@ -90,8 +90,27 @@
 		var layers = this.mapRenderer.getLayers();
 		var i, len;
 		var entitiesInLayers = [];
+		// check entity map collisions
+		for (i = entities.length; i-- > 0;) {
+			var entity = entities[i];
+			entity.layerNum = -1;
+			if (entity.mapCollision && entity.mapCollision.length) {
+				for (var j=entity.mapCollision.length; j-- > 0;) {
+					var element = entity.mapCollision[j];
+					if (element.mapType === 'floor') {
+						entity.layerNum = Math.max(entity.layerNum, element.layerNum);
+					}
+				}
+				if (entity.layerNum > -1) {
+					entitiesInLayers[entity.layerNum] = entitiesInLayers[entity.layerNum] || [];
+					entities.splice(i, 1);
+					entitiesInLayers[entity.layerNum].push(entity);
+				}
+			}
+		}
+		// entities that do not have any map collisions
 		for (i=layers.length; i-- > 0;) {
-			var inLayer = this.mapRenderer.getItemsInLayer(layers[i], entities);
+			var inLayer = this.mapRenderer.getItemsInLayer(layers[i], entities, entitiesInLayers[i]);
 			//sort Entities in each layer
 			inLayer.sort(sortEntities);
 			entitiesInLayers[i] = inLayer;

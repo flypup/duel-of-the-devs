@@ -36,6 +36,21 @@
 		return this;
 	};
 
+	proto.addMapCollision  = function(mapElement) {
+		this.mapCollision = this.mapCollision || [];
+		if (this.mapCollision.indexOf(mapElement) < 0) {
+			this.mapCollision.push(mapElement);
+		}
+	};
+
+	proto.removeMapCollision  = function(mapElement) {
+		this.mapCollision = this.mapCollision || [];
+		var index = this.mapCollision.indexOf(mapElement);
+		if (index > -1) {
+			this.mapCollision.splice(index, 1);
+		}
+	};
+	
 	proto.hit = function(arbiter) {
 		console.log('HIT', this);
 		return this;

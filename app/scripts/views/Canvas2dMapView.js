@@ -30,16 +30,16 @@
 		return this.layers || [];
 	};
 
-	proto.getItemsInLayer = function(layer, entities) {
-		var inLayer = [];
+	proto.getItemsInLayer = function(layer, entities, inLayer) {
+		inLayer = inLayer || [];
 		var elements = layer.elements;
 		for (var i = entities.length; i-- > 0;) {
+			var element, j;
 			var entity = entities[i];
 			entity.layerNum = -1;
 			var entityBounds = entity.getSortBounds();
-			var j;
 			for (j=elements.length; j-- > 0;) {
-				var element = elements[j];
+				element = elements[j];
 				if (element.mapType === 'container') {
 					continue;
 				}
