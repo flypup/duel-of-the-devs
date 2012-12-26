@@ -19,7 +19,7 @@ package {
 		 * Entity Shape (box, circle)
 		 */
 
-		[Inspectable(defaultValue="box",enumeration="box,circle")]
+		[Inspectable(defaultValue="box",enumeration="box,circle,polygons")]
 		public var shape:String = "box";
 
 

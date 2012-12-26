@@ -232,8 +232,10 @@ for (var i = layers.length; i-- > 0;) {
 		var group = layer.parentLayer && layer.parentLayer.name;
 		var lData = {};
 		var elements = [];
-		var images = [];
-		var shapes = [];
+		var layerContainer = {
+			mapType: "container",//"parallax"
+			children: []
+		};
 
 		lData.name = layer.name;
 		if (!layer.visible) {
@@ -246,157 +248,239 @@ for (var i = layers.length; i-- > 0;) {
 
 		layerFrameElements = layer.frames[0].elements;
 		for (var j=0;  j<layerFrameElements.length;  j++) {
-			var el = layerFrameElements[j];
-			var eData = {};
-			var libItem;
-			// fl.trace('//     Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
+			var element = layerFrameElements[j];
+			var eData = getElementData(element);
 
-			if (el.elementType === "shape") {
-				eData.x = el.left;
-				eData.y = el.top;
-				eData.width  = el.width;
-				eData.height = el.height;
+			if (element.elementType === "instance") {
+				elements.push(eData);
 
-				if (el.isGroup && el.members.length) {
-					eData.group = true;
-					eData.members = el.members.length;
-				}
-				//if (el.isDrawingObject) {
-				//	eData.drawing = true;
-				//	eData.members = el.members.length;
-				//}
-
-				if (el.isRectangleObject) {
-					eData.rectangle = true;
-				} else if (el.isOvalObject) {
-					eData.oval = true;
-				} else {
-					var polygons = contoursToPolygons(el.contours, -eData.x, -eData.y);
-					if (isRectangle(polygons)) {
-						eData.rectangle = true;
-					} else {
-						eData.polygons = polygons;
-					}
-				}
-
-				extend(eData, contoursToFills(el.contours));
-
-				//export fill image
-				if (eData.fillImage) {
-					if (document.library.itemExists(eData.fillImage)) {
-						if (exported.indexOf(exportDir +'/'+ eData.fillImage) < 0) {
-							var libIndex = document.library.findItemIndex(eData.fillImage);
-							libItem = document.library.items[libIndex];
-							libItem.exportToFile(exportDir +'/'+ eData.fillImage);
-							exported.push(exportDir +'/'+ eData.fillImage);
-						}
-
-					} else {
-						fl.trace('// ERROR: Library Bitmap Item not found  "'+ eData.fillImage +'" (fillImage)');
-					}
-				}
-
-				shapes.push(eData);
-
-			} else if (el.elementType === "instance") {
-
-				if (el.instanceType === "symbol") {
-					eData.name = el.name || ("instance" + el.depth);
-					eData.x = el.x;
-					eData.y = el.y;
-
-					eData.regX = parseFloat((el.x - el.left).toFixed(4));
-					eData.regY = parseFloat((el.y - el.top).toFixed(4));
-					eData.width  = el.width;
-					eData.height = el.height;
-					if (!el.visible) {
-						eData.visible = false;
-					}
-					eData.matrix = el.matrix;
-					elements.push(eData);
-
-					libItem = el.libraryItem;
-					//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
-					// fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
-					if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
-						//SymbolItem
-
-						//"component"
-						extend(eData, parseParameters(el.parameters));
-						if (eData.mWidth !== undefined) eData.mWidth = eData.mWidth || eData.width;
-						if (eData.mHeight !== undefined) eData.mHeight = eData.mHeight || eData.height;
-						if (!eData.notes) eData.notes = undefined;
-
-						if (eData.mapType !== "entity") {
-							if (el.width && el.height) {
-								if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
-									libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
-									exported.push(exportDir +'/'+ libItem.name +'.png');
-								}
-								eData.image = libItem.name +'.png';
-							}
-						}
-
-						if (el.bitmapRenderMode === "export") {
-							//eData.image = "TODO";
-							//el.useTransparentBackground;
-							//el.backgroundColor = "#000000";
-							// eData.x = Math.round(eData.x);
-							// eData.y = Math.round(eData.y);
-							// eData.regX = Math.round(eData.regX);
-							// eData.regY = Math.round(eData.regY);
-
-						} else if (el.bitmapRenderMode === "cache") {
-							eData.cacheAsBitmap = true;
-						}
-						if (el.colorAlphaPercent !== 100) {
-							eData.alpha = Math.max(el.colorAlphaPercent, 0);
-						}
-						if (el.blendMode !== "normal") {
-							eData.blendMode = el.blendMode;
-						}
-
-					} else {
-						fl.trace('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
-					}
-
-				} else if (el.instanceType === "bitmap") {
-					eData.name = el.name || ("instance" + el.depth);
-					eData.x = el.x;
-					eData.y = el.y;
-					eData.width  = el.width;
-					eData.height = el.height;
-					images.push(eData);
-
-					libItem = el.libraryItem;
-					fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
-					if (libItem.itemType === "bitmap") {
-						if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
-							libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
-							exported.push(exportDir +'/'+ libItem.name +'.png');
-						}
-						eData.image = libItem.name +'.png';
-
-					} else {
-						fl.trace('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
-					}
-
-				} else {
-					fl.trace('// ERROR: Instance type not supported  "'+ el.instanceType +'"');
-				}
-
-			} else {
-				fl.trace('// ERROR: Element type not supported  "'+ el.elementType +'"');
+			} else if (element.elementType === "shape" || element.elementType === "bitmap") {
+				layerContainer.children.push(eData);
 			}
-		}
+			
 
+		}
+		if (layerContainer.children.length) elements.push(layerContainer);
 		if (elements.length) lData.elements = elements;
-		if (images.length) lData.images = images;
-		if (shapes.length) lData.shapes = shapes;
 	}
 
 }
 
+
+function getElementData(el, exportImage, regX, regY, noFills) {
+	exportImage |= false;
+	regX |= 0;
+	regY |= 0;
+	noFills |= false;
+	var eData = {};
+	var libItem;
+	// fl.trace('//     Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
+
+	if (el.elementType === "shape") {
+		eData.x = el.left + regX;
+		eData.y = el.top + regY;
+		eData.width  = el.width;
+		eData.height = el.height;
+
+		if (el.isGroup && el.members.length) {
+			eData.group = true;
+			eData.members = el.members.length;
+		}
+		//if (el.isDrawingObject) {
+		//	eData.drawing = true;
+		//	eData.members = el.members.length;
+		//}
+
+		if (el.isRectangleObject) {
+			eData.rectangle = true;
+		} else if (el.isOvalObject) {
+			eData.oval = true;
+		} else {
+			var polygons = contoursToPolygons(el.contours, regX-eData.x, regY-eData.y);
+			if (isRectangle(polygons)) {
+				eData.rectangle = true;
+			} else {
+				eData.polygons = polygons;
+			}
+		}
+
+		if (!noFills) {
+			extend(eData, contoursToFills(el.contours));
+		}
+
+		//export fill image
+		if (eData.fillImage) {
+			if (document.library.itemExists(eData.fillImage)) {
+				if (exported.indexOf(exportDir +'/'+ eData.fillImage) < 0) {
+					var libIndex = document.library.findItemIndex(eData.fillImage);
+					libItem = document.library.items[libIndex];
+					libItem.exportToFile(exportDir +'/'+ eData.fillImage);
+					exported.push(exportDir +'/'+ eData.fillImage);
+				}
+
+			} else {
+				throw('// ERROR: Library Bitmap Item not found  "'+ eData.fillImage +'" (fillImage)');
+			}
+		}
+
+	} else if (el.elementType === "instance") {
+
+		if (el.instanceType === "symbol") {
+			if (!exportImage) {
+				eData.name = el.name || ("instance" + el.depth);
+			}
+			eData.x = el.x + regX;
+			eData.y = el.y + regY;
+			regX = parseFloat((el.x - el.left).toFixed(4));
+			regY = parseFloat((el.y - el.top).toFixed(4));
+			if (el.width || el.height) {
+				eData.width  = el.width;
+				eData.height = el.height;
+			} else {
+				eData.visible = false;
+			}
+			if (!el.visible) {
+				eData.visible = false;
+			}
+			if (!exportImage && eData.width && eData.height) {
+				eData.regX = regX;
+				eData.regY = regY;
+				eData.matrix = el.matrix;
+			} else {
+				eData.x -= regX;
+				eData.y -= regY;
+			}
+
+			libItem = el.libraryItem;
+			//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
+			// fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
+			if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
+				//SymbolItem
+
+				//"component"
+				extend(eData, parseParameters(el.parameters));
+				if (eData.mWidth !== undefined) eData.mWidth = eData.mWidth || eData.width;
+				if (eData.mHeight !== undefined) eData.mHeight = eData.mHeight || eData.height;
+				if (!eData.notes) eData.notes = undefined;
+
+				if (eData.mapType !== "entity") {
+					var exportPng = exportImage || el.bitmapRenderMode === "export" || el.bitmapRenderMode === "cache";
+					var children;
+					if (exportPng) {
+						//eData.cacheAsBitmap = true;
+						if (el.width && el.height) {
+							if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+								libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
+								exported.push(exportDir +'/'+ libItem.name +'.png');
+							}
+							eData.image = libItem.name +'.png';
+						}
+					} else {
+						children = getSymbolChildren(libItem, regX, regY);
+						if (children && children.length) eData.children = children;
+					}
+					if (eData.shape === "polygons") {
+						var shapes = getSymbolShapesLayer(libItem, regX, regY);
+						if (shapes && shapes.length) {
+							eData.shapes = shapes;
+						} else {
+							throw('"polygons" shape must contain "shapes" layer: ('+layer.name+':'+eData.name+')');
+						}
+					}
+				} else {
+					delete eData.width;
+					delete eData.height;
+					delete eData.regX;
+					delete eData.regY;
+					delete eData.matrix;
+				}
+				if (el.colorAlphaPercent !== 100) {
+					eData.alpha = Math.max(el.colorAlphaPercent, 0);
+				}
+				if (el.blendMode !== "normal") {
+					eData.blendMode = el.blendMode;
+				}
+
+			} else {
+				throw('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
+			}
+
+		} else if (el.instanceType === "bitmap") {
+			eData.name = el.name || ("instance" + el.depth);
+			eData.x = el.x + regX;
+			eData.y = el.y + regY;
+			eData.width  = el.width;
+			eData.height = el.height;
+
+			libItem = el.libraryItem;
+			//fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
+			if (libItem.itemType === "bitmap") {
+				if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+					libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
+					exported.push(exportDir +'/'+ libItem.name +'.png');
+				}
+				eData.image = libItem.name +'.png';
+
+			} else {
+				throw('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
+			}
+
+		} else {
+			throw('// ERROR: Instance type not supported  "'+ el.instanceType +'"');
+		}
+
+	} else {
+		throw('// ERROR: Element type not supported  "'+ el.elementType +'"');
+	}
+
+	return eData;
+}
+
+//---------
+
+function getSymbolChildren(symbol, regX, regY) {
+	var children = [];
+	var exportImage = true;
+
+	var layers = symbol.timeline.layers;
+	var layerFrameElements;
+	for (var i = layers.length; i-- > 0;) {
+		var layer = layers[i];
+		// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
+		if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
+			layerFrameElements = layer.frames[0].elements;
+			for (var j=0;  j<layerFrameElements.length;  j++) {
+				var element = layerFrameElements[j];
+				var eData = getElementData(element, exportImage, regX, regY);
+				children.push(eData);
+			}
+		}
+	}
+	return children;
+}
+
+function getSymbolShapesLayer(symbol, regX, regY) {
+	var shapes = [];
+	var exportImage = false;
+	var noFills = true;
+
+	var layers = symbol.timeline.layers;
+	var layerFrameElements;
+	for (var i = layers.length; i-- > 0;) {
+		var layer = layers[i];
+		// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
+		if ((layer.layerType === "normal" || layer.layerType === "guide") && /^shapes$/.test(layer.name)) {
+			layerFrameElements = layer.frames[0].elements;
+			for (var j=0;  j<layerFrameElements.length;  j++) {
+				var element = layerFrameElements[j];
+				var eData = getElementData(element, exportImage, regX, regY, noFills);
+				shapes.push(eData);
+			}
+		}
+	}
+	return shapes;
+}
+//-----------
 var output = JSON.stringify(data, null, 2);
 
 FLfile.createFolder(exportDir);
@@ -452,6 +536,9 @@ function contoursToFills(contours) {
 		if(contour.orientation == -1) {
 			fills.fillColor = contour.fill.color;
 			fills.fillImage = contour.fill.bitmapPath;
+			// if (fills.fillImage) {
+			//	fills.fillMatrix = contour.fill.matrix;
+			// }
 		}
 	}
 	return fills;
