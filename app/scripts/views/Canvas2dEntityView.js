@@ -191,6 +191,11 @@
 				}
 				throw('elements did not get placed in a layer '+entity);
 			}
+			if (ec.debug > 1) {
+				this.label = this.label || new ec.TextField(context, 0, 0, 16);
+				this.label.setPos(x-16, y-((o&&o.regY+16)||0));
+				this.label.setText(''+ entity.layerNum);
+			}
 			context.restore();
 		};
 	};
