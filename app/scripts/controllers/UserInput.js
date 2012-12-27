@@ -337,6 +337,10 @@
 				ec.core.cycleDebug();
 				break;
 
+			case KEY.M:
+				ec.core.cycleMap();
+				break;
+
 			case KEY.F:
 			case KEY.SLASH:
 				ec.core.fullscreen();

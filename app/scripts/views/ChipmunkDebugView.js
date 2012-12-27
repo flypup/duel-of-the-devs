@@ -126,6 +126,10 @@
 		};
 	};
 
+	ChipmunkDebugView.prototype.setSpace = function(space) {
+		this.space = space;
+	};
+	
 	ChipmunkDebugView.prototype.show = function() {
 		this.canvas.style.display = 'block';
 		document.body.appendChild( this.canvas );

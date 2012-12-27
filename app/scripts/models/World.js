@@ -10,6 +10,22 @@
 	var WORLD_BOUNDS = 640;
 
 	var World = ec.World = function() {
+		this.entities = [];
+		this.elements = [];
+	}
+	World.PLAYER_TYPE = 1;
+	World.PLAYER_HAND = 2;
+
+	World.MONSTER_TYPE = 10;
+
+	World.MAP_TYPE = 50;
+
+	World.PROP_TYPE = 100;
+
+	var proto = World.prototype;
+
+
+	proto.init = function() {
 		this.time = 0;
 
 		var space =
@@ -33,36 +49,29 @@
 		space.addCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE, bumpHandler, null, bumpHandler, null);
 		space.addCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
 		space.addCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
+		// TODO: Don't allow player hand to pass through obstacles
 		space.addCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE, returnFalse, null, null, null);
-		
-		this.entities = [];
-		this.elements = [];
 	};
-
-	World.PLAYER_TYPE = 1;
-	World.PLAYER_HAND = 2;
-
-	World.MONSTER_TYPE = 10;
-
-	World.MAP_TYPE = 50;
-
-	World.PROP_TYPE = 100;
-
-	var proto = World.prototype;
 
 	proto.term = function() {
 		// TODO: call remove on all entities > bodies > shapes
 		this.entities.length = 0;
+		this.elements.length = 0;
 		var space = this.space;
-		space.locked = 0;
-		space.removeCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE);
-		space.removeCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE);
-		space.bodies.length = 0;
-		space.sleepingComponents.length = 0;
-		space.constraints.length = 0;
-		space.arbiters.length = 0;
-		space.constraints.length = 0;
-		delete this.space;
+		if (space) {
+			space.locked = 0;
+			space.removeCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE);
+			space.removeCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE);
+			space.removeCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE);
+			space.removeCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE);
+			space.removeCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE);
+			space.bodies.length = 0;
+			space.sleepingComponents.length = 0;
+			space.constraints.length = 0;
+			space.arbiters.length = 0;
+			space.constraints.length = 0;
+			delete this.space;
+		}
 	};
 
 	var returnFalse = function(arbiter, space) {
@@ -101,6 +110,7 @@
 	};
 
 	proto.mapCollisionBegin = function(arbiter, space) {
+		//console.log('mapCollisionBegin');
 		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = this.entityForBody(entityBody);
@@ -114,6 +124,7 @@
 	};
 
 	proto.mapCollisionSeparate = function(arbiter, space) {
+		//console.log('mapCollisionSeparate');
 		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = this.entityForBody(entityBody);
@@ -125,6 +136,7 @@
 	};
 
 	proto.mapCollisionPreSolve = function(arbiter, space) {
+		//console.log('mapCollisionPreSolve');
 		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
 		// if (contact) {
 		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
@@ -161,6 +173,51 @@
 			//arbiter.ignore();
 		}
 		return true;
+	};
+
+	proto.setMap = function(data) {
+		//clear space
+		this.term();
+		this.init();
+
+		// TODO: remember / remove walls - AKA ViewPort Bounds
+		this.addWalls(0, 0, data.width, data.height);
+
+		// add entities / mapElements
+		var layers = data.layers;
+		for (var i=0; i<layers.length; i++) {
+			var layer = layers[i];
+			layer.layerNum = i;
+
+			var elements = layer.elements || [];
+			var shapes = layer.shapes || [];
+
+			var j, mapElement;
+			for (j=elements.length; j-- > 0;) {
+				mapElement = this.addMapElement(elements[j]);
+				mapElement.layerNum = i;
+				if (mapElement.isEntity) {
+					// entity
+					elements.splice(j, 1);
+				} else {
+					mapElement.visible = !!mapElement.image || !!mapElement.children;
+					// ew!
+					elements[j] = mapElement;
+				}
+
+			}
+			for (j=shapes.length; j-- > 0;) {
+				mapElement = this.addMapElement(shapes[j]);
+				mapElement.layerNum = i;
+				mapElement.name = layer.name +'_'+ j;
+				// ew!
+				shapes[j] = mapElement;
+			}
+			layer.elements = elements;
+			layer.shapes = shapes;
+		}
+
+		this.map = data;
 	};
 
 	proto.addMapElement = function(element) {

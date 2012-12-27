@@ -22,45 +22,8 @@
 
 	var proto = Canvas2dWorldView.prototype;
 
-	proto.setMapData = function(data) {
-		// TODO: remember / remove walls - AKA ViewPort Bounds
-		this.world.addWalls(0, 0, data.width, data.height);
-
-		// add entities / mapElements
-		var layers = data.layers;
-		for (var i=0; i<layers.length; i++) {
-			var layer = layers[i];
-			layer.layerNum = i;
-
-			var elements = layer.elements || [];
-			var shapes = layer.shapes || [];
-
-			var j, mapElement;
-			for (j=elements.length; j-- > 0;) {
-				mapElement = this.world.addMapElement(elements[j]);
-				mapElement.layerNum = i;
-				if (mapElement.isEntity) {
-					// entity
-					elements.splice(j, 1);
-				} else {
-					mapElement.visible = !!mapElement.image || !!mapElement.children;
-					// ew!
-					elements[j] = mapElement;
-				}
-
-			}
-			for (j=shapes.length; j-- > 0;) {
-				mapElement = this.world.addMapElement(shapes[j]);
-				mapElement.layerNum = i;
-				mapElement.name = layer.name +'_'+ j;
-				// ew!
-				shapes[j] = mapElement;
-			}
-			layer.elements = elements;
-			layer.shapes = shapes;
-		}
-
-		this.mapRenderer.loadLayers(data);
+	proto.loadMap = function() {
+		this.mapRenderer.loadLayers(this.world.map);
 	};
 
 	proto.updateViewport = function(camera) {
@@ -73,6 +36,7 @@
 	};
 
 	proto.draw = function(context) {
+		//console.log('world 2d draw');
 		context.setTransform(1, 0, 0, 1, 0, 0);
 		context.fillStyle = '#888888';
 		context.globalAlpha = 1;
@@ -88,14 +52,14 @@
 		// loop through layers and create a 2d array of entitiesInLayers
 		var entities = this.world.entities.slice();
 		var layers = this.mapRenderer.getLayers();
-		var i, len;
+		var i, j, len;
 		var entitiesInLayers = [];
 		// check entity map collisions
 		for (i = entities.length; i-- > 0;) {
 			var entity = entities[i];
 			entity.layerNum = -1;
 			if (entity.mapCollision && entity.mapCollision.length) {
-				for (var j=entity.mapCollision.length; j-- > 0;) {
+				for (j=entity.mapCollision.length; j-- > 0;) {
 					var element = entity.mapCollision[j];
 					if (element.mapType === 'floor') {
 						entity.layerNum = Math.max(entity.layerNum, element.layerNum);
@@ -125,7 +89,7 @@
 			this.mapRenderer.drawLayer(layers[i], context, viewport);
 
 			var layerEntities = entitiesInLayers[i];
-			for (var j=0; j<layerEntities.length; j++) {
+			for (j=0; j<layerEntities.length; j++) {
 				var item = layerEntities[j];
 				this.entityRenderer.draw(context, item, viewport);
 			}

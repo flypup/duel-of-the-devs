@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.200',
+	version: '0.1.241',
 	debug: 0
 };
 
@@ -24,6 +24,7 @@ var ec = ec || {
 	var delta, deltaTime, remainder;
 
 	var userInput;
+	var bossInput;
 	var player;
 	var boss;
 	var overlay = null;
@@ -71,7 +72,7 @@ var ec = ec || {
 			rafId = requestAnimationFrame( core.animate );
 
 			userInput = new ec.UserInput();
-
+			bossInput = new ec.EnemyInput();
 		    ec.world =
 		    world = new ec.World();
 
@@ -95,20 +96,10 @@ var ec = ec || {
 		    view.add(userInput);
 		    ec.view = view;
 
-		    if (maps && maps.testmap) {
-				worldView.setMapData(maps.testmap);
+		    if (!world.map) {
+				ec.core.cycleMap();
 		    }
 
-		    // monk
-			ec.player =
-			player =
-			world.add(new ec.Player().setPos(1280, 2930, 0).setInput(userInput));
-
-		    // ninja
-		    var bossInput = new ec.EnemyInput();
-		    boss =
-		    world.add(new ec.Ninja().setPos(1424, 2632, 0).setInput(bossInput));
-		    
 		    cpDebugView = new ec.ChipmunkDebugView(world.space);
 		    debugView = new ec.DebugView();
 		    if (ec.debug) {
@@ -140,9 +131,6 @@ var ec = ec || {
 			overlay = new Image();
 			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
 
-			//worldView.zoom(0.5);
-			player.setPos(640, 1012, 0);
-			boss.setPos(240, 1012, 0);
 
 			worldView.lookAt(player.body.p.x, -player.body.p.y);
 
@@ -179,6 +167,43 @@ var ec = ec || {
 			}
 			
 			sound.playGameMusic();
+		},
+
+		cycleMap: function() {
+			if (!world || !maps) {
+				console.error('cycleMap requires world and maps data', world, maps);
+				return;
+			}
+			var map = maps.courtyard;
+			if (world.map === map) {
+				map = maps.testmap;
+			}
+			if (world.space) {
+				world.remove(player);
+				world.remove(boss);
+			}
+			world.setMap(map);
+			worldView.loadMap();
+			if (cpDebugView) {
+				cpDebugView.setSpace(world.space);
+			}
+
+			//place player and npcs
+			// monk
+			if (!player) {
+				ec.player =
+				player = new ec.Player().setInput(userInput);
+			}
+			player.setPos(map.width/2, map.height/2+450, 0);//player.setPos(1280, 2930, 0);
+			world.add(player);
+
+		    // ninja
+		    if (!boss) {
+				boss = new ec.Ninja().setInput(bossInput);
+		    }
+			boss.setPos(map.width/2+200, map.height/2, 0);//boss.setPos(1424, 2632, 0);
+			bossInput.completeTask();
+		    world.add(boss);
 		},
 
 		userReady: function() {
@@ -393,9 +418,9 @@ var ec = ec || {
 	ec.loadMap = function(data) {
 		maps = maps || {};
 		maps[data.name] = data;
-		if (worldView && data.name === 'testmap') {
-			worldView.setMapData(data);
-		}
+		if (world && !world.map) {
+			ec.core.cycleMap();
+	    }
 	};
 
 	// utils
