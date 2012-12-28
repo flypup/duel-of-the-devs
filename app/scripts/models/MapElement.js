@@ -25,6 +25,7 @@
 		}
 		// TODO: just use z and depth in MapComponent/editor
 		this.z = this.mZ || this.z;
+		this.y = this.y + this.z;
 		this.depth = this.mDepth || this.depth;
 		//visible
 		
