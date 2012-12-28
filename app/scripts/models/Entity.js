@@ -16,6 +16,8 @@
 	proto.depth = 32;
 	proto.groupId = cp.NO_GROUP;
 	proto.isEntity = true;
+	proto.layerNum = 0;
+	proto.layerName = '';
 
 	proto.setView = function(view) {
 		this.view = view;

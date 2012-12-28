@@ -39,6 +39,7 @@
 			for (var j=elements.length; j-- > 0;) {
 				if (elements[j].containsEntity(entity)) {
 					entity.layerNum = layer.layerNum;
+					entity.layerName = layer.name;
 					entities.splice(i, 1);
 					inLayer.push(entity);
 					break;
