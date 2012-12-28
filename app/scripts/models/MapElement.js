@@ -55,6 +55,40 @@
 		}
 	};
 
+	proto.containsEntity = function(entity) {
+		switch (this.mapType) {
+			case 'container':
+			case 'parallax':
+				return false;
+		}
+		var mapBounds = this.getSortBounds();
+		if (this.mapType === 'floor') {
+			if (entity.mapCollision.length) {
+				if (entity.mapCollision.indexOf(this) > -1) {
+					if (entity.z >= mapBounds.top) {
+						return true;
+					}
+				}
+			} else if (entity.z >= mapBounds.top) {
+				return true;
+			}
+		} else {
+			var entityBounds = entity.getSortBounds();
+			if (this.mapType === 'wall') {
+				if (entityBounds.front > mapBounds.front) {
+					return true;
+				}
+			} else if (this.mapType === 'steps') {
+				if (entity.z >= this.z && entityBounds.front > mapBounds.back) {
+					return true;
+				}
+			} else {
+				throw('can\'t test if element contains entity '+ this.mapType);
+			}
+		}
+		return false;
+	};
+
 	proto.getSortBounds = function() {
 		this.sortBounds = this.sortBounds || {top:0, front:0, back:0};
 		this.sortBounds.top = this.z + this.depth;

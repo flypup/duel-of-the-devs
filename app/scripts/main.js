@@ -170,6 +170,7 @@ var ec = ec || {
 		},
 
 		cycleMap: function() {
+			console.log('cycleMap');
 			if (!world || !maps) {
 				console.error('cycleMap requires world and maps data', world, maps);
 				return;
@@ -179,6 +180,9 @@ var ec = ec || {
 				map = maps.testmap;
 			}
 			if (world.space) {
+				if (world.contains(player.attack)) {
+					world.remove(player.attack);
+				}
 				world.remove(player);
 				world.remove(boss);
 			}

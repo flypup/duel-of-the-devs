@@ -10,6 +10,7 @@
 	var WORLD_BOUNDS = 640;
 
 	var World = ec.World = function() {
+		this.time = 0;
 		this.entities = [];
 		this.elements = [];
 	}
@@ -26,8 +27,7 @@
 
 
 	proto.init = function() {
-		this.time = 0;
-
+		
 		var space =
 		this.space = new cp.Space();
 		space.gravity = v(0, 0);
@@ -385,6 +385,7 @@
 			}
 			this.space.removeShape(entity.shape);
 			this.entities.splice(index, 1);
+			entity.mapCollision.length = 0;
 			return entity;
 		}
 		console.error('entity not a child of world', entity);

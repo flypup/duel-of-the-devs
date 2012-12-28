@@ -37,14 +37,12 @@
 	};
 
 	proto.addMapCollision  = function(mapElement) {
-		this.mapCollision = this.mapCollision || [];
 		if (this.mapCollision.indexOf(mapElement) < 0) {
 			this.mapCollision.push(mapElement);
 		}
 	};
 
 	proto.removeMapCollision  = function(mapElement) {
-		this.mapCollision = this.mapCollision || [];
 		var index = this.mapCollision.indexOf(mapElement);
 		if (index > -1) {
 			this.mapCollision.splice(index, 1);
@@ -107,6 +105,7 @@
 	};
 
 	proto.assignCircleShape = function(radius, mass, moment) {
+		this.mapCollision = this.mapCollision || [];
 		moment = moment || cp.momentForCircle(mass, 0, radius, v(0, 0));//cp.vzero);
 		this.radius = radius;
 		this.body = getBody(mass, moment);
@@ -115,6 +114,7 @@
 	};
 
 	proto.assignBoxShape = function(width, height, mass, moment) {
+		this.mapCollision = this.mapCollision || [];
 		moment = moment || cp.momentForBox(mass, width, height);
 		this.width = width;
 		this.height = height;

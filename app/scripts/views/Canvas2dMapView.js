@@ -34,32 +34,11 @@
 		inLayer = inLayer || [];
 		var elements = layer.elements;
 		for (var i = entities.length; i-- > 0;) {
-			var element, j;
 			var entity = entities[i];
 			entity.layerNum = -1;
-			var entityBounds = entity.getSortBounds();
-			for (j=elements.length; j-- > 0;) {
-				element = elements[j];
-				if (element.mapType === 'container') {
-					continue;
-				}
-				var mapBounds = element.getSortBounds();
-				if (element.mapType === 'floor') {
-					if (entity.z >= mapBounds.top) {
-						entity.layerNum = layer.layerNum;
-					}
-				} else if (element.mapType === 'wall') {
-					if ( entityBounds.front > mapBounds.front) {
-						entity.layerNum = layer.layerNum;
-					}
-				} else if (element.mapType === 'steps') {
-					if (entity.z >= element.z && entityBounds.front > mapBounds.back) {
-						entity.layerNum = layer.layerNum;
-					}
-				} else {
-					throw('can\'t test if element contains entity '+ element.mapType);
-				}
-				if (entity.layerNum === layer.layerNum) {//} && entityBounds.front > mapBounds.front) {
+			for (var j=elements.length; j-- > 0;) {
+				if (elements[j].containsEntity(entity)) {
+					entity.layerNum = layer.layerNum;
 					entities.splice(i, 1);
 					inLayer.push(entity);
 					break;
