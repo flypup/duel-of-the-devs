@@ -454,7 +454,7 @@
           "mapType": "floor",
           "mass": 0,
           "mDepth": 0,
-          "mHeight": 1984,
+          "mHeight": 2048,
           "mWidth": 2560,
           "mZ": 0,
           "shape": "box",
