@@ -14,7 +14,7 @@
               "x": 0,
               "y": 0,
               "width": 2560,
-              "height": 1280,
+              "height": 1248,
               "rectangle": true,
               "fillColor": "#000033"
             }
@@ -106,6 +106,25 @@
           "shape": "box",
           "type": "Box",
           "image": "map/trees.png"
+        }
+      ]
+    },
+    {
+      "name": "top bounds",
+      "elements": [
+        {
+          "name": "instance0",
+          "x": 1280,
+          "y": 1520,
+          "visible": false,
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 3000,
+          "mHeight": 128,
+          "mWidth": 2560,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box"
         }
       ]
     },
@@ -392,7 +411,7 @@
       "elements": [
         {
           "name": "bannister1",
-          "x": 560,
+          "x": 559,
           "y": 1664,
           "width": 960,
           "height": 80,
@@ -403,7 +422,7 @@
             "b": 0,
             "c": 0,
             "d": 1,
-            "tx": 560,
+            "tx": 559,
             "ty": 1664
           },
           "mapType": "wall",
@@ -417,7 +436,7 @@
         },
         {
           "name": "bannister2",
-          "x": 2000,
+          "x": 1999,
           "y": 1664,
           "width": 960,
           "height": 80,
@@ -428,7 +447,7 @@
             "b": 0,
             "c": 0,
             "d": 1,
-            "tx": 2000,
+            "tx": 1999,
             "ty": 1664
           },
           "mapType": "wall",
@@ -454,7 +473,7 @@
           "mapType": "floor",
           "mass": 0,
           "mDepth": 0,
-          "mHeight": 1984,
+          "mHeight": 2048,
           "mWidth": 2560,
           "mZ": 0,
           "shape": "box",
@@ -1207,7 +1226,7 @@
       "name": "roof",
       "elements": [
         {
-          "name": "roof",
+          "name": "instance0",
           "x": 1280,
           "y": 1188,
           "width": 1024,
@@ -1223,14 +1242,86 @@
             "ty": 1188
           },
           "mapType": "floor",
+          "mass": 0,
           "mDepth": 32,
           "mHeight": 250,
           "mWidth": 1024,
           "mZ": 400,
-          "notes": "Needs better shape",
-          "shape": "box",
+          "shape": "polygons",
           "type": "Box",
-          "image": "map/roof.png"
+          "image": "map/roof.png",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 1024,
+              "height": 496,
+              "polygons": [
+                [
+                  [
+                    898.35,
+                    0
+                  ],
+                  [
+                    989.7,
+                    236.55
+                  ],
+                  [
+                    1023.65,
+                    459.65
+                  ],
+                  [
+                    1024,
+                    496
+                  ],
+                  [
+                    0,
+                    496
+                  ],
+                  [
+                    0,
+                    459.9
+                  ],
+                  [
+                    34,
+                    236.55
+                  ],
+                  [
+                    126.2,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1024,
+                    459.9
+                  ],
+                  [
+                    1024,
+                    496
+                  ],
+                  [
+                    1023.95,
+                    459.9
+                  ]
+                ],
+                [
+                  [
+                    1023.95,
+                    459.9
+                  ],
+                  [
+                    1024,
+                    496
+                  ],
+                  [
+                    1023.65,
+                    459.65
+                  ]
+                ]
+              ]
+            }
+          ]
         }
       ]
     }
