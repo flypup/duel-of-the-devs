@@ -37,7 +37,7 @@
 			var entity = entities[i];
 			entity.layerNum = -1;
 			for (var j=elements.length; j-- > 0;) {
-				if (elements[j].containsEntity(entity)) {
+				if (elements[j].isBehindEntity(entity)) {
 					entity.layerNum = layer.layerNum;
 					entity.layerName = layer.name;
 					entities.splice(i, 1);

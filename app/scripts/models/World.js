@@ -4,23 +4,22 @@
 	var ec = window.ec;
 	var cp = window.cp;
 	var v = cp.v;
-	var GRABABLE_MASK_BIT = 1<<31;
-	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
-
-	var WORLD_BOUNDS = 640;
 
 	var World = ec.World = function() {
 		this.time = 0;
 		this.entities = [];
 		this.elements = [];
-	}
+	};
+
+	//shape layers
+	var GRABABLE_MASK_BIT = 1<<31;
+	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
+
+	//shape groups
 	World.PLAYER_TYPE = 1;
 	World.PLAYER_HAND = 2;
-
 	World.MONSTER_TYPE = 10;
-
 	World.MAP_TYPE = 50;
-
 	World.PROP_TYPE = 100;
 
 	var proto = World.prototype;
@@ -145,33 +144,24 @@
 		var mapElement = this.elementForBody(mapBody);
 		//console.log('mapCollision', arbiter, mapElement);
 
-		// TODO: Don't use this callback. Apply rules only based on Entity's Checklist - which element it's over - after step, pre draw
-
-		if (entity && mapElement) {
-			var entityBounds = entity.getSortBounds();
-			//standing under
-			if ( entityBounds.top < mapElement.z ) {
-				return false;
-			}
-			var mapBounds = mapElement.getSortBounds();
-			//standing over - fall
-			if ( entity.z > mapBounds.top) {
-				entity.z -= 4;
-				return false;
-			}
-			//standing on
-			if ( entity.z === mapBounds.top) {
-				return false;
-			}
-			// able to climb
-			if ( entity.z >= mapElement.z ) {
-				if ((mapBounds.top - entity.z) <=128) { //mapBounds.top ) {
-					//entity.z = Math.min(entity.z+4, mapBounds.top);
-				}
-			}
-
-			//arbiter.ignore();
+		//determine if entity is outside of collision z
+		var entityBounds = entity.getSortBounds();
+		//standing under
+		if ( entityBounds.top < mapElement.z ) {
+			return false;
 		}
+		var mapBounds = mapElement.getSortBounds();
+		//standing over - fall
+		if ( entity.z > mapBounds.top) {
+			return false;
+		}
+		//standing on
+		if ( entity.z === mapBounds.top) {
+			return false;
+		}
+		//arbiter.ignore();
+
+		//collision
 		return true;
 	};
 

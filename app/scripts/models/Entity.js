@@ -13,6 +13,8 @@
 
 	var proto = Entity.prototype;
 	proto.z = 0;
+	proto.groundZ = 0;
+	proto.velZ = 0;
 	proto.depth = 32;
 	proto.groupId = cp.NO_GROUP;
 	proto.isEntity = true;
@@ -34,7 +36,49 @@
 	};
 
 	proto.postStep = function(delta) {
-		// TODO: update z
+		this.groundZ = this.z;
+
+		// TODO: some things regarding entity z movement need to be worked out
+		var distance;
+		var gravity = -10;
+		var damping = 1;
+		var friction = 0;
+		var thisEntityCanClimb = 128;
+		var thisEntitylimbSpeed = 5;
+		
+		// get floor. target z = floor z
+		// no floor? target z = 0
+		var targetZ = 0;
+		for (var i=0; i<this.mapCollision.length; i++) {
+			var element = this.mapCollision[i];
+			var top = element.getTop(this.body.p.x, -this.body.p.y);
+			if (top > targetZ && (top - this.z) <= thisEntityCanClimb) {
+				targetZ = top;
+			}
+		}
+
+		distance = targetZ - this.z;
+		if (distance > 0) {
+			// climb?
+			if (distance <= thisEntityCanClimb) {
+				this.groundZ = this.z; // TODO: get next lowest floor
+				//this.z = targetZ; // TODO: climb animation
+				//this.velZ = 5;
+				this.velZ = this.velZ * damping + (thisEntitylimbSpeed + friction * this.body.m_inv) * delta / 100;
+				if (this.velZ < 0) {
+					this.velZ = 0;
+				}
+				this.z = Math.min(targetZ, this.z + this.velZ);
+			}
+		} else if (distance < 0) {
+			// fall?
+			this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
+			this.z = Math.max(targetZ, this.z + this.velZ);
+			this.groundZ = targetZ;
+		} else {
+			this.velZ = 0;
+		}
+		
 		return this;
 	};
 

@@ -20,7 +20,7 @@
 		var o = this.shadow || ec.SpriteSheets.shadow.getFrame(0);
 		if (o) {
 			var x =  entity.body.p.x;
-			var y = -entity.body.p.y -entity.z;
+			var y = -entity.body.p.y -entity.groundZ;
 			var rect = o.rect;
 			if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
 				context.save();

@@ -56,7 +56,7 @@
 		}
 	};
 
-	proto.containsEntity = function(entity) {
+	proto.isBehindEntity = function(entity) {
 		switch (this.mapType) {
 			case 'container':
 			case 'parallax':
@@ -76,6 +76,7 @@
 		} else {
 			var entityBounds = entity.getSortBounds();
 			if (this.mapType === 'wall') {
+				// TODO: raycast a->b normal
 				if (entityBounds.front > mapBounds.front) {
 					return true;
 				}
@@ -88,6 +89,14 @@
 			}
 		}
 		return false;
+	};
+
+	proto.getTop = function(x, y) {
+		if (this.mapType === 'steps') {
+			var top = this.z + this.depth * (this.y-y) / this.mHeight;
+			return Math.min(this.z + this.depth, Math.max(0, top));
+		}
+		return this.z + this.depth;
 	};
 
 	proto.getSortBounds = function() {
