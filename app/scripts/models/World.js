@@ -184,7 +184,12 @@
 
 			var j, mapElement;
 			for (j=elements.length; j-- > 0;) {
-				mapElement = this.addMapElement(elements[j]);
+				if (elements[j].mapType === 'entity') {
+					mapElement = this.add(this.initMapEntity(elements[j]));
+				} else {
+					mapElement = this.initMapElement(elements[j]);
+					this.addMapElementBody(mapElement);
+				}
 				mapElement.layerNum = i;
 				if (mapElement.isEntity) {
 					// entity
@@ -196,13 +201,6 @@
 				}
 
 			}
-			for (j=shapes.length; j-- > 0;) {
-				mapElement = this.addMapElement(shapes[j]);
-				mapElement.layerNum = i;
-				mapElement.name = layer.name +'_'+ j;
-				// ew!
-				shapes[j] = mapElement;
-			}
 			layer.elements = elements;
 			layer.shapes = shapes;
 		}
@@ -210,27 +208,32 @@
 		this.map = data;
 	};
 
-	proto.addMapElement = function(element) {
+	proto.initMapEntity = function(element) {
 		var x = element.x;
 		var y = element.y;
 		var z = element.mZ;
+		var EntityClass = ec[element.type];
+		console.log('map entity', element.type, x, y, z);
+		var entity = new EntityClass(
+			element.mass,
+			element.mWidth,
+			element.mHeight
+		).setPos(x, y, z);
+		entity.depth = element.mDepth;
+		return entity;
+	};
 
-		if (element.mapType === 'entity') {
-			var EntityClass = ec[element.type];
-			
-			console.log('map entity', element, x, y, z);
-			var entity = this.add(new EntityClass(
-				element.mass,
-				element.mWidth,
-				element.mHeight
-			).setPos(x, y, z));
-			entity.depth = element.mDepth;
-			return entity;
-		}
-
+	proto.initMapElement = function(element) {
 		var mapElement = new ec.MapElement();
 		ec.extend(mapElement, element);
 		mapElement.init();
+		return mapElement;
+	};
+
+	proto.addMapElementBody = function(mapElement) {
+		var x = mapElement.x;
+		var y = mapElement.y;
+		var z = mapElement.z;
 		var shapes, shape, verts, o, i;
 
 		if (mapElement.mapType === 'wall') {
@@ -248,7 +251,7 @@
 						verts[i] = -verts[i];
 					}
 					try {
-						wall = this.addPolygons(v(x, y+z), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+						wall = this.addPolygons(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 						wall.depth = mapElement.mDepth;
 						wall.collision_type = World.MAP_TYPE;
 						console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regX+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
@@ -257,7 +260,7 @@
 					}
 				}
 			} else {
-				wall = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
+				wall = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 				wall.depth = mapElement.mDepth;
 				wall.collision_type = World.MAP_TYPE;
 				mapElement.body = wall.body;
@@ -279,7 +282,7 @@
 						verts[i] = -verts[i];
 					}
 					try {
-						floor = this.addPolygons(v(x, y+mapElement.mDepth+z), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+						floor = this.addPolygons(v(x, y+mapElement.mDepth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 						floor.depth = mapElement.mDepth;
 						floor.collision_type = World.MAP_TYPE;
 						console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
@@ -289,7 +292,7 @@
 				}
 
 			} else {
-				floor = this.addBox(v(x, y+mapElement.mDepth+z), mapElement.mWidth, mapElement.mHeight);
+				floor = this.addBox(v(x, y+mapElement.mDepth), mapElement.mWidth, mapElement.mHeight);
 				floor.depth = mapElement.mDepth;
 				floor.collision_type = World.MAP_TYPE;
 				mapElement.body = floor.body;
@@ -297,7 +300,7 @@
 			this.elements.push(mapElement);
 
 		} else if (mapElement.mapType === 'steps') {
-			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)+z), mapElement.mWidth, mapElement.mHeight);
+			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 			steps.depth = mapElement.mDepth;
 			steps.collision_type = World.MAP_TYPE;
 			mapElement.body = steps.body;
@@ -309,8 +312,6 @@
 		} else {
 			throw('can\'t make cp shape for map shape: '+ mapElement.mapType);
 		}
-
-		return mapElement;
 	};
 
 	proto.addWalls = function(left, top, right, bottom) {
