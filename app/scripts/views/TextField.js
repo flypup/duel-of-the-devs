@@ -3,7 +3,7 @@
 
 	var ec = window.ec;
 	
-	var TextField = ec.TextField = function(context, x, y, width) {
+	var TextField = ec.TextField = function(context, x, y, width, fillStyle) {
 		this.ctx = context;
 		this.text = '';
 		this.x = x || 0;
@@ -18,7 +18,7 @@
 		this.context = canvas.getContext('2d');
 		this.context.textAlign = 'start';
 		this.context.textBaseline = 'top';
-		this.context.fillStyle = 'black';
+		this.context.fillStyle = fillStyle || 'black';
 		this.context.font = '12px sans-serif';
 		this.context.scale(ratio, ratio);
 	};
