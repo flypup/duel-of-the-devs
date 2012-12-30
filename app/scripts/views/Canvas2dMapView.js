@@ -71,12 +71,11 @@
 		if (!element.visible) {
 			return false;
 		}
-		if (element.width && !this.intersects(element, viewport)) {
-			return false;
-		}
+		if (!element.width || this.intersects(element, viewport)) {
+			context.save();
+			context.globalAlpha = element.alpha;
 		var matrix = element.matrix;
 		if (matrix) {
-			context.save();
 			context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX*matrix.a, matrix.ty - element.regY*matrix.d);
 		} else {
 			context.transform(1, 0, 0, 1, element.drawX, element.drawY);
@@ -99,9 +98,25 @@
 		if (element.imageData) {
 			context.drawImage(element.imageData, 0, 0);
 		}
-
-		if (matrix) {
 			context.restore();
+		}
+		if (ec.debug > 1) {
+			//draw sort bounds
+			var bounds = element.getSortBounds();
+			var debugColor = (element.mapType === 'floor') ? '#f00' : '#f0f';
+
+			element.label = element.label || new ec.TextField(context, 0, 0, 512, debugColor);
+			element.label.setPos(16+element.x-element.width/2, bounds.back+2);
+			element.label.setText(element.name +': '+ element.mapType +' ('+ element.y +', '+ element.z +', '+ element.depth +', '+ element.height +', '+ element.mHeight +')' + bounds.back +','+bounds.front);
+
+			context.strokeStyle = debugColor;
+			context.lineWidth = 1;
+			context.beginPath();
+			//front/back
+			context.rect(element.x-element.width/2, bounds.back, element.width, bounds.front-bounds.back);
+			//top bottom(z)?
+			//context.rect(element.x-element.width/2, element.y-bounds.top, element.width, element.y);
+			context.stroke();
 		}
 		return true;
 	};

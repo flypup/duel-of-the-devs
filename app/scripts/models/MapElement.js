@@ -100,28 +100,56 @@
 	};
 
 	proto.getSortBounds = function() {
-		this.sortBounds = this.sortBounds || {top:0, front:0, back:0};
-		this.sortBounds.top = this.z + this.depth;
-		this.sortBounds.back = this.y - this.mHeight;
+		var bounds = this.sortBounds;
+		if (!bounds) {
+			bounds = this.sortBounds = {top:0, front:0, back:0};
+			bounds.top = this.z + this.depth;
+			bounds.back = this.y - this.mHeight;
 		if (this.mapType === 'entity') {
 			throw('entity sorting should not be handled by element instances');
+
+			} else if (this.shape === 'polygons' && this.shapes) {
+				var shapes = this.shapes;
+				bounds.front = -Infinity;
+				bounds.back  = Infinity;
+				var offsetY;
+				for (var o in shapes) {
+					offsetY = this.y - (this.regY - shapes[o].y);
+					if (this.mapType === 'floor') {
+						offsetY += this.depth;
+					}
+					for (var p in shapes[o].polygons) {
+						var polys = shapes[o].polygons[p];
+						for (var i=0; i<polys.length; i++) {
+							var vert = polys[i];
+							bounds.front = Math.max(bounds.front, offsetY+vert[1]);
+							bounds.back  = Math.min(bounds.back,  offsetY+vert[1]);
+						}
+					}
+				}
+				console.log(this.mapType, this.name, 'yd', this.y+this.depth, 'r', this.regY, 'offsetY', offsetY);
+
 		} else if (this.mapType === 'wall') {
-			this.sortBounds.front = this.y;
-			//this.sortBounds.back = this.y;
+				bounds.front = this.y;
+				//bounds.back = this.y;
 		} else if (this.mapType === 'steps') {
-			this.sortBounds.top = this.z;
-			this.sortBounds.front = this.y;
+				bounds.front = this.y;
 		} else if (this.mapType === 'floor') {
-			this.sortBounds.front = this.y - this.height/2;
+				bounds.back = this.y + this.depth - this.mHeight/2;
+				bounds.front = bounds.back + this.mHeight;
 		} else if (this.mapType === 'parallax') {
-			this.sortBounds.front = -1; // TODO: parallax sorting and depth
-			this.sortBounds.back = -1;
+				bounds.front = -1; // TODO: parallax sorting and depth
+				bounds.back = -1;
 		} else {
 			//throw('unexpected element mapType: ' + this.mapType);
 			//shape
-			this.sortBounds.front = this.y + this.height;
+				bounds.front = this.y + this.mHeight;
+			}
+			if (this.mapType === 'steps') {
+				bounds.top = this.z;
+			}
 		}
-		return this.sortBounds;
+		return bounds;
 	};
 
 })(window);

@@ -224,6 +224,9 @@
 	};
 
 	proto.initMapElement = function(element) {
+		if (element instanceof ec.MapElement) {
+			return element;
+		}
 		var mapElement = new ec.MapElement();
 		ec.extend(mapElement, element);
 		mapElement.init();
@@ -233,8 +236,8 @@
 	proto.addMapElementBody = function(mapElement) {
 		var x = mapElement.x;
 		var y = mapElement.y;
-		var z = mapElement.z;
-		var shapes, shape, verts, o, i;
+		//var z = mapElement.z;
+		var shapes, shape, verts, o, p, i;
 
 		if (mapElement.mapType === 'wall') {
 			var wall;
@@ -245,23 +248,25 @@
 				for (o in shapes) {
 					verts = [];
 					shape = shapes[o];
-					verts = verts.concat.apply(verts, shape.polygons[0]);
-					// reverse y
-					for (i=1; i<verts.length; i+=2) {
-						verts[i] = -verts[i];
-					}
-					try {
-						wall = this.addPolygons(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
-						wall.depth = mapElement.mDepth;
-						wall.collision_type = World.MAP_TYPE;
-						console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regX+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
-					} catch (err) {
-						console.error('Bad Wall Polygon in "'+mapElement.name+'". '+err +' '+ verts);
+					for (p in shape.polygons) {
+						verts = verts.concat.apply(verts, shape.polygons[p]);
+						// reverse y
+						for (i=1; i<verts.length; i+=2) {
+							verts[i] = -verts[i];
+						}
+						try {
+							wall = this.addPolygons(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+							wall.depth = mapElement.depth;
+							wall.collision_type = World.MAP_TYPE;
+							console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regY+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
+						} catch (err) {
+							console.error('Bad Wall Polygon in "'+mapElement.name+'". '+err +' '+ verts);
+						}
 					}
 				}
 			} else {
 				wall = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
-				wall.depth = mapElement.mDepth;
+				wall.depth = mapElement.depth;
 				wall.collision_type = World.MAP_TYPE;
 				mapElement.body = wall.body;
 			}
@@ -276,24 +281,26 @@
 				for (o in shapes) {
 					verts = [];
 					shape = shapes[o];
-					verts = verts.concat.apply(verts, shape.polygons[0]);//.reverse()
-					// reverse y
-					for (i=1; i<verts.length; i+=2) {
-						verts[i] = -verts[i];
-					}
-					try {
-						floor = this.addPolygons(v(x, y+mapElement.mDepth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
-						floor.depth = mapElement.mDepth;
-						floor.collision_type = World.MAP_TYPE;
-						console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
-					} catch (err) {
-						console.error('Bad Floor Polygon in "'+mapElement.name+'". '+err +' '+ verts);
+					for (p in shape.polygons) {
+						verts = verts.concat.apply(verts, shape.polygons[p]);
+						// reverse y
+						for (i=1; i<verts.length; i+=2) {
+							verts[i] = -verts[i];
+						}
+						try {
+							floor = this.addPolygons(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+							floor.depth = mapElement.depth;
+							floor.collision_type = World.MAP_TYPE;
+							console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
+						} catch (err) {
+							console.error('Bad Floor Polygon in "'+mapElement.name+':'+p+'". '+err +' '+ verts);
+						}
 					}
 				}
 
 			} else {
-				floor = this.addBox(v(x, y+mapElement.mDepth), mapElement.mWidth, mapElement.mHeight);
-				floor.depth = mapElement.mDepth;
+				floor = this.addBox(v(x, y+mapElement.depth), mapElement.mWidth, mapElement.mHeight);
+				floor.depth = mapElement.depth;
 				floor.collision_type = World.MAP_TYPE;
 				mapElement.body = floor.body;
 			}
@@ -301,7 +308,7 @@
 
 		} else if (mapElement.mapType === 'steps') {
 			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
-			steps.depth = mapElement.mDepth;
+			steps.depth = mapElement.depth;
 			steps.collision_type = World.MAP_TYPE;
 			mapElement.body = steps.body;
 			this.elements.push(mapElement);

@@ -154,7 +154,7 @@
 		canvas.height = this.height * ratio;
 		canvas.style.width = this.width + 'px';
 		canvas.style.height = this.height + 'px';
-		canvas.style.left = (ec.width  - this.width )/2+'px';
+		canvas.style.left = (ec.width  - this.width )+'px';
 		canvas.style.top  = (ec.height - this.height)+'px';
 		this.ctx.scale(ratio, ratio);
 	};
