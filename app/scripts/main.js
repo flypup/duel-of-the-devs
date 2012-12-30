@@ -101,8 +101,6 @@ var ec = ec || {
 
 				ec.core.cycleMap();
 
-		    cpDebugView = new ec.ChipmunkDebugView(world.space);
-		    debugView = new ec.DebugView();
 		    if (ec.debug) {
 				ec.core.setDebugLevel(ec.debug);
 			}
@@ -199,16 +197,16 @@ var ec = ec || {
 				ec.player =
 				player = new ec.Player().setInput(userInput);
 			}
-			player.setPos(map.width/2, map.height/2+450, 0);//player.setPos(1280, 2930, 0);
 			world.add(player);
+			player.setPos(map.width/2, map.height/2+450, 0);
 
 		    // ninja
 		    if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 		    }
-			boss.setPos(map.width/2+200, map.height/2, 0);//boss.setPos(1424, 2632, 0);
-			bossInput.completeTask();
 		    world.add(boss);
+			boss.setPos(map.width/2+200, map.height/2, 0);
+			bossInput.completeTask();
 		},
 
 		userReady: function() {
@@ -365,7 +363,9 @@ var ec = ec || {
 		resize: function() {
 			if (ec.resizeDisplay()) {
 				view.resize(ec.width, ec.height, ec.pixelRatio);
+				if (cpDebugView) {
 				cpDebugView.resize();
+			}
 			}
 		},
 
@@ -399,6 +399,9 @@ var ec = ec || {
 			if (level < 0) {
 				level = 3;
 			}
+			cpDebugView = cpDebugView || new ec.ChipmunkDebugView(world.space);
+		    debugView = debugView || new ec.DebugView();
+		    
 			debugView.hide();
 			cpDebugView.hide();
 			switch (level) {
