@@ -205,8 +205,9 @@ fl.drawingLayer.endDraw();
 
 var document = fl.getDocumentDOM();
 var fileName = document.name.replace(/\.[^\.]+$/, '');
-var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
-var exportDir = dirUri +'/../../app/data/'+ fileName;
+//var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
+var dir = document.path.replace(/[\/\\][^\/\\]+$/, '');
+var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/')+ fileName;
 var exported = [];
 
 var data = {};
@@ -222,14 +223,15 @@ var layers = document.getTimeline().layers;
 
 // fl.getDocumentDOM().selection
 var layerFrameElements;
+var layerIndex = 0;
 
+fl.trace('Exporting Layers for '+document.getTimeline().name+'...');
 for (var i = layers.length; i-- > 0;) {
 	var layer = layers[i];
-	// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
-
+	
 	if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
-		
 		var group = layer.parentLayer && layer.parentLayer.name;
+
 		var lData = {};
 		var elements = [];
 		var layerContainer = {
@@ -245,7 +247,7 @@ for (var i = layers.length; i-- > 0;) {
 			lData.group = group;
 		}
 		data.layers.push(lData);
-
+		
 		layerFrameElements = layer.frames[0].elements;
 		for (var j=0;  j<layerFrameElements.length;  j++) {
 			var element = layerFrameElements[j];
@@ -257,11 +259,18 @@ for (var i = layers.length; i-- > 0;) {
 			} else if (element.elementType === "shape" || element.elementType === "bitmap") {
 				layerContainer.children.push(eData);
 			}
-			
-
 		}
 		if (layerContainer.children.length) elements.push(layerContainer);
 		if (elements.length) lData.elements = elements;
+
+
+		fl.trace(layerIndex+'\t"'
+			+layer.name +'"\t'
+			+elements.length+' elements\t'
+			+(layerContainer.children.length ? 'container\t' : '')
+			+(group ? 'group: "'+group+'" ' : ''));
+		
+		layerIndex++;
 	}
 
 }
@@ -274,7 +283,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 	noFills |= false;
 	var eData = {};
 	var libItem;
-	// fl.trace('//     Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
+	// fl.trace('Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
 
 	if (el.elementType === "shape") {
 		eData.x = el.left + regX;
@@ -353,7 +362,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 
 			libItem = el.libraryItem;
 			//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
-			// fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
+			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 			if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
 				//SymbolItem
 
@@ -413,7 +422,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 			eData.height = el.height;
 
 			libItem = el.libraryItem;
-			//fl.trace('//       Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
+			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 			if (libItem.itemType === "bitmap") {
 				if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
 					libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
@@ -446,7 +455,7 @@ function getSymbolChildren(symbol, regX, regY) {
 	var layerFrameElements;
 	for (var i = layers.length; i-- > 0;) {
 		var layer = layers[i];
-		// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
+		// fl.trace('--> Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
 		if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
 			layerFrameElements = layer.frames[0].elements;
 			for (var j=0;  j<layerFrameElements.length;  j++) {
@@ -468,7 +477,7 @@ function getSymbolShapesLayer(symbol, regX, regY) {
 	var layerFrameElements;
 	for (var i = layers.length; i-- > 0;) {
 		var layer = layers[i];
-		// fl.trace('//   Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
+		// fl.trace('--> Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
 		if ((layer.layerType === "normal" || layer.layerType === "guide") && /^shapes$/.test(layer.name)) {
 			layerFrameElements = layer.frames[0].elements;
 			for (var j=0;  j<layerFrameElements.length;  j++) {
@@ -484,12 +493,8 @@ function getSymbolShapesLayer(symbol, regX, regY) {
 var output = JSON.stringify(data, null, 2);
 
 FLfile.createFolder(exportDir);
-
-// fl.trace(output);
-// fl.outputPanel.save(exportDir +'/data.json');
-
-fl.trace('ec.loadMap('+output+');');
-fl.outputPanel.save(exportDir +'/data.js', false, false);
+FLfile.write(exportDir +'/data.js', 'ec.loadMap('+output+');');
+fl.trace('Map exported to '+exportDir);
 
 /* -------------------------------------------------------------------------
 	Parse Component Instance Parameters
