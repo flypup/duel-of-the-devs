@@ -1,4 +1,4 @@
-﻿ec.loadMap({
+ec.loadMap({
   "name": "courtyard",
   "path": "data/courtyard",
   "width": 2560,
@@ -6,6 +6,7 @@
   "layers": [
     {
       "name": "sky",
+      "group": "background",
       "elements": [
         {
           "mapType": "container",
@@ -24,6 +25,7 @@
     },
     {
       "name": "moon",
+      "group": "background",
       "elements": [
         {
           "name": "moon",
@@ -54,6 +56,7 @@
     },
     {
       "name": "trees",
+      "group": "background",
       "elements": [
         {
           "name": "trees1",
@@ -845,6 +848,7 @@
     },
     {
       "name": "roof bounds east",
+      "group": "roofs",
       "elements": [
         {
           "name": "roofsideeastnorth",
@@ -1016,6 +1020,7 @@
     },
     {
       "name": "roof bounds west",
+      "group": "roofs",
       "elements": [
         {
           "name": "roofsidewestsouth",
@@ -1187,6 +1192,7 @@
     },
     {
       "name": "roof bounds south",
+      "group": "roofs",
       "elements": [
         {
           "mapType": "container",
@@ -1224,6 +1230,7 @@
     },
     {
       "name": "roof",
+      "group": "roofs",
       "elements": [
         {
           "name": "roof",
