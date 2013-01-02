@@ -50,7 +50,7 @@ ec.loadMap({
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/moon.png"
+          "image": "elements/moon.png"
         }
       ]
     },
@@ -82,7 +82,7 @@ ec.loadMap({
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/trees.png"
+          "image": "elements/trees.png"
         },
         {
           "name": "trees2",
@@ -108,7 +108,7 @@ ec.loadMap({
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/trees.png"
+          "image": "elements/trees.png"
         }
       ]
     },
@@ -218,7 +218,7 @@ ec.loadMap({
               "width": 870,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             },
             {
               "x": 1700,
@@ -226,7 +226,7 @@ ec.loadMap({
               "width": 863,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             }
           ]
         }
@@ -234,6 +234,7 @@ ec.loadMap({
     },
     {
       "name": "wall",
+      "group": "temple",
       "elements": [
         {
           "name": "templeFront",
@@ -259,12 +260,13 @@ ec.loadMap({
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/templefront.png"
+          "image": "elements/templefront.png"
         }
       ]
     },
     {
       "name": "ledge right",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgesidewest",
@@ -305,6 +307,7 @@ ec.loadMap({
     },
     {
       "name": "ledge left",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgesidewest",
@@ -345,6 +348,7 @@ ec.loadMap({
     },
     {
       "name": "ledge center",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgefront",
@@ -385,6 +389,7 @@ ec.loadMap({
     },
     {
       "name": "ledge wall",
+      "group": "ledge",
       "elements": [
         {
           "mapType": "container",
@@ -395,7 +400,7 @@ ec.loadMap({
               "width": 960,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/bricksgray2_64.png"
+              "fillImage": "elements/fills/bricksgray2_64.png"
             },
             {
               "x": 1520,
@@ -403,7 +408,7 @@ ec.loadMap({
               "width": 960,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/bricksgray2_64.png"
+              "fillImage": "elements/fills/bricksgray2_64.png"
             }
           ]
         }
@@ -411,6 +416,7 @@ ec.loadMap({
     },
     {
       "name": "ledge bannister",
+      "group": "ledge",
       "elements": [
         {
           "name": "bannister1",
@@ -435,7 +441,7 @@ ec.loadMap({
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/bannister.png"
+          "image": "elements/bannister.png"
         },
         {
           "name": "bannister2",
@@ -460,7 +466,7 @@ ec.loadMap({
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/bannister.png"
+          "image": "elements/bannister.png"
         }
       ]
     },
@@ -563,6 +569,7 @@ ec.loadMap({
     },
     {
       "name": "steps",
+      "group": "courtyard",
       "elements": [
         {
           "name": "stairs",
@@ -587,12 +594,13 @@ ec.loadMap({
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/steps.png"
+          "image": "elements/steps.png"
         }
       ]
     },
     {
       "name": "entities",
+      "group": "entities",
       "elements": [
         {
           "name": "cauldron2",
@@ -880,56 +888,56 @@ ec.loadMap({
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         },
@@ -963,56 +971,56 @@ ec.loadMap({
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         }
@@ -1052,56 +1060,56 @@ ec.loadMap({
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         },
@@ -1135,56 +1143,56 @@ ec.loadMap({
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         }
@@ -1222,7 +1230,7 @@ ec.loadMap({
                   ]
                 ]
               ],
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             }
           ]
         }
@@ -1256,7 +1264,7 @@ ec.loadMap({
           "mZ": 400,
           "shape": "polygons",
           "type": "Box",
-          "image": "map/roof.png",
+          "image": "elements/roof.png",
           "shapes": [
             {
               "x": 0,

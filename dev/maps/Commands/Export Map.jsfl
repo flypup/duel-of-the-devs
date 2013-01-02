@@ -1,3 +1,7 @@
+/*
+ *	@author Rob Walch
+*/
+
 /* -------------------------------------------------------------------------
 	JSON.stringify
 */
@@ -204,28 +208,31 @@ fl.drawingLayer.endDraw();
 */
 
 var document = fl.getDocumentDOM();
-var fileName = document.name.replace(/\.[^\.]+$/, '');
+var timeline = document.getTimeline();
+
+// if this is not the main timeline (Scene 1), use the parent clip's name, otherwise use the file name
+var mapName = (timeline.name.indexOf('Scene') === -1)
+	? timeline.name
+	: document.name.replace(/\.[^\.]+$/, '');
+
 //var dirUri = document.pathURI.replace(/\/[^\/]+$/, '');
 var dir = document.path.replace(/[\/\\][^\/\\]+$/, '');
-var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/')+ fileName;
+var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/')+ mapName;
 var exported = [];
 
 var data = {};
-data.name = fileName;
-data.path = "data/"+ fileName;
+data.name = mapName;
+data.path = "data/"+ mapName;
 data.width  = document.width;
 data.height = document.height;
 data.layers = [];
 
-// fl.getDocumentDOM().getTimeline().layers
-// fl.getDocumentDOM().getTimeline().currentLayer
-var layers = document.getTimeline().layers;
+var layers = timeline.layers;
 
-// fl.getDocumentDOM().selection
 var layerFrameElements;
 var layerIndex = 0;
 
-fl.trace('Exporting Layers for '+document.getTimeline().name+'...');
+fl.trace('Exporting Layers for '+timeline.name+'...');
 for (var i = layers.length; i-- > 0;) {
 	var layer = layers[i];
 	
@@ -264,10 +271,9 @@ for (var i = layers.length; i-- > 0;) {
 		if (elements.length) lData.elements = elements;
 
 
-		fl.trace(layerIndex+'\t"'
-			+layer.name +'"\t'
-			+elements.length+' elements\t'
-			+(layerContainer.children.length ? 'container\t' : '')
+		fl.trace(layerIndex+'\t\t"'
+			+layer.name +'"\t\t'
+			+(layerContainer.children.length ? (layerContainer.children.length+' children') : (elements.length+' elements'))+'\t\t'
 			+(group ? 'group: "'+group+'" ' : ''));
 		
 		layerIndex++;
@@ -323,6 +329,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				if (exported.indexOf(exportDir +'/'+ eData.fillImage) < 0) {
 					var libIndex = document.library.findItemIndex(eData.fillImage);
 					libItem = document.library.items[libIndex];
+					fl.trace('\t\texporting fill image "'+libItem.name+'" to file: '+eData.fillImage);
 					libItem.exportToFile(exportDir +'/'+ eData.fillImage);
 					exported.push(exportDir +'/'+ eData.fillImage);
 				}
@@ -379,6 +386,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 						//eData.cacheAsBitmap = true;
 						if (el.width && el.height) {
 							if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+								fl.trace('\t\texporting symbol "'+libItem.name+'" to PNG sequence: '+libItem.name +'.png');
 								libItem.exportToPNGSequence(exportDir +'/'+ libItem.name +'.png');
 								exported.push(exportDir +'/'+ libItem.name +'.png');
 							}
@@ -425,6 +433,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 			if (libItem.itemType === "bitmap") {
 				if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
+					fl.trace('\t\texporting bitmap "'+libItem.name+'" to file: '+eData.fillImage);
 					libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
 					exported.push(exportDir +'/'+ libItem.name +'.png');
 				}
