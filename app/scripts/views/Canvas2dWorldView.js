@@ -12,7 +12,12 @@
 		// TODO: add instances to graph for entities in world model
 		this.entityRenderer = new ec.Canvas2dEntityView();
 		
-		this.camera = {};
+		this.camera = {
+			lookAt: function(x, y) {
+				this.x = -this.width/this.scaleX/2 + x;
+				this.y = -this.height/this.scaleY/2 + y - 64;
+			}
+		};
 		this.camera.x = this.camera.y = 16;
 		this.camera.zoom = 1;
 		this.viewport = {
@@ -81,8 +86,7 @@
 	};
 
 	proto.lookAt = function(x, y) {
-		this.camera.x = -this.camera.width/this.camera.scaleX/2 + x;
-		this.camera.y = -this.camera.height/this.camera.scaleY/2 + y - 64;
+		this.camera.lookAt(x, y);
 	};
 
 	proto.resize = function(width, height, ratio) {
@@ -99,7 +103,7 @@
 		amount = amount * ec.height / verticalPixels;
 		this.camera.scaleX = this.camera.pixelRatio * amount;
 		this.camera.scaleY = this.camera.pixelRatio * amount;
-		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY);
+		console.log('zoom', this.camera.zoom, 'factor', amount, 'x,y:', this.camera.scaleX, this.camera.scaleY, 'w,h:', this.camera.width, this.camera.height, 'px:', this.camera.pixelRatio);
 	};
 
 	var sortEntities = function(a, b) {

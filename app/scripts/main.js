@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.264',
+	version: '0.1.266',
 	debug: 0
 };
 
@@ -13,6 +13,8 @@ var ec = ec || {
 	
 	var world;
 	var maps;
+	var scenes;
+	var scene;
 	var view;
 	var worldView;
 	var creditsView;
@@ -35,10 +37,9 @@ var ec = ec || {
 
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Scene,Animation,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,createjs,Stats').split(',');
-	//'SpriteSheet,Rectangle'
-
+	
 	var hasProperties = function(obj, props) {
 		if (!obj) {
 			return false;
@@ -61,7 +62,11 @@ var ec = ec || {
 		},
 
 		load: function(time) {
-			if (!hasProperties(window, globalRequired) || !hasProperties(ec, required) || !hasProperties(maps, ['testmap','courtyard'])) {
+			if (!hasProperties(window, globalRequired) ||
+				!hasProperties(ec, required) ||
+				!hasProperties(maps, ('testmap,courtyard').split(',')) ||
+				!hasProperties(scenes, ['enter_the_ninja']) ||
+				!hasProperties(window.createjs, ('SpriteSheet,Rectangle').split(','))) {
 				console.log('loading');
 				requestAnimationFrame( core.load );
 				return;
@@ -79,15 +84,12 @@ var ec = ec || {
 			deltaTime = time;
 		    remainder = 0;
 		    
-			rafId = requestAnimationFrame( core.animate );
-
-			userInput = new ec.UserInput();
+		    userInput = new ec.UserInput();
 			bossInput = new ec.EnemyInput();
 		    ec.world =
 		    world = new ec.World();
 
-			ec.resizeDisplay();
-
+		    ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
 
@@ -106,12 +108,7 @@ var ec = ec || {
 		    view.add(userInput);
 		    ec.view = view;
 
-				ec.core.cycleMap();
-
-		    if (ec.debug) {
-				ec.core.setDebugLevel(ec.debug);
-			}
-
+		    //-------- UI --------//
 		    ec.addBrowserListeners(userInput);
 
 		    if (ec.touch) {
@@ -133,58 +130,46 @@ var ec = ec || {
 				window.scrollTo( 0, 1 );
 			}
 
+			//-------- DEBUG / GUI --------//
+			if (ec.debug) {
+				ec.core.setDebugLevel(ec.debug);
+			}
+
+			if (!ec.touch) {
+				// debugView.worldGui(world);
+				// view.debugGui(debugView);
+			}
+
+			//-------- TITLE SCREEN SETUP --------//
+			sound.stop();
+
 			paused = true;
 			overlay = new Image();
 			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
 
-
-			worldView.lookAt(player.body.p.x, -player.body.p.y);
-
+			
 			if (ec.touch) {
 				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
 			} else {
 				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.start, false);
 			}
 
-			// GUI Settings
-			if (!ec.touch) {
-				// debugView.worldGui(world);
-				// view.debugGui(debugView);
-			}
+			//-------- SCENE INIT --------//
 
-			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
-
-			sound.stop();
-		},
-
-		start: function(e) {
-			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
-
-			overlay = null;
-			if (ec.playerInteractions < 1) {
-				overlay = new Image();
-				if (!ec.touch) {
-					overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
-					ec.core.trackEvent('game', 'guide', 'guide-move-desktop');
-				} else {
-					overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
-					ec.core.trackEvent('game', 'guide', 'guide-touch');
-				}
-			}
+		    var sceneData = scenes.enter_the_ninja;
+		    scene = new ec.Scene(sceneData);
 			
-			sound.playGameMusic();
+			//-------- MAP INIT --------//
+
+			var map = maps[scene.mapName];
+		    ec.core.setupMap(map, scene);
+
+			//-------- TRACKING --------//
+			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
 
-		cycleMap: function() {
-			console.log('cycleMap');
-			if (!world || !maps) {
-				console.error('cycleMap requires world and maps data', world, maps);
-				return;
-			}
-			var map = maps.courtyard;//testmap;//
-			if (world.map === map) {
-				map = maps.testmap;//courtyard;//
-			}
+		setupMap: function(map, scene) {
+			console.log('setupMap', map);
 			if (world.space) {
 				if (world.contains(player.attack)) {
 					world.remove(player.attack);
@@ -198,32 +183,73 @@ var ec = ec || {
 				cpDebugView.setSpace(world.space);
 			}
 
-			//place player and npcs
+			//----- Player and NPC entity setup -----//
+
 			// monk
 			if (!player) {
 				ec.player =
 				player = new ec.Player().setInput(userInput);
 			}
 			world.add(player);
-			player.setPos(map.width/2, map.height/2+450, 0);
-
+			
 		    // ninja
 		    if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 		    }
 		    world.add(boss);
-			boss.setPos(map.width/2+200, map.height/2, 0);
-			bossInput.completeTask();
+
+			// scene
+			rafId = requestAnimationFrame(
+				scene ? core.animateScene : core.animate
+			);
+
+			//worldView.zoom(0.75);
+			if (scene) {
+				scene.init({
+					viewport: worldView.camera,
+					monk: player,
+					boss: boss
+				});
+			} else {
+				bossInput.completeTask();
+				player.setPos(map.width/2, map.height/2+450, 0);
+				boss.setPos(map.width/2+200, map.height/2, 0);
+				worldView.lookAt(player.body.p.x, -player.body.p.y);
+			}
+		},
+
+		cycleMap: function() {
+			var map = maps.courtyard;//testmap;//
+			if (world.map === map) {
+				map = maps.testmap;//courtyard;//
+			}
+			ec.core.setupMap(map, null);
+		},
+
+		start: function(e) {
+			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
+
+			overlay = null;
+			
+			// sound.playGameMusic();
+		},
+
+		userStarted: function() {
+			overlay = new Image();
+			if (!ec.touch) {
+				overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
+				ec.core.trackEvent('game', 'guide', 'guide-move-desktop');
+			} else {
+				overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
+				ec.core.trackEvent('game', 'guide', 'guide-touch');
+			}
 		},
 
 		userReady: function() {
-			if (overlay) {
-				if (!ec.touch) {
-					overlay = null;
-					overlay = new Image();
-					overlay.src = 'img/ui/guide-fight-desktop.png?v=' + ec.version;
-					ec.core.trackEvent('game', 'guide', 'guide-fight-desktop');
-				}
+			if (!ec.touch) {
+				overlay = new Image();
+				overlay.src = 'img/ui/guide-fight-desktop.png?v=' + ec.version;
+				ec.core.trackEvent('game', 'guide', 'guide-fight-desktop');
 			}
 		},
 
@@ -283,6 +309,46 @@ var ec = ec || {
 			}
 
 			if (ec.debug > 0) {
+				debugView.stats.end();
+			}
+		},
+
+		animateScene: function(time) {
+			if (!scene.complete) {
+				rafId = requestAnimationFrame( core.animateScene );
+			} else {
+				rafId = requestAnimationFrame( core.animate );
+				scene = null;
+				return;
+			}
+
+			if (ec.debug > 0) {
+				debugView.stats.begin();
+			}
+
+			delta = (time - deltaTime);
+			deltaTime = time;
+
+			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+
+			if (!paused) {
+				scene.step(delta);
+
+				remainder += delta;
+				while(remainder >= TIME_STEP) {
+					remainder -= TIME_STEP;
+					//world.step(TIME_STEP);
+				}
+			}
+
+			if (ec.debug < 3) {
+				view.draw(delta);
+			}
+
+		    if (ec.debug > 0) {
+			    if (ec.debug > 1) {
+					cpDebugView.step(view);
+			    }
 				debugView.stats.end();
 			}
 		},
@@ -371,8 +437,8 @@ var ec = ec || {
 			if (ec.resizeDisplay()) {
 				view.resize(ec.width, ec.height, ec.pixelRatio);
 				if (cpDebugView) {
-				cpDebugView.resize();
-			}
+					cpDebugView.resize();
+				}
 			}
 		},
 
@@ -428,11 +494,18 @@ var ec = ec || {
 		}
 	};
 
-	// loadMap JSONp callback
+	// loadMap/loadScene JSONp callbacks
 
 	ec.loadMap = function(data) {
+		console.log('loadMap', data.name);
 		maps = maps || {};
 		maps[data.name] = data;
+	};
+
+	ec.loadScene = function(data) {
+		console.log('loadScene', data.name);
+		scenes = scenes || {};
+		scenes[data.name] = data;
 	};
 
 	// utils

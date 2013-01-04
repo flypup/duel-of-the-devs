@@ -10,7 +10,7 @@
 	var direction = v(0,0);
 	var pushpull = v(0,0);
 
-	ec.playerInteractions = 0;
+	ec.playerInteractions = -1;
 	
 	var Player = ec.Player = function() {
 		this.groupId = ec.Entity.groupId++;
@@ -111,6 +111,11 @@
 		this.body.resetForces();
 
 		this.attack.entityStep(ec.world.time, ec.world, this);
+
+		if (ec.playerInteractions === -1) {
+			ec.playerInteractions = 0;
+			ec.core.userStarted();
+		}
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
 			direction.x =  this.input.axes[0];
