@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.241',
+	version: '0.1.264',
 	debug: 0
 };
 
@@ -52,6 +52,13 @@ var ec = ec || {
 	};
 
 	var core = ec.core = {
+
+		begin: function() {
+			//window.onReady(core.init);
+			requestAnimationFrame( core.load );
+
+			ec.core.trackEvent('core', 'preload', ec.version, undefined, true);
+		},
 
 		load: function(time) {
 			if (!hasProperties(window, globalRequired) || !hasProperties(ec, required) || !hasProperties(maps, ['testmap','courtyard'])) {
@@ -496,21 +503,28 @@ var ec = ec || {
 		};
 	}
 
-	var applicationCache = window.applicationCache;
-	if (applicationCache) {
-		applicationCache.addEventListener('updateready', function(e) {
-			if (applicationCache.status === applicationCache.UPDATEREADY) {
-				console.log('cache updated', e);
-				applicationCache.swapCache();
-				// TODO: reload images
+	// handle reloading app cache
+	var appCache = window.applicationCache;
+	if (appCache) {
+		appCache.addEventListener('noupdate', function(e) {
+			ec.core.begin();
+		}, false);
+		appCache.addEventListener('downloading', function(e) {
+			// show app update message
+			var p = document.createElement( 'p' );
+			p.innerHTML = 'Downloading Update...';
+			document.body.appendChild( p );
+		}, false);
+		appCache.addEventListener('updateready', function(e) {
+			if (appCache.status === appCache.UPDATEREADY) {
+				appCache.swapCache();
+				window.location.reload();
 			}
 		}, false);
+	} else {
+		ec.core.begin();
 	}
 
-	//window.onReady(core.init);
-	requestAnimationFrame( core.load );
-
-	ec.core.trackEvent('core', 'preload', ec.version, undefined, true);
 	//ec.core.trackCustom(2, 'version', ec.version, 3);
 
 })(window);
