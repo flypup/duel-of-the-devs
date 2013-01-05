@@ -1,4 +1,4 @@
-/*
+/* -------------------------------------------------------------------------
  *	@author Rob Walch
 */
 
@@ -254,7 +254,10 @@ for (var i = layers.length; i-- > 0;) {
 			lData.group = group;
 		}
 		data.layers.push(lData);
-		
+
+		if (layer.frames.length === 0) {
+			continue;
+		}
 		layerFrameElements = layer.frames[0].elements;
 		for (var j=0;  j<layerFrameElements.length;  j++) {
 			var element = layerFrameElements[j];
@@ -281,6 +284,13 @@ for (var i = layers.length; i-- > 0;) {
 
 }
 
+var output = JSON.stringify(data, null, 2);
+
+FLfile.createFolder(exportDir);
+FLfile.write(exportDir +'/data.js', 'ec.loadMap('+output+');');
+fl.trace('Map exported to '+exportDir);
+
+//-----------
 
 function getElementData(el, exportImage, regX, regY, noFills) {
 	exportImage |= false;
@@ -498,29 +508,24 @@ function getSymbolShapesLayer(symbol, regX, regY) {
 	}
 	return shapes;
 }
-//-----------
-var output = JSON.stringify(data, null, 2);
-
-FLfile.createFolder(exportDir);
-FLfile.write(exportDir +'/data.js', 'ec.loadMap('+output+');');
-fl.trace('Map exported to '+exportDir);
 
 /* -------------------------------------------------------------------------
 	Parse Component Instance Parameters
 */
 
 function parseParameters(componentInstanceParameters) {
-	if (!componentInstanceParameters) return;
-	parameters = {};
-	for (var i=0;  i<componentInstanceParameters.length;  i++) {
-		var parameter = componentInstanceParameters[i];
-		var value = parameter.value;
-		if (parameter.valueType === "Number") {
-			value = parseFloat(value);
-		} else if (parameter.valueType === "List") {
-			value = value[parameter.listIndex].value;
+	var parameters = {};
+	if (componentInstanceParameters) {
+		for (var i=0;  i<componentInstanceParameters.length;  i++) {
+			var parameter = componentInstanceParameters[i];
+			var value = parameter.value;
+			if (parameter.valueType === "Number") {
+				value = parseFloat(value);
+			} else if (parameter.valueType === "List") {
+				value = value[parameter.listIndex].value;
+			}
+			parameters[parameter.name] = value;
 		}
-		parameters[parameter.name] = value;
 	}
 	return parameters;
 }

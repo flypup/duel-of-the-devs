@@ -1,4 +1,4 @@
-/*
+/* -------------------------------------------------------------------------
  *	@author Rob Walch
 */
 
@@ -147,54 +147,210 @@ fl.outputPanel.clear();
 */
 
 var document = fl.getDocumentDOM();
+var timeline = document.getTimeline();
+
 var fileName = document.name.replace(/\.[^\.]+$/, '');
+
+// if this is not the main timeline (Scene 1), use the parent clip's name, otherwise use the file name
+var sceneName = (timeline.name.indexOf('Scene') === -1)
+	? timeline.name
+	: fileName;
+
 var dir = document.path.replace(/[\/\\][^\/\\]+$/, '');
-var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/')+ fileName;
 
 var data = {};
+data.name = sceneName;
 data.map = fileName;
-data.path = "data/"+ fileName;
-//data.name / data.scenes
+//data.path = 'data';
+data.fps = document.frameRate;
+data.useFrames = true;
+data.duration = 0;
+data.tracks = [];
 
-var layers = document.getTimeline().layers;
+var layers = timeline.layers;
 var layerIndex = 0;
+var elements = [];
 
-fl.trace('Exporting Frame Data for '+document.getTimeline().name+'...');
+fl.trace('Exporting Frame Data for '+timeline.name+'...');
 for (var i = layers.length; i-- > 0;) {
 	var layer = layers[i];
-	if (layer.visible && layer.layerType === "normal") {
+	if (layer.name === 'map') {
+		// get map name from instance or library item name
+		var instance = layer.frames[0].elements[0];
+		data.map = instance.name || instance.libraryItem.timeline.name;
+
+	} else if (layer.visible && layer.layerType === 'normal') {
 
 		fl.trace('"'+ layer.name +'"\t'+ layerIndex +'\t'+ layer.frameCount +' '+ layer.animationType);
 
-		// TODO: get keyframes
-		var frames = layer.frames;
-		for (var k=0; k<frames.length; k++) {
-			var  frame = frames[k];
-			if (frame.startFrame === k) {
-				//keyframe
+		data.duration = Math.max(data.duration, layer.frameCount);
 
+		// get keyframes
+		var keyframes = getLayerKeyframes(layer);
+		//ignore layers with no keyframe data
+		if (keyframes.length === 0) {
+			continue;
+		}
 
-				fl.trace(
-					frame.startFrame +'\t'+
-					'"'+
-					frame.name +'"\t'+
-					frame.duration +'\t'+
-					// '"'+ frame.tweenInstanceName +'"\t'+
-					frame.tweenType +'\t'+
-					frame.tweenEasing +'\t'+
-					(frame.actionScript ? '\tAS' : '') +'\t'+
-					frame.elements +'\t'+ (frame.elements.length ? '"'+(frame.elements[0].name||('unnamed instance '+frame.elements[0].instanceType))+'"' : '(no instances)')+
-					(frame.hasCustomEase ? '\r\t\t'+ frame.getCustomEase() : '') +
-					(frame.isMotionObject() ? '\r\t\t'+ frame.getMotionObjectXML() : '') +
-					(frame.soundLibraryItem ? '\r\t\t'+ frame.soundName +'\t'+ frame.soundLoopMode +'\t'+ frame.soundLoop : '')
-				);
+		var elementData = {};
+		var trackData = {
+			name: layer.name,
+			element: elementData,
+			duration: layer.frameCount,
+			keyframes: []
+		};
+		var libraryItem = null;
+		
+		data.tracks.push(trackData);
 
-				//symbolInstance.actionScript
-				//soundItem.sourceFilePath | soundItem.exportToFile()
-				
+		for (var k=0; k<keyframes.length; k++) {
+			var frame = keyframes[k];
+
+			// ------ TRACE IT ALL!!! ----- //
+			fl.trace(
+				frame.startFrame +'\t'+
+				'"'+
+				frame.name +'"\t'+
+				frame.duration +'\t'+
+				// '"'+ frame.tweenInstanceName +'"\t'+
+				frame.tweenType +'\t'+
+				frame.tweenEasing +'\t'+
+				(frame.actionScript ? '\tAS' : '') +'\t'+
+				frame.elements +'\t'+ (frame.elements.length ? '"'+(frame.elements[0].name||('unnamed instance '+frame.elements[0].instanceType))+'"' : '(no instances)')+
+				(frame.hasCustomEase ? '\r\t\t'+ frame.getCustomEase() : '') +
+				(frame.isMotionObject() ? '\r\t\t'+ frame.getMotionObjectXML() : '') +
+				(frame.soundLibraryItem ? '\r\t\t'+ frame.soundName +'\t'+ frame.soundLoopMode +'\t'+ frame.soundLoop : '')
+			);
+			//symbolInstance.actionScript
+			//soundItem.sourceFilePath | soundItem.exportToFile()
+
+			var keyframeData = {
+				start:    frame.startFrame,
+				duration: frame.duration
+			};
+
+			if (frame.elements.length === 0) {
+				// empty
+				keyframeData.empty = true;
+
+			} else if (frame.elements.length === 1) {
+
+				// index element, layer
+				var element = frame.elements[0];
+				if (element.elementType !== 'instance') {
+					throw('Element type not supported ('+ element.elementType +'). Layer "'+ layer.name +'" frame '+ frame.startFrame);
+				} else if (element.instanceType !== 'symbol') {
+					throw('What am I supposed to do with a '+ element.instanceType +'?. Layer "'+ layer.name +'" frame '+ frame.startFrame);
+				} else if (element.symbolType === 'button') {
+					throw('A button symbol, really?. Layer "'+ layer.name +'" frame '+ frame.startFrame);
+				}
+				if (libraryItem && libraryItem !== element.libraryItem) {
+					throw('Instance library item changed in track ("'+ libraryItem.name +'" -> "'+ element.libraryItem.name +'"). Layer "'+ layer.name +'" frame '+ frame.startFrame);
+				}
+				libraryItem = element.libraryItem;
+				if (!elementData.name) {
+					elementData.name = element.name || libraryItem.timeline.name;
+					// TODO: element type: Entity, Camera, Light, FX, etc...
+					elementData.type = libraryItem.linkageClassName || libraryItem.timeline.name;
+				}
+				// default props
+				keyframeData.x = element.x;
+				keyframeData.y = element.y;
+
+				//custom props
+				if (libraryItem.itemType === 'component') {
+					var params = parseParameters(element.parameters);
+					keyframeData.z = params.z || params.mZ;
+					// TODO: 'standing on' map element reference?
+					// TODO: 'action' : 'jump', 'punch', 'taunt', etc...
+				}
+
+				// optional props
+				if (element.colorAlphaPercent !== 100) {
+					keyframeData.alpha = Math.max(element.colorAlphaPercent, 0);
+				}
+				if (!element.visible) {
+					keyframeData.visible = false;
+				}
+				if (frame.tweenType !== 'none' && k < keyframes.length-1) {
+					keyframeData.tween = true;
+					if (frame.hasCustomEase) {
+						keyframeData.ease = 'inout';
+					} else if (frame.tweenEasing > 0) {
+						keyframeData.ease = 'out';
+					} else if (frame.tweenEasing < 0) {
+						keyframeData.ease = 'in';
+					}
+				}
+
+			} else {
+				// multiple elements in frame
+				throw('Multiple elements in one layer/keyframe not supported. Layer "'+ layer.name +'" Frame '+ frame.startFrame);
 			}
+
+			trackData.keyframes.push(keyframeData);
 		} 
 		
 		layerIndex++;
 	}
+}
+
+var output = JSON.stringify(data, null, 2);
+
+var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/scenes');
+FLfile.createFolder(exportDir);
+FLfile.write(exportDir +'/'+sceneName+'.js', 'ec.loadScene('+output+');');
+fl.trace('Scene exported to '+exportDir);//+'\r'+ output);
+
+function getLayerKeyframes(layer) {
+	var keyframes = [];
+	var frames = layer.frames;
+	for (var i=0; i<frames.length; i++) {
+		if (frames[i].startFrame === i) {
+			//frame.elements, frame.elements.length, frame.elements[0].name, frame.elements[0].instanceType
+			keyframes.push(frames[i]);
+		}
+	}
+	//ignore empty layer frames
+	if (keyframes.length === 1) {
+		if (!keyframes.elements || keyframes.elements.length === 0) {
+			return [];
+		}
+	}
+	return keyframes;
+}
+
+/* -------------------------------------------------------------------------
+	Parse Component Instance Parameters
+*/
+
+function parseParameters(componentInstanceParameters) {
+	var parameters = {};
+	if (componentInstanceParameters) {
+		for (var i=0;  i<componentInstanceParameters.length;  i++) {
+			var parameter = componentInstanceParameters[i];
+			var value = parameter.value;
+			if (parameter.valueType === 'Number') {
+				value = parseFloat(value);
+			} else if (parameter.valueType === 'List') {
+				value = value[parameter.listIndex].value;
+			}
+			parameters[parameter.name] = value;
+		}
+	}
+	return parameters;
+}
+
+function extend(target, source) {
+    for ( var prop in source ) {
+		if ( source.hasOwnProperty( prop ) ) {
+            if ( !target.hasOwnProperty( prop ) ) {
+				var copy = source[ prop ];
+				if (copy !== undefined) {
+					target[ prop ] = source[ prop ];
+				}
+            }
+        }
+    }
+    return target;
 }

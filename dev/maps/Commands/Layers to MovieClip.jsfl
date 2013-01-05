@@ -2,7 +2,7 @@
 /* 
  *	Take selected layers and copy them to a new MovieClip Symbol.
  *	Place the new Symbol on a new layer above the selected layers.
-  *	Remove previously selected layers.
+ *	Remove previously selected layers.
 */
 
 
