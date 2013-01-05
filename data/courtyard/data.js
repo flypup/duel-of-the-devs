@@ -1,4 +1,4 @@
-﻿ec.loadMap({
+ec.loadMap({
   "name": "courtyard",
   "path": "data/courtyard",
   "width": 2560,
@@ -6,6 +6,7 @@
   "layers": [
     {
       "name": "sky",
+      "group": "background",
       "elements": [
         {
           "mapType": "container",
@@ -24,6 +25,7 @@
     },
     {
       "name": "moon",
+      "group": "background",
       "elements": [
         {
           "name": "moon",
@@ -48,12 +50,13 @@
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/moon.png"
+          "image": "elements/moon.png"
         }
       ]
     },
     {
       "name": "trees",
+      "group": "background",
       "elements": [
         {
           "name": "trees1",
@@ -79,7 +82,7 @@
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/trees.png"
+          "image": "elements/trees.png"
         },
         {
           "name": "trees2",
@@ -105,7 +108,7 @@
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/trees.png"
+          "image": "elements/trees.png"
         }
       ]
     },
@@ -215,7 +218,7 @@
               "width": 870,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             },
             {
               "x": 1700,
@@ -223,7 +226,7 @@
               "width": 863,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             }
           ]
         }
@@ -231,6 +234,7 @@
     },
     {
       "name": "wall",
+      "group": "temple",
       "elements": [
         {
           "name": "templeFront",
@@ -256,12 +260,13 @@
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/templefront.png"
+          "image": "elements/templefront.png"
         }
       ]
     },
     {
       "name": "ledge right",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgesidewest",
@@ -302,6 +307,7 @@
     },
     {
       "name": "ledge left",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgesidewest",
@@ -342,6 +348,7 @@
     },
     {
       "name": "ledge center",
+      "group": "ledge",
       "elements": [
         {
           "name": "ledgefront",
@@ -382,6 +389,7 @@
     },
     {
       "name": "ledge wall",
+      "group": "ledge",
       "elements": [
         {
           "mapType": "container",
@@ -392,7 +400,7 @@
               "width": 960,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/bricksgray2_64.png"
+              "fillImage": "elements/fills/bricksgray2_64.png"
             },
             {
               "x": 1520,
@@ -400,7 +408,7 @@
               "width": 960,
               "height": 128,
               "rectangle": true,
-              "fillImage": "map/fills/bricksgray2_64.png"
+              "fillImage": "elements/fills/bricksgray2_64.png"
             }
           ]
         }
@@ -408,6 +416,7 @@
     },
     {
       "name": "ledge bannister",
+      "group": "ledge",
       "elements": [
         {
           "name": "bannister1",
@@ -432,7 +441,7 @@
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/bannister.png"
+          "image": "elements/bannister.png"
         },
         {
           "name": "bannister2",
@@ -457,7 +466,7 @@
           "mZ": 128,
           "shape": "box",
           "type": "Box",
-          "image": "map/bannister.png"
+          "image": "elements/bannister.png"
         }
       ]
     },
@@ -560,6 +569,7 @@
     },
     {
       "name": "steps",
+      "group": "courtyard",
       "elements": [
         {
           "name": "stairs",
@@ -584,12 +594,13 @@
           "mZ": 0,
           "shape": "box",
           "type": "Box",
-          "image": "map/steps.png"
+          "image": "elements/steps.png"
         }
       ]
     },
     {
       "name": "entities",
+      "group": "entities",
       "elements": [
         {
           "name": "cauldron2",
@@ -752,7 +763,7 @@
           "mapType": "wall",
           "mass": 0,
           "mDepth": 288,
-          "mHeight": 1200,
+          "mHeight": 1152,
           "mWidth": 108,
           "mZ": 0,
           "shape": "box",
@@ -806,7 +817,7 @@
           "mapType": "wall",
           "mass": 0,
           "mDepth": 288,
-          "mHeight": 1200,
+          "mHeight": 1152,
           "mWidth": 108,
           "mZ": 0,
           "shape": "box",
@@ -845,6 +856,7 @@
     },
     {
       "name": "roof bounds east",
+      "group": "roofs",
       "elements": [
         {
           "name": "roofsideeastnorth",
@@ -865,7 +877,7 @@
           "mapType": "floor",
           "mass": 0,
           "mDepth": 64,
-          "mHeight": 1016,
+          "mHeight": 1020,
           "mWidth": 128,
           "mZ": 288,
           "shape": "box",
@@ -876,56 +888,56 @@
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         },
@@ -959,56 +971,56 @@
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         }
@@ -1016,6 +1028,7 @@
     },
     {
       "name": "roof bounds west",
+      "group": "roofs",
       "elements": [
         {
           "name": "roofsidewestsouth",
@@ -1047,56 +1060,56 @@
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         },
@@ -1119,7 +1132,7 @@
           "mapType": "floor",
           "mass": 0,
           "mDepth": 64,
-          "mHeight": 1016,
+          "mHeight": 1020,
           "mWidth": 128,
           "mZ": 288,
           "shape": "box",
@@ -1130,56 +1143,56 @@
               "y": -0.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 126.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 253.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 379.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 507.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 634.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 761.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             },
             {
               "x": 0,
               "y": 888.5,
               "width": 128,
               "height": 256,
-              "image": "map/roofsidepanel.png"
+              "image": "elements/roofsidepanel.png"
             }
           ]
         }
@@ -1187,6 +1200,7 @@
     },
     {
       "name": "roof bounds south",
+      "group": "roofs",
       "elements": [
         {
           "mapType": "container",
@@ -1216,7 +1230,7 @@
                   ]
                 ]
               ],
-              "fillImage": "map/fills/rooftiles_64.png"
+              "fillImage": "elements/fills/rooftiles_64.png"
             }
           ]
         }
@@ -1224,9 +1238,10 @@
     },
     {
       "name": "roof",
+      "group": "roofs",
       "elements": [
         {
-          "name": "instance0",
+          "name": "roof",
           "x": 1280,
           "y": 1188,
           "width": 1024,
@@ -1249,13 +1264,13 @@
           "mZ": 400,
           "shape": "polygons",
           "type": "Box",
-          "image": "map/roof.png",
+          "image": "elements/roof.png",
           "shapes": [
             {
               "x": 0,
               "y": 0,
               "width": 1024,
-              "height": 496,
+              "height": 464,
               "polygons": [
                 [
                   [
@@ -1264,59 +1279,23 @@
                   ],
                   [
                     989.7,
-                    236.55
-                  ],
-                  [
-                    1023.65,
-                    459.65
+                    236.7
                   ],
                   [
                     1024,
-                    496
+                    464
                   ],
                   [
                     0,
-                    496
-                  ],
-                  [
-                    0,
-                    459.9
+                    464
                   ],
                   [
                     34,
-                    236.55
+                    236.7
                   ],
                   [
                     126.2,
                     0
-                  ]
-                ],
-                [
-                  [
-                    1024,
-                    459.9
-                  ],
-                  [
-                    1024,
-                    496
-                  ],
-                  [
-                    1023.95,
-                    459.9
-                  ]
-                ],
-                [
-                  [
-                    1023.95,
-                    459.9
-                  ],
-                  [
-                    1024,
-                    496
-                  ],
-                  [
-                    1023.65,
-                    459.65
                   ]
                 ]
               ]
