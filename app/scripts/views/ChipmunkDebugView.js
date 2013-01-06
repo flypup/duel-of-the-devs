@@ -180,12 +180,15 @@
 
 		var self = this;
 
+		ctx.clearRect(0, 0, this.width, this.height);
+		
 		ctx.fillStyle = '#ACF';
+		ctx.globalAlpha = 0.5;
 		ctx.fillRect(0, 0, this.width, this.height);
+		ctx.globalAlpha = 1;
 
 		// Draw shapes
 		ctx.strokeStyle = 'black';
-		//ctx.clearRect(0, 0, this.width, this.height);
 		
 		//this.ctx.lineCap = 'round';
 

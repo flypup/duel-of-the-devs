@@ -114,8 +114,9 @@
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = this.entityForBody(entityBody);
 		var mapElement = this.elementForBody(mapBody);
-		// console.log('mapCollisionBegin', arbiter, mapElement);
-		
+		if (ec.debug > 0) {
+			//console.log('mapCollisionBegin', entity.type, mapElement);
+		}
 		// Add Map Element to Entity's Checklist
 		entity.addMapCollision(mapElement);
 
@@ -128,8 +129,9 @@
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = this.entityForBody(entityBody);
 		var mapElement = this.elementForBody(mapBody);
-		// console.log('mapCollisionSeparate', arbiter, mapElement);
-		
+		if (ec.debug > 0) {
+			//console.log('mapCollisionSeparate', entity.type, mapElement);
+		}
 		// Remove Map Element from Entity's Checklist
 		entity.removeMapCollision(mapElement);
 	};
@@ -142,7 +144,7 @@
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity = this.entityForBody(entityBody);
 		var mapElement = this.elementForBody(mapBody);
-		//console.log('mapCollision', arbiter, mapElement);
+		//console.log('mapCollision', entity, mapElement);
 
 		//determine if entity is outside of collision z
 		var entityBounds = entity.getSortBounds();
@@ -161,6 +163,9 @@
 		}
 		//arbiter.ignore();
 
+		if (ec.debug > 0) {
+			console.log('mapCollision', entity, mapElement);
+		}
 		//collision
 		return true;
 	};
@@ -421,13 +426,27 @@
 	};
 
 	proto.step = function(delta) {
-		for(var i = this.entities.length; i-- > 0;) {
+		var i;
+		for(i = this.entities.length; i-- > 0;) {
 			this.entities[i].step(delta);
 		}
 		this.space.step(delta / 1000);
-		for(var i = this.entities.length; i-- > 0;) {
+		for(i = this.entities.length; i-- > 0;) {
 			this.entities[i].postStep(delta);
 		}
+		this.time += delta;
+	};
+
+	proto.stepScene = function(delta) {
+		var i;
+		// for(i = this.entities.length; i-- > 0;) {
+		//	this.entities[i].step(delta);
+		// }
+		this.space.step(delta / 1000);
+		// TODO: if scenes hint map element collisions, this can work
+		// for(i = this.entities.length; i-- > 0;) {
+		// 	this.entities[i].postStep(delta);
+		// }
 		this.time += delta;
 	};
 

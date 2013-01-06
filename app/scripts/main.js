@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.266',
+	version: '0.1.268',
 	debug: 0
 };
 
@@ -130,16 +130,6 @@ var ec = ec || {
 				window.scrollTo( 0, 1 );
 			}
 
-			//-------- DEBUG / GUI --------//
-			if (ec.debug) {
-				ec.core.setDebugLevel(ec.debug);
-			}
-
-			if (!ec.touch) {
-				// debugView.worldGui(world);
-				// view.debugGui(debugView);
-			}
-
 			//-------- TITLE SCREEN SETUP --------//
 			sound.stop();
 
@@ -164,12 +154,24 @@ var ec = ec || {
 			var map = maps[scene.mapName];
 		    ec.core.setupMap(map, scene);
 
+		    //-------- DEBUG / GUI --------//
+			if (ec.debug) {
+				ec.core.setDebugLevel(ec.debug);
+			}
+
+			if (!ec.touch) {
+				// debugView.worldGui(world);
+				// view.debugGui(debugView);
+			}
+
 			//-------- TRACKING --------//
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 		},
 
 		setupMap: function(map, scene) {
 			console.log('setupMap', map);
+
+			//----- World setup -----//
 			if (world.space) {
 				if (world.contains(player.attack)) {
 					world.remove(player.attack);
@@ -182,6 +184,7 @@ var ec = ec || {
 			if (cpDebugView) {
 				cpDebugView.setSpace(world.space);
 			}
+			remainder = 0;
 
 			//----- Player and NPC entity setup -----//
 
@@ -199,22 +202,24 @@ var ec = ec || {
 		    world.add(boss);
 
 			// scene
+			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame(
 				scene ? core.animateScene : core.animate
 			);
+
+			player.setPos(map.width/2, map.height/2+450, 0);
+			boss.setPos(map.width/2+200, map.height/2, 0);
 
 			//worldView.zoom(0.75);
 			if (scene) {
 				scene.init({
 					viewport: worldView.camera,
 					monk: player,
-					boss: boss
+					ninja: boss
 				});
 			} else {
 				bossInput.completeTask();
-				player.setPos(map.width/2, map.height/2+450, 0);
-				boss.setPos(map.width/2+200, map.height/2, 0);
-				worldView.lookAt(player.body.p.x, -player.body.p.y);
+				worldView.lookAt(player.body.p.x, -player.body.p.y -64);
 			}
 		},
 
@@ -337,7 +342,7 @@ var ec = ec || {
 				remainder += delta;
 				while(remainder >= TIME_STEP) {
 					remainder -= TIME_STEP;
-					//world.step(TIME_STEP);
+					world.stepScene(TIME_STEP);
 				}
 			}
 
@@ -372,7 +377,7 @@ var ec = ec || {
 					world.step(TIME_STEP);
 				}
 
-				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z);
+				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
 			}
 			if (boss.state === 'dead') {
 				boss.decomposed = boss.decomposed || 0;

@@ -20,6 +20,7 @@
 	proto.isEntity = true;
 	proto.layerNum = 0;
 	proto.layerName = '';
+	proto.type = 'Entity';
 
 	proto.setView = function(view) {
 		this.view = view;
@@ -118,12 +119,15 @@
 	};
 
 	proto.setPos = function(x, y, z) {
-		this.body.activate();
-		this.body.p.x =  x;
-		this.body.p.y = -y;
 		if (z !== undefined) {
 			this.z = this.body.z = z;
 		}
+		this.body.p.x =  x;
+		this.body.p.y = -y;
+		this.body.activate();
+		// if (ec.debug > 0) {
+		// 	console.log(this.type, 'pos', x, y, z, this.mapCollision);
+		// }
 		if (this.body.isStatic()) {
 			//space.reindexShapesForBody(this.body);
 			for(var i = 0; i < this.body.shapeList.length; i++){

@@ -31,6 +31,7 @@
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(RADIUS-4, 1);
 		this.depth = 64;
+		this.type = 'Player';
 		
 		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};

@@ -15,7 +15,7 @@
 		this.camera = {
 			lookAt: function(x, y) {
 				this.x = -this.width/this.scaleX/2 + x;
-				this.y = -this.height/this.scaleY/2 + y - 64;
+				this.y = -this.height/this.scaleY/2 + y;
 			}
 		};
 		this.camera.x = this.camera.y = 16;
@@ -69,6 +69,7 @@
 		// test
 		if (entities.length) {
 			throw(entities.length + ' elements did not get placed in a layer');
+			//entitiesInLayers[layers.length-1] = entitiesInLayers[layers.length-1].concat(entities);
 		}
 
 		var viewport = this.updateViewport(this.camera);
