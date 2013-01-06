@@ -280,8 +280,6 @@ var ec = ec || {
 				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.restart, false);
 			}
 
-			world.term();
-
 			sound.playEndingMusic();
 		},
 
@@ -293,6 +291,15 @@ var ec = ec || {
 
 			view.remove(creditsView);
 			overlay = null;
+
+			if (world && world.space) {
+				if (world.contains(player.attack)) {
+					world.remove(player.attack);
+				}
+				world.remove(player);
+				world.remove(boss);
+				world.term();
+			}
 
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.init );
