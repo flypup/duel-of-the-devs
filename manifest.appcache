@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# Time: Fri Jan 04 2013 20:39:33 GMT-0500 (EST)
+# Time: Sat Jan 05 2013 20:35:28 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -24,8 +24,32 @@ CACHE:
 data/courtyard/data.js
 data/scenes/enter_the_ninja.js
 data/testmap/data.js
-scripts/e69b57ed.scripts.js
+scripts/80cb3f81.scripts.js
 styles/df3dc908.main.css
+img/sprite/ninja_64.png
+img/sprite/minimonk_64.png
+img/sprite/cauldron_64.png
+img/sprite/lion_64.png
+img/sprite/shadow_64.png
+img/ui/credits.png
+img/ui/guide-fight-desktop.png
+img/ui/guide-move-desktop.png
+img/ui/guide-touch.png
+img/ui/screenshot.jpg
+img/ui/startscreen.png
+data/courtyard/elements/fills/bricksgray2_64.png
+data/courtyard/elements/fills/rooftiles_64.png
+data/courtyard/elements/bannister.png
+data/courtyard/elements/moon.png
+data/courtyard/elements/roof.png
+data/courtyard/elements/roofsidepanel.png
+data/courtyard/elements/steps.png
+data/courtyard/elements/templefront.png
+data/courtyard/elements/trees.png
+data/testmap/map/grass.png
+data/testmap/map/wallWindow.png
+audio/ending.ogg
+audio/game.ogg
 
 NETWORK:
 http://www.google-analytics.com/ga.js

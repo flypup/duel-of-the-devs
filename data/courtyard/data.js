@@ -113,18 +113,59 @@ ec.loadMap({
       ]
     },
     {
-      "name": "top bounds",
+      "name": "boundsNorthWest",
+      "group": "top bounds",
       "elements": [
         {
-          "name": "instance0",
-          "x": 1280,
-          "y": 1520,
+          "name": "boundsNorthWest",
+          "x": 444,
+          "y": 1500,
           "visible": false,
           "mapType": "wall",
           "mass": 0,
-          "mDepth": 3000,
+          "mDepth": 2000,
           "mHeight": 128,
-          "mWidth": 2560,
+          "mWidth": 870,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box"
+        }
+      ]
+    },
+    {
+      "name": "boundsNorthEast",
+      "group": "top bounds",
+      "elements": [
+        {
+          "name": "boundsNorthEast",
+          "x": 2120,
+          "y": 1500,
+          "visible": false,
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 2000,
+          "mHeight": 128,
+          "mWidth": 870,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box"
+        }
+      ]
+    },
+    {
+      "name": "boundsTop",
+      "group": "top bounds",
+      "elements": [
+        {
+          "name": "boundsTop",
+          "x": 1280,
+          "y": 1272,
+          "visible": false,
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 2000,
+          "mHeight": 128,
+          "mWidth": 832,
           "mZ": 0,
           "shape": "box",
           "type": "Box"
@@ -254,7 +295,7 @@ ec.loadMap({
           },
           "mapType": "wall",
           "mass": 0,
-          "mDepth": 320,
+          "mDepth": 200,
           "mHeight": 480,
           "mWidth": 832,
           "mZ": 128,

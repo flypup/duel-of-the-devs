@@ -8,7 +8,7 @@ ec.loadScene({
     {
       "name": "ninja",
       "element": {
-        "name": "boss",
+        "name": "ninja",
         "type": "Ninja"
       },
       "duration": 721,
@@ -16,47 +16,77 @@ ec.loadScene({
         {
           "start": 0,
           "duration": 179,
-          "empty": true
+          "x": 2500,
+          "y": 2050,
+          "z": 352,
+          "alpha": 0
         },
         {
           "start": 179,
           "duration": 16,
-          "x": 2673.45,
-          "y": 2051,
+          "x": 2500,
+          "y": 2050,
+          "z": 352,
           "alpha": 0,
           "tween": true
         },
         {
           "start": 195,
           "duration": 24,
-          "x": 2673.45,
-          "y": 2051,
+          "x": 2500,
+          "y": 2050,
+          "z": 352,
           "tween": true
         },
         {
           "start": 219,
           "duration": 7,
           "x": 2447.4,
-          "y": 2043
+          "y": 2043,
+          "z": 352
         },
         {
           "start": 226,
           "duration": 16,
           "x": 2447.4,
           "y": 2043,
+          "z": 352,
+          "action": "fall",
           "tween": true
         },
         {
           "start": 242,
           "duration": 13,
           "x": 2359.4,
-          "y": 2315.05
+          "y": 2315.05,
+          "z": 0,
+          "action": "land"
         },
         {
           "start": 255,
-          "duration": 73,
+          "duration": 58,
           "x": 2359.4,
           "y": 2315.05,
+          "z": 0,
+          "action": "run",
+          "tween": true
+        },
+        {
+          "start": 313,
+          "duration": 10,
+          "x": 2245.95,
+          "y": 1878.5,
+          "z": 0,
+          "action": "jump",
+          "tween": true
+        },
+        {
+          "start": 323,
+          "duration": 5,
+          "x": 2178.9,
+          "y": 1589.4,
+          "z": 192,
+          "action": "jump",
           "tween": true
         },
         {
@@ -64,19 +94,23 @@ ec.loadScene({
           "duration": 33,
           "x": 2175.35,
           "y": 1606.85,
+          "z": 128,
           "tween": true
         },
         {
           "start": 361,
           "duration": 21,
           "x": 1623.2,
-          "y": 1606.85
+          "y": 1606.85,
+          "z": 128
         },
         {
           "start": 382,
           "duration": 11,
           "x": 1623.2,
           "y": 1606.85,
+          "z": 128,
+          "action": "jump",
           "tween": true
         },
         {
@@ -84,6 +118,8 @@ ec.loadScene({
           "duration": 17,
           "x": 1623.2,
           "y": 1526.8,
+          "z": 150,
+          "action": "ledge",
           "tween": true
         },
         {
@@ -91,6 +127,8 @@ ec.loadScene({
           "duration": 9,
           "x": 1623.2,
           "y": 1526.8,
+          "z": 150,
+          "action": "ledge",
           "tween": true
         },
         {
@@ -98,18 +136,23 @@ ec.loadScene({
           "duration": 1,
           "x": 1623.2,
           "y": 1526.8,
+          "z": 150,
           "alpha": 0
         },
         {
           "start": 420,
           "duration": 116,
-          "empty": true
+          "x": 1623.2,
+          "y": 1526.8,
+          "z": 150,
+          "alpha": 0
         },
         {
           "start": 536,
           "duration": 13,
           "x": 1623.2,
           "y": 1526.8,
+          "z": 150,
           "alpha": 0,
           "tween": true
         },
@@ -118,6 +161,7 @@ ec.loadScene({
           "duration": 4,
           "x": 1623.2,
           "y": 1526.8,
+          "z": 150,
           "tween": true
         },
         {
@@ -125,19 +169,22 @@ ec.loadScene({
           "duration": 8,
           "x": 1623.2,
           "y": 1514.8,
+          "z": 160,
           "tween": true
         },
         {
           "start": 561,
           "duration": 21,
           "x": 1623.2,
-          "y": 1602.85
+          "y": 1602.85,
+          "z": 128
         },
         {
           "start": 582,
           "duration": 25,
           "x": 1623.2,
           "y": 1602.85,
+          "z": 128,
           "tween": true
         },
         {
@@ -145,6 +192,7 @@ ec.loadScene({
           "duration": 4,
           "x": 1823.2,
           "y": 1602.85,
+          "z": 128,
           "tween": true
         },
         {
@@ -152,6 +200,7 @@ ec.loadScene({
           "duration": 5,
           "x": 1823.2,
           "y": 1578.85,
+          "z": 192,
           "tween": true
         },
         {
@@ -159,6 +208,7 @@ ec.loadScene({
           "duration": 21,
           "x": 1863.2,
           "y": 1498.85,
+          "z": 256,
           "tween": true
         },
         {
@@ -166,13 +216,14 @@ ec.loadScene({
           "duration": 2,
           "x": 1935.2,
           "y": 1816.15,
-          "tween": true
+          "z": 0
         },
         {
           "start": 639,
           "duration": 60,
           "x": 1935.2,
           "y": 1816.15,
+          "z": 0,
           "tween": true
         },
         {
@@ -180,19 +231,22 @@ ec.loadScene({
           "duration": 2,
           "x": 2135.7,
           "y": 2396.65,
+          "z": 0,
           "tween": true
         },
         {
           "start": 701,
           "duration": 4,
           "x": 2113.55,
-          "y": 2325.05
+          "y": 2325.05,
+          "z": 0
         },
         {
           "start": 705,
           "duration": 1,
           "x": 2073.55,
-          "y": 2325.05
+          "y": 2325.05,
+          "z": 0
         },
         {
           "start": 706,
@@ -210,7 +264,8 @@ ec.loadScene({
           "start": 708,
           "duration": 13,
           "x": 2113.55,
-          "y": 2325.05
+          "y": 2325.05,
+          "z": 0
         }
       ]
     },
@@ -225,20 +280,23 @@ ec.loadScene({
         {
           "start": 0,
           "duration": 90,
-          "x": 1567.3,
-          "y": 1062.95
+          "x": 1567,
+          "y": 1064,
+          "z": 432
         },
         {
           "start": 90,
           "duration": 358,
-          "x": 1567.3,
-          "y": 1062.95
+          "x": 1567,
+          "y": 1065,
+          "z": 432
         },
         {
           "start": 448,
           "duration": 34,
-          "x": 1567.3,
-          "y": 1062.95,
+          "x": 1567,
+          "y": 1065,
+          "z": 432,
           "tween": true,
           "ease": "out"
         },
@@ -246,13 +304,15 @@ ec.loadScene({
           "start": 482,
           "duration": 189,
           "x": 1384,
-          "y": 1218
+          "y": 1218,
+          "z": 432
         },
         {
           "start": 671,
           "duration": 5,
           "x": 1384,
           "y": 1218,
+          "z": 432,
           "tween": true
         },
         {
@@ -260,6 +320,7 @@ ec.loadScene({
           "duration": 3,
           "x": 1727.6,
           "y": 1212.15,
+          "z": 432,
           "tween": true,
           "ease": "out"
         },
@@ -268,6 +329,7 @@ ec.loadScene({
           "duration": 8,
           "x": 1909.6,
           "y": 1189.75,
+          "z": 440,
           "tween": true,
           "ease": "in"
         },
@@ -276,13 +338,15 @@ ec.loadScene({
           "duration": 11,
           "x": 2179.7,
           "y": 1521.95,
+          "z": 320,
           "tween": true
         },
         {
           "start": 698,
           "duration": 23,
           "x": 2190,
-          "y": 2518.6
+          "y": 2518.6,
+          "z": 0
         }
       ]
     },
