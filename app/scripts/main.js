@@ -56,7 +56,8 @@ var ec = ec || {
 
 		begin: function() {
 			//window.onReady(core.init);
-			requestAnimationFrame( core.load );
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame( core.load );
 
 			ec.core.trackEvent('core', 'preload', ec.version, undefined, true);
 		},
@@ -68,7 +69,7 @@ var ec = ec || {
 				!hasProperties(scenes, ['enter_the_ninja']) ||
 				!hasProperties(window.createjs, ('SpriteSheet,Rectangle').split(','))) {
 				console.log('loading');
-				requestAnimationFrame( core.load );
+				rafId = requestAnimationFrame( core.load );
 				return;
 			}
 
@@ -580,7 +581,7 @@ var ec = ec || {
 	var cancelAnimationFrame = window.cancelAnimationFrame || prefixed('CancelAnimationFrame', window) || prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
 	if (!requestAnimationFrame) {
 		var lastTime = 0;
-		requestAnimationFrame = function ( callback, element ) {
+		requestAnimationFrame = function(callback) {
 			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
 			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
 			lastTime = currTime + timeToCall;
@@ -590,22 +591,36 @@ var ec = ec || {
 
 	// handle reloading app cache
 	var appCache = window.applicationCache;
-	if (appCache) {
-		appCache.addEventListener('noupdate', function(e) {
+	if (appCache && appCache.status !== appCache.UNCACHED) {
+
+		var timeoutAppCacheCheckAfter = 5000;
+		var toId = window.setTimeout(function(){
+			if (!rafId) {
+				ec.core.begin();
+			}
+		}, timeoutAppCacheCheckAfter);
+
+		appCache.addEventListener('noupdate', function() {
+			window.clearTimeout(toId);
 			ec.core.begin();
 		}, false);
-		appCache.addEventListener('downloading', function(e) {
+
+		appCache.addEventListener('downloading', function() {
 			// show app update message
 			var p = document.createElement( 'p' );
 			p.innerHTML = 'Downloading Update...';
 			document.body.appendChild( p );
+			window.clearTimeout(toId);
 		}, false);
-		appCache.addEventListener('updateready', function(e) {
+
+		appCache.addEventListener('updateready', function() {
 			if (appCache.status === appCache.UPDATEREADY) {
+				window.clearTimeout(toId);
 				appCache.swapCache();
 				window.location.reload();
 			}
 		}, false);
+
 	} else {
 		ec.core.begin();
 	}
