@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# Time: Sat Jan 05 2013 21:25:09 GMT-0500 (EST)
+# Time: Sun Jan 06 2013 18:00:37 GMT-0500 (EST)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -24,7 +24,7 @@ CACHE:
 data/courtyard/data.js
 data/scenes/enter_the_ninja.js
 data/testmap/data.js
-scripts/24b68608.scripts.js
+scripts/a0e67b17.scripts.js
 styles/df3dc908.main.css
 img/sprite/ninja_64.png
 img/sprite/minimonk_64.png
