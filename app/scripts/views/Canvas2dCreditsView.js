@@ -8,7 +8,7 @@
 		this.skipAfter = 3500;
 
 		this.overlay = new Image();
-		this.overlay.src = 'img/ui/credits.png?v=' + ec.version;
+		this.overlay.src = 'img/ui/credits.png';
 	};
 
 	// TODO: Extend 2d Overlay/Layer View

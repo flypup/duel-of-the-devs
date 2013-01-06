@@ -23,7 +23,7 @@
 
 	proto.playGameMusic = function() {
 		if (this.context) {
-			this.playSound('audio/game.ogg?v='+ec.version, 'game');
+			this.playSound('audio/game.ogg', 'game');
 
 			if (this.sources.ending) {
 				this.sources.ending.disconnect(0);
@@ -33,7 +33,7 @@
 
 	proto.playEndingMusic = function() {
 		if (this.context) {
-			this.playSound('audio/ending.ogg?v='+ec.version, 'ending');
+			this.playSound('audio/ending.ogg', 'ending');
 
 			if (this.sources.game) {
 				this.sources.game.disconnect(0);

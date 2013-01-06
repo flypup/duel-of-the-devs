@@ -135,7 +135,7 @@ var ec = ec || {
 
 			paused = true;
 			overlay = new Image();
-			overlay.src = 'img/ui/startscreen.png?v=' + ec.version;
+			overlay.src = 'img/ui/startscreen.png';
 
 			
 			if (ec.touch) {
@@ -242,10 +242,10 @@ var ec = ec || {
 		userStarted: function() {
 			overlay = new Image();
 			if (!ec.touch) {
-				overlay.src = 'img/ui/guide-move-desktop.png?v=' + ec.version;
+				overlay.src = 'img/ui/guide-move-desktop.png';
 				ec.core.trackEvent('game', 'guide', 'guide-move-desktop');
 			} else {
-				overlay.src = 'img/ui/guide-touch.png?v=' + ec.version;
+				overlay.src = 'img/ui/guide-touch.png';
 				ec.core.trackEvent('game', 'guide', 'guide-touch');
 			}
 		},
@@ -253,7 +253,7 @@ var ec = ec || {
 		userReady: function() {
 			if (!ec.touch) {
 				overlay = new Image();
-				overlay.src = 'img/ui/guide-fight-desktop.png?v=' + ec.version;
+				overlay.src = 'img/ui/guide-fight-desktop.png';
 				ec.core.trackEvent('game', 'guide', 'guide-fight-desktop');
 			}
 		},
