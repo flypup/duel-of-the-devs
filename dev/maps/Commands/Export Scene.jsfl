@@ -206,6 +206,9 @@ for (var i = layers.length; i-- > 0;) {
 		for (var k=0; k<keyframes.length; k++) {
 			var frame = keyframes[k];
 
+			var element = frame.elements[0];
+			libraryItem = element ? element.libraryItem : '';
+
 			// ------ TRACE IT ALL!!! ----- //
 			fl.trace(
 				frame.startFrame +'\t'+
@@ -216,7 +219,8 @@ for (var i = layers.length; i-- > 0;) {
 				frame.tweenType +'\t'+
 				frame.tweenEasing +'\t'+
 				(frame.actionScript ? '\tAS' : '') +'\t'+
-				frame.elements +'\t'+ (frame.elements.length ? '"'+(frame.elements[0].name||('unnamed instance '+frame.elements[0].instanceType))+'"' : '(no instances)')+
+				frame.elements +'\t'+ (frame.elements.length ? '"'+(frame.elements[0].name||('unnamed instance '+frame.elements[0].instanceType))+'"' : '(no instances)') +'\t'+
+				libraryItem.itemType +
 				(frame.hasCustomEase ? '\r\t\t'+ frame.getCustomEase() : '') +
 				(frame.isMotionObject() ? '\r\t\t'+ frame.getMotionObjectXML() : '') +
 				(frame.soundLibraryItem ? '\r\t\t'+ frame.soundName +'\t'+ frame.soundLoopMode +'\t'+ frame.soundLoop : '')
@@ -260,7 +264,26 @@ for (var i = layers.length; i-- > 0;) {
 				//custom props
 				if (libraryItem.itemType === 'component') {
 					var params = parseParameters(element.parameters);
-					keyframeData.z = params.z || params.mZ;
+					if (!(element instanceof ComponentInstance)) {
+						fl.trace('Instance of component should be a component instance, not a symbol instance. (Can\'t get params). SAVE AND REPOPEN THE FLA.');
+						
+						// var pos = {x: element.x, y: element.y};
+						// timeline.setSelectedLayers(i);
+						// timeline.setSelectedFrames(frame.startFrame, frame.startFrame);
+						// frame.elements.length = 0;
+
+						// document.addItem(pos, libraryItem);
+						// element = frame.elements[0];
+						// TODO: replace element
+					}
+					if (params.z === 0) {
+						keyframeData.z = params.z;
+					} else {
+						keyframeData.z = params.z || params.mZ;
+					}
+					if (params.action) {
+						keyframeData.action = params.action;
+					}
 					// TODO: 'standing on' map element reference?
 					// TODO: 'action' : 'jump', 'punch', 'taunt', etc...
 				}
