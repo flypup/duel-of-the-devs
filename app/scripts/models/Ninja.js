@@ -121,6 +121,8 @@
 					direction.mult(1/v.len(direction));
 				}
 
+				this.state = 'walking';
+
 				// console.log(this.input.axes, direction.x, direction.y);
 				// console.log('v', this.body.vx, this.body.vy);
 
@@ -139,6 +141,8 @@
 				this.body.a = Math.atan2(direction.y, direction.x);
 
 			} else {
+				this.state = 'standing';
+				
 				this.body.vx = 0;
 				this.body.vy = 0;
 				this.body.w *= 0.99;

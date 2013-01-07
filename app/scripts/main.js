@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.268',
+	version: '0.1.279',
 	debug: 0
 };
 
