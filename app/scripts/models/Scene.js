@@ -40,6 +40,11 @@
 		}
 	};
 
+	proto.skip = function() {
+		this.time = this.duration;
+		this.step(0);
+	};
+
 	proto.calculateTime = function(value) {
 		if (this.data.useFrames) {
 			return value / this.fps;

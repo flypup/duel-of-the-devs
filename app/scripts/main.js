@@ -138,12 +138,7 @@ var ec = ec || {
 			overlay = new Image();
 			overlay.src = 'img/ui/startscreen.png';
 
-			
-			if (ec.touch) {
-				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.start, false);
-			} else {
-				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.start, false);
-			}
+			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.start, false);
 
 			//-------- SCENE INIT --------//
 
@@ -218,6 +213,7 @@ var ec = ec || {
 					monk: player,
 					ninja: boss
 				});
+
 			} else {
 				bossInput.completeTask();
 				worldView.lookAt(player.body.p.x, -player.body.p.y -64);
@@ -233,11 +229,19 @@ var ec = ec || {
 		},
 
 		start: function(e) {
+			// remove title screen
 			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
-
 			overlay = null;
 			
+			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.skipScene, false);
 			// sound.playGameMusic();
+		},
+
+		skipScene: function(e) {
+			if (!paused && scene && !scene.complete) {
+				ec.unbind(ec.core.getViewDom(), e.type, ec.core.skipScene, false);
+				scene.skip();
+			}
 		},
 
 		userStarted: function() {
@@ -427,7 +431,7 @@ var ec = ec || {
 		},
 
 		togglePause: function() {
-			if (ec.core.paused()) {
+			if (paused) {
 				ec.core.resume();
 			} else {
 				ec.core.pause();

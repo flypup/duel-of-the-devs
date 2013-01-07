@@ -25,6 +25,9 @@
 		// last keyframe
 		var kindex = ++this.index;
 		if (kindex >= keyframes.length) {
+			if (this.tween && !this.tween.complete) {
+				this.updateTween(this.tween.endTime);
+			}
 			this.update = this.idle;
 			this.complete = true;
 			return;
@@ -38,13 +41,13 @@
 		tween.from = fromFrame;
 		tween.startTime = this.calculateTime(fromFrame.start);
 		tween.duration  = this.calculateTime(fromFrame.duration);
-		tween.endTime   = tween.startTime + tween.duration;
+		tween.endTime   = this.calculateTime(fromFrame.start + fromFrame.duration);
 		
 		if (fromFrame.empty) {
 			console.log('empty keyframe', this);
 			tween.complete = true;
-			this.update = this.checkNext;
 			this.actor.z = 10000;
+			this.checkNext(time);
 			return;
 		}
 
@@ -67,11 +70,14 @@
 			}
 		}
 
-		this.update = this.updateTween;
-		this.update(time);
+		this.updateTween(time);
 	};
 
 	proto.updateTween = function(time) {
+		if (this.checkNext(time)) {
+			return;
+		}
+
 		var tween = this.tween;
 		var from = tween.from;
 
@@ -80,9 +86,6 @@
 		var z = from.z;
 		
 		if (from.tween) {
-			if (this.checkNext(time)) {
-				return;
-			}
 			var to = tween.to;
 			var tweenTime = time - tween.startTime;
 			x = tween.fn(tweenTime, x, to.x - x, tween.duration);
@@ -110,6 +113,7 @@
 				// TODO: entity actions (or spritesheet frames?)
 
 			}
+			this.update = this.updateTween;
 		} else {
 			//single frame, no tween
 			if (this.element.type === 'Viewport') {
@@ -125,17 +129,16 @@
 			}
 			tween.complete = true;
 			this.update = this.checkNext;
-			//this.update(time);
 		}
 	};
 
 	proto.checkNext = function(time) {
 		// wait for next tween
 		if (time > this.tween.endTime) {
-			this.update = this.nextTween;
-			this.update(time);
+			this.nextTween(time);
 			return true;
 		}
+		this.update = this.checkNext;
 		return false;
 	};
 
