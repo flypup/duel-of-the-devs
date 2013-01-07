@@ -110,7 +110,7 @@
 				// if (ec.debug > 0) {
 				//	console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
 				// }
-				// TODO: 'a' entity angle (character rotation)
+				// entity angle (character rotation)
 				direction.x = x - pos.x;
 				direction.y = y - pos.y;
 				this.actor.setAngle(direction, 0);
