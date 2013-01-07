@@ -32,7 +32,7 @@
 		this.attack = new ec.EmptyHand(RADIUS-4, 1);
 		this.depth = 64;
 		this.type = 'Player';
-		
+
 		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 
@@ -65,9 +65,8 @@
 
 		// face direction of punch
 		// TODO: tween angular motion
-		this.body.w = 0;
-		this.body.a =
-		attack.body.a = Math.atan2(pushpull.y, pushpull.x);
+		this.setAngle(pushpull, 0);
+		attack.body.a = Math.atan2(-pushpull.y, pushpull.x);
 
 		// slow down while punching
 		var movementFriction = 0.75;
@@ -78,8 +77,8 @@
 		attack.body.resetForces();
 		attack.body.activate();
 		var force = v.mult(pushpull, this.speed*1000/delta);
-		attack.body.vx = force.x + direction.x * movementFriction;
-		attack.body.vy = force.y + direction.y * movementFriction;
+		attack.body.vx =  force.x + direction.x * movementFriction;
+		attack.body.vy = -force.y - direction.y * movementFriction;
 
 		//attack.body.applyImpulse(attack.force, cp.vzero);
 
@@ -119,8 +118,8 @@
 		}
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
-			direction.x =  this.input.axes[0];
-			direction.y = -this.input.axes[1];
+			direction.x = this.input.axes[0];
+			direction.y = this.input.axes[1];
 			if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
 				if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
 					// normalize the vector
@@ -135,7 +134,7 @@
 				direction.mult(this.speed*1000/delta);
 				this.body.activate();
 				this.body.vx += direction.x;
-				this.body.vy += direction.y;
+				this.body.vy -= direction.y;
 				this.body.vx *= 0.5;
 				this.body.vy *= 0.5;
 				//this.body.applyForce(direction, cp.vzero);
@@ -143,8 +142,7 @@
 				// this.body.applyImpulse(direction, cp.vzero);
 
 				// TODO: tween angular motion
-				this.body.w = 0;
-				this.body.a = Math.atan2(direction.y, direction.x);
+				this.setAngle(direction, 0);
 
 				if (ec.playerInteractions === 0) {
 					ec.playerInteractions = 1;
@@ -167,12 +165,12 @@
 				}
 			}
 		}
-		pushpull.x =  this.input.axes[2];
-		pushpull.y = -this.input.axes[3];
+		pushpull.x = this.input.axes[2];
+		pushpull.y = this.input.axes[3];
 		if (this.input.buttons[0] > 0) {
 			//v.forangle(this.body.a);
 			pushpull.x = Math.cos(this.body.a);
-			pushpull.y = Math.sin(this.body.a);
+			pushpull.y = -Math.sin(this.body.a);
 		}
 		if (abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
 			//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {

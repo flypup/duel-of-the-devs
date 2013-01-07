@@ -2,6 +2,7 @@
 	'use strict';
 
 	var ec = window.ec;
+	var direction = {x:0, y:0};
 
 	var Animation = ec.Animation = function(track, actors, fps) {
 		ec.extend(this, track);
@@ -104,14 +105,18 @@
 					}
 					y += z;
 				}
+				var pos = this.actor.getPos();
 				this.actor.setPos(x, y, z);
-				if (ec.debug > 0) {
-					console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
-				}
+				// if (ec.debug > 0) {
+				//	console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
+				// }
 				// TODO: 'a' entity angle (character rotation)
+				direction.x = x - pos.x;
+				direction.y = y - pos.y;
+				this.actor.setAngle(direction, 0);
 
 				// TODO: entity actions (or spritesheet frames?)
-
+				this.actor.state = 'walking';
 			}
 			this.update = this.updateTween;
 		} else {
@@ -123,9 +128,11 @@
 					y += z;
 				}
 				this.actor.setPos(x, y, z);
-				if (ec.debug > 0) {
-					console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
-				}
+				// TODO: custom action
+				this.actor.state = 'standing';
+				// if (ec.debug > 0) {
+				//	console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
+				// }
 			}
 			tween.complete = true;
 			this.update = this.checkNext;

@@ -141,6 +141,15 @@
 		return this;
 	};
 	
+	proto.setAngle = function(v, w) {
+		if (w !== undefined) {
+			this.body.w = w;
+		}
+		if (v && (v.x || v.y)) {
+			this.body.a = Math.atan2(-v.y, v.x);
+		}
+	};
+
 	var getBody = function(mass, moment) {
 		// to create a static body specify a mass of zero
 		var body;
