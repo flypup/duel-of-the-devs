@@ -60,7 +60,8 @@
 
 		distance = targetZ - this.z;
 		if (distance > 0) {
-			// climb?
+			// TODO: update state and modify velX,velY when climbing or falling
+			// climbing
 			if (distance <= thisEntityCanClimb) {
 				this.groundZ = this.z; // TODO: get next lowest floor
 				//this.z = targetZ; // TODO: climb animation
@@ -72,7 +73,7 @@
 				this.z = Math.min(targetZ, this.z + this.velZ);
 			}
 		} else if (distance < 0) {
-			// fall?
+			// falling
 			this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
 			this.z = Math.max(targetZ, this.z + this.velZ);
 			this.groundZ = targetZ;
