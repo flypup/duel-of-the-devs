@@ -8,6 +8,8 @@
 		ec.extend(this, track);
 
 		this.actor = actors[this.element.name];
+		this.sensor = false;
+
 		this.fps = fps;
 
 		this.complete = false;

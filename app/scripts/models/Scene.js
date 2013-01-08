@@ -23,19 +23,33 @@
 		for (var i=0; i<tracks.length; i++) {
 			var animation = new ec.Animation(tracks[i], actors, this.fps);
 			this.animations.push(animation);
+			//make shapes sensors so they don't collide with obstacles
+			if (animation.actor.shape) {
+				animation.sensor = animation.actor.shape.sensor;
+				animation.actor.shape.sensor = true;
+			}
 		}
 	};
 
 	proto.step = function(delta) {
+		var i;
+		var animation;
 		delta /= 1000;
 		this.time += delta;
 		if (this.time > this.duration) {
 			this.time = this.duration;
 			this.complete = true;
+			//reset shapes
+			for (i=0; i<this.animations.length; i++) {
+				animation = this.animations[i];
+				if (animation.actor.shape) {
+					animation.actor.shape.sensor = animation.sensor;
+				}
+			}
 		}
 
-		for (var i=0; i<this.animations.length; i++) {
-			var animation = this.animations[i];
+		for (i=0; i<this.animations.length; i++) {
+			animation = this.animations[i];
 			animation.update(this.time);
 		}
 	};
