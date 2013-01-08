@@ -351,6 +351,16 @@
 		}
 	};
 
+	proto.clearKeys = function() {
+		ec.keyPressed = {};
+		this.keyboardAxes1 = false;
+		this.keyboardAxes2 = false;
+		this.setAxes1(0, 0);
+		this.setAxes2(0, 0);
+		this.setButton(BUTTON.SELECT, 0);
+		this.setButton(BUTTON.CANCEL, 0);
+	};
+
 	proto.updateAxes1FromKeys = function() {
 		var x = ((ec.keyPressed[KEY.LEFT] || ec.keyPressed[KEY.A]) ? -1 : 0) + ((ec.keyPressed[KEY.RIGHT] || ec.keyPressed[KEY.D]) ? 1 : 0);
 		var y = ((ec.keyPressed[KEY.UP] || ec.keyPressed[KEY.W]) ? -1 : 0) + ((ec.keyPressed[KEY.DOWN] || ec.keyPressed[KEY.S]) ? 1 : 0);

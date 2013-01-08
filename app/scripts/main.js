@@ -347,7 +347,7 @@ var ec = ec || {
 			deltaTime = time;
 
 			if (!paused) {
-			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+				delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
 				scene.step(delta);
 
@@ -384,7 +384,7 @@ var ec = ec || {
 			deltaTime = time;
 
 			if (!paused) {
-			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+				delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
 				remainder += delta;
 				while(remainder >= TIME_STEP) {
@@ -394,15 +394,15 @@ var ec = ec || {
 
 				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
 
-			if (boss.state === 'dead') {
-				boss.decomposed = boss.decomposed || 0;
-				boss.decomposed += delta;
-				if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
-					delete boss.decomposed;
-					ec.core.rollCredits();
-					return;
+				if (boss.state === 'dead') {
+					boss.decomposed = boss.decomposed || 0;
+					boss.decomposed += delta;
+					if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
+						delete boss.decomposed;
+						ec.core.rollCredits();
+						return;
+					}
 				}
-			}
 			} else {
 				delta = 0;
 			}
@@ -428,6 +428,7 @@ var ec = ec || {
 			paused = true;
 			view.pause();
 			ec.allowPinchZoom();
+			userInput.clearKeys();
 		},
 
 		resume: function() {
