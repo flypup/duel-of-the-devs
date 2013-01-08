@@ -56,48 +56,49 @@
 		}
 	};
 
-	proto.drawLayer = function(layer, context, viewport) {
+	proto.drawLayer = function(layer, context, viewport, delta) {
 		if (!layer.visible) {
 			return false;
 		}
 		var elements = layer.elements;
 		for (var i=elements.length; i-- > 0;) {
-			this.drawElement(elements[i], context, viewport);
+			//elements[i].alpha = layer.alpha || 1;
+			this.drawElement(elements[i], context, viewport, delta);
 		}
 		return true;
 	};
 
-	proto.drawElement = function(element, context, viewport) {
+	proto.drawElement = function(element, context, viewport, delta) {
 		if (!element.visible) {
 			return false;
 		}
 		if (!element.width || this.intersects(element, viewport)) {
 			context.save();
 			context.globalAlpha = element.alpha;
-		var matrix = element.matrix;
-		if (matrix) {
-			context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX*matrix.a, matrix.ty - element.regY*matrix.d);
-		} else {
-			context.transform(1, 0, 0, 1, element.drawX, element.drawY);
-		}
+			var matrix = element.matrix;
+			if (matrix) {
+				context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX*matrix.a, matrix.ty - element.regY*matrix.d);
+			} else {
+				context.transform(1, 0, 0, 1, element.drawX, element.drawY);
+			}
 
-		if (element.children) {
-			var rendered = false;
-			var children = element.children;
-			for (var i=0; i<children.length; i++) {
-				var child = children[i];
-				if (element.width || this.intersects(child, viewport)) {
-					if (child.image && child.imageData) {
-						rendered |= this.drawImage(child, context);
-					} else {
-						rendered |= this.drawShape(child, context);
+			if (element.children) {
+				var rendered = false;
+				var children = element.children;
+				for (var i=0; i<children.length; i++) {
+					var child = children[i];
+					if (element.width || this.intersects(child, viewport)) {
+						if (child.image && child.imageData) {
+							rendered |= this.drawImage(child, context);
+						} else {
+							rendered |= this.drawShape(child, context);
+						}
 					}
 				}
 			}
-		}
-		if (element.imageData) {
-			context.drawImage(element.imageData, 0, 0);
-		}
+			if (element.imageData) {
+				context.drawImage(element.imageData, 0, 0);
+			}
 			context.restore();
 		}
 		if (ec.debug > 1) {

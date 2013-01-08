@@ -346,9 +346,9 @@ var ec = ec || {
 			delta = (time - deltaTime);
 			deltaTime = time;
 
+			if (!paused) {
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
-			if (!paused) {
 				scene.step(delta);
 
 				remainder += delta;
@@ -356,6 +356,9 @@ var ec = ec || {
 					remainder -= TIME_STEP;
 					world.stepScene(TIME_STEP);
 				}
+
+			} else {
+				delta = 0;
 			}
 
 			if (ec.debug < 3) {
@@ -380,9 +383,9 @@ var ec = ec || {
 			delta = (time - deltaTime);
 			deltaTime = time;
 
+			if (!paused) {
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
-			if (!paused) {
 				remainder += delta;
 				while(remainder >= TIME_STEP) {
 					remainder -= TIME_STEP;
@@ -390,7 +393,7 @@ var ec = ec || {
 				}
 
 				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
-			}
+
 			if (boss.state === 'dead') {
 				boss.decomposed = boss.decomposed || 0;
 				boss.decomposed += delta;
@@ -400,6 +403,10 @@ var ec = ec || {
 					return;
 				}
 			}
+			} else {
+				delta = 0;
+			}
+			
 			if (ec.debug < 3) {
 				view.draw(delta);
 			}

@@ -40,7 +40,7 @@
 		return viewport;
 	};
 
-	proto.draw = function(context) {
+	proto.draw = function(context, delta) {
 		//console.log('world 2d draw');
 		context.setTransform(1, 0, 0, 1, 0, 0);
 		context.fillStyle = '#888888';
@@ -74,12 +74,12 @@
 
 		var viewport = this.updateViewport(this.camera);
 		for (i = 0, len = layers.length; i < len; i++) {
-			this.mapRenderer.drawLayer(layers[i], context, viewport);
+			this.mapRenderer.drawLayer(layers[i], context, viewport, delta);
 
 			var layerEntities = entitiesInLayers[i];
 			for (j=0; j<layerEntities.length; j++) {
 				var item = layerEntities[j];
-				this.entityRenderer.draw(context, item, viewport);
+				this.entityRenderer.draw(context, item, viewport, delta);
 			}
 		}
 

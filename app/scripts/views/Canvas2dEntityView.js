@@ -11,9 +11,9 @@
 
 	var proto = Canvas2dEntityView.prototype;
 
-	proto.draw = function(context, entity, viewport) {
+	proto.draw = function(context, entity, viewport, delta) {
 		this.drawShadow(context, entity, viewport);
-		this.drawEntityHandler(context, entity, viewport);
+		this.drawEntityHandler(context, entity, viewport, delta);
 	};
 	
 	proto.drawShadow = function(context, entity, viewport) {
@@ -42,7 +42,7 @@
 		var pi = Math.PI;
 		var round = Math.round;
 
-		var spriteSheetFrame = function spriteSheetFrame(entity, spriteSheet) {
+		var spriteSheetFrame = function spriteSheetFrame(entity, spriteSheet, delta) {
 			//var numFrames = spriteSheet.getNumFrames();
 			var a = entity.body.a;
 			var degrees = 6;
@@ -61,9 +61,10 @@
 				frame += degrees;
 			}
 			if (entity.state === 'walking') {
-				var velocity = Math.sqrt(entity.body.vx * entity.body.vx + entity.body.vy * entity.body.vy);
-				//console.log(velocity);
-				entity.walkCount += Math.max(0.15, velocity/2500);
+				if (delta) {
+					var velocity = Math.sqrt(entity.body.vx * entity.body.vx + entity.body.vy * entity.body.vy) * delta / 40000;
+					entity.walkCount += Math.max(0.15, velocity);
+				}
 				animation = spriteSheet.getAnimation('walk_'+ frame);
 				if (animation) {
 					animationFrame = Math.floor(entity.walkCount) % 4;
@@ -115,7 +116,7 @@
 			return frameData;
 		};
 
-		return function drawEntityFn(context, entity, viewport) {
+		return function drawEntityFn(context, entity, viewport, delta) {
 			// if (entity.view) {
 			//	entity.view.update(entity, scene);
 			// }
@@ -126,7 +127,7 @@
 
 			context.save();
 			if (entity instanceof ec.Ninja) {
-				o = spriteSheetFrame(entity, ninjaSheet);
+				o = spriteSheetFrame(entity, ninjaSheet, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
@@ -146,7 +147,7 @@
 				}
 
 			} else if (entity instanceof ec.Player) {
-				o = spriteSheetFrame(entity, monkSheet);
+				o = spriteSheetFrame(entity, monkSheet, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
