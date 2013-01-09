@@ -141,6 +141,11 @@
 				// direction.mult(this.speed);
 				// this.body.applyImpulse(direction, cp.vzero);
 
+				if (delta) {
+					var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
+					this.walkCount += Math.max(0.15, velocity);
+				}
+
 				// TODO: tween angular motion
 				this.setAngle(direction, 0);
 

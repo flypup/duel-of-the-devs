@@ -61,10 +61,6 @@
 				frame += degrees;
 			}
 			if (entity.state === 'walking') {
-				if (delta) {
-					var velocity = Math.sqrt(entity.body.vx * entity.body.vx + entity.body.vy * entity.body.vy) * delta / 40000;
-					entity.walkCount += Math.max(0.15, velocity);
-				}
 				animation = spriteSheet.getAnimation('walk_'+ frame);
 				if (animation) {
 					animationFrame = Math.floor(entity.walkCount) % 4;
