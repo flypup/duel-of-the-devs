@@ -85,6 +85,8 @@ var ec = ec || {
 			deltaTime = time;
 		    remainder = 0;
 		    
+		    player = null;
+		    boss   = null;
 		    userInput = new ec.UserInput();
 			bossInput = new ec.EnemyInput();
 		    ec.world =
