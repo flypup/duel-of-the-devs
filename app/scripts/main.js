@@ -563,6 +563,14 @@ var ec = ec || {
 		};
 	};
 
+	ec.objectToProps = function(arr, prop) {
+		var propArray = [];
+		for (var i=0, len = arr.length; i<len; i++) {
+			propArray.push(arr[i][prop]);
+		}
+		return propArray;
+	};
+
 	// tests
 
 	var prefixed = function(str, obj) {

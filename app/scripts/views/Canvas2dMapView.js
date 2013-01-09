@@ -106,7 +106,7 @@
 			var bounds = element.getSortBounds();
 			var debugColor = (element.mapType === 'floor') ? '#f00' : '#f0f';
 
-			element.label = element.label || new ec.TextField(context, 0, 0, 512, debugColor);
+			element.label = element.label || new ec.TextField(context, 0, 0, 512, null, debugColor);
 			element.label.setPos(16+element.x-element.width/2, bounds.back+2);
 			element.label.setText(element.name +': '+ element.mapType +' ('+ element.y +', '+ element.z +', '+ element.depth +', '+ element.height +', '+ element.mHeight +')' + bounds.back +','+bounds.front);
 

@@ -190,9 +190,13 @@
 			}
 			if (ec.debug > 1) {
 				//draw layer info
-				this.label = this.label || new ec.TextField(context, 0, 0, 160, '#00f');
-				this.label.setPos(x-16, y-((o&&o.regY+16)||0));
-				this.label.setText(''+ entity.layerNum +': '+ entity.layerName );
+				this.label = this.label || new ec.TextField(context, 0, 0, 160, 32, '#0ff');
+				this.label.setPos(x-16, y-((o&&o.regY+32)||0));
+				var info = ''+ entity.layerNum +': '+ entity.layerName;
+				if (entity.mapCollision.length) {
+					info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+				}
+				this.label.setText(info);
 			}
 			context.restore();
 		};
