@@ -205,6 +205,10 @@ Body.prototype.setPos = function(pos)
 {
 	this.activate();
 	this.sanityCheck();
+	// If I allow the position to be set to vzero, vzero will get changed.
+	if (pos === vzero) {
+		pos = cp.v(0,0);
+	}
 	this.p = pos;
 };
 
@@ -248,7 +252,7 @@ Body.prototype.velocity_func = function(gravity, damping, dt)
 	//this.vx = v.x; this.vy = v.y;
 	var v_limit = this.v_limit;
 	var lensq = vx * vx + vy * vy;
-	var scale = (lensq > v_limit*v_limit) ? v_limit / Math.sqrt(len) : 1;
+	var scale = (lensq > v_limit*v_limit) ? v_limit / Math.sqrt(lensq) : 1;
 	this.vx = vx * scale;
 	this.vy = vy * scale;
 
