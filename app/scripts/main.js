@@ -478,6 +478,10 @@ var ec = ec || {
 			return view.getDom();
 		},
 
+		getCamera: function() {
+			return worldView.camera;
+		},
+
 		trackPage: function(route) {
 			if (window._gaq) {
 				window._gaq.push(['_trackPageview', route]);

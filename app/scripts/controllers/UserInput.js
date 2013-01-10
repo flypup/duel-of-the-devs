@@ -246,9 +246,12 @@
 	proto.mouseRightStick = function(e) {
 		//console.log(e.type, e);
 		var halfWidth  = e.target.width /2;
-		var halfHeight = e.target.height/2 + 100;
-		var x = e.clientX - halfWidth;
-		var y = e.clientY - halfHeight;
+		var halfHeight = e.target.height/2;
+		var x = e.offsetX - halfWidth;
+		var y = e.offsetY - halfHeight;
+		var camera = ec.core.getCamera();
+		//camera to player offset
+		y -= 64 * camera.scaleY;
 		var length = Math.sqrt(x*x + y*y);
 		x /= length;
 		y /= length;
