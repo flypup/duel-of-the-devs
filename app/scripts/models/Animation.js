@@ -119,6 +119,10 @@
 
 				// TODO: entity actions (or spritesheet frames?)
 				this.actor.state = 'walking';
+				if (direction.x || direction.y) {
+					var velocity = Math.sqrt(direction.x * direction.x + direction.y * direction.y) / 40000;
+					this.actor.walkCount += Math.max(0.15, velocity);
+				}
 			}
 			this.update = this.updateTween;
 		} else {
