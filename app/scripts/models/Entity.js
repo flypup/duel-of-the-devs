@@ -84,6 +84,37 @@
 		return this;
 	};
 
+	proto.postStepScene = function(delta) {
+		this.groundZ = this.z;
+
+		var distance;
+		var thisEntityCanClimb = 32;
+
+		// get floor. target z = floor z
+		// no floor? target z = 0
+		var targetZ = 0;
+		for (var i=0; i<this.mapCollision.length; i++) {
+			var element = this.mapCollision[i];
+			var top = element.getTop(this.body.p.x, -this.body.p.y);
+			if (top > targetZ && (top - this.z) <= thisEntityCanClimb) {
+				targetZ = top;
+			}
+		}
+
+		distance = targetZ - this.z;
+		if (distance >= thisEntityCanClimb) {
+			// climbing
+			if (distance <= 0) {
+				this.groundZ = targetZ;//this.z; // TODO: get next lowest floor
+			}
+		} else if (distance < 0) {
+			// falling
+			this.groundZ = targetZ;
+		}
+		
+		return this;
+	};
+
 	proto.addMapCollision  = function(mapElement) {
 		if (this.mapCollision.indexOf(mapElement) < 0) {
 			this.mapCollision.push(mapElement);
@@ -123,11 +154,12 @@
 		if (z !== undefined) {
 			this.z = this.body.z = z;
 		}
+		this.body.activate();
 		this.body.p.x =  x;
 		this.body.p.y = -y;
-		this.body.activate();
+		
 		// if (ec.debug > 0) {
-		// 	console.log(this.type, 'pos', x, y, z, this.mapCollision);
+		//	console.log(this.type, 'pos', x, y, z, this.mapCollision);
 		// }
 		if (this.body.isStatic()) {
 			//space.reindexShapesForBody(this.body);

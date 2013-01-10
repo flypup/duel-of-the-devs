@@ -134,6 +134,10 @@
 					y += z;
 				}
 				this.actor.setPos(x, y, z);
+
+				// This is a hack to make sure map collisions are triggered
+				this.actor.body.vy = 0.001;
+
 				// TODO: custom action
 				this.actor.state = 'standing';
 				// if (ec.debug > 0) {

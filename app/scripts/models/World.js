@@ -31,7 +31,7 @@
 		this.space = new cp.Space();
 		space.gravity = v(0, 0);
 		space.iterations = 10;
-		space.sleepTimeThreshold = ec.TIME_STEP * 9;
+		space.sleepTimeThreshold = ec.TIME_STEP * 9;//Infinity;//
 		space.idleSpeedThreshold = 0.1;//5;//0.01;//
 		space.collisionSlop = 0.025;
 		space.collisionBias = Math.pow(1 - 0.75, 60);
@@ -164,7 +164,7 @@
 		//arbiter.ignore();
 
 		if (ec.debug > 0) {
-			console.log('mapCollision', entity, mapElement);
+			//console.log('mapCollision', entity, mapElement);
 		}
 		//collision
 		return true;
@@ -444,9 +444,9 @@
 		// }
 		this.space.step(delta / 1000);
 		// TODO: if scenes hint map element collisions, this can work
-		// for(i = this.entities.length; i-- > 0;) {
-		// 	this.entities[i].postStep(delta);
-		// }
+		for(i = this.entities.length; i-- > 0;) {
+			this.entities[i].postStepScene(delta);
+		}
 		this.time += delta;
 	};
 

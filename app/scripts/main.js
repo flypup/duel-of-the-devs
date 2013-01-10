@@ -216,6 +216,7 @@ var ec = ec || {
 					ninja: boss
 				});
 
+				world.stepScene(TIME_STEP);
 			} else {
 				bossInput.completeTask();
 				worldView.lookAt(player.body.p.x, -player.body.p.y -64);
