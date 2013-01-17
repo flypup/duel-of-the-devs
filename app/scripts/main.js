@@ -1,5 +1,5 @@
 var ec = ec || {
-	version: '0.1.279',
+	version: '0.1.280',
 	debug: 0
 };
 
@@ -37,6 +37,7 @@ var ec = ec || {
 
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
+	var loadingViewNode;
 	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Scene,Animation,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,createjs,Stats').split(',');
 	
@@ -55,6 +56,7 @@ var ec = ec || {
 	var core = ec.core = {
 
 		begin: function() {
+			console.log('begin');
 			//window.onReady(core.init);
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.load );
@@ -63,25 +65,31 @@ var ec = ec || {
 		},
 
 		load: function(time) {
-			if (!hasProperties(window, globalRequired) ||
+			var appCache = ec.appCache || {};
+			if ((!appCache.complete && !appCache.timedout) ||
+				!hasProperties(window, globalRequired) ||
 				!hasProperties(ec, required) ||
 				!hasProperties(maps, ('testmap,courtyard').split(',')) ||
 				!hasProperties(scenes, ['enter_the_ninja']) ||
 				!hasProperties(window.createjs, ('SpriteSheet,Rectangle').split(','))) {
-				console.log('loading');
 				rafId = requestAnimationFrame( core.load );
+				// TODO: Loading screen drawn to canvas
+				if (!loadingViewNode) {
+					loadingViewNode = document.createElement('p');
+					document.body.appendChild(loadingViewNode);
+				}
+				loadingViewNode.innerHTML = appCache.loaded ? 'Downloading Updates '+appCache.loaded+'/'+appCache.total : 'Loading...';
+				console.log('loading');
 				return;
 			}
-
-			// TODO: preload sprite sheets
-
-			sound = new ec.Sound();
-
-			console.log('init');
+			if (loadingViewNode) {
+				document.body.removeChild(loadingViewNode);
+			}
 			core.init(time);
 		},
 
 		init: function(time) {
+			console.log('init');
 			deltaTime = time;
 		    remainder = 0;
 		    
@@ -91,7 +99,8 @@ var ec = ec || {
 			bossInput = new ec.EnemyInput();
 		    ec.world =
 		    world = new ec.World();
-
+		    sound = sound || new ec.Sound();
+			
 		    ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
@@ -616,41 +625,7 @@ var ec = ec || {
 		};
 	}
 
-	// handle reloading app cache
-	var appCache = window.applicationCache;
-	if (appCache && appCache.status !== appCache.UNCACHED) {
-
-		var timeoutAppCacheCheckAfter = 5000;
-		var toId = window.setTimeout(function(){
-			if (!rafId) {
-				ec.core.begin();
-			}
-		}, timeoutAppCacheCheckAfter);
-
-		appCache.addEventListener('noupdate', function() {
-			window.clearTimeout(toId);
-			ec.core.begin();
-		}, false);
-
-		appCache.addEventListener('downloading', function() {
-			// show app update message
-			var p = document.createElement( 'p' );
-			p.innerHTML = 'Downloading Update...';
-			document.body.appendChild( p );
-			window.clearTimeout(toId);
-		}, false);
-
-		appCache.addEventListener('updateready', function() {
-			if (appCache.status === appCache.UPDATEREADY) {
-				window.clearTimeout(toId);
-				appCache.swapCache();
-				window.location.reload();
-			}
-		}, false);
-
-	} else {
-		ec.core.begin();
-	}
+	ec.core.begin();
 
 	//ec.core.trackCustom(2, 'version', ec.version, 3);
 
