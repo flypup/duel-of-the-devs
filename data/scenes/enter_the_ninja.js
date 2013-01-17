@@ -1,4 +1,4 @@
-ec.loadScene({
+ec && ec.loadScene({
   "name": "enter_the_ninja",
   "map": "courtyard",
   "fps": 24,
