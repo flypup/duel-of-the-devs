@@ -1,4 +1,4 @@
-ec.loadMap({
+ec && ec.loadMap({
   "name": "courtyard",
   "path": "data/courtyard",
   "width": 2560,

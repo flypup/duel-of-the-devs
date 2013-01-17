@@ -287,7 +287,7 @@ for (var i = layers.length; i-- > 0;) {
 var output = JSON.stringify(data, null, 2);
 
 FLfile.createFolder(exportDir);
-FLfile.write(exportDir +'/data.js', 'ec.loadMap('+output+');');
+FLfile.write(exportDir +'/data.js', 'ec && ec.loadMap('+output+');');
 fl.trace('Map exported to '+exportDir);
 
 //-----------

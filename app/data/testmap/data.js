@@ -1,4 +1,4 @@
-﻿ec.loadMap({
+﻿ec && ec.loadMap({
   "name": "testmap",
   "path": "data/testmap",
   "width": 1280,

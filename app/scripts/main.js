@@ -1,7 +1,6 @@
-var ec = ec || {
-	version: '0.1.280',
-	debug: 0
-};
+var ec = ec || {};
+ec.version = '0.1.280';
+ec.debug = 0;
 
 (function(window) {
 	'use strict';

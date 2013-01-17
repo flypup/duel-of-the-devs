@@ -322,7 +322,7 @@ var output = JSON.stringify(data, null, 2);
 
 var exportDir = FLfile.platformPathToURI(dir +'/../../app/data/scenes');
 FLfile.createFolder(exportDir);
-FLfile.write(exportDir +'/'+sceneName+'.js', 'ec.loadScene('+output+');');
+FLfile.write(exportDir +'/'+sceneName+'.js', 'ec && ec.loadScene('+output+');');
 fl.trace('Scene exported to '+exportDir);//+'\r'+ output);
 
 function getLayerKeyframes(layer) {
