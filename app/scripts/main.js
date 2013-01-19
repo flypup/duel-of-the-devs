@@ -1,5 +1,5 @@
 var ec = ec || {};
-ec.version = '0.1.280';
+ec.version = '0.1.281';
 ec.debug = 0;
 
 (function(window) {
@@ -7,8 +7,6 @@ ec.debug = 0;
 
 	window.ec = ec;
 	var document = window.document;
-	
-	ec.debug = 0;//ec.mobile ? 1 : 2;
 	
 	var world;
 	var maps;
@@ -60,7 +58,21 @@ ec.debug = 0;
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.load );
 
+			ec.core.loadSettings();
+
 			ec.core.trackEvent('core', 'preload', ec.version, undefined, true);
+		},
+
+		loadSettings: function() {
+			//version and settings check
+			var version = ec.core.getLocal('version');
+			if (!version) {
+				ec.core.clearLocal();
+			}
+			if (version !== ec.version) {
+				ec.core.setLocal('version', ec.version);
+			}
+			ec.debug = ec.core.getLocal('debug', 0, parseInt, [10]);
 		},
 
 		load: function(time) {
@@ -98,8 +110,13 @@ ec.debug = 0;
 			bossInput = new ec.EnemyInput();
 		    ec.world =
 		    world = new ec.World();
-		    sound = sound || new ec.Sound();
-			
+		    if (!sound) {
+				sound = new ec.Sound();
+				// TODO: separate music and sound effect volume
+				sound.setVolume(ec.core.getLocal('soundVolume', 0, parseFloat));
+		    }
+		    ec.sound = sound;
+
 		    ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
@@ -245,7 +262,8 @@ ec.debug = 0;
 			overlay = null;
 			
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.skipScene, false);
-			// sound.playGameMusic();
+			
+			sound.playGameMusic();
 		},
 
 		skipScene: function(e) {
@@ -372,7 +390,7 @@ ec.debug = 0;
 				delta = 0;
 			}
 
-			if (ec.debug < 3) {
+			if (ec.debug !== 3) {
 				view.draw(delta);
 			}
 
@@ -418,7 +436,7 @@ ec.debug = 0;
 				delta = 0;
 			}
 			
-			if (ec.debug < 3) {
+			if (ec.debug !== 3) {
 				view.draw(delta);
 			}
 
@@ -490,6 +508,36 @@ ec.debug = 0;
 			return worldView.camera;
 		},
 
+		setLocal: function(id, val) {
+			try {
+				localStorage.setItem(id, val);
+			} catch (e) {
+				console.error('localStorage.setItem', e);
+				ec.core.trackEvent('error', 'localStorage.setItem', e.message, undefined, true);
+			}
+		},
+
+		getLocal: function(id, defaultValue, convert, args) {
+			var value = localStorage.getItem(id);
+			if (value === null && defaultValue !== undefined) {
+				return defaultValue;
+			}
+			if (convert) {
+				args = args||[];
+				args.unshift(value);
+				return convert.apply(null, args);
+			}
+			return value;
+		},
+
+		removeLocal: function(id) {
+			return localStorage.removeItem(id);
+		},
+
+		clearLocal: function() {
+			localStorage.clear();
+		},
+
 		trackPage: function(route) {
 			if (window._gaq) {
 				window._gaq.push(['_trackPageview', route]);
@@ -509,6 +557,7 @@ ec.debug = 0;
 		},
 
 		setDebugLevel: function(level) {
+			level = isNaN(level) ? 0 : level;
 			if (level < 0) {
 				level = 3;
 			}
@@ -526,6 +575,7 @@ ec.debug = 0;
 					debugView.show();
 			}
 			ec.debug = level;
+			ec.core.setLocal('debug', level);
 			console.log('debug level', level);
 		},
 
@@ -623,6 +673,15 @@ ec.debug = 0;
 			return id;
 		};
 	}
+
+	var localStorage = window.localStorage ||
+		{
+			_data       : {},
+			setItem     : function(id, val) { return this._data[id] = String(val); },
+			getItem     : function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : undefined; },
+			removeItem  : function(id) { return delete this._data[id]; },
+			clear       : function() { return this._data = {}; }
+		};
 
 	ec.core.begin();
 

@@ -4,18 +4,26 @@
 	var ec = window.ec;
 
 	var Sound = ec.Sound = function() {
-		this.volume = 0.0;
+		this.volume = 1.0;
 		this.buffers = {};
 		this.sources = {};
 		if (ec.webaudio) {
 			try {
-				this.context = new (window.webkitAudioContext || window.AudioContext)();
-				this.volume = 1.0;
+				var context;
+				if (window.AudioContext) {
+					context = new window.AudioContext();
+				} else if (window.webkitAudioContext) {
+					context = new window.webkitAudioContext();
+				}
+				if (context) {
+					this.gainNode = context.createGainNode();
+					this.gainNode.gain.value = this.volume;
+					this.gainNode.connect(context.destination);
+					this.context = context;
+				}
 			} catch(e) {
 				console.error('Web Audio API not supported');
 			}
-
-
 		}
 	};
 
@@ -23,7 +31,7 @@
 
 	proto.playGameMusic = function() {
 		if (this.context) {
-			this.playSound('audio/game.ogg', 'game');
+			this.playSound('audio/game.ogg', 'game', true);
 
 			if (this.sources.ending) {
 				this.sources.ending.disconnect(0);
@@ -41,16 +49,27 @@
 		}
 	};
 
-	proto.playSound = function(url, name) {
+	proto.setVolume = function(value) {
+		this.volume = value;
+		if (this.gainNode) {
+			this.gainNode.gain.value = value;
+		}
+	};
+
+	proto.playSound = function(url, name, loop) {
+		if (this.volume === 0) {
+			return;
+		}
 		var buffer = this.buffers[name];
 		if (buffer) {
 			var source = this.sources[name] = this.context.createBufferSource();
 			source.buffer = buffer;
 
 			// FIXME: hackalicious
-			source.loop = (name === 'game');
+			source.loop = (loop === true);
 
-			source.connect(this.context.destination);
+			source.connect(this.gainNode);
+
 			source.noteOn(0);
 		} else {
 			this.loadSound(url, name);
