@@ -24,10 +24,6 @@
 		return image;
 	};
 
-	ec.getDrawableSprite = function(spritesheet) {
-
-	};
-
 	ec.getCached = function(image, id) {
 		id = id || image.src;
 		
@@ -38,7 +34,7 @@
 		}
 
 		//image loading
-		if (!image.width) {
+		if (!image.width || !image.height) {
 			return image;
 		}
 
