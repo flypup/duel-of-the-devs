@@ -35,7 +35,7 @@ ec.debug = 0;
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
 	var loadingViewNode;
-	var required = ('extend,resizeDisplay,addBrowserListeners,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Scene,Animation,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
+	var required = ('extend,resizeDisplay,addBrowserListeners,getImage,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Scene,Animation,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
 	var globalRequired = ('cp,createjs,Stats').split(',');
 	
 	var hasProperties = function(obj, props) {
@@ -102,44 +102,44 @@ ec.debug = 0;
 		init: function(time) {
 			console.log('init');
 			deltaTime = time;
-		    remainder = 0;
-		    
-		    player = null;
-		    boss   = null;
-		    userInput = new ec.UserInput();
+			remainder = 0;
+			
+			player = null;
+			boss   = null;
+			userInput = new ec.UserInput();
 			bossInput = new ec.EnemyInput();
-		    ec.world =
-		    world = new ec.World();
-		    if (!sound) {
+			ec.world =
+			world = new ec.World();
+			if (!sound) {
 				sound = new ec.Sound();
 				// TODO: separate music and sound effect volume
 				sound.setVolume(ec.core.getLocal('soundVolume', 0, parseFloat));
-		    }
-		    ec.sound = sound;
+			}
+			ec.sound = sound;
 
-		    ec.resizeDisplay();
+			ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
 
 			// THREE.js View
-		    // view = new ec.ThreeJsWorldView();
+			// view = new ec.ThreeJsWorldView();
 
-		    // Dummy View
-		    // view = {};
-		    // view.pause = view.resume = view.draw = function(){};
+			// Dummy View
+			// view = {};
+			// view.pause = view.resume = view.draw = function(){};
 
-		    // Canvas 2d Context View
-		    view = view || new ec.Canvas2dView();
-		    view.removeAll();
-		    worldView = new ec.Canvas2dWorldView(world);
-		    view.add(worldView);
-		    view.add(userInput);
-		    ec.view = view;
+			// Canvas 2d Context View
+			view = view || new ec.Canvas2dView();
+			view.removeAll();
+			worldView = new ec.Canvas2dWorldView(world);
+			view.add(worldView);
+			view.add(userInput);
+			ec.view = view;
 
-		    //-------- UI --------//
-		    ec.addBrowserListeners(userInput);
+			//-------- UI --------//
+			ec.addBrowserListeners(userInput);
 
-		    if (ec.touch) {
+			if (ec.touch) {
 				var scaledWidth  = view.width  * ec.pixelRatio;
 				var scaledHeight = view.height * ec.pixelRatio;
 				ec.ButtonOverlay.viewWidth  = scaledWidth;
@@ -151,9 +151,9 @@ ec.debug = 0;
 				var debugButton = userInput.addButtonOverlay(new ec.ButtonOverlay({x: 0, y: 50,   radius: 150}));
 				ec.bind(pauseButton, 'touchend', ec.core.togglePause, false);
 				ec.bind(debugButton, 'touchend', ec.core.cycleDebug, false);
-		    }
+			}
 
-		    // hideUrlBarOnLoad
+			// hideUrlBarOnLoad
 			if (ec.mobile) {
 				window.scrollTo( 0, 1 );
 			}
@@ -162,22 +162,21 @@ ec.debug = 0;
 			sound.stop();
 
 			paused = true;
-			overlay = new Image();
-			overlay.src = 'img/ui/startscreen.png';
+			overlay = ec.getImage('img/ui/startscreen.png');
 
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.start, false);
 
 			//-------- SCENE INIT --------//
 
-		    var sceneData = scenes.enter_the_ninja;
-		    scene = new ec.Scene(sceneData);
+			var sceneData = scenes.enter_the_ninja;
+			scene = new ec.Scene(sceneData);
 			
 			//-------- MAP INIT --------//
 
 			var map = maps[scene.mapName];
-		    ec.core.setupMap(map, scene);
+			ec.core.setupMap(map, scene);
 
-		    //-------- DEBUG / GUI --------//
+			//-------- DEBUG / GUI --------//
 			if (ec.debug) {
 				ec.core.setDebugLevel(ec.debug);
 			}
@@ -218,11 +217,11 @@ ec.debug = 0;
 			}
 			world.add(player);
 			
-		    // ninja
-		    if (!boss) {
+			// ninja
+			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
-		    }
-		    world.add(boss);
+			}
+			world.add(boss);
 
 			// scene
 			cancelAnimationFrame(rafId);
@@ -274,20 +273,18 @@ ec.debug = 0;
 		},
 
 		userStarted: function() {
-			overlay = new Image();
 			if (!ec.touch) {
-				overlay.src = 'img/ui/guide-move-desktop.png';
+				overlay = ec.getImage('img/ui/guide-move-desktop.png');
 				ec.core.trackEvent('game', 'guide', 'guide-move-desktop');
 			} else {
-				overlay.src = 'img/ui/guide-touch.png';
+				overlay = ec.getImage('img/ui/guide-touch.png');
 				ec.core.trackEvent('game', 'guide', 'guide-touch');
 			}
 		},
 
 		userReady: function() {
 			if (!ec.touch) {
-				overlay = new Image();
-				overlay.src = 'img/ui/guide-fight-desktop.png';
+				overlay = ec.getImage('img/ui/guide-fight-desktop.png');
 				ec.core.trackEvent('game', 'guide', 'guide-fight-desktop');
 			}
 		},
@@ -303,6 +300,7 @@ ec.debug = 0;
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.animateCredits );
 
+			ec.clearCache();
 			creditsView = creditsView || new ec.Canvas2dCreditsView();
 			creditsView.init(view.context);
 			view.removeAll();
@@ -340,11 +338,12 @@ ec.debug = 0;
 		},
 
 		animateCredits: function(time) {
-			rafId = requestAnimationFrame( core.animateCredits );
-
 			if (ec.debug > 0) {
-				debugView.stats.begin();
+				debugView.begin();
+				if (ec.debug === 1) {ec.core.traceTime('animateCredits');}
 			}
+
+			rafId = requestAnimationFrame( core.animateCredits );
 
 			delta = (time - deltaTime);
 			deltaTime = time;
@@ -355,21 +354,23 @@ ec.debug = 0;
 			}
 
 			if (ec.debug > 0) {
-				debugView.stats.end();
+				if (ec.debug === 1) {ec.core.traceTimeEnd('animateCredits');}
+				debugView.end();
 			}
 		},
 
 		animateScene: function(time) {
+			if (ec.debug > 0) {
+				debugView.begin();
+				if (ec.debug === 1) {ec.core.traceTime('animateScene');}
+			}
+
 			if (!scene.complete) {
 				rafId = requestAnimationFrame( core.animateScene );
 			} else {
 				rafId = requestAnimationFrame( core.animate );
 				scene = null;
 				return;
-			}
-
-			if (ec.debug > 0) {
-				debugView.stats.begin();
 			}
 
 			delta = (time - deltaTime);
@@ -390,24 +391,24 @@ ec.debug = 0;
 				delta = 0;
 			}
 
-			if (ec.debug !== 3) {
+			if (ec.debug !== 4) {
 				view.draw(delta);
 			}
 
-		    if (ec.debug > 0) {
-			    if (ec.debug > 1) {
-					cpDebugView.step(view);
-			    }
-				debugView.stats.end();
+			if (ec.debug > 0) {
+				if (ec.debug > 2) {cpDebugView.step(view);}
+				if (ec.debug === 1) {ec.core.traceTimeEnd('animateScene');}
+				debugView.end();
 			}
 		},
 
 		animate: function(time) {
-			rafId = requestAnimationFrame( core.animate );
-			
 			if (ec.debug > 0) {
-				debugView.stats.begin();
+				debugView.begin();
+				if (ec.debug === 1) {ec.core.traceTime('animate');}
 			}
+
+			rafId = requestAnimationFrame( core.animate );
 			
 			delta = (time - deltaTime);
 			deltaTime = time;
@@ -436,15 +437,14 @@ ec.debug = 0;
 				delta = 0;
 			}
 			
-			if (ec.debug !== 3) {
+			if (ec.debug !== 4) {
 				view.draw(delta);
 			}
 
-		    if (ec.debug > 0) {
-			    if (ec.debug > 1) {
-					cpDebugView.step(view);
-			    }
-				debugView.stats.end();
+			if (ec.debug > 0) {
+				if (ec.debug > 2) {cpDebugView.step(view);}
+				if (ec.debug === 1) {ec.core.traceTimeEnd('animate');}
+				debugView.end();
 			}
 		},
 
@@ -559,18 +559,19 @@ ec.debug = 0;
 		setDebugLevel: function(level) {
 			level = isNaN(level) ? 0 : level;
 			if (level < 0) {
-				level = 3;
+				level = 4;
 			}
 			cpDebugView = cpDebugView || new ec.ChipmunkDebugView(world.space);
-		    debugView = debugView || new ec.DebugView();
-		    
+			debugView = debugView || new ec.DebugView();
+			
 			debugView.hide();
 			cpDebugView.hide();
 			switch (level) {
+				case 4:
 				case 3:
-				case 2:
 					cpDebugView.show();
 					/*falls through*/
+				case 2:
 				case 1:
 					debugView.show();
 			}
@@ -581,6 +582,18 @@ ec.debug = 0;
 
 		cycleDebug: function() {
 			ec.core.setDebugLevel(ec.debug-1);
+		},
+
+		traceTime: function(tag) {
+			tag = tag || 'default';
+			console.time = console.time || function(){};
+			console.time(tag);
+		},
+
+		traceTimeEnd: function(tag) {
+			tag = tag || 'default';
+			console.timeEnd = console.timeEnd || function(){};
+			console.timeEnd(tag);
 		}
 	};
 
@@ -601,24 +614,24 @@ ec.debug = 0;
 	// utils
 
 	ec.extend = function( target, source ) {
-        for ( var prop in source ) {
+		for ( var prop in source ) {
 			if ( source.hasOwnProperty( prop ) ) {
-	            if ( !target.hasOwnProperty( prop ) ) {
+				if ( !target.hasOwnProperty( prop ) ) {
 					var copy = source[ prop ];
 					if (copy !== undefined) {
 						target[ prop ] = source[ prop ];
 					}
-	            }
-	        }
-        }
-        return target;
-    };
+				}
+			}
+		}
+		return target;
+	};
 
-    ec.create = function(obj) {
+	ec.create = function(obj) {
 		function F() {}
 		F.prototype = obj;
 		return new F();
-    };
+	};
 
 	ec.delegate = function(obj, func) {
 		return function() {
@@ -656,8 +669,8 @@ ec.debug = 0;
 
 	if (!Date.now) {
 		Date.now = function now() {
-	        return +(new Date());
-	    };
+			return +(new Date());
+		};
 	}
 
 	// requestAnimationFrame polyfill by Erik Möller

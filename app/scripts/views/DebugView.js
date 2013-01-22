@@ -14,6 +14,14 @@
 	    //window.document.body.appendChild( stats.domElement );
 	};
 
+	DebugView.prototype.begin = function() {
+		this.stats.begin();
+	};
+
+	DebugView.prototype.end = function() {
+		this.stats.end();
+	};
+
 	DebugView.prototype.show = function() {
 		this.stats.domElement.style.display = 'block';
 		window.document.body.appendChild( this.stats.domElement );

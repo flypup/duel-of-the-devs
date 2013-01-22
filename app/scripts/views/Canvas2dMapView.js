@@ -2,6 +2,7 @@
 	'use strict';
 
 	var ec = window.ec;
+	var document = window.document;
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
 		this.layers = [];
@@ -72,7 +73,7 @@
 		if (!element.visible) {
 			return false;
 		}
-		if (!element.width || this.intersects(element, viewport)) {
+		if (element.width === undefined || this.intersects(element, viewport)) {
 			context.save();
 			context.globalAlpha = element.alpha;
 			var matrix = element.matrix;
@@ -83,21 +84,20 @@
 			}
 
 			if (element.children) {
-				var rendered = false;
 				var children = element.children;
 				for (var i=0; i<children.length; i++) {
 					var child = children[i];
 					if (element.width || this.intersects(child, viewport)) {
 						if (child.image && child.imageData) {
-							rendered |= this.drawImage(child, context);
+							this.drawImage(child, context);
 						} else {
-							rendered |= this.drawShape(child, context);
+							this.drawShape(child, context);
 						}
 					}
 				}
 			}
 			if (element.imageData) {
-				context.drawImage(element.imageData, 0, 0);
+				this.drawImageInplace(element, context);
 			}
 			context.restore();
 		}
@@ -123,8 +123,10 @@
 	};
 
 	proto.drawShape = function(shape, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawShape '+ shape.fillImage);}
 		if (shape.fillImage) {
-			context.fillStyle = context.createPattern(shape.imageData, 'repeat') ;
+			var drawable = ec.getCached(shape.imageData, shape.fillImage);
+			context.fillStyle = context.createPattern(drawable, 'repeat') ;
 		} else {
 			context.fillStyle = shape.fillColor || '#00f';
 		}
@@ -147,8 +149,11 @@
 			// TODO: clip to context bounds
 			context.fillRect(shape.x, shape.y, shape.width, shape.height);
 		} else {
+			if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
 			throw('what kind of shape is this? '+ shape);
 		}
+
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
 		return true;
 	};
 
@@ -164,9 +169,19 @@
 		return true;
 	};
 
-	proto.drawImage = function(image, context) {
-		context.drawImage(image.imageData, image.x, image.y, image.width, image.height);
+	proto.drawImage = function(element, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawImage map child '+element.image);}
+		var drawable = ec.getCached(element.imageData, element.image);
+		context.drawImage(drawable, element.x, element.y, element.width, element.height);
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map child '+element.image);}
 		return true;
+	};
+
+	proto.drawImageInplace = function(element, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawImage map '+element.image);}
+		var drawable = ec.getCached(element.imageData, element.image);
+		context.drawImage(drawable, 0, 0);
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map '+element.image);}
 	};
 
 	proto.intersects = function(element, viewport) {

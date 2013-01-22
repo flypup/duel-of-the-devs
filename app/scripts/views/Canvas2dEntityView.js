@@ -26,7 +26,10 @@
 				context.save();
 
 				if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
+					var drawable = ec.getCached(o.image, 'shadow');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
 				}
 				context.restore();
 			}
@@ -120,13 +123,17 @@
 			var y = -entity.body.p.y -entity.z;
 			var o;
 			var rect;
+			var drawable;
 
 			context.save();
 			if (entity instanceof ec.Ninja) {
 				o = spriteSheetFrame(entity, ninjaSheet, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTime('drawImage ninja '+o.image.src);}
+					drawable = ec.getCached(o.image, 'ninja');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage ninja '+o.image.src);}
 				}
 
 			} else if (entity instanceof ec.Puff) {
@@ -136,7 +143,10 @@
 					o = ninjaSheet.getFrame(frame);
 					if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 						rect = o.rect;
-						context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+						if (ec.debug === 1) {ec.core.traceTime('drawImage puff '+o.image.src);}
+						drawable = ec.getCached(o.image, 'ninja');
+						context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+						if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage puff '+o.image.src);}
 					}
 				} else {
 					console.error('no puff');
@@ -146,7 +156,10 @@
 				o = spriteSheetFrame(entity, monkSheet, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTime('drawImage monk '+o.image.src);}
+					drawable = ec.getCached(o.image, 'monk');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage monk '+o.image.src);}
 				}
 
 			} else if (entity instanceof ec.EmptyHand) {
@@ -160,7 +173,10 @@
 				o = lionSprite || ec.SpriteSheets.lion.getFrame(0);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTime('drawImage lion '+o.image.src);}
+					drawable = ec.getCached(o.image, 'lion');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage lion '+o.image.src);}
 				}
 
 			} else if (entity instanceof ec.Circle) {
@@ -168,7 +184,10 @@
 				o = cauldronSprite || ec.SpriteSheets.cauldron.getFrame(0);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
-					context.drawImage(o.image, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTime('drawImage cauldron '+o.image.src);}
+					drawable = ec.getCached(o.image, 'cauldron');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage cauldron '+o.image.src);}
 				}
 
 			} else {

@@ -91,7 +91,9 @@
 			var x = this.width  - overlay.width * scale;
 			var y = this.height - overlay.height * scale;
 			context.globalAlpha = 1;
+			if (ec.debug === 1) {ec.core.traceTime('drawImage overlay '+overlay.src);}
 			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
+			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage overlay '+overlay.src);}
         }
         context.restore();
 	};

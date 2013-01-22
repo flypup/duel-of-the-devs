@@ -6,9 +6,8 @@
 	var Canvas2dCreditsView = ec.Canvas2dCreditsView = function() {
 		this.creditsTime = -1;
 		this.skipAfter = 3500;
-
-		this.overlay = new Image();
-		this.overlay.src = 'img/ui/credits.png';
+		
+		this.overlay = ec.getImage('img/ui/credits.png');
 	};
 
 	// TODO: Extend 2d Overlay/Layer View

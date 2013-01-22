@@ -40,8 +40,7 @@
 
 	proto.loadImages = function(path) {
 		if (this.image || this.fillImage) {
-			this.imageData = new Image();
-			this.imageData.src = path +'/'+ (this.image || this.fillImage);
+			this.imageData = ec.getImage(path +'/'+ (this.image || this.fillImage));
 		}
 		if (this.fillColor) {
 			if (this.fillColor.length === 9) {
