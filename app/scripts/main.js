@@ -35,8 +35,6 @@ ec.debug = 0;
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
 	var loadingViewNode;
-	var required = ('extend,resizeDisplay,addBrowserListeners,getImage,Entity,Box,Circle,EmptyHand,Player,Ninja,Puff,MapElement,World,Scene,Animation,Canvas2dView,Canvas2dWorldView,Canvas2dMapView,Canvas2dEntityView,Canvas2dCreditsView,TextField,ChipmunkDebugView,DebugView,UserInput,EnemyInput,SpriteSheets,ButtonOverlay,Sound').split(',');
-	var globalRequired = ('cp,createjs,Stats').split(',');
 	
 	var hasProperties = function(obj, props) {
 		if (!obj) {
@@ -78,11 +76,9 @@ ec.debug = 0;
 		load: function(time) {
 			var appCache = ec.appCache || {};
 			if ((!appCache.complete && !appCache.timedout) ||
-				!hasProperties(window, globalRequired) ||
-				!hasProperties(ec, required) ||
+				document.readyState !== 'complete' ||
 				!hasProperties(maps, ('testmap,courtyard').split(',')) ||
-				!hasProperties(scenes, ['enter_the_ninja']) ||
-				!hasProperties(window.createjs, ('SpriteSheet,Rectangle').split(','))) {
+				!hasProperties(scenes, ['enter_the_ninja'])) {
 				rafId = requestAnimationFrame( core.load );
 				// TODO: Loading screen drawn to canvas
 				if (!loadingViewNode) {
@@ -96,6 +92,9 @@ ec.debug = 0;
 			if (loadingViewNode) {
 				document.body.removeChild(loadingViewNode);
 			}
+			document.removeEventListener( 'DOMContentLoaded', docReadyHandler, false );
+			window.removeEventListener( 'load', docReadyHandler, false );
+
 			core.init(time);
 		},
 
@@ -695,6 +694,14 @@ ec.debug = 0;
 			removeItem  : function(id) { return delete this._data[id]; },
 			clear       : function() { return this._data = {}; }
 		};
+
+	//document ready
+	var docReadyHandler = function() {
+		document.readyState = 'complete';
+	};
+	document.addEventListener( 'DOMContentLoaded', docReadyHandler, false );
+	window.addEventListener( 'load', docReadyHandler, false );
+
 
 	ec.core.begin();
 
