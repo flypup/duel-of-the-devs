@@ -20,7 +20,7 @@ ec.debug = 0;
 	
 	var TIME_STEP = ec.TIME_STEP = 1000/60;
 	var paused = false;
-	var delta, deltaTime, remainder;
+	var deltaTime, remainder;
 
 	var userInput;
 	var bossInput;
@@ -344,11 +344,11 @@ ec.debug = 0;
 
 			rafId = requestAnimationFrame( core.animateCredits );
 
-			delta = (time - deltaTime);
+			var delta = (time - deltaTime);
 			deltaTime = time;
 			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
 
-			if (ec.debug < 3) {
+			if (ec.debug !== 4) {
 				view.draw(delta);
 			}
 
@@ -372,7 +372,7 @@ ec.debug = 0;
 				return;
 			}
 
-			delta = (time - deltaTime);
+			var delta = (time - deltaTime);
 			deltaTime = time;
 
 			if (!paused) {
@@ -409,7 +409,7 @@ ec.debug = 0;
 
 			rafId = requestAnimationFrame( core.animate );
 			
-			delta = (time - deltaTime);
+			var delta = (time - deltaTime);
 			deltaTime = time;
 
 			if (!paused) {
@@ -618,7 +618,7 @@ ec.debug = 0;
 				if ( !target.hasOwnProperty( prop ) ) {
 					var copy = source[ prop ];
 					if (copy !== undefined) {
-						target[ prop ] = source[ prop ];
+						target[ prop ] = copy;
 					}
 				}
 			}
@@ -656,9 +656,9 @@ ec.debug = 0;
 
 	// tests
 
-	var prefixed = function(str, obj) {
+	function prefixed(str, obj) {
 		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
-	};
+	}
 
 	ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
 	ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
@@ -704,9 +704,9 @@ ec.debug = 0;
 		};
 
 	//document ready
-	var docReadyHandler = function() {
+	function docReadyHandler() {
 		document.readyState = 'complete';
-	};
+	}
 	document.addEventListener( 'DOMContentLoaded', docReadyHandler, false );
 	window.addEventListener( 'load', docReadyHandler, false );
 
