@@ -107,7 +107,7 @@
 	};
 
 	proto.step = function(delta) {
-		this.input.poll();
+		this.input.poll(this, delta);
 		this.body.resetForces();
 
 		this.attack.entityStep(ec.world.time, ec.world, this);

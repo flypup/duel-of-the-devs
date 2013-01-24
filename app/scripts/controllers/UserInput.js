@@ -163,7 +163,7 @@
 
 	// game loop
 
-	proto.poll = function() {
+	proto.poll = function(entity, delta) {
 		// virtial gamepad
 		if (this.leftStickOverlay && !this.keyboardAxes1) {
 			this.setAxes1(this.leftStickOverlay.vx/100, this.leftStickOverlay.vy/100);
@@ -194,6 +194,10 @@
 		}
 	};
 
+	proto.mapCollision = function(entity, mapElement) {
+		
+	};
+	
 	// Touch / Mouse
 
 	proto.touchstart = function(e) {

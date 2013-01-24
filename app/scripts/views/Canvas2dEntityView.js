@@ -209,11 +209,18 @@
 			}
 			if (ec.debug > 1) {
 				//draw layer info
-				this.label = this.label || new ec.TextField(context, 0, 0, 160, 32, '#0ff');
-				this.label.setPos(x-16, y-((o&&o.regY+32)||0));
+				var fieldHeight = 48;
+				this.label = this.label || new ec.TextField(context, 0, 0, 160, fieldHeight, '#0ff');
+				this.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
 				var info = ''+ entity.layerNum +': '+ entity.layerName;
 				if (entity.mapCollision.length) {
 					info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+				}
+				if (entity.input) {
+					var goal = entity.input.goal;
+					if (goal) {
+						info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
+					}
 				}
 				this.label.setText(info);
 			}

@@ -50,12 +50,15 @@
 		// get floor. target z = floor z
 		// no floor? target z = 0
 		var targetZ = 0;
-		for (var i=0; i<this.mapCollision.length; i++) {
+		var maxCollisionTopZ = 0;
+		var collisionLength = this.mapCollision.length;
+		for (var i=0; i<collisionLength; i++) {
 			var element = this.mapCollision[i];
 			var top = element.getTop(this.body.p.x, -this.body.p.y);
 			if (top > targetZ && (top - this.z) <= thisEntityCanClimb) {
 				targetZ = top;
 			}
+			maxCollisionTopZ = Math.max(maxCollisionTopZ, top);
 		}
 
 		distance = targetZ - this.z;
@@ -81,6 +84,13 @@
 			this.velZ = 0;
 		}
 		
+		// check if movement is being restricted
+		if (collisionLength > 0) {
+			if (maxCollisionTopZ > targetZ) {
+				this.input.mapCollision(this);
+			}
+		}
+
 		return this;
 	};
 

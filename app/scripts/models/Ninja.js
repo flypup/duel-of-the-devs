@@ -32,6 +32,8 @@
 		this.type = 'Ninja';
 		
 		this.isShadowClone = false;
+		this.shadowClones = null;
+
 		this.hitPoints = 100;
 	};
 
@@ -45,13 +47,31 @@
 		}
 		// use ShadowClone class and prototype or something cool to inherit stuff
 		var pos = this.getPos();
-		var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.EnemyInput());
+		var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.ShadowCloneInput());
 		shadowClone.isShadowClone = true;
 		shadowClone.master = this;
+		if (!this.shadowClones) {
+			this.shadowClones = [];
+		}
+		this.shadowClones.push(shadowClone);
 		ec.world.add(shadowClone);
 		ec.world.add(new ec.Puff(this));
 		ec.world.add(new ec.Puff(shadowClone));
 	};
+
+	proto.getClones = function() {
+		var shadowClones = this.shadowClones;
+		if (!shadowClones) {
+			shadowClones = this.shadowClones = [];
+		}
+		for (var i = shadowClones.length; i-- > 0;) {
+			if (shadowClones[i].state === 'dead') {
+				shadowClones.splice(i, 1);
+			}
+		}
+		return shadowClones;
+	};
+	// TODO: get number of shadow clones, clear 'dead' clone refs
 
 	proto.hit = function(arbiter, world, damage) {
 		var energy = (arbiter && arbiter.totalKE()) || 1000;
@@ -109,7 +129,7 @@
 			return this;
 		}
 
-		this.input.poll(this);
+		this.input.poll(this, delta);
 		this.body.resetForces();
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {

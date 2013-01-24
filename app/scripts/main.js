@@ -626,6 +626,14 @@ ec.debug = 0;
 		return target;
 	};
 
+	ec.copy = function( target, source ) {
+		target = target || {};
+		for ( var prop in source ) {
+			target[ prop ] = source[ prop ];
+		}
+		return target;
+	};
+
 	ec.create = function(obj) {
 		function F() {}
 		F.prototype = obj;
