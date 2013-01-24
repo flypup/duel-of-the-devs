@@ -15,43 +15,12 @@
 	};
 
 	var proto = EnemyInput.prototype;
-
-	// Descision Loop:
-	//   goal set?
-	// -  No: set goal
-	// - Yes: goal met?
-	//      - Yes: wait N for next descision
-	//      -  No: goal sub-steps
-
-	proto.poll = function(entity, delta) {
-		if (this.state === 'dead') {
-			return;
-		}
-		var goal = this.goal;
-		if (!goal || goal.met) {
-			goal = this.selectGoal(goal, entity);
-		}
-		this.goal = goal;
-		var task = goal.task;
-		if (!task || task.complete) {
-			task = this.selectTask(goal, entity);
-		}
-		if (task) {
-			goal.taskTime += delta;
-			task.apply(this, arguments);//[entity]);
-		}
+	EnemyInput.ready = function() {
+		ec.extend(proto, ec.GoalBasedInput.prototype);
 	};
 
-	proto.mapCollision = function(entity) {
-		this.completeTask();
-	};
-
-	proto.setAxes1 = function(x, y) {
-		this.axes[0] = x;
-		this.axes[1] = y;
-	};
-
-	proto.selectGoal = function(currentGoal, entity) {
+	//cycle through private 'goals' array
+	proto.selectGoal = function() {
 		var goal, index;
 		index = this.goalIndex + 1;
 		if (index >= goals.length) {
@@ -59,49 +28,7 @@
 		}
 		goal = goals[index];
 		this.goalIndex = index;
-		// if (currentGoal === goalTree.faceOff) {
-		//	if (currentGoal && currentGoal.failed) ...
-		// }
-		goal.met = false;
-		goal.task = null;
-		goal.taskIndex = -1;
-		goal.taskTime = 0;
-		// if (ec.debug) {
-		//	console.log('Enemy goal: ', goal.name);
-		// }
 		return goal;
-	};
-
-	proto.selectTask = function(goal, entity) {
-		var task, index;
-		index = goal.taskIndex + 1;
-		if (index >= goal.tasks.length) {
-			goal.met = true;
-			return null;
-		}
-		task = goal.tasks[index];
-		task.complete = false;
-		goal.task = task;
-		goal.taskIndex = index;
-		goal.taskTime = 0;
-		// if (ec.debug) {
-		//	console.log('Enemy task: ', i);
-		// }
-		return task;
-	};
-
-	proto.completeTask = function() {
-		if (this.goal && this.goal.task) {
-			this.goal.task.complete = true;
-		}
-	};
-
-	proto.updateTargetPos = function() {
-		if (!this.targetEntity) {
-			this.completeTask();
-			return;
-		}
-		this.targetPos = ec.copy(this.targetsPos, this.targetEntity.getPos());
 	};
 
 /** UTILS ***********************************/
@@ -110,29 +37,51 @@
 		return vect.x * vect.x + vect.y * vect.y;
 	}
 
-	function vnormalize (vect) {
-		var length = v.len(vect);
+	function vnormalize (vect, update) {
+		if (!update) {
+			vect = ec.copy({}, vect);
+		}
+		var length = Math.sqrt(lengthSq(vect));
 		vect.x = vect.x / length;
 		vect.y = vect.y / length;
+		return vect;
 	}
 
-	function vmultiply (vect, value) {
+	function vmultiply (vect, value, update) {
+		if (!update) {
+			vect = ec.copy({}, vect);
+		}
 		vect.x = vect.x * value;
 		vect.y = vect.y * value;
+		return vect;
 	}
 
-	function vperp (vect) {
+	function vperp (vect, update) {
+		if (!update) {
+			vect = ec.copy({}, vect);
+		}
 		var x = vect.x;
 		vect.x = -vect.y;
 		vect.y = x;
+		return vect;
 	}
 
-	var tempVector = {x: 0, y: 0};
+	function vsub (v1, v2, update) {
+		if (!update) {
+			v1 = ec.copy({}, v1);
+		}
+		v1.x = v1.x - v2.x;
+		v1.y = v1.y - v2.y;
+		return v1;
+	}
 
-	function vsub (v1, v2) {
-		tempVector.x = v1.x - v2.x;
-		tempVector.y = v1.y - v2.y;
-		return tempVector;
+	function vadd (v1, v2, update) {
+		if (!update) {
+			v1 = ec.copy({}, v1);
+		}
+		v1.x = v1.x + v2.x;
+		v1.y = v1.y + v2.y;
+		return v1;
 	}
 
 /** TASKS ***********************************/
@@ -185,7 +134,7 @@
 				entity.setAngle(direction, 0);
 				return;
 			}
-			vnormalize(direction);
+			vnormalize(direction, true);
 			this.setAxes1(direction.x, direction.y);
 		};
 	}
@@ -209,7 +158,7 @@
 				entity.setAngle(direction, 0);
 				return;
 			}
-			vnormalize(direction);
+			vnormalize(direction, true);
 			this.setAxes1(direction.x, direction.y);
 		};
 	}
@@ -227,12 +176,12 @@
 			var direction = vsub(this.targetPos, entity.getPos());
 			if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
 				// far from target
-				vnormalize(direction);
+				vnormalize(direction, true);
 				this.setAxes1(direction.x, direction.y);
 				return;
 			} else if (lengthSq(direction) < distance * distance) {
 				// too close to target
-				vnormalize(direction);
+				vnormalize(direction, true);
 				this.setAxes1(-direction.x, -direction.y);
 				return;
 			}
@@ -331,17 +280,19 @@
 			var numberOfClones = shadowClones.length;
 			this.updateTargetPos();
 			
-			var direction = ec.copy({}, vsub(this.targetPos, entity.getPos()));
-			vmultiply(direction, 0.5);
+			// TODO: Define line between target and myself
+			var direction = vsub(this.targetPos, entity.getPos());
+			vmultiply(direction, 0.5, true);
 			var middle = vsub(this.targetPos, direction);
-			vperp(direction);
+			//line spacing
+			direction = vmultiply(vnormalize(vperp(direction, true), true), 128, true);
+			// TODO: Define points on line for numberOfClones
+			//middle = vadd(middle, vmultiply(direction, numberOfClones/2), true);
 
-
-
+			// TODO: tell clones to form line
 			for (var i = numberOfClones; i-- > 0;) {
 				var cloneInput = shadowClones[i].input;
-				middle = vsub(middle, direction);
-				cloneInput.targetPos = ec.copy({}, middle);
+				cloneInput.targetPos = middle = vsub(middle, direction, true);
 				cloneInput.setGoal(goalTree.moveToPosition);
 			}
 			this.completeTask();
@@ -350,6 +301,7 @@
 
 	function throwStars() {
 		return function throwStarsTask(entity) {
+			// TODO: tell clones to fire starts at target
 			this.completeTask();
 		};
 	}
@@ -403,6 +355,7 @@
 				kageNoBunshin(11),
 				makeClones(11, 5),
 				idle(1)
+				// TODO: tell clones to form circle with me
 			]
 		},
 		formCircleB: {
@@ -426,6 +379,7 @@
 			name: 'circle target',
 			tasks: [
 				idle(1)
+				// TODO: tell clones run around target with me
 			]
 		},
 		rush: {
@@ -456,7 +410,7 @@
 		moveToPosition: {
 			name: 'move to',
 			tasks: [
-				moveTo()
+				moveTo(GOAL_DISTANCE/2)
 			]
 		},
 	};

@@ -96,6 +96,8 @@ ec.debug = 0;
 			window.removeEventListener( 'load', docReadyHandler, false );
 
 			// initialize inheritance - these should listen for an app loaded event, or use 'requires'
+			ec.EnemyInput.ready();
+			ec.ShadowCloneInput.ready();
 			ec.Player.ready();
 			ec.Ninja.ready();
 			ec.EmptyHand.ready();

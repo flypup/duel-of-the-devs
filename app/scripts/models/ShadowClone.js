@@ -25,7 +25,9 @@
 	};
 
 	var proto = ShadowClone.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	ShadowClone.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 
 })(window);
