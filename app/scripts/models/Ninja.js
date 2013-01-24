@@ -38,7 +38,9 @@
 	};
 
 	var proto = Ninja.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	Ninja.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 	proto.shadowClone = function() {
 		if (this.isShadowClone) {

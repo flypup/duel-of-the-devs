@@ -25,7 +25,9 @@
 	};
 
 	var proto = Puff.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	Puff.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 	proto.step = function(delta) {
 		this.time -= delta;

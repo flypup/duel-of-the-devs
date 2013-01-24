@@ -95,6 +95,14 @@ ec.debug = 0;
 			document.removeEventListener( 'DOMContentLoaded', docReadyHandler, false );
 			window.removeEventListener( 'load', docReadyHandler, false );
 
+			// initialize inheritance - these should listen for an app loaded event, or use 'requires'
+			ec.Player.ready();
+			ec.Ninja.ready();
+			ec.EmptyHand.ready();
+			ec.Puff.ready();
+			ec.Box.ready();
+			ec.Circle.ready();
+
 			core.init(time);
 		},
 

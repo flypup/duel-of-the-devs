@@ -23,7 +23,9 @@
 	};
 
 	var proto = Circle.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	Circle.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 	
 })(window);

@@ -32,7 +32,9 @@
 	EmptyHand.PULLING = 3;
 
 	var proto = EmptyHand.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	EmptyHand.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 	proto.entityStep = function(time, world, entity) {
 		if (this.phase) {

@@ -21,7 +21,8 @@
 	};
 
 	var proto = Box.prototype;
-	ec.extend(proto, ec.Entity.prototype);
-
+	Box.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 	
 })(window);

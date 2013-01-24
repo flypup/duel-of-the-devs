@@ -37,7 +37,9 @@
 	};
 
 	var proto = Player.prototype;
-	ec.extend(proto, ec.Entity.prototype);
+	Player.ready = function() {
+		ec.extend(proto, ec.Entity.prototype);
+	};
 
 	proto.punch = function(time, world, delta) {
 		if (this.passive()) {
