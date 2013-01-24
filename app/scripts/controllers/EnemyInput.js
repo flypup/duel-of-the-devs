@@ -340,8 +340,9 @@
 
 			for (var i = numberOfClones; i-- > 0;) {
 				var cloneInput = shadowClones[i].input;
+				middle = vsub(middle, direction);
 				cloneInput.targetPos = ec.copy({}, middle);
-				cloneInput.task = moveTo();
+				cloneInput.setGoal(goalTree.moveToPosition);
 			}
 			this.completeTask();
 		};
@@ -451,7 +452,13 @@
 				moveAway(600),
 				idle(300)
 			]
-		}
+		},
+		moveToPosition: {
+			name: 'move to',
+			tasks: [
+				moveTo()
+			]
+		},
 	};
 
 	var goals = [
