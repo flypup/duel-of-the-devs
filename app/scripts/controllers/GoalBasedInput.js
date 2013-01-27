@@ -44,6 +44,7 @@
 	};
 
 	proto.mapCollision = function(entity) {
+		this.setAxes1(0, 0);
 		this.completeTask();
 	};
 

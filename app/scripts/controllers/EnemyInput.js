@@ -354,7 +354,7 @@
 			name: 'face off',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(160, 10),
+				faceOffTarget(200, 10),
 				idle(250)
 			]
 		},
@@ -362,11 +362,11 @@
 			name: 'formation line a',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(320, 10),
+				faceOffTarget(350, 10),
 				idle(250),
 				kageNoBunshin(8),
 				makeClones(8, 5),
-				clonesFormLineA(),
+				clonesFormLineA(200, 80),
 				idle(500)
 			]
 		},
@@ -439,11 +439,11 @@
 	var goals = [
 		goalTree.formLineA,
 		goalTree.throwStars,
-		//goalTree.formCircleA,
-		//goalTree.circleTarget,
-		//goalTree.scatter,
+		goalTree.formCircleA,
+		goalTree.circleTarget,
+		goalTree.scatter,
 		goalTree.faceOff,
-		//goalTree.formCircleB,
+		goalTree.formCircleB,
 		goalTree.rush
 	];
 
