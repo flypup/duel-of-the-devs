@@ -68,7 +68,6 @@
 			space.sleepingComponents.length = 0;
 			space.constraints.length = 0;
 			space.arbiters.length = 0;
-			space.constraints.length = 0;
 			delete this.space;
 		}
 	};

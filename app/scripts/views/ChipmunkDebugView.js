@@ -30,7 +30,7 @@
 	})();
 
 	var ChipmunkDebugView = ec.ChipmunkDebugView = function(space) {
-		this.space = space;
+		this.setSpace(space);
 
 		var canvas = this.canvas = document.createElement( 'canvas' );
 		canvas.style.position = 'absolute';
@@ -265,7 +265,7 @@
 		infoFields[index++].setText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0));
 
 		if (this.message) {
-			infoFields[5].setText(this.message);
+			infoFields[index++].setText(this.message);
 		}
 	};
 
