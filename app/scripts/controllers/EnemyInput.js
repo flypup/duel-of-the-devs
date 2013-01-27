@@ -12,6 +12,8 @@
 		}
 		this.goal = null;
 		this.goalIndex = -1;
+
+		this.formations = new ec.Formations();
 	};
 
 	var proto = EnemyInput.prototype;
@@ -30,59 +32,6 @@
 		this.goalIndex = index;
 		return goal;
 	};
-
-/** UTILS ***********************************/
-
-	function lengthSq (vect) {
-		return vect.x * vect.x + vect.y * vect.y;
-	}
-
-	function vnormalize (vect, update) {
-		if (!update) {
-			vect = ec.copy({}, vect);
-		}
-		var length = Math.sqrt(lengthSq(vect));
-		vect.x = vect.x / length;
-		vect.y = vect.y / length;
-		return vect;
-	}
-
-	function vmultiply (vect, value, update) {
-		if (!update) {
-			vect = ec.copy({}, vect);
-		}
-		vect.x = vect.x * value;
-		vect.y = vect.y * value;
-		return vect;
-	}
-
-	function vperp (vect, update) {
-		if (!update) {
-			vect = ec.copy({}, vect);
-		}
-		var x = vect.x;
-		vect.x = -vect.y;
-		vect.y = x;
-		return vect;
-	}
-
-	function vsub (v1, v2, update) {
-		if (!update) {
-			v1 = ec.copy({}, v1);
-		}
-		v1.x = v1.x - v2.x;
-		v1.y = v1.y - v2.y;
-		return v1;
-	}
-
-	function vadd (v1, v2, update) {
-		if (!update) {
-			v1 = ec.copy({}, v1);
-		}
-		v1.x = v1.x + v2.x;
-		v1.y = v1.y + v2.y;
-		return v1;
-	}
 
 /** TASKS ***********************************/
 
@@ -125,7 +74,8 @@
 				return;
 			}
 			// from me to target
-			var direction = vsub(this.targetPos, entity.getPos());
+			// TODO: temp vector: tempVectorSubtract(a, b)
+			var direction = v.sub(this.targetPos, entity.getPos());
 			if (lengthSq(direction) < distance * distance) {
 				//reached target
 				//console.log('moved to target');
@@ -154,7 +104,7 @@
 				this.completeTask();
 				return;
 			}
-			var direction = vsub(entity.getPos(), this.targetPos);
+			var direction = v.sub(entity.getPos(), this.targetPos);
 			if (lengthSq(direction) > distance * distance) {
 				//evaded target
 				//console.log('evaded target');
@@ -179,7 +129,7 @@
 				return;
 			}
 			// from me to target
-			var direction = vsub(this.targetPos, entity.getPos());
+			var direction = v.sub(this.targetPos, entity.getPos());
 			if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
 				// far from target
 				vnormalize(direction, true);
@@ -279,45 +229,66 @@
 		};
 	}
 
-	function clonesFormLineA(distance, spacing) {
-		distance = distance || 128;
+	function clonesFormLineA(spacing, minDistance, length) {
 		spacing = spacing || 128;
+		minDistance = minDistance || 128;
 		return function clonesFormLineATask(entity) {
 			var shadowClones = entity.getClones();
-			var numberOfClones = shadowClones.length;
-			this.updateTargetPos();
-			
-			// points along line between self and target
-			var vector = vsub(entity.getPos(), this.targetPos);
-			var pos = vmultiply(vector, 0.5);
-			if (lengthSq(pos) < distance*distance) {
-				pos.x = 0;
-				pos.y = -distance;
-			}
+			length = length || shadowClones.length;
 
-			var perp = vmultiply(vnormalize(vperp(vector), true), spacing, true);
-			vsub(pos, v.mult(perp, (numberOfClones-1)/2), true);
-			var angle = Math.atan2(-vector.y, vector.x) + Math.PI;
+			var targetPos = this.updateTargetPos();
+			var positions = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
 
-			for (var i=0; i<numberOfClones; i++) {
-				var cloneInput = shadowClones[i].input;
-				var targetPos = cloneInput.targetPos || {};
-				targetPos.x = pos.x + this.targetPos.x;
-				targetPos.y = pos.y + this.targetPos.y;
-				targetPos.angle = angle;
+			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
 
-				cloneInput.targetPos = targetPos;
-				cloneInput.setGoal({
-					name: 'move to',
-					tasks: [
-						moveTo(GOAL_DISTANCE/2)
-					]
-				});
+			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
 
-				vadd(pos, perp, true);
-			}
 			this.completeTask();
 		};
+	}
+
+	function assignPositionsUsingSolution(units, positions, solution, length, targetPos) {
+		length = length || solution.length;
+		targetPos = targetPos || v(0,0);
+		for (var i=0; i<length; i++) {
+			var pos       = positions[solution[i][0]];
+			var unitInput = units[solution[i][1]].input;
+			var formationPos = unitInput.targetPos || v(0,0);
+
+			formationPos.x = pos.x + targetPos.x;
+			formationPos.y = pos.y + targetPos.y;
+			formationPos.angle = pos.angle;
+
+			unitInput.targetPos = formationPos;
+			unitInput.setGoal({
+				name: 'move to',
+				tasks: [
+					moveTo(GOAL_DISTANCE/2)
+				]
+			});
+		}
+	}
+
+	function assignPositions(units, positions, solution, length, targetPos) {
+		length = length || solution.length;
+		targetPos = targetPos || v(0,0);
+		for (var i=0; i<length; i++) {
+			var pos       = positions[i];
+			var unitInput = units[i].input;
+			var formationPos = unitInput.targetPos || v(0,0);
+
+			formationPos.x = pos.x + targetPos.x;
+			formationPos.y = pos.y + targetPos.y;
+			formationPos.angle = pos.angle;
+
+			unitInput.targetPos = formationPos;
+			unitInput.setGoal({
+				name: 'move to',
+				tasks: [
+					moveTo(GOAL_DISTANCE/2)
+				]
+			});
+		}
 	}
 
 	function throwStars() {
@@ -366,7 +337,7 @@
 				idle(250),
 				kageNoBunshin(8),
 				makeClones(8, 5),
-				clonesFormLineA(200, 80),
+				clonesFormLineA(80, 200),
 				idle(500)
 			]
 		},
@@ -438,14 +409,29 @@
 
 	var goals = [
 		goalTree.formLineA,
-		goalTree.throwStars,
-		goalTree.formCircleA,
-		goalTree.circleTarget,
-		goalTree.scatter,
+		//goalTree.throwStars,
+		//goalTree.formCircleA,
+		//goalTree.circleTarget,
+		//goalTree.scatter,
 		goalTree.faceOff,
-		goalTree.formCircleB,
-		goalTree.rush
+		//goalTree.formCircleB,
+		//goalTree.rush
 	];
 
+/** MATH UTILS ***********************************/
+
+	function lengthSq (vect) {
+		return vect.x * vect.x + vect.y * vect.y;
+	}
+
+	function vnormalize (vect, update) {
+		if (!update) {
+			vect = ec.copy({}, vect);
+		}
+		var length = Math.sqrt(lengthSq(vect));
+		vect.x = vect.x / length;
+		vect.y = vect.y / length;
+		return vect;
+	}
 
 })(window);

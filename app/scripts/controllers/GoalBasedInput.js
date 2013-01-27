@@ -97,9 +97,10 @@
 	proto.updateTargetPos = function() {
 		if (!this.targetEntity) {
 			this.completeTask();
-			return;
+			return this.targetPos;
 		}
 		this.targetPos = ec.copy(this.targetPos, this.targetEntity.getPos());
+		return this.targetPos;
 	};
 
 })(window);
