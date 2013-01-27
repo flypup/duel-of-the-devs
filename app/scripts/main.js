@@ -92,8 +92,6 @@ ec.debug = 0;
 			if (loadingViewNode) {
 				document.body.removeChild(loadingViewNode);
 			}
-			document.removeEventListener( 'DOMContentLoaded', docReadyHandler, false );
-			window.removeEventListener( 'load', docReadyHandler, false );
 
 			// initialize inheritance - these should listen for an app loaded event, or use 'requires'
 			ec.EnemyInput.ready();
@@ -681,6 +679,28 @@ ec.debug = 0;
 	ec.webaudio   = !!prefixed('AudioContext', window);
 	ec.gamepads   = !!prefixed('getGamepads', navigator);
 
+	ec.bind = function(obj, event, func, bool) {
+		bool = bool || false;
+		if (obj.addEventListener) {
+			obj.addEventListener(event, func, bool);
+		} else if (obj.attachEvent) {
+			obj.attachEvent('on' + event, func);
+		} else {
+			// not exactly 'trigger' or 'dispatchEvent' friendly
+			obj['on' + event] = func;
+		}
+	};
+	
+	ec.unbind = function(obj, event, func, bool) {
+		bool = bool || false;
+		if (obj.removeEventListener) {
+			obj.removeEventListener(event, func, bool);
+		} else if (obj.detachEvent) {
+			obj.detachEvent('on' + event, func);
+		} else {
+			delete obj['on' + event];
+		}
+	};
 
 	// polyfills
 
@@ -715,10 +735,12 @@ ec.debug = 0;
 
 	//document ready
 	function docReadyHandler() {
+		ec.unbind(document, 'DOMContentLoaded', docReadyHandler, false);
+		ec.unbind(window, 'load', docReadyHandler, false);
 		document.readyState = 'complete';
 	}
-	document.addEventListener( 'DOMContentLoaded', docReadyHandler, false );
-	window.addEventListener( 'load', docReadyHandler, false );
+	ec.bind(document, 'DOMContentLoaded', docReadyHandler, false);
+	ec.bind(window, 'load', docReadyHandler, false);
 
 
 	ec.core.begin();

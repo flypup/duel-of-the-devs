@@ -45,28 +45,5 @@
 			viewportmeta.content = 'width=device-width, user-scalable=1';
 		}
 	};
-
-	ec.bind = function(obj, event, func, bool) {
-		bool = bool || false;
-		if (obj.addEventListener) {
-			obj.addEventListener(event, func, bool);
-		} else if (obj.attachEvent) {
-			obj.attachEvent('on' + event, func);
-		} else {
-			// not exactly 'trigger' or 'dispatchEvent' friendly
-			obj['on' + event] = func;
-		}
-	};
-
-	ec.unbind = function(obj, event, func, bool) {
-		bool = bool || false;
-		if (obj.removeEventListener) {
-			obj.removeEventListener(event, func, bool);
-		} else if (obj.detachEvent) {
-			obj.detachEvent('on' + event, func);
-		} else {
-			delete obj['on' + event];
-		}
-	};
-
+	
 })(window);
