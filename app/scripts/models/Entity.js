@@ -185,11 +185,15 @@
 	};
 	
 	proto.setAngle = function(v, w) {
+
 		if (w !== undefined) {
 			this.body.w = w;
 		}
 		if (v && (v.x || v.y)) {
+			//this.body.setAngle(Math.atan2(-v.y, v.x))
 			this.body.a = Math.atan2(-v.y, v.x);
+			this.body.rot.x = v.x;
+			this.body.rot.y = -v.y;
 		}
 	};
 

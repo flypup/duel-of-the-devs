@@ -19,8 +19,6 @@
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
-		
-		this.body.a = -1.57;
 
 		this.shape.collision_type = ec.World.PLAYER_TYPE;
 
@@ -68,7 +66,7 @@
 		// face direction of punch
 		// TODO: tween angular motion
 		this.setAngle(pushpull, 0);
-		attack.body.a = Math.atan2(-pushpull.y, pushpull.x);
+		attack.setAngle(pushpull, 0);
 
 		// slow down while punching
 		var movementFriction = 0.75;

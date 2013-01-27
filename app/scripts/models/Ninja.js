@@ -18,8 +18,6 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.body.a = 3;
-
 		this.shape.collision_type = ec.World.MONSTER_TYPE;
 
 		// TODO: better states!
@@ -137,10 +135,10 @@
 		this.body.f.x = 0;
 		this.body.f.y = 0;
 		this.body.t = 0;
-
+		
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
-			direction.x =  this.input.axes[0];
-			direction.y = -this.input.axes[1];
+			direction.x = this.input.axes[0];
+			direction.y = this.input.axes[1];
 			if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
 				if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
 					// normalize the vector
@@ -155,7 +153,7 @@
 				direction.mult(this.speed*1000/delta);
 				this.body.activate();
 				this.body.vx += direction.x;
-				this.body.vy += direction.y;
+				this.body.vy -= direction.y;
 				this.body.vx *= 0.5;
 				this.body.vy *= 0.5;
 				//this.body.applyForce(direction, cp.vzero);
@@ -168,8 +166,7 @@
 				}
 				
 				// TODO: tween angular motion
-				this.body.w = 0;
-				this.body.a = Math.atan2(direction.y, direction.x);
+				this.setAngle(direction, 0);
 
 			} else {
 				this.state = 'standing';
