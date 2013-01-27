@@ -68,7 +68,7 @@
 		}
 		// test
 		if (entities.length) {
-			throw(entities.length + ' elements did not get placed in a layer');
+			console.error(entities.length + ' elements did not get placed in a layer');
 			//entitiesInLayers[layers.length-1] = entitiesInLayers[layers.length-1].concat(entities);
 		}
 
