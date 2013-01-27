@@ -56,7 +56,6 @@
 				}
 
 			} else if (this.phase === ec.EmptyHand.GRABBING) {
-				//this.body.resetForces();
 				this.body.vx *= 0.9;
 				this.body.vy *= 0.9;
 				if (entity.passive()) {

@@ -76,7 +76,12 @@
 		this.body.vy *= movementFriction;
 		
 		// apply impulse to attack
-		attack.body.resetForces();
+		
+		//attack.body.resetForces();
+		attack.body.f.x = 0;
+		attack.body.f.y = 0;
+		attack.body.t = 0;
+
 		attack.body.activate();
 		var force = v.mult(pushpull, this.speed*1000/delta);
 		attack.body.vx =  force.x + direction.x * movementFriction;
@@ -110,7 +115,11 @@
 
 	proto.step = function(delta) {
 		this.input.poll(this, delta);
-		this.body.resetForces();
+
+		//this.body.resetForces();
+		this.body.f.x = 0;
+		this.body.f.y = 0;
+		this.body.t = 0;
 
 		this.attack.entityStep(ec.world.time, ec.world, this);
 

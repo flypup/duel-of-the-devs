@@ -132,7 +132,11 @@
 		}
 
 		this.input.poll(this, delta);
-		this.body.resetForces();
+
+		//this.body.resetForces();
+		this.body.f.x = 0;
+		this.body.f.y = 0;
+		this.body.t = 0;
 
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
 			direction.x =  this.input.axes[0];
