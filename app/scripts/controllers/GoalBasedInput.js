@@ -98,7 +98,7 @@
 			this.completeTask();
 			return;
 		}
-		this.targetPos = ec.copy(this.targetsPos, this.targetEntity.getPos());
+		this.targetPos = ec.copy(this.targetPos, this.targetEntity.getPos());
 	};
 
 })(window);

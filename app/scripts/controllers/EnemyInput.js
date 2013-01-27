@@ -120,6 +120,7 @@
 			//console.log('moveTo', this.targetPos, this);
 			if (!this.targetPos) {
 				//nowhere to go
+				this.setAxes1(0, 0);
 				this.completeTask();
 				return;
 			}
@@ -129,9 +130,14 @@
 				//reached target
 				//console.log('moved to target');
 				this.completeTask();
+				var angle = this.targetPos.angle;
+				if (angle) {
+					entity.body.a = angle;
+				} else {
+					entity.setAngle(direction, 0);
+				}
 				this.targetPos = null;
 				this.setAxes1(0, 0);
-				entity.setAngle(direction, 0);
 				return;
 			}
 			vnormalize(direction, true);
@@ -273,27 +279,42 @@
 		};
 	}
 
-	function clonesFormLineA(distance) {
-		distance = distance || 192;
+	function clonesFormLineA(distance, spacing) {
+		distance = distance || 128;
+		spacing = spacing || 128;
 		return function clonesFormLineATask(entity) {
 			var shadowClones = entity.getClones();
 			var numberOfClones = shadowClones.length;
 			this.updateTargetPos();
 			
-			// TODO: Define line between target and myself
-			var direction = vsub(this.targetPos, entity.getPos());
-			vmultiply(direction, 0.5, true);
-			var middle = vsub(this.targetPos, direction);
-			//line spacing
-			direction = vmultiply(vnormalize(vperp(direction, true), true), 128, true);
-			// TODO: Define points on line for numberOfClones
-			//middle = vadd(middle, vmultiply(direction, numberOfClones/2), true);
+			// points along line between self and target
+			var vector = vsub(entity.getPos(), this.targetPos);
+			var pos = vmultiply(vector, 0.5);
+			if (lengthSq(pos) < distance*distance) {
+				pos.x = 0;
+				pos.y = -distance;
+			}
 
-			// TODO: tell clones to form line
-			for (var i = numberOfClones; i-- > 0;) {
+			var perp = vmultiply(vnormalize(vperp(vector), true), spacing, true);
+			vsub(pos, v.mult(perp, (numberOfClones-1)/2), true);
+			var angle = Math.atan2(-vector.y, vector.x) + Math.PI;
+
+			for (var i=0; i<numberOfClones; i++) {
 				var cloneInput = shadowClones[i].input;
-				cloneInput.targetPos = middle = vsub(middle, direction, true);
-				cloneInput.setGoal(goalTree.moveToPosition);
+				var targetPos = cloneInput.targetPos || {};
+				targetPos.x = pos.x + this.targetPos.x;
+				targetPos.y = pos.y + this.targetPos.y;
+				targetPos.angle = angle;
+
+				cloneInput.targetPos = targetPos;
+				cloneInput.setGoal({
+					name: 'move to',
+					tasks: [
+						moveTo(GOAL_DISTANCE/2)
+					]
+				});
+
+				vadd(pos, perp, true);
 			}
 			this.completeTask();
 		};
@@ -345,8 +366,8 @@
 				idle(250),
 				kageNoBunshin(8),
 				makeClones(8, 5),
-				clonesFormLineA(160),
-				idle(400)
+				clonesFormLineA(),
+				idle(500)
 			]
 		},
 		formCircleA: {
@@ -418,11 +439,11 @@
 	var goals = [
 		goalTree.formLineA,
 		goalTree.throwStars,
-		goalTree.formCircleA,
-		goalTree.circleTarget,
-		goalTree.scatter,
+		//goalTree.formCircleA,
+		//goalTree.circleTarget,
+		//goalTree.scatter,
 		goalTree.faceOff,
-		goalTree.formCircleB,
+		//goalTree.formCircleB,
 		goalTree.rush
 	];
 
