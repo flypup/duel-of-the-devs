@@ -44,7 +44,7 @@
 	};
 
 	proto.mapCollision = function(entity) {
-		this.setAxes1(0, 0);
+		//this.setAxes1(0, 0);
 		this.completeTask();
 	};
 
@@ -96,6 +96,7 @@
 
 	proto.updateTargetPos = function() {
 		if (!this.targetEntity) {
+			console.error('update target: targetEntity not set');
 			this.completeTask();
 			return this.targetPos;
 		}

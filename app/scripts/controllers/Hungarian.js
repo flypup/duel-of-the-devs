@@ -101,10 +101,17 @@
 				var pos = formation[i];
 				for (var j = 0; j < matrix[i].length; j++) {
 					// TODO: we should just pass two lists of vects
-					var unitPos = squad[j].getPos();
-					var x = unitPos.x - pos.x;
-					var y = unitPos.y - pos.y;
-					matrix[i][j] = x * x + y * y;
+					var entity = squad[j];
+					if (entity) {
+						var unitPos = squad[j].getPos();
+						var x = unitPos.x - pos.x;
+						var y = unitPos.y - pos.y;
+						matrix[i][j] = x * x + y * y;
+					} else {
+						matrix[i][j] = 0;
+						console.error('entity missing from squad: '+ j +' '+ squad);
+					}
+
 				}
 			}
 			return matrix;

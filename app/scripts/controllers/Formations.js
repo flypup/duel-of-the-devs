@@ -8,6 +8,7 @@
 
 	var Formations = ec.Formations = function() {
 		this.positions = [];
+		//this.radialMove = 0;
 	};
 
 	var proto = Formations.prototype;
@@ -41,30 +42,26 @@
 
 			pos.add(perp);
 		}
-
 		return positions;
 	};
 
-	//TODO: fix this implementation
-	proto.circle = function(length) {
-		var mousePos = this.headPos();
-		var targetPos = this.targetPos();
-
-		var radius = Math.max(v.len(v.sub(mousePos, targetPos)), 64);//radius
+	proto.circlePositions = function(headPos, targetPos, length, radius) {
+		//radius = Math.max(v.len(v.sub(headPos, targetPos)), radius);
 		var pi = Math.PI;
 		var pi2 = 2 * pi;
-		var circumference = pi2 * radius;
-		this.radialMove += 20 / circumference;
+		//var circumference = pi2 * radius;
+		//this.radialMove += 20 / circumference;
 
 		var positions = this.getFormationVectors(length);
 		for (var i=0; i<length; i++) {
 			var radian = pi2 * i / length;
-			radian += this.radialMove;
+			//radian += this.radialMove;
 			var pos = v.forangle(radian).mult(radius);
 			positions[i].x = pos.x;
 			positions[i].y = pos.y;
-			positions[i].angle = (v.toangle(pos) + pi) % pi2;
+			positions[i].angle = Math.atan2(-pos.y, pos.x) + pi;
 		}
+		return positions;
 	};
 
 	// UNIT FORMATION PATH FINDING

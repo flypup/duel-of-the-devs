@@ -194,7 +194,7 @@
 
 	function kageNoBunshin(maxNumberOfClones, numberOfClonesToMake)  {
 		maxNumberOfClones = maxNumberOfClones || 7;
-		numberOfClonesToMake = numberOfClonesToMake || 2;
+		numberOfClonesToMake = numberOfClonesToMake || maxNumberOfClones;
 		var makeClonesJutsu = makeClones(maxNumberOfClones, numberOfClonesToMake);
 		return function kageNoBunshinTask(entity) {
 			if (entity.getClones().length >= maxNumberOfClones) {
@@ -216,7 +216,7 @@
 
 	function makeClones(maxNumberOfClones, numberOfClonesToMake) {
 		maxNumberOfClones = maxNumberOfClones || 7;
-		numberOfClonesToMake = numberOfClonesToMake || 2;
+		numberOfClonesToMake = numberOfClonesToMake || numberOfClonesToMake;
 		return function makeClonesTask(entity) {
 			this.clones = this.clones || 0;
 			if (++this.clones > numberOfClonesToMake || entity.getClones().length >= maxNumberOfClones) {
@@ -224,20 +224,58 @@
 				this.completeTask();
 				//console.log('made all clones');
 			} else {
+				// TODO: use formation positions when creating clones
 				entity.shadowClone();
 			}
 		};
 	}
 
-	function clonesFormLineA(spacing, minDistance, length) {
+	function clonesFormLine(spacing, minDistance, maxLength) {
 		spacing = spacing || 128;
 		minDistance = minDistance || 128;
-		return function clonesFormLineATask(entity) {
+		maxLength = maxLength || 100;
+		return function clonesFormLineTask(entity) {
+			var shadowClones = entity.getClones();
+			var length = Math.min(maxLength, shadowClones.length);
+
+			var targetPos = this.updateTargetPos();
+			var positions = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
+
+			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
+
+			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
+
+			this.completeTask();
+		};
+	}
+
+	function clonesFormCircleWithLeader(radius, maxLength) {
+		radius = radius || 256;
+		maxLength = maxLength || 100;
+		return function clonesFormCircleWithLeaderTask(entity) {
+			var shadowClones = entity.getClones().slice(0);
+			shadowClones.unshift(entity);
+			var length = Math.min(maxLength, shadowClones.length);
+
+			var targetPos = this.updateTargetPos();
+			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
+
+			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
+
+			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
+
+			this.completeTask();
+		};
+	}
+
+	function clonesFormCircle(radius, length) {
+		radius = radius || 256;
+		return function clonesFormCircleTask(entity) {
 			var shadowClones = entity.getClones();
 			length = length || shadowClones.length;
 
 			var targetPos = this.updateTargetPos();
-			var positions = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
+			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
 
@@ -252,7 +290,8 @@
 		targetPos = targetPos || v(0,0);
 		for (var i=0; i<length; i++) {
 			var pos       = positions[solution[i][0]];
-			var unitInput = units[solution[i][1]].input;
+			var entity    = units[solution[i][1]];
+			var unitInput = entity.input;
 			var formationPos = unitInput.targetPos || v(0,0);
 
 			formationPos.x = pos.x + targetPos.x;
@@ -260,12 +299,14 @@
 			formationPos.angle = pos.angle;
 
 			unitInput.targetPos = formationPos;
-			unitInput.setGoal({
-				name: 'move to',
-				tasks: [
-					moveTo(GOAL_DISTANCE/2)
-				]
-			});
+			if (entity.isShadowClone) {
+				unitInput.setGoal({
+					name: 'move to',
+					tasks: [
+						moveTo(GOAL_DISTANCE/2)
+					]
+				});
+			}
 		}
 	}
 
@@ -290,6 +331,8 @@
 			});
 		}
 	}
+
+	// TODO: rotate positions: shift assignments so units cycle through positions, # of positons 1-N, 0 (constant)
 
 	function throwStars() {
 		return function throwStarsTask(entity) {
@@ -319,44 +362,50 @@
 
 	var GOAL_DISTANCE = 64;
 	var AVOID_DISTANCE = 512;
+	var HIGH_SPEED = 10;
 
 	var goalTree = {
 		faceOff: {
 			name: 'face off',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(200, 10),
+				faceOffTarget(200, HIGH_SPEED),
 				idle(250)
 			]
 		},
-		formLineA: {
-			name: 'formation line a',
+		formLine: {
+			name: 'formation line',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(350, 10),
+				faceOffTarget(350, HIGH_SPEED),
 				idle(250),
 				kageNoBunshin(8),
-				makeClones(8, 5),
-				clonesFormLineA(80, 200),
+				makeClones(8),
+				clonesFormLine(80, 200),
 				idle(500)
 			]
 		},
-		formCircleA: {
-			name: 'formation circle a',
+		formCircleWithLeader: {
+			name: 'formation circle with leader',
 			tasks: [
-				kageNoBunshin(11),
-				makeClones(11, 5),
-				idle(1)
-				// TODO: tell clones to form circle with me
+				targetNearestEnemy,
+				kageNoBunshin(8),
+				makeClones(8),
+				clonesFormCircleWithLeader(360),
+				moveTo(GOAL_DISTANCE/2),
+				idle(800)
 			]
 		},
-		formCircleB: {
-			name: 'formation circle b',
+		formCircle: {
+			name: 'formation circle',
 			tasks: [
-				kageNoBunshin(5),
-				makeClones(5, 5),
-				idle(1)
-				// TODO: tell clones to form circle w/o me
+				targetNearestEnemy,
+				faceOffTarget(360),
+				kageNoBunshin(8),
+				makeClones(8),
+				clonesFormCircle(200),
+				idle(800)
+				
 			]
 		},
 		throwStars: {
@@ -408,13 +457,12 @@
 	};
 
 	var goals = [
-		goalTree.formLineA,
-		//goalTree.throwStars,
-		//goalTree.formCircleA,
+		goalTree.formLine,
+		goalTree.throwStars,
+		goalTree.formCircleWithLeader,
 		//goalTree.circleTarget,
 		//goalTree.scatter,
-		goalTree.faceOff,
-		//goalTree.formCircleB,
+		goalTree.formCircle,
 		//goalTree.rush
 	];
 
