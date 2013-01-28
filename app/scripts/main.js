@@ -76,7 +76,7 @@ ec.debug = 0;
 		load: function(time) {
 			var appCache = ec.appCache || {};
 			if ((!appCache.complete && !appCache.timedout) ||
-				document.readyState !== 'complete' ||
+				ec.ready !== true ||
 				!hasProperties(maps, ('testmap,courtyard').split(',')) ||
 				!hasProperties(scenes, ['enter_the_ninja'])) {
 				rafId = requestAnimationFrame( core.load );
@@ -737,7 +737,7 @@ ec.debug = 0;
 	function docReadyHandler() {
 		ec.unbind(document, 'DOMContentLoaded', docReadyHandler, false);
 		ec.unbind(window, 'load', docReadyHandler, false);
-		document.readyState = 'complete';
+		ec.ready = true;
 	}
 	ec.bind(document, 'DOMContentLoaded', docReadyHandler, false);
 	ec.bind(window, 'load', docReadyHandler, false);
