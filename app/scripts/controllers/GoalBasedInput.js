@@ -2,6 +2,7 @@
 	'use strict';
 
 	var ec = window.ec;
+	var cp = window.cp;
 
 	var GoalBasedInput = ec.GoalBasedInput = function() {
 		this.axes = [];
@@ -95,13 +96,14 @@
 	};
 
 	proto.updateTargetPos = function() {
+		var targetPos = this.targetPos || cp.v(0,0);
 		if (!this.targetEntity) {
 			console.error('update target: targetEntity not set');
 			this.completeTask();
-			return this.targetPos;
+			return targetPos;
 		}
-		this.targetPos = ec.copy(this.targetPos, this.targetEntity.getPos());
-		return this.targetPos;
+		this.targetPos = ec.copy(targetPos, this.targetEntity.getPos());
+		return targetPos;
 	};
 
 })(window);

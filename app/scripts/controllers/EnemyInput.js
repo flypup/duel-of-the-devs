@@ -242,8 +242,8 @@
 			var positions = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-
 			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
+			//assignPositions(shadowClones, positions, length, targetPos);
 
 			this.completeTask();
 		};
@@ -261,25 +261,26 @@
 			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-
 			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
+			//assignPositions(shadowClones, positions, length, targetPos);
 
 			this.completeTask();
 		};
 	}
 
-	function clonesFormCircle(radius, length) {
+	function clonesFormCircle(radius, maxLength) {
 		radius = radius || 256;
+		maxLength = maxLength || 100;
 		return function clonesFormCircleTask(entity) {
 			var shadowClones = entity.getClones();
-			length = length || shadowClones.length;
+			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
 			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-
 			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
+			//assignPositions(shadowClones, positions, length, targetPos);
 
 			this.completeTask();
 		};
@@ -287,15 +288,16 @@
 
 	function assignPositionsUsingSolution(units, positions, solution, length, targetPos) {
 		length = length || solution.length;
-		targetPos = targetPos || v(0,0);
+		var targetX = targetPos ? targetPos.x : 0;
+		var targetY = targetPos ? targetPos.y : 0;
 		for (var i=0; i<length; i++) {
 			var pos       = positions[solution[i][0]];
 			var entity    = units[solution[i][1]];
 			var unitInput = entity.input;
 			var formationPos = unitInput.targetPos || v(0,0);
 
-			formationPos.x = pos.x + targetPos.x;
-			formationPos.y = pos.y + targetPos.y;
+			formationPos.x = pos.x + targetX;
+			formationPos.y = pos.y + targetY;
 			formationPos.angle = pos.angle;
 
 			unitInput.targetPos = formationPos;
@@ -310,25 +312,29 @@
 		}
 	}
 
-	function assignPositions(units, positions, solution, length, targetPos) {
-		length = length || solution.length;
-		targetPos = targetPos || v(0,0);
+	function assignPositions(units, positions, length, targetPos) {
+		length = length || units.length;
+		var targetX = targetPos ? targetPos.x : 0;
+		var targetY = targetPos ? targetPos.y : 0;
 		for (var i=0; i<length; i++) {
 			var pos       = positions[i];
-			var unitInput = units[i].input;
+			var entity    = units[i];
+			var unitInput = entity.input;
 			var formationPos = unitInput.targetPos || v(0,0);
 
-			formationPos.x = pos.x + targetPos.x;
-			formationPos.y = pos.y + targetPos.y;
+			formationPos.x = pos.x + targetX;
+			formationPos.y = pos.y + targetY;
 			formationPos.angle = pos.angle;
 
 			unitInput.targetPos = formationPos;
-			unitInput.setGoal({
-				name: 'move to',
-				tasks: [
-					moveTo(GOAL_DISTANCE/2)
-				]
-			});
+			if (entity.isShadowClone) {
+				unitInput.setGoal({
+					name: 'move to',
+					tasks: [
+						moveTo(GOAL_DISTANCE/2)
+					]
+				});
+			}
 		}
 	}
 
@@ -382,7 +388,7 @@
 				kageNoBunshin(8),
 				makeClones(8),
 				clonesFormLine(80, 200),
-				idle(500)
+				idle(800)
 			]
 		},
 		formCircleWithLeader: {
@@ -393,7 +399,7 @@
 				makeClones(8),
 				clonesFormCircleWithLeader(360),
 				moveTo(GOAL_DISTANCE/2),
-				idle(800)
+				idle(1500)
 			]
 		},
 		formCircle: {
@@ -404,7 +410,7 @@
 				kageNoBunshin(8),
 				makeClones(8),
 				clonesFormCircle(200),
-				idle(800)
+				idle(1500)
 				
 			]
 		},
