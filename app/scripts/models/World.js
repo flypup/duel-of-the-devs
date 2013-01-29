@@ -19,6 +19,7 @@
 	World.PLAYER_TYPE = 1;
 	World.PLAYER_HAND = 2;
 	World.MONSTER_TYPE = 10;
+	World.MONSTER_PROJECTILE = 12;
 	World.MAP_TYPE = 50;
 	World.PROP_TYPE = 100;
 
@@ -35,7 +36,7 @@
 		space.idleSpeedThreshold = 0.1;//5;//0.01;//
 		space.collisionSlop = 0.025;
 		space.collisionBias = Math.pow(1 - 0.75, 60);
-		space.damping = 0.5;//0.99;//
+		space.damping = 0.5;//0.95;//0.66;//1
 
 		//space.addCollisionHandler(a, b, begin, preSolve, postSolve, separate)
 		var pushHandler = ec.delegate(this, this.pushCollision);
@@ -50,6 +51,7 @@
 		space.addCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
 		// TODO: Don't allow player hand to pass through obstacles
 		space.addCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE, returnFalse, null, null, null);
+		space.addCollisionHandler(World.MONSTER_PROJECTILE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
 	};
 
 	proto.term = function() {

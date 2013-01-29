@@ -6,14 +6,15 @@
 	var v = cp.v;
 	var abs = Math.abs;
 
-	var RADIUS = 32;
 	var direction = v(0,0);
 	var intent = v(0,0);
 
 	var Ninja = ec.Ninja = function() {
 		this.groupId = ec.Entity.groupId++;
 
-		this.assignCircleShape(RADIUS, 1);
+		var radius = 32;
+		var mass = 5;
+		this.assignCircleShape(radius, mass);
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
@@ -25,7 +26,7 @@
 		this.state = 'standing';
 		this.walkCount = 0;
 		this.speed = 8;
-		this.attack = new ec.EmptyHand(RADIUS-4, 1); // Ninja Star
+		this.attack = new ec.EmptyHand(radius-4, 1); // Ninja Star
 		this.depth = 64;
 		this.type = 'Ninja';
 		
@@ -60,6 +61,7 @@
 	};
 
 	proto.getClones = function() {
+	// get number of shadow clones, clear 'dead' clone refs
 		var shadowClones = this.shadowClones;
 		if (!shadowClones) {
 			shadowClones = this.shadowClones = [];
@@ -71,7 +73,21 @@
 		}
 		return shadowClones;
 	};
-	// TODO: get number of shadow clones, clear 'dead' clone refs
+	
+	proto.throwStar = function() {
+		var pos = this.getPos();
+		var angle = this.body.a;
+		var velocity = 800;
+		var angleVelocity = 20;
+
+		var throwingStar = new ec.Projectile()
+						.setPos(pos.x, pos.y, pos.z + 64)
+						.setAngle(angle, angleVelocity)
+						.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
+
+		throwingStar.shape.group = this.groupId;
+		ec.world.add(throwingStar);
+	};
 
 	proto.hit = function(arbiter, world, damage) {
 		var energy = (arbiter && arbiter.totalKE()) || 1000;
@@ -131,10 +147,7 @@
 
 		this.input.poll(this, delta);
 
-		//this.body.resetForces();
-		this.body.f.x = 0;
-		this.body.f.y = 0;
-		this.body.t = 0;
+		this.resetForces();
 		
 		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
 			direction.x = this.input.axes[0];

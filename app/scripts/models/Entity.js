@@ -15,6 +15,8 @@
 	proto.z = 0;
 	proto.groundZ = 0;
 	proto.velZ = 0;
+	proto.climbHeight = 128;
+	proto.maxCollisionTopZ = 0;
 	proto.depth = 32;
 	proto.groupId = cp.NO_GROUP;
 	proto.isEntity = true;
@@ -44,28 +46,17 @@
 		var gravity = -10;
 		var damping = 1;
 		var friction = 0;
-		var thisEntityCanClimb = 128;
 		var thisEntitylimbSpeed = 5;
 		
 		// get floor. target z = floor z
 		// no floor? target z = 0
-		var targetZ = 0;
-		var maxCollisionTopZ = 0;
-		var collisionLength = this.mapCollision.length;
-		for (var i=0; i<collisionLength; i++) {
-			var element = this.mapCollision[i];
-			var top = element.getTop(this.body.p.x, -this.body.p.y);
-			if (top > targetZ && (top - this.z) <= thisEntityCanClimb) {
-				targetZ = top;
-			}
-			maxCollisionTopZ = Math.max(maxCollisionTopZ, top);
-		}
+		var targetZ = this.getTargetZ(this.climbHeight);
 
 		distance = targetZ - this.z;
 		if (distance > 0) {
 			// TODO: update state and modify velX,velY when climbing or falling
 			// climbing
-			if (distance <= thisEntityCanClimb) {
+			if (distance <= this.climbHeight) {
 				this.groundZ = this.z; // TODO: get next lowest floor
 				//this.z = targetZ; // TODO: climb animation
 				//this.velZ = 5;
@@ -85,13 +76,19 @@
 		}
 		
 		// check if movement is being restricted
-		if (collisionLength > 0) {
-			if (maxCollisionTopZ > targetZ) {
-				this.input.mapCollision(this);
+		if (this.mapCollision.length > 0) {
+			if (this.maxCollisionTopZ > targetZ) {
+				this.hitMapWall();
 			}
 		}
 
 		return this;
+	};
+
+	proto.hitMapWall = function() {
+		if (this.input) {
+			this.input.mapCollision(this);
+		}
 	};
 
 	proto.postStepScene = function(delta) {
@@ -102,14 +99,7 @@
 
 		// get floor. target z = floor z
 		// no floor? target z = 0
-		var targetZ = 0;
-		for (var i=0; i<this.mapCollision.length; i++) {
-			var element = this.mapCollision[i];
-			var top = element.getTop(this.body.p.x, -this.body.p.y);
-			if (top > targetZ && (top - this.z) <= thisEntityCanClimb) {
-				targetZ = top;
-			}
-		}
+		var targetZ = this.getTargetZ(thisEntityCanClimb);
 
 		distance = targetZ - this.z;
 		if (distance >= thisEntityCanClimb) {
@@ -123,6 +113,21 @@
 		}
 		
 		return this;
+	};
+
+	proto.getTargetZ = function(climbHeight) {
+		climbHeight = climbHeight || this.climbHeight;
+		var targetZ = 0;
+		this.maxCollisionTopZ = 0;
+		for (var i=0, len=this.mapCollision.length; i<len; i++) {
+			var element = this.mapCollision[i];
+			var top = element.getTop(this.body.p.x, -this.body.p.y);
+			if (top > targetZ && (top - this.z) <= climbHeight) {
+				targetZ = top;
+			}
+			this.maxCollisionTopZ = Math.max(this.maxCollisionTopZ, top);
+		}
+		return targetZ;
 	};
 
 	proto.addMapCollision  = function(mapElement) {
@@ -161,21 +166,22 @@
 	};
 
 	proto.setPos = function(x, y, z) {
+		var body = this.body;
 		if (z !== undefined) {
-			this.z = this.body.z = z;
+			this.z = body.z = z;
 		}
-		this.body.activate();
-		this.body.p.x =  x;
-		this.body.p.y = -y;
+		body.activate();
+		body.p.x =  x;
+		body.p.y = -y;
 		
 		// if (ec.debug > 0) {
 		//	console.log(this.type, 'pos', x, y, z, this.mapCollision);
 		// }
-		if (this.body.isStatic()) {
-			//space.reindexShapesForBody(this.body);
-			for(var i = 0; i < this.body.shapeList.length; i++){
-				var shape = this.body.shapeList[i];
-				shape.update(this.body.p, this.body.rot);
+		if (body.isStatic()) {
+			//space.reindexShapesForBody(body);
+			for(var i = 0; i < body.shapeList.length; i++){
+				var shape = body.shapeList[i];
+				shape.update(body.p, body.rot);
 				if (shape.space) {
 					shape.space.staticShapes.reindexObject(shape, shape.hashid);
 				}
@@ -185,16 +191,39 @@
 	};
 	
 	proto.setAngle = function(v, w) {
-
+		var body = this.body;
 		if (w !== undefined) {
-			this.body.w = w;
+			body.w = w;
 		}
 		if (v && (v.x || v.y)) {
-			//this.body.setAngle(Math.atan2(-v.y, v.x))
-			this.body.a = Math.atan2(-v.y, v.x);
-			this.body.rot.x = v.x;
-			this.body.rot.y = -v.y;
+			//body.setAngle(Math.atan2(-v.y, v.x))
+			body.a = Math.atan2(-v.y, v.x);
+			body.rot.x = v.x;
+			body.rot.y = -v.y;
+		} else if (!isNaN(v)) {
+			body.a = v;
+			body.rot.x = Math.cos(v);
+			body.rot.y = -Math.sin(v);
 		}
+		return this;
+	};
+
+	proto.setVelocity = function(vx, vy, vz) {
+		var body = this.body;
+		body.vx = vx;
+		body.vy = vy;
+		if (vz !== undefined) {
+			this.velZ = vz;
+		}
+		return this;
+	};
+
+	proto.resetForces = function() {
+		var body = this.body;
+		//body.resetForces();
+		body.f.x = 0;
+		body.f.y = 0;
+		body.t = 0;
 	};
 
 	var getBody = function(mass, moment) {

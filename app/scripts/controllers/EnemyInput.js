@@ -340,9 +340,36 @@
 
 	// TODO: rotate positions: shift assignments so units cycle through positions, # of positons 1-N, 0 (constant)
 
+
+	function waitForClonesToFinish(timeoutAfter) {
+		timeoutAfter = timeoutAfter || 1000;
+		return function waitForClonesToFinishTask(entity) {
+			if (this.goal.taskTime < timeoutAfter) {
+				var shadowClones = entity.getClones();
+				for (var i=0; i<shadowClones.length; i++) {
+					var input = shadowClones[i].input;
+					if (input.goal && !input.goal.met) {
+						return;
+					}
+				}
+			}
+			this.completeTask();
+		};
+	}
+
 	function throwStars() {
 		return function throwStarsTask(entity) {
-			// TODO: tell clones to fire starts at target
+			// leader throws stars
+			//entity.throwStar(); // setButton()
+
+			//clones throw stars
+			var shadowClones = entity.getClones();
+			for (var i=0; i<shadowClones.length; i++) {
+				var input = shadowClones[i].input;
+				if (input.goal.met && input.goal.mapCollisions === 0) {
+					shadowClones[i].throwStar();
+				}
+			}
 			this.completeTask();
 		};
 	}
@@ -368,7 +395,7 @@
 
 	var GOAL_DISTANCE = 64;
 	var AVOID_DISTANCE = 512;
-	var HIGH_SPEED = 10;
+	var HIGH_SPEED = 12;
 
 	var goalTree = {
 		faceOff: {
@@ -384,11 +411,25 @@
 			tasks: [
 				targetNearestEnemy,
 				faceOffTarget(350, HIGH_SPEED),
-				idle(250),
+				idle(33),
 				kageNoBunshin(8),
 				makeClones(8),
 				clonesFormLine(80, 200),
-				idle(800)
+				idle(166)
+			]
+		},
+		waitForClones: {
+			name: 'wait for clones',
+			tasks: [
+				waitForClonesToFinish(800)
+			]
+		},
+		throwStars: {
+			name: 'throw stars',
+			tasks: [
+				targetNearestEnemy,
+				throwStars(),
+				idle(600)
 			]
 		},
 		formCircleWithLeader: {
@@ -412,14 +453,6 @@
 				clonesFormCircle(200),
 				idle(1500)
 				
-			]
-		},
-		throwStars: {
-			name: 'throw stars',
-			tasks: [
-				targetNearestEnemy,
-				throwStars(),
-				idle(600)
 			]
 		},
 		circleTarget: {
@@ -464,6 +497,7 @@
 
 	var goals = [
 		goalTree.formLine,
+		goalTree.waitForClones,
 		goalTree.throwStars,
 		goalTree.formCircleWithLeader,
 		//goalTree.circleTarget,

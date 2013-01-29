@@ -25,11 +25,17 @@
 			if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
 				context.save();
 
+				var drawable;
 				if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
 					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
-					var drawable = ec.getCached(o.image, 'shadow');
+					drawable = ec.getCached(o.image, 'shadow');
 					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
+				} else if (entity instanceof ec.Projectile) {
+					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow  2 '+o.image.src);}
+					drawable = ec.getCached(o.image, 'shadow');
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow 2 '+o.image.src);}
 				}
 				context.restore();
 			}
@@ -191,6 +197,7 @@
 				}
 
 			} else {
+				if (ec.debug === 1) {ec.core.traceTime('draw entity');}
 				if (entity.radius) {
 					context.fillStyle = '#ff8000';
 					context.beginPath();
@@ -205,7 +212,8 @@
 					context.beginPath();
 					context.fillRect(x-32, y-32, 64, 64);
 				}
-				throw('elements did not get placed in a layer '+entity);
+				if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
+				//throw('elements did not get placed in a layer '+entity);
 			}
 			if (ec.debug > 1) {
 				//draw layer info

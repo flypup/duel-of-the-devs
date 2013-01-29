@@ -99,6 +99,7 @@ ec.debug = 0;
 			ec.Player.ready();
 			ec.Ninja.ready();
 			ec.EmptyHand.ready();
+			ec.Projectile.ready();
 			ec.Puff.ready();
 			ec.Box.ready();
 			ec.Circle.ready();

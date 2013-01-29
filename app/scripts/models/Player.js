@@ -6,7 +6,6 @@
 	var v = cp.v;
 	var abs = Math.abs;
 
-	var RADIUS = 32;
 	var direction = v(0,0);
 	var pushpull = v(0,0);
 
@@ -15,7 +14,9 @@
 	var Player = ec.Player = function() {
 		this.groupId = ec.Entity.groupId++;
 
-		this.assignCircleShape(RADIUS, 1);
+		var radius = 32;
+		var mass = 5;
+		this.assignCircleShape(radius, mass);
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
@@ -27,7 +28,7 @@
 		this.state = 'standing';
 		this.walkCount = 0;
 		this.speed = 8;
-		this.attack = new ec.EmptyHand(RADIUS-4, 1);
+		this.attack = new ec.EmptyHand(radius-4, 1);
 		this.depth = 64;
 		this.type = 'Player';
 
@@ -75,10 +76,7 @@
 		
 		// apply impulse to attack
 		
-		//attack.body.resetForces();
-		attack.body.f.x = 0;
-		attack.body.f.y = 0;
-		attack.body.t = 0;
+		attack.resetForces();
 
 		attack.body.activate();
 		var force = v.mult(pushpull, this.speed*1000/delta);
@@ -114,10 +112,7 @@
 	proto.step = function(delta) {
 		this.input.poll(this, delta);
 
-		//this.body.resetForces();
-		this.body.f.x = 0;
-		this.body.f.y = 0;
-		this.body.t = 0;
+		this.resetForces();
 
 		this.attack.entityStep(ec.world.time, ec.world, this);
 

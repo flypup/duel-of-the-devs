@@ -47,6 +47,12 @@
 	proto.mapCollision = function(entity) {
 		//this.setAxes1(0, 0);
 		this.completeTask();
+		if (this.goal) {
+			this.goal.mapCollisions++;
+			if (this.goal.task) {
+				this.goal.task.mapCollisions++;
+			}
+		}
 	};
 
 	proto.setAxes1 = function(x, y) {
@@ -68,6 +74,7 @@
 		goal.task = null;
 		goal.taskIndex = -1;
 		goal.taskTime = 0;
+		goal.mapCollisions = 0;
 		this.goal = goal;
 	};
 
@@ -80,6 +87,7 @@
 		}
 		task = goal.tasks[index];
 		task.complete = false;
+		task.mapCollisions = 0;
 		goal.task = task;
 		goal.taskIndex = index;
 		goal.taskTime = 0;
