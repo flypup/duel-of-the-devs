@@ -11,6 +11,17 @@
 
 	Entity.groupId = 1;
 
+	Entity.labelPool = [];
+	Entity.getLabel = function(context, fieldHeight) {
+		var label = this.labelPool.pop();
+		if (!label) {
+			label = new ec.TextField(context, 0, 0);
+		} else {
+			label.setContext(context);
+		}
+		return label.setSize(160, fieldHeight).setStyle('#0ff');
+	};
+
 	var proto = Entity.prototype;
 	proto.z = 0;
 	proto.groundZ = 0;
@@ -23,6 +34,24 @@
 	proto.layerNum = 0;
 	proto.layerName = '';
 	proto.type = 'Entity';
+
+	proto.term = function() {
+		delete this.shape;
+		delete this.body;
+		delete this.pos;
+		delete this.sortBounds;
+		//
+		delete this.input;
+		delete this.mapCollision;
+		if (this.label) {
+			Entity.labelPool.push(this.label);
+			delete this.label;
+		}
+		//
+		delete this.attack;
+		delete this.shadowClones;
+		delete this.fx;
+	};
 
 	proto.setView = function(view) {
 		this.view = view;

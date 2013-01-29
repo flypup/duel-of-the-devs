@@ -5,8 +5,8 @@
 
 	var RADIUS = 50;
 
-	var Puff = ec.Puff = function(entity) {
-		this.groupId = entity.groupId;
+	var Puff = ec.Puff = function(groupId) {
+		this.groupId = groupId || ec.Entity.groupId++;
 
 		this.assignCircleShape(RADIUS, 1);
 		
@@ -17,11 +17,6 @@
 		
 		this.time =
 		this.duration = 500;
-
-		this.master = entity;
-
-		var pos = entity.getPos();
-		this.setPos(pos.x, pos.y+1, pos.z+1);
 	};
 
 	var proto = Puff.prototype;
@@ -34,10 +29,15 @@
 		if (this.time <= 0) {
 			this.time = 0;
 			ec.world.remove(this);
-			delete this.master;
-		} else {
-			var pos = this.master.getPos();
+			this.term();
+		}
+	};
+
+	proto.update = function(entity) {
+		if (this.time > 0) {
+			var pos = entity.getPos();
 			this.setPos(pos.x, pos.y+1, pos.z+1);
+			this.setVelocity(entity.body.vx, entity.body.vy, 0);
 		}
 	};
 

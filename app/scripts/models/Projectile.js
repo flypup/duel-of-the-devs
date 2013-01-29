@@ -46,19 +46,19 @@
 		this.vx = this.body.vx;
 		this.vy = this.body.vy;
 		
-		return this;
-	};
-
-	proto.postStep = function(delta) {
 		if (this.inactive > 0) {
 			// count down to delete
 			this.inactive += delta;
 			if (this.inactive > 3000) {
 				ec.world.remove(this);
+				this.term();
 			}
-			return;
 		}
 
+		return this;
+	};
+
+	proto.postStep = function(delta) {
 		// get floor
 		this.groundZ = this.getTargetZ(this.climbHeight);
 

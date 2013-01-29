@@ -32,6 +32,7 @@
 		
 		this.isShadowClone = false;
 		this.shadowClones = null;
+		this.fx = null;
 
 		this.hitPoints = 100;
 	};
@@ -56,8 +57,8 @@
 		}
 		this.shadowClones.push(shadowClone);
 		ec.world.add(shadowClone);
-		ec.world.add(new ec.Puff(this));
-		ec.world.add(new ec.Puff(shadowClone));
+		this.puffSmoke();
+		shadowClone.puffSmoke();
 	};
 
 	proto.getClones = function() {
@@ -74,6 +75,12 @@
 		return shadowClones;
 	};
 	
+	proto.puffSmoke = function() {
+		var puff = new ec.Puff(this.groupId);
+		ec.world.add(puff);
+		this.fx = puff;
+	};
+
 	proto.throwStar = function() {
 		var pos = this.getPos();
 		var angle = this.body.a;
@@ -113,11 +120,20 @@
 		return this;
 	};
 
+	proto.updateFx = function(delta) {
+		if (this.fx) {
+			if (this.fx.time > 0) {
+				this.fx.update(this);
+			} else {
+				this.fx = null;
+			}
+		}
+	};
+
 	proto.step = function(delta) {
-		//this.attackStep(ec.world.time, ec.world);
 		if (this.hitTime > 0) {
 			if (this.isShadowClone && this.hitTime === this.hitDuration && this.hitPoints === 0) {
-				ec.world.add(new ec.Puff(this));
+				this.puffSmoke();
 			}
 			this.hitTime -= delta;
 			//hit animation
@@ -127,21 +143,24 @@
 					this.state = 'dead';
 					if (this.isShadowClone) {
 						ec.world.remove(this);
+						this.term();
 					}
 				} else {
 					this.state = 'standing'; //getting up
 				}
 			}
+			this.updateFx();
 			return this;
 
 		} else if (this.isShadowClone && this.master.hitPoints <= 0) {
-			ec.world.add(new ec.Puff(this));
+			this.puffSmoke();
 			this.hit(null, ec.world, 1);
 
 		} else if (this.state === 'dead') {
 			this.body.vx = 0;
 			this.body.vy = 0;
 			this.body.w *= 0.5;
+			this.updateFx();
 			return this;
 		}
 
@@ -206,6 +225,7 @@
 			intent.y = 0;
 		}
 
+		this.updateFx();
 		return this;
 	};
 

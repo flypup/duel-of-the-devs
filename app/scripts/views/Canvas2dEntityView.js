@@ -218,8 +218,8 @@
 			if (ec.debug > 1) {
 				//draw layer info
 				var fieldHeight = 48;
-				this.label = this.label || new ec.TextField(context, 0, 0, 160, fieldHeight, '#0ff');
-				this.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
+				entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
+				entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
 				var info = ''+ entity.layerNum +': '+ entity.layerName;
 				if (entity.mapCollision.length) {
 					info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
@@ -230,7 +230,7 @@
 						info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
 					}
 				}
-				this.label.setText(info);
+				entity.label.setText(info);
 			}
 			context.restore();
 		};

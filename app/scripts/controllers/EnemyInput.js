@@ -366,7 +366,7 @@
 			var shadowClones = entity.getClones();
 			for (var i=0; i<shadowClones.length; i++) {
 				var input = shadowClones[i].input;
-				if (input.goal.met && input.goal.mapCollisions === 0) {
+				if (input.goal && input.goal.met && input.goal.mapCollisions === 0) {
 					shadowClones[i].throwStar();
 				}
 			}
