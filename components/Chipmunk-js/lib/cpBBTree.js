@@ -34,9 +34,9 @@ var BBTree = cp.BBTree = function(staticIndex)
 
 	this.root = null;
 	
-	// An object pool of tree nodes and pairs.
-	//this.pooledNodes = [];
-	//this.pooledPairs = [];
+	// A linked list containing an object pool of tree nodes and pairs.
+	this.pooledNodes = null;
+	this.pooledPairs = null;
 	
 	this.stamp = 0;
 };
@@ -47,9 +47,7 @@ var numNodes = 0;
 
 var Node = function(tree, a, b)
 {
-	//Node *node = NodeFromPool(tree);
 	this.obj = null;
-	//this.bb = bbMerge(a.bb, b.bb);
 	this.bb_l = min(a.bb_l, b.bb_l);
 	this.bb_b = min(a.bb_b, b.bb_b);
 	this.bb_r = max(a.bb_r, b.bb_r);
@@ -58,16 +56,25 @@ var Node = function(tree, a, b)
 	
 	this.setA(a);
 	this.setB(b);
-	numNodes++;
+};
+
+BBTree.prototype.makeNode = function(a, b)
+{
+	var node = this.pooledNodes;
+	if(node){
+		this.pooledNodes = node.parent;
+		node.constructor(this, a, b);
+		return node;
+	} else {
+		numNodes++;
+		return new Node(this, a, b);
+	}
 };
 
 var numLeaves = 0;
 var Leaf = function(tree, obj)
 {
-	//Node *node = NodeFromPool(tree);
-
 	this.obj = obj;
-	//this.bb = tree.getBB(obj);
 	tree.getBB(obj, this);
 
 	this.parent = null;
@@ -118,45 +125,59 @@ BBTree.prototype.incrementStamp = function()
 
 // **** Pair/Thread Functions
 
+var numPairs = 0;
 // Objects created with constructors are faster than object literals. :(
-var Pair = function(a, b)
+var Pair = function(leafA, nextA, leafB, nextB)
 {
-	this.a = a; this.b = b;
+	this.prevA = null;
+	this.leafA = leafA;
+	this.nextA = nextA;
+
+	this.prevB = null;
+	this.leafB = leafB;
+	this.nextB = nextB;
 };
 
-var Thread = function(leaf, next)
+BBTree.prototype.makePair = function(leafA, nextA, leafB, nextB)
 {
-	this.prev = null;
-	this.next = next;
-	this.leaf = leaf;
+	//return new Pair(leafA, nextA, leafB, nextB);
+	var pair = this.pooledPairs;
+	if (pair)
+	{
+		this.pooledPairs = pair.prevA;
+
+		pair.prevA = null;
+		pair.leafA = leafA;
+		pair.nextA = nextA;
+
+		pair.prevB = null;
+		pair.leafB = leafB;
+		pair.nextB = nextB;
+
+		//pair.constructor(leafA, nextA, leafB, nextB);
+		return pair;
+	} else {
+		numPairs++;
+		return new Pair(leafA, nextA, leafB, nextB);
+	}
 };
 
-// Benchmark this code with object pools on & off.
-/*
-BBTree.prototype.pairRecycle = function(pair)
+Pair.prototype.recycle = function(tree)
 {
-	this.pooledPairs.push(pair);
+	this.prevA = tree.pooledPairs;
+	tree.pooledPairs = this;
 };
 
-BBTree.prototype.pairFromPool = function()
+var unlinkThread = function(prev, leaf, next)
 {
-	return this.pooledPairs.pop() || new Pair(null, null);
-};
-*/
-
-Thread.prototype.unlink = function()
-{
-	var next = this.next;
-	var prev = this.prev;
-	
 	if(next){
-		if(next.a.leaf == this.leaf) next.a.prev = prev; else next.b.prev = prev;
+		if(next.leafA === leaf) next.prevA = prev; else next.prevB = prev;
 	}
 	
 	if(prev){
-		if(prev.a.leaf == this.leaf) prev.a.next = next; else prev.b.next = next;
+		if(prev.leafA === leaf) prev.nextA = next; else prev.nextB = next;
 	} else {
-		this.leaf.pairs = next;
+		leaf.pairs = next;
 	}
 };
 
@@ -168,61 +189,45 @@ Leaf.prototype.clearPairs = function(tree)
 	this.pairs = null;
 	
 	while(pair){
-		if(pair.a.leaf == this){
-			next = pair.a.next;
-			pair.b.unlink();
-			//tree.pairRecycle(pair);
-			pair = next;
+		if(pair.leafA === this){
+			next = pair.nextA;
+			unlinkThread(pair.prevB, pair.leafB, pair.nextB);
 		} else {
-			next = pair.b.next;
-			pair.a.unlink();
-			//tree.pairRecycle(pair);
-			pair = next;
+			next = pair.nextB;
+			unlinkThread(pair.prevA, pair.leafA, pair.nextA);
 		}
+		pair.recycle(tree);
+		pair = next;
 	}
-}
+};
 
 var pairInsert = function(a, b, tree)
 {
 	var nextA = a.pairs, nextB = b.pairs;
-	var pair = new Pair(new Thread(a, nextA), new Thread(b, nextB));
+	var pair = tree.makePair(a, nextA, b, nextB);
 	a.pairs = b.pairs = pair;
 
-	//var pair = tree.pairFromPool();
-	//Pair temp = {{null, a, nextA},{null, b, nextB}};
-	//*pair = temp;
-	
 	if(nextA){
-		if(nextA.a.leaf == a) nextA.a.prev = pair; else nextA.b.prev = pair;
+		if(nextA.leafA === a) nextA.prevA = pair; else nextA.prevB = pair;
 	}
 	
 	if(nextB){
-		if(nextB.a.leaf == b) nextB.a.prev = pair; else nextB.b.prev = pair;
+		if(nextB.leafA === b) nextB.prevA = pair; else nextB.prevB = pair;
 	}
 };
 
 // **** Node Functions
 
-/*
-static void
-NodeRecycle(bbTree *tree, Node *node)
+Node.prototype.recycle = function(tree)
 {
-	node.parent = tree.pooledNodes;
-	tree.pooledNodes = node;
-}
+	this.parent = tree.pooledNodes;
+	tree.pooledNodes = this;
+};
 
-static Node *
-NodeFromPool(bbTree *tree)
+Leaf.prototype.recycle = function(tree)
 {
-	Node *node = tree.pooledNodes;
-	
-	if(node){
-		tree.pooledNodes = node.parent;
-		return node;
-	} else {
-		// Pool is exhausted, make more
-	}
-}*/
+	// Its not worth the overhead to recycle leaves.
+};
 
 Node.prototype.setA = function(value)
 {
@@ -236,12 +241,6 @@ Node.prototype.setB = function(value)
 	value.parent = this;
 };
 
-/*
-static inline cpBool
-NodeIsLeaf(Node *node)
-{
-	return (node.obj != null);
-}*/
 Leaf.prototype.isLeaf = true;
 Node.prototype.isLeaf = false;
 
@@ -255,10 +254,10 @@ Node.prototype.replaceChild = function(child, value, tree)
 	assertSoft(child == this.A || child == this.B, "Node is not a child of parent.");
 	
 	if(this.A == child){
-		//NodeRecycle(tree, parent.A);
+		this.A.recycle(tree);
 		this.setA(value);
 	} else {
-		//NodeRecycle(tree, parent.B);
+		this.B.recycle(tree);
 		this.setB(value);
 	}
 	
@@ -290,7 +289,7 @@ var bbTreeMergedArea = function(a, b)
 var bbProximity = function(a, b)
 {
 	return Math.abs(a.bb_l + a.bb_r - b.bb_l - b.bb_r) + Math.abs(a.bb_b + b.bb_t - b.bb_b - b.bb_t);
-}
+};
 
 var subtreeInsert = function(subtree, leaf, tree)
 {
@@ -300,7 +299,7 @@ var subtreeInsert = function(subtree, leaf, tree)
 	if(subtree == null){
 		return leaf;
 	} else if(subtree.isLeaf){
-		return new Node(tree, leaf, subtree);
+		return tree.makeNode(leaf, subtree);
 	} else {
 		var cost_a = subtree.B.bbArea() + bbTreeMergedArea(subtree.A, leaf);
 		var cost_b = subtree.A.bbArea() + bbTreeMergedArea(subtree.B, leaf);
@@ -389,16 +388,14 @@ var subtreeSegmentQuery = function(subtree, a, b, t_exit, func)
 	}
 };
 
-/*
-static void
-SubtreeRecycle(bbTree *tree, Node *node)
+BBTree.prototype.subtreeRecycle = function(node)
 {
-	if(!NodeIsLeaf(node)){
-		SubtreeRecycle(tree, node.A);
-		SubtreeRecycle(tree, node.B);
-		NodeRecycle(tree, node);
+	if(node.isLeaf){
+		this.subtreeRecycle(node.A);
+		this.subtreeRecycle(node.B);
+		node.recycle(this);
 	}
-}*/
+};
 
 var subtreeRemove = function(subtree, leaf, tree)
 {
@@ -409,7 +406,7 @@ var subtreeRemove = function(subtree, leaf, tree)
 		if(parent == subtree){
 			var other = subtree.otherChild(leaf);
 			other.parent = subtree.parent;
-			//NodeRecycle(tree, subtree);
+			subtree.recycle(tree);
 			return other;
 		} else {
 			parent.parent.replaceChild(parent, parent.otherChild(leaf), tree);
@@ -433,56 +430,55 @@ var bbTreeIntersectsNode = function(a, b)
 	return (a.bb_l <= b.bb_r && b.bb_l <= a.bb_r && a.bb_b <= b.bb_t && b.bb_b <= a.bb_t);
 };
 
-var markLeafQuery = function(subtree, leaf, left, tree, func)
+Leaf.prototype.markLeafQuery = function(leaf, left, tree, func)
 {
-	if(bbTreeIntersectsNode(leaf, subtree)){
-		if(subtree.isLeaf){
-			if(left){
-				pairInsert(leaf, subtree, tree);
-			} else {
-				if(subtree.stamp < leaf.stamp) pairInsert(subtree, leaf, tree);
-				if(func) func(leaf.obj, subtree.obj);
-			}
-		} else {
-			markLeafQuery(subtree.A, leaf, left, tree, func);
-			markLeafQuery(subtree.B, leaf, left, tree, func);
-		}
+	if(bbTreeIntersectsNode(leaf, this)){
+    if(left){
+      pairInsert(leaf, this, tree);
+    } else {
+      if(this.stamp < leaf.stamp) pairInsert(this, leaf, tree);
+      if(func) func(leaf.obj, this.obj);
+    }
+  }
+};
+
+Node.prototype.markLeafQuery = function(leaf, left, tree, func)
+{
+	if(bbTreeIntersectsNode(leaf, this)){
+    this.A.markLeafQuery(leaf, left, tree, func);
+    this.B.markLeafQuery(leaf, left, tree, func);
 	}
 };
 
-var markLeaf = function(leaf, tree, staticRoot, func)
+Leaf.prototype.markSubtree = function(tree, staticRoot, func)
 {
-	if(leaf.stamp == tree.getStamp()){
-		if(staticRoot) markLeafQuery(staticRoot, leaf, false, tree, func);
+	if(this.stamp == tree.getStamp()){
+		if(staticRoot) staticRoot.markLeafQuery(this, false, tree, func);
 		
-		for(var node = leaf; node.parent; node = node.parent){
+		for(var node = this; node.parent; node = node.parent){
 			if(node == node.parent.A){
-				markLeafQuery(node.parent.B, leaf, true, tree, func);
+				node.parent.B.markLeafQuery(this, true, tree, func);
 			} else {
-				markLeafQuery(node.parent.A, leaf, false, tree, func);
+				node.parent.A.markLeafQuery(this, false, tree, func);
 			}
 		}
 	} else {
-		var pair = leaf.pairs;
+		var pair = this.pairs;
 		while(pair){
-			if(leaf == pair.b.leaf){
-				if(func) func(pair.a.leaf.obj, leaf.obj);
-				pair = pair.b.next;
+			if(this === pair.leafB){
+				if(func) func(pair.leafA.obj, this.obj);
+				pair = pair.nextB;
 			} else {
-				pair = pair.a.next;
+				pair = pair.nextA;
 			}
 		}
 	}
 };
 
-var markSubtree = function(subtree, tree, staticRoot, func)
+Node.prototype.markSubtree = function(tree, staticRoot, func)
 {
-	if(subtree.isLeaf){
-		markLeaf(subtree, tree, staticRoot, func);
-	} else {
-		markSubtree(subtree.A, tree, staticRoot, func);
-		markSubtree(subtree.B, tree, staticRoot, func);
-	}
+  this.A.markSubtree(tree, staticRoot, func);
+  this.B.markSubtree(tree, staticRoot, func);
 };
 
 // **** Leaf Functions
@@ -519,11 +515,11 @@ Leaf.prototype.addPairs = function(tree)
 	if(dynamicIndex){
 		var dynamicRoot = dynamicIndex.root;
 		if(dynamicRoot){
-			markLeafQuery(dynamicRoot, this, true, dynamicIndex, null);
+			dynamicRoot.markLeafQuery(this, true, dynamicIndex, null);
 		}
 	} else {
 		var staticRoot = tree.staticIndex.root;
-		markLeaf(this, tree, staticRoot, null);
+		this.markSubtree(tree, staticRoot, null);
 	}
 };
 
@@ -551,7 +547,7 @@ BBTree.prototype.remove = function(obj, hashid)
 	this.count--;
 
 	leaf.clearPairs(this);
-	//NodeRecycle(tree, leaf);
+	leaf.recycle(this);
 };
 
 BBTree.prototype.contains = function(obj, hashid)
@@ -577,7 +573,7 @@ BBTree.prototype.reindexQuery = function(func)
 	var staticIndex = this.staticIndex;
 	var staticRoot = staticIndex && staticIndex.root;
 	
-	markSubtree(this.root, this, staticRoot, func);
+	this.root.markSubtree(this, staticRoot, func);
 	if(staticIndex && !staticRoot) this.collideStatic(this, staticIndex, func);
 	
 	this.incrementStamp();
@@ -643,7 +639,7 @@ var partitionNodes = function(tree, nodes, offset, count)
 	if(count == 1){
 		return nodes[offset];
 	} else if(count == 2) {
-		return new Node(tree, nodes[offset], nodes[offset + 1]);
+		return tree.makeNode(nodes[offset], nodes[offset + 1]);
 	}
 	
 	// Find the AABB for these nodes
@@ -750,7 +746,7 @@ BBTree.prototype.optimize = function()
 		nodes[i++] = this.nodes[hashid];
 	}
 	
-	//SubtreeRecycle(tree, root);
+	tree.subtreeRecycle(root);
 	this.root = partitionNodes(tree, nodes, nodes.length);
 };
 
@@ -759,18 +755,16 @@ BBTree.prototype.optimize = function()
 var nodeRender = function(node, depth)
 {
 	if(!node.isLeaf && depth <= 10){
-		nodeRender(node.a, depth + 1);
-		nodeRender(node.b, depth + 1);
+		nodeRender(node.A, depth + 1);
+		nodeRender(node.B, depth + 1);
 	}
-	
-//	var bb = node.bb;
 	
 	var str = '';
 	for(var i = 0; i < depth; i++) {
 		str += ' ';
 	}
 
-//	console.log(str + bb.b + ' ' + bb.t);
+	console.log(str + node.bb_b + ' ' + node.bb_t);
 };
 
 BBTree.prototype.log = function(){
