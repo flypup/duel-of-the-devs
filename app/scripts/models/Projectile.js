@@ -3,7 +3,6 @@
 
 	var ec = window.ec;
 	var cp = window.cp;
-	var v = cp.v;
 
 	var Projectile = ec.Projectile = function(radius, mass) {
 		radius = radius || 12;
@@ -124,6 +123,7 @@
 
 	proto.deactivate = function(delta) {
 		this.setVelocity(0,0,0);
+		this.body.w = 0;
 		this.inactive = delta;
 		this.shape.sensor = true;
 	};
