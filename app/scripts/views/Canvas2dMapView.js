@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var document = window.document;
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
 		this.layers = [];
