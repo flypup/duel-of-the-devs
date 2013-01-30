@@ -4,9 +4,10 @@
 	var ec = window.ec;
 	var pi = Math.PI;
 	var round = Math.round;
+	var floor = Math.floor;
 
 	var Canvas2dEntityView = ec.Canvas2dEntityView = function() {
-		this.shadow = ec.SpriteSheets.shadow.getFrame(0);
+		// TODO: create one class-type & instance per entity instance or type with spritesheet(s)
 	};
 
 	var proto = Canvas2dEntityView.prototype;
@@ -17,26 +18,26 @@
 	};
 	
 	proto.drawShadow = function(context, entity, viewport) {
-		var o = this.shadow || ec.SpriteSheets.shadow.getFrame(0);
+		var o;
+		if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
+			o = ec.SpriteSheets.shadow.getFrame(0);
+		} else if (entity instanceof ec.Projectile) {
+			o = ec.SpriteSheets.shadowSmall.getFrame(0);
+		} else {
+			return;
+		}
+
 		if (o) {
-			var x =  entity.body.p.x;
-			var y = -entity.body.p.y -entity.groundZ;
+			var pos = entity.getPos();
+			var x = pos.x;
+			var y = pos.y - entity.groundZ;
 			var rect = o.rect;
 			if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
 				context.save();
-
-				var drawable;
-				if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
-					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
-					drawable = ec.getCached(o.image, 'shadow');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
-				} else if (entity instanceof ec.Projectile) {
-					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow  2 '+o.image.src);}
-					drawable = ec.getCached(o.image, 'shadow');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow 2 '+o.image.src);}
-				}
+				if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
+				var drawable = ec.getCached(o.image);
+				context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
 				context.restore();
 			}
 		}
@@ -46,117 +47,94 @@
 		var pos = entity.getPos();
 		var x = pos.x;
 		var y = pos.y - pos.z;
-			var o;
-			var rect;
-			var drawable;
+		var o;
+		var rect;
+		var drawable;
+		var frame;
 
-			context.save();
-			if (entity instanceof ec.Ninja) {
+		if (entity instanceof ec.Ninja) {
 			o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
-				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-					rect = o.rect;
-					if (ec.debug === 1) {ec.core.traceTime('drawImage ninja '+o.image.src);}
-					drawable = ec.getCached(o.image, 'ninja');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage ninja '+o.image.src);}
-				}
 
-			} else if (entity instanceof ec.Puff) {
+		} else if (entity instanceof ec.Puff) {
 			var ninjaSheet = ec.SpriteSheets.ninja;
-				var animation = ninjaSheet.getAnimation('puff');
-				if (animation) {
-					var frame = animation.frames[0] + Math.floor(4.9 * (entity.duration-entity.time) / entity.duration);
-					o = ninjaSheet.getFrame(frame);
-					if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-						rect = o.rect;
-						if (ec.debug === 1) {ec.core.traceTime('drawImage puff '+o.image.src);}
-						drawable = ec.getCached(o.image, 'ninja');
-						context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-						if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage puff '+o.image.src);}
-					}
-				} else {
-					console.error('no puff');
-				}
-
-			} else if (entity instanceof ec.Player) {
-			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
-				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-					rect = o.rect;
-					if (ec.debug === 1) {ec.core.traceTime('drawImage monk '+o.image.src);}
-					drawable = ec.getCached(o.image, 'monk');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage monk '+o.image.src);}
-				}
-
-			} else if (entity instanceof ec.EmptyHand) {
-				// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
-				// context.beginPath();
-				// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
-				// context.fill();
-
-			} else if (entity instanceof ec.Box) {
-				context.fillStyle = '#888888';
-			o = ec.SpriteSheets.lion.getFrame(0);
-				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-					rect = o.rect;
-					if (ec.debug === 1) {ec.core.traceTime('drawImage lion '+o.image.src);}
-					drawable = ec.getCached(o.image, 'lion');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage lion '+o.image.src);}
-				}
-
-			} else if (entity instanceof ec.Circle) {
-				context.fillStyle = '#888888';
-			o = ec.SpriteSheets.cauldron.getFrame(0);
-				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-					rect = o.rect;
-					if (ec.debug === 1) {ec.core.traceTime('drawImage cauldron '+o.image.src);}
-					drawable = ec.getCached(o.image, 'cauldron');
-					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage cauldron '+o.image.src);}
-				}
-
-			} else {
-				if (ec.debug === 1) {ec.core.traceTime('draw entity');}
-				if (entity.radius) {
-					context.fillStyle = '#ff8000';
-					context.beginPath();
-					context.arc(x, y, entity.radius, 0, 2*pi, false);
-					context.fill();
-				} else if (entity.width && entity.height) {
-					context.fillStyle = '#0008ff';
-					context.beginPath();
-					context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
-				} else {
-					context.fillStyle = '#000088';
-					context.beginPath();
-					context.fillRect(x-32, y-32, 64, 64);
-				}
-				if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
-				//throw('elements did not get placed in a layer '+entity);
+			var animation = ninjaSheet.getAnimation('puff');
+			if (animation) {
+				frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
+				o = ninjaSheet.getFrame(frame);
 			}
-			if (ec.debug > 1) {
-				//draw layer info
-				var fieldHeight = 48;
-				entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
-				entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
-				var info = ''+ entity.layerNum +': '+ entity.layerName;
-				if (entity.mapCollision.length) {
-					info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
-				}
-				if (entity.input) {
-					var goal = entity.input.goal;
-					if (goal) {
-						info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
-					}
-				}
-				entity.label.setText(info);
+
+		} else if (entity instanceof ec.Projectile) {
+			var spriteSheet = ec.SpriteSheets.throwingStar;
+			var frames = spriteSheet.getNumFrames();
+			frame = floor(entity.body.a * frames / pi) % frames;
+			o = spriteSheet.getFrame(frame);
+
+		} else if (entity instanceof ec.Player) {
+			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
+
+		} else if (entity instanceof ec.Box) {
+			o = ec.SpriteSheets.lion.getFrame(0);
+
+		} else if (entity instanceof ec.Circle) {
+			o = ec.SpriteSheets.cauldron.getFrame(0);
+
+		} else if (entity instanceof ec.EmptyHand) {
+			// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
+			// context.beginPath();
+			// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
+			// context.fill();
+		} else {
+			if (ec.debug === 1) {ec.core.traceTime('draw entity');}
+			context.save();
+			// TODO: ninja star / projectile sprite
+			if (entity.radius) {
+				context.fillStyle = '#ff8000';
+				context.beginPath();
+				context.arc(x, y, entity.radius, 0, 2*pi, false);
+				context.fill();
+			} else if (entity.width && entity.height) {
+				context.fillStyle = '#0008ff';
+				context.beginPath();
+				context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
+			} else {
+				context.fillStyle = '#000088';
+				context.beginPath();
+				context.fillRect(x-32, y-32, 64, 64);
 			}
 			context.restore();
-		};
+			if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
+			//throw('elements did not get placed in a layer '+entity);
+		}
+
+		if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
+			drawable = ec.getCached(o.image);
+			rect = o.rect;
+			if (ec.debug === 1) {ec.core.traceTime('drawImage '+o.image.src);}
+			context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
+		}
+
+		if (ec.debug > 1) {
+			//draw layer info
+			var fieldHeight = 48;
+			entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
+			entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
+			var info = ''+ entity.layerNum +': '+ entity.layerName;
+			if (entity.mapCollision.length) {
+				info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+			}
+			if (entity.input) {
+				var goal = entity.input.goal;
+				if (goal) {
+					info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
+				}
+			}
+			entity.label.setText(info);
+		}
+	};
 
 	function spriteSheetFrame(entity, spriteSheet, delta) {
-			//var numFrames = spriteSheet.getNumFrames();
+		//var numFrames = spriteSheet.getNumFrames();
 		var a = entity.body.a;
 		var degrees = 6;
 		var radians = a + pi/6;
@@ -176,7 +154,7 @@
 		if (entity.state === 'walking') {
 			animation = spriteSheet.getAnimation('walk_'+ frame);
 			if (animation) {
-				animationFrame = Math.floor(entity.walkCount) % 4;
+				animationFrame = floor(entity.walkCount) % 4;
 				frame = animation.frames[0] + animationFrame;
 			} else {
 				console.error('no walk_'+ frame);
@@ -185,7 +163,7 @@
 			animation = spriteSheet.getAnimation('punch_'+ frame);
 			if (animation) {
 				progress = entity.attack.time / entity.attack.pushDuration;
-				animationFrame = Math.min(3, Math.floor(progress * 3));
+				animationFrame = Math.min(3, floor(progress * 3));
 				frame = animation.frames[0] + animationFrame;
 			} else {
 				console.error('no walk_'+ frame);
@@ -198,14 +176,14 @@
 				} else {
 					if (entity.isShadowClone) {
 						progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
-						animationFrame = Math.min(3, Math.floor(progress * 2));
+						animationFrame = Math.min(3, floor(progress * 2));
 					} else {
 						progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
 						if (progress < 0.33) {
 							animationFrame = -1;
 						} else {
 							progress = (progress - 0.33) * 3 /2;
-							animationFrame = Math.min(3, Math.floor(progress * 3));
+							animationFrame = Math.min(3, floor(progress * 3));
 						}
 					}
 				}
@@ -223,7 +201,7 @@
 			return null;
 		}
 		return frameData;
-	};
+	}
 
 	function intersects(rect, viewport, x, y) {
 		return (x <= viewport.r && viewport.l <= (x + rect.width) &&

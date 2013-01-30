@@ -78,8 +78,10 @@
 
 			var layerEntities = entitiesInLayers[i];
 			for (j=0; j<layerEntities.length; j++) {
-				var item = layerEntities[j];
-				this.entityRenderer.draw(context, item, viewport, delta);
+				this.entityRenderer.drawShadow(context, layerEntities[j], viewport, delta);
+			}
+			for (j=0; j<layerEntities.length; j++) {
+				this.entityRenderer.drawEntity(context, layerEntities[j], viewport, delta);
 			}
 		}
 
