@@ -11,7 +11,7 @@
 
 		this.assignCircleShape(radius, mass);
 
-		this.shape.setElasticity(2);
+		this.shape.setElasticity(1);
 		this.shape.setFriction(1);
 
 		this.shape.collision_type = ec.World.MONSTER_PROJECTILE;
@@ -46,6 +46,13 @@
 		this.vx = this.body.vx;
 		this.vy = this.body.vy;
 		
+		return this;
+	};
+
+	proto.postStep = function(delta) {
+		// get floor
+		this.groundZ = this.getTargetZ(this.climbHeight);
+
 		if (this.inactive > 0) {
 			// count down to delete
 			this.inactive += delta;
@@ -53,14 +60,8 @@
 				ec.world.remove(this);
 				this.term();
 			}
+			return;
 		}
-
-		return this;
-	};
-
-	proto.postStep = function(delta) {
-		// get floor
-		this.groundZ = this.getTargetZ(this.climbHeight);
 
 		//linear z motion
 		var z = this.z + this.velZ * delta / 100;
@@ -75,21 +76,21 @@
 		this.z = z;
 
 		//map collision or flying?
-		if (this.mapCollision.length > 0) {
+		if (this.maxDistanceSq && this.mapCollision.length > 0) {
 			if (this.maxCollisionTopZ > this.groundZ) {
 				this.hitMapWall(delta);
 			}
 
 		}
-		//maintain velocity up to a certain distance
+	
 		this.distanceSq += this.vx * this.vx + this.vy * this.vy;
 		if (this.distanceSq < this.maxDistanceSq) {
 			this.body.vx = this.vx;
 			this.body.vy = this.vy;
-		} else if (this.inactive === 0) {
+		} else {
 			var gravity = -10;
-			var damping = 2 / (Math.abs(this.body.w)+2);
-			var friction = 0;
+			var damping = 50 / (Math.abs(this.body.w)+50);
+			var friction = damping;
 			this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
 		}
 	};
@@ -104,8 +105,9 @@
 			this.deactivate(delta);
 		} else {
 			//fall
-			this.velZ += Math.random() * 16 -32;
-			this.body.w = Math.random() * 1 -2;
+			this.resetForces();
+			this.velZ += Math.random() * 32 -16;
+			this.body.w = Math.random() * 4 -2;
 		}
 
 		//loose perpetual motion
