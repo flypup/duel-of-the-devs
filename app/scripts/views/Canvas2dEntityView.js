@@ -2,18 +2,18 @@
 	'use strict';
 
 	var ec = window.ec;
+	var pi = Math.PI;
+	var round = Math.round;
 
 	var Canvas2dEntityView = ec.Canvas2dEntityView = function() {
 		this.shadow = ec.SpriteSheets.shadow.getFrame(0);
-
-		this.drawEntityHandler = this.drawEntity();
 	};
 
 	var proto = Canvas2dEntityView.prototype;
 
 	proto.draw = function(context, entity, viewport, delta) {
 		this.drawShadow(context, entity, viewport);
-		this.drawEntityHandler(context, entity, viewport, delta);
+		this.drawEntity(context, entity, viewport, delta);
 	};
 	
 	proto.drawShadow = function(context, entity, viewport) {
@@ -42,98 +42,17 @@
 		}
 	};
 
-	proto.drawEntity = function() {
-		var monkSheet = ec.SpriteSheets.monk;
-		var ninjaSheet = ec.SpriteSheets.ninja;
-		var lionSprite = ec.SpriteSheets.lion.getFrame(0);
-		var cauldronSprite = ec.SpriteSheets.cauldron.getFrame(0);
-		
-		var pi = Math.PI;
-		var round = Math.round;
-
-		var spriteSheetFrame = function spriteSheetFrame(entity, spriteSheet, delta) {
-			//var numFrames = spriteSheet.getNumFrames();
-			var a = entity.body.a;
-			var degrees = 6;
-			var radians = a + pi/6;
-			var animation;
-			var animationFrame;
-			var progress;
-			if (a === 0) {
-				radians -= 0.1;
-			}
-			var frame = (5 - round(radians * 3 / pi)) % 6;
-			// 0 = down, 1-5 clockwise
-
-			//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
-			while (frame < 0) {
-				frame += degrees;
-			}
-			if (entity.state === 'walking') {
-				animation = spriteSheet.getAnimation('walk_'+ frame);
-				if (animation) {
-					animationFrame = Math.floor(entity.walkCount) % 4;
-					frame = animation.frames[0] + animationFrame;
-				} else {
-					console.error('no walk_'+ frame);
-				}
-			} else if (entity.state === 'punching') {
-				animation = spriteSheet.getAnimation('punch_'+ frame);
-				if (animation) {
-					progress = entity.attack.time / entity.attack.pushDuration;
-					animationFrame = Math.min(3, Math.floor(progress * 3));
-					frame = animation.frames[0] + animationFrame;
-				} else {
-					console.error('no walk_'+ frame);
-				}
-			} else if (entity.state === 'hit' || entity.state === 'dead') {//entity.hitPoints <= 0) {//entity.state === 'hit') {
-				animation = spriteSheet.getAnimation('fall');
-				if (animation) {
-					if (entity.state === 'dead') {
-						animationFrame = 3;
-					} else {
-						if (entity.isShadowClone) {
-							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
-							animationFrame = Math.min(3, Math.floor(progress * 2));
-						} else {
-							progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
-							if (progress < 0.33) {
-								animationFrame = -1;
-							} else {
-								progress = (progress - 0.33) * 3 /2;
-								animationFrame = Math.min(3, Math.floor(progress * 3));
-							}
-						}
-					}
-					frame = (animationFrame === -1) ? frame : animation.frames[0] + animationFrame;
-				} else {
-					console.error('no fall');
-				}
-			}
-
-			var frameData = spriteSheet.getFrame(frame);
-			if (frameData === null) {
-				if (spriteSheet.complete) {
-					console.error('SpriteSheet null frame. Complete:', spriteSheet.complete, frame, '/', spriteSheet.getNumFrames(), spriteSheet.getAnimations());
-				}
-				return null;
-			}
-			return frameData;
-		};
-
-		return function drawEntityFn(context, entity, viewport, delta) {
-			// if (entity.view) {
-			//	entity.view.update(entity, scene);
-			// }
-			var x =  entity.body.p.x;
-			var y = -entity.body.p.y -entity.z;
+	proto.drawEntity = function(context, entity, viewport, delta) {
+		var pos = entity.getPos();
+		var x = pos.x;
+		var y = pos.y - pos.z;
 			var o;
 			var rect;
 			var drawable;
 
 			context.save();
 			if (entity instanceof ec.Ninja) {
-				o = spriteSheetFrame(entity, ninjaSheet, delta);
+			o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					if (ec.debug === 1) {ec.core.traceTime('drawImage ninja '+o.image.src);}
@@ -143,6 +62,7 @@
 				}
 
 			} else if (entity instanceof ec.Puff) {
+			var ninjaSheet = ec.SpriteSheets.ninja;
 				var animation = ninjaSheet.getAnimation('puff');
 				if (animation) {
 					var frame = animation.frames[0] + Math.floor(4.9 * (entity.duration-entity.time) / entity.duration);
@@ -159,7 +79,7 @@
 				}
 
 			} else if (entity instanceof ec.Player) {
-				o = spriteSheetFrame(entity, monkSheet, delta);
+			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					if (ec.debug === 1) {ec.core.traceTime('drawImage monk '+o.image.src);}
@@ -176,7 +96,7 @@
 
 			} else if (entity instanceof ec.Box) {
 				context.fillStyle = '#888888';
-				o = lionSprite || ec.SpriteSheets.lion.getFrame(0);
+			o = ec.SpriteSheets.lion.getFrame(0);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					if (ec.debug === 1) {ec.core.traceTime('drawImage lion '+o.image.src);}
@@ -187,7 +107,7 @@
 
 			} else if (entity instanceof ec.Circle) {
 				context.fillStyle = '#888888';
-				o = cauldronSprite || ec.SpriteSheets.cauldron.getFrame(0);
+			o = ec.SpriteSheets.cauldron.getFrame(0);
 				if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 					rect = o.rect;
 					if (ec.debug === 1) {ec.core.traceTime('drawImage cauldron '+o.image.src);}
@@ -234,9 +154,78 @@
 			}
 			context.restore();
 		};
+
+	function spriteSheetFrame(entity, spriteSheet, delta) {
+			//var numFrames = spriteSheet.getNumFrames();
+		var a = entity.body.a;
+		var degrees = 6;
+		var radians = a + pi/6;
+		var animation;
+		var animationFrame;
+		var progress;
+		if (a === 0) {
+			radians -= 0.1;
+		}
+		var frame = (5 - round(radians * 3 / pi)) % 6;
+		// 0 = down, 1-5 clockwise
+
+		//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
+		while (frame < 0) {
+			frame += degrees;
+		}
+		if (entity.state === 'walking') {
+			animation = spriteSheet.getAnimation('walk_'+ frame);
+			if (animation) {
+				animationFrame = Math.floor(entity.walkCount) % 4;
+				frame = animation.frames[0] + animationFrame;
+			} else {
+				console.error('no walk_'+ frame);
+			}
+		} else if (entity.state === 'punching') {
+			animation = spriteSheet.getAnimation('punch_'+ frame);
+			if (animation) {
+				progress = entity.attack.time / entity.attack.pushDuration;
+				animationFrame = Math.min(3, Math.floor(progress * 3));
+				frame = animation.frames[0] + animationFrame;
+			} else {
+				console.error('no walk_'+ frame);
+			}
+		} else if (entity.state === 'hit' || entity.state === 'dead') {//entity.hitPoints <= 0) {//entity.state === 'hit') {
+			animation = spriteSheet.getAnimation('fall');
+			if (animation) {
+				if (entity.state === 'dead') {
+					animationFrame = 3;
+				} else {
+					if (entity.isShadowClone) {
+						progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+						animationFrame = Math.min(3, Math.floor(progress * 2));
+					} else {
+						progress = (entity.hitDuration - entity.hitTime) / entity.hitDuration;
+						if (progress < 0.33) {
+							animationFrame = -1;
+						} else {
+							progress = (progress - 0.33) * 3 /2;
+							animationFrame = Math.min(3, Math.floor(progress * 3));
+						}
+					}
+				}
+				frame = (animationFrame === -1) ? frame : animation.frames[0] + animationFrame;
+			} else {
+				console.error('no fall');
+			}
+		}
+
+		var frameData = spriteSheet.getFrame(frame);
+		if (frameData === null) {
+			if (spriteSheet.complete) {
+				console.error('SpriteSheet null frame. Complete:', spriteSheet.complete, frame, '/', spriteSheet.getNumFrames(), spriteSheet.getAnimations());
+			}
+			return null;
+		}
+		return frameData;
 	};
 
-	var intersects = function intersects(rect, viewport, x, y) {
+	function intersects(rect, viewport, x, y) {
 		return (x <= viewport.r && viewport.l <= (x + rect.width) &&
 				y <= viewport.b && viewport.t <= (y + rect.height));
 	};
