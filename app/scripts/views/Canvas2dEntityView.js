@@ -206,6 +206,6 @@
 	function intersects(rect, viewport, x, y) {
 		return (x <= viewport.r && viewport.l <= (x + rect.width) &&
 				y <= viewport.b && viewport.t <= (y + rect.height));
-	};
+	}
 
 })(window);
