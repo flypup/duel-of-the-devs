@@ -13,7 +13,7 @@
 		this.shape.setElasticity(0.5);
 		this.shape.setFriction(1);
 
-		this.shape.collision_type = ec.World.PLAYER_HAND;
+		this.shape.collision_type = ec.Collisions.PLAYER_HAND;
 
 		this.time = 0;
 		this.startTime = -1;

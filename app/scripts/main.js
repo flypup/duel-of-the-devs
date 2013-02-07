@@ -9,6 +9,7 @@ ec.debug = 0;
 	var document = window.document;
 	
 	var world;
+	var collisions;
 	var maps;
 	var scenes;
 	var scene;
@@ -116,8 +117,12 @@ ec.debug = 0;
 			boss   = null;
 			userInput = new ec.UserInput();
 			bossInput = new ec.EnemyInput();
+			if (world) {
+				world.term();
+			}
 			ec.world =
-			world = new ec.World();
+			world = world || new ec.World();
+			collisions = collisions || new ec.Collisions();
 			if (!sound) {
 				sound = new ec.Sound();
 				// TODO: separate music and sound effect volume
@@ -139,7 +144,7 @@ ec.debug = 0;
 			// Canvas 2d Context View
 			view = view || new ec.Canvas2dView();
 			view.removeAll();
-			worldView = new ec.Canvas2dWorldView(world);
+			worldView = worldView || new ec.Canvas2dWorldView(world);
 			view.add(worldView);
 			view.add(userInput);
 			ec.view = view;
@@ -209,7 +214,10 @@ ec.debug = 0;
 				world.remove(player);
 				world.remove(boss);
 			}
+			
 			world.setMap(map);
+			collisions.init(world);
+			
 			worldView.loadMap();
 			if (cpDebugView) {
 				cpDebugView.setSpace(world.space);
@@ -248,6 +256,7 @@ ec.debug = 0;
 					ninja: boss
 				});
 
+				scene.step(0);
 				world.stepScene(TIME_STEP);
 			} else {
 				bossInput.completeTask();

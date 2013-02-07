@@ -19,7 +19,7 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.shape.collision_type = ec.World.MONSTER_TYPE;
+		this.shape.collision_type = ec.Collisions.MONSTER;
 
 		// TODO: better states!
 		this.shape.group = this.groupId;

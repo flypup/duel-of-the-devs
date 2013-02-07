@@ -15,19 +15,10 @@
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
-	//shape groups
-	World.PLAYER_TYPE = 1;
-	World.PLAYER_HAND = 2;
-	World.MONSTER_TYPE = 10;
-	World.MONSTER_PROJECTILE = 12;
-	World.MAP_TYPE = 50;
-	World.PROP_TYPE = 100;
-
 	var proto = World.prototype;
 
 
 	proto.init = function() {
-		
 		var space =
 		this.space = new cp.Space();
 		space.gravity = v(0, 0);
@@ -37,21 +28,6 @@
 		space.collisionSlop = 0.025;
 		space.collisionBias = Math.pow(1 - 0.75, 60);
 		space.damping = 0.5;//0.95;//0.66;//1
-
-		//space.addCollisionHandler(a, b, begin, preSolve, postSolve, separate)
-		var pushHandler = ec.delegate(this, this.pushCollision);
-		var bumpHandler = ec.delegate(this, this.bumpCollision);
-		var mapBeginHandler  = ec.delegate(this, this.mapCollisionBegin);
-		var mapPreSolveHandler = ec.delegate(this, this.mapCollisionPreSolve);
-		var mapSeparateHandler = ec.delegate(this, this.mapCollisionSeparate);
-
-		space.addCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE, null, null, pushHandler, null);
-		space.addCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE, bumpHandler, null, bumpHandler, null);
-		space.addCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
-		space.addCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
-		// TODO: Don't allow player hand to pass through obstacles
-		space.addCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE, returnFalse, null, null, null);
-		space.addCollisionHandler(World.MONSTER_PROJECTILE, World.MAP_TYPE, mapBeginHandler, mapPreSolveHandler, null, mapSeparateHandler);
 	};
 
 	proto.term = function() {
@@ -61,114 +37,13 @@
 		var space = this.space;
 		if (space) {
 			space.locked = 0;
-			space.removeCollisionHandler(World.PLAYER_HAND, World.MONSTER_TYPE);
-			space.removeCollisionHandler(World.MONSTER_TYPE, World.MONSTER_TYPE);
-			space.removeCollisionHandler(World.PLAYER_TYPE,  World.MAP_TYPE);
-			space.removeCollisionHandler(World.MONSTER_TYPE, World.MAP_TYPE);
-			space.removeCollisionHandler(World.PLAYER_HAND, World.MAP_TYPE);
+			space.collisionHandlers.length = 0;
 			space.bodies.length = 0;
 			space.sleepingComponents.length = 0;
 			space.constraints.length = 0;
 			space.arbiters.length = 0;
 			delete this.space;
 		}
-	};
-
-	var returnFalse = function(arbiter, space) {
-		return false;
-	};
-
-	var DAMAGE = 10;
-	proto.pushCollision = function(arbiter, space) {
-		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
-		// if (contact) {
-		//console.log('push collision', arbiter);
-		var monsterBody = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		var monsterEntity = this.entityForBody(monsterBody);
-		if (monsterEntity) {
-			monsterEntity.hit(arbiter, this, DAMAGE);
-			arbiter.ignore();
-			return false;
-		}
-		return (arbiter.contacts && arbiter.contacts.length);
-	};
-
-	proto.bumpCollision = function(arbiter, space) {
-
-		//console.log('push collision', arbiter);
-		var monsterEntityA = this.entityForBody(arbiter.body_a);
-		var monsterEntityB = this.entityForBody(arbiter.body_b);
-		if (monsterEntityA  && monsterEntityB) {
-			if (monsterEntityA.hitTime && !monsterEntityB.hitTime) {
-				monsterEntityB.hit(arbiter, this, 0);
-			} else if (monsterEntityB.hitTime && !monsterEntityA.hitTime) {
-				monsterEntityA.hit(arbiter, this, 0);
-			}
-			return !(monsterEntityA.hitTime > 0 && monsterEntityB.hitTime > 0);
-		}
-		return true;
-	};
-
-	proto.mapCollisionBegin = function(arbiter, space) {
-		//console.log('mapCollisionBegin');
-		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
-		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		var entity     = this.entityForBody(entityBody);
-		var mapElement = this.elementForBody(mapBody);
-		if (ec.debug > 0) {
-			//console.log('mapCollisionBegin', entity.type, mapElement);
-		}
-		// Add Map Element to Entity's Checklist
-		entity.addMapCollision(mapElement);
-
-		return true;
-	};
-
-	proto.mapCollisionSeparate = function(arbiter, space) {
-		//console.log('mapCollisionSeparate');
-		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
-		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		var entity     = this.entityForBody(entityBody);
-		var mapElement = this.elementForBody(mapBody);
-		if (ec.debug > 0) {
-			//console.log('mapCollisionSeparate', entity.type, mapElement);
-		}
-		// Remove Map Element from Entity's Checklist
-		entity.removeMapCollision(mapElement);
-	};
-
-	proto.mapCollisionPreSolve = function(arbiter, space) {
-		//console.log('mapCollisionPreSolve');
-		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
-		// if (contact) {
-		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
-		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		var entity = this.entityForBody(entityBody);
-		var mapElement = this.elementForBody(mapBody);
-		//console.log('mapCollision', entity, mapElement);
-
-		//determine if entity is outside of collision z
-		var entityBounds = entity.getSortBounds();
-		//standing under
-		if ( entityBounds.top < mapElement.z ) {
-			return false;
-		}
-		var mapBounds = mapElement.getSortBounds();
-		//standing over - fall
-		if ( entity.z > mapBounds.top) {
-			return false;
-		}
-		//standing on
-		if ( entity.z === mapBounds.top) {
-			return false;
-		}
-		//arbiter.ignore();
-
-		if (ec.debug > 0) {
-			//console.log('mapCollision', entity, mapElement);
-		}
-		//collision
-		return true;
 	};
 
 	proto.setMap = function(data) {
@@ -263,7 +138,7 @@
 						try {
 							wall = this.addPolygons(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 							wall.depth = mapElement.depth;
-							wall.collision_type = World.MAP_TYPE;
+							wall.collision_type = ec.Collisions.MAP;
 							console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regY+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
 						} catch (err) {
 							console.error('Bad Wall Polygon in "'+mapElement.name+'". '+err +' '+ verts);
@@ -273,7 +148,7 @@
 			} else {
 				wall = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 				wall.depth = mapElement.depth;
-				wall.collision_type = World.MAP_TYPE;
+				wall.collision_type = ec.Collisions.MAP;
 				mapElement.body = wall.body;
 			}
 			this.elements.push(mapElement);
@@ -296,7 +171,7 @@
 						try {
 							floor = this.addPolygons(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 							floor.depth = mapElement.depth;
-							floor.collision_type = World.MAP_TYPE;
+							floor.collision_type = ec.Collisions.MAP;
 							console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
 						} catch (err) {
 							console.error('Bad Floor Polygon in "'+mapElement.name+':'+p+'". '+err +' '+ verts);
@@ -307,7 +182,7 @@
 			} else {
 				floor = this.addBox(v(x, y+mapElement.depth), mapElement.mWidth, mapElement.mHeight);
 				floor.depth = mapElement.depth;
-				floor.collision_type = World.MAP_TYPE;
+				floor.collision_type = ec.Collisions.MAP;
 				mapElement.body = floor.body;
 			}
 			this.elements.push(mapElement);
@@ -315,7 +190,7 @@
 		} else if (mapElement.mapType === 'steps') {
 			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 			steps.depth = mapElement.depth;
-			steps.collision_type = World.MAP_TYPE;
+			steps.collision_type = ec.Collisions.MAP;
 			mapElement.body = steps.body;
 			this.elements.push(mapElement);
 

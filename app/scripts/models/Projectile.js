@@ -13,7 +13,7 @@
 		this.shape.setElasticity(1);
 		this.shape.setFriction(1);
 
-		this.shape.collision_type = ec.World.MONSTER_PROJECTILE;
+		this.shape.collision_type = ec.Collisions.MONSTER_PROJECTILE;
 
 		this.vx = 0;
 		this.vy = 0;

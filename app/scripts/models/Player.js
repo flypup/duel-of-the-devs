@@ -21,7 +21,7 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.shape.collision_type = ec.World.PLAYER_TYPE;
+		this.shape.collision_type = ec.Collisions.PLAYER;
 
 		// TODO: better states!
 		this.shape.group = this.groupId;

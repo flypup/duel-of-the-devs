@@ -19,7 +19,7 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0.6);
 		
-		this.shape.collision_type = ec.World.PROP_TYPE;
+		this.shape.collision_type = ec.Collisions.PROP;
 	};
 
 	var proto = Circle.prototype;
