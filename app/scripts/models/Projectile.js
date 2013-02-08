@@ -77,7 +77,7 @@
 		//map collision or flying?
 		if (this.maxDistanceSq && this.mapCollision.length > 0) {
 			if (this.maxCollisionTopZ > this.groundZ) {
-				this.hitMapWall(delta);
+				this.hitObstacle(delta);
 			}
 
 		}
@@ -95,10 +95,11 @@
 	};
 
 	proto.hit = function(arbiter, forceDamage) {//pushed
-
+		console.log('projectile hit');
+		this.startFall(forceDamage);
 	};
 
-	proto.hitMapWall = function(delta) {
+	proto.hitObstacle = function(delta) {
 		//console.log('projectile hit wall');
 		//stick or bounce down to floor?
 
@@ -107,10 +108,7 @@
 			//stick in wall
 			this.deactivate(delta);
 		} else {
-			//fall
-			this.resetForces();
-			this.velZ += Math.random() * 32 -16;
-			this.body.w = Math.random() * 4 -2;
+			this.startFall(delta);
 		}
 
 		//loose perpetual motion
@@ -123,6 +121,12 @@
 		// body.vy = 0;
 		// body.w = 0;
 		// ec.world.remove(this);
+	};
+
+	proto.startFall = function(delta) {
+		this.resetForces();
+		this.velZ += Math.random() * 32 -16;
+		this.body.w = Math.random() * 4 -2;
 	};
 
 	proto.deactivate = function(delta) {

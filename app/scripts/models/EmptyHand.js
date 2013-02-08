@@ -15,6 +15,8 @@
 
 		this.shape.collision_type = ec.Collisions.PLAYER_HAND;
 
+		this.depth = 64;
+
 		this.time = 0;
 		this.startTime = -1;
 		this.phase = EmptyHand.PASSIVE;
