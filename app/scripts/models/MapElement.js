@@ -55,6 +55,13 @@
 		}
 	};
 
+	proto.setBody = function(body) {
+		this.body = body;
+		body.userData = {
+			parent: this
+		};
+	};
+
 	proto.isBehindEntity = function(entity) {
 		switch (this.mapType) {
 			case 'container':

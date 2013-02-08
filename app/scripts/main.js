@@ -216,7 +216,7 @@ ec.debug = 0;
 			}
 			
 			world.setMap(map);
-			collisions.init(world);
+			collisions.init(world.space);
 			
 			worldView.loadMap();
 			if (cpDebugView) {

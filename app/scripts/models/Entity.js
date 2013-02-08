@@ -37,7 +37,13 @@
 
 	proto.term = function() {
 		delete this.shape;
-		delete this.body;
+		if (this.body) {
+			if (this.body.userData) {
+				delete this.body.userData.parent;
+				delete this.body.userData;
+			}
+			delete this.body;
+		}
 		delete this.pos;
 		delete this.sortBounds;
 		//
@@ -272,8 +278,9 @@
 		this.mapCollision = this.mapCollision || [];
 		moment = moment || cp.momentForCircle(mass, 0, radius, v(0, 0));//cp.vzero);
 		this.radius = radius;
-		this.body = getBody(mass, moment);
-		this.shape = new cp.CircleShape(this.body, radius, v(0, 0));
+		var body = getBody(mass, moment);
+		this.setBody(body);
+		this.shape = new cp.CircleShape(body, radius, v(0, 0));
 		return this;
 	};
 
@@ -282,9 +289,17 @@
 		moment = moment || cp.momentForBox(mass, width, height);
 		this.width = width;
 		this.height = height;
-		this.body = getBody(mass, moment);
-		this.shape = new cp.BoxShape(this.body, width, height);
+		var body = getBody(mass, moment);
+		this.setBody(body);
+		this.shape = new cp.BoxShape(body, width, height);
 		return this;
+	};
+
+	proto.setBody = function(body) {
+		this.body = body;
+		body.userData = {
+			parent: this
+		};
 	};
 
 })(window);

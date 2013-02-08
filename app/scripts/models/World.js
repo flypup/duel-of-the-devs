@@ -124,7 +124,7 @@
 			var wall;
 			shapes = mapElement.shapes;
 			if (mapElement.shape === 'polygons' && shapes) {
-				mapElement.body = new cp.Body(Infinity, Infinity);
+				mapElement.setBody(new cp.Body(Infinity, Infinity));
 				//poly to verts
 				for (o in shapes) {
 					verts = [];
@@ -149,15 +149,15 @@
 				wall = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 				wall.depth = mapElement.depth;
 				wall.collision_type = ec.Collisions.MAP;
-				mapElement.body = wall.body;
+				mapElement.setBody(wall.body);
 			}
 			this.elements.push(mapElement);
 
 		} else if (mapElement.mapType === 'floor') {
-			var floor;
+			var floorShape;
 			shapes = mapElement.shapes;
 			if (mapElement.shape === 'polygons' && shapes) {
-				mapElement.body = new cp.Body(Infinity, Infinity);
+				mapElement.setBody(new cp.Body(Infinity, Infinity));
 				//poly to verts... 2d array to flat array
 				for (o in shapes) {
 					verts = [];
@@ -169,9 +169,9 @@
 							verts[i] = -verts[i];
 						}
 						try {
-							floor = this.addPolygons(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
-							floor.depth = mapElement.depth;
-							floor.collision_type = ec.Collisions.MAP;
+							floorShape = this.addPolygons(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+							floorShape.depth = mapElement.depth;
+							floorShape.collision_type = ec.Collisions.MAP;
 							console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
 						} catch (err) {
 							console.error('Bad Floor Polygon in "'+mapElement.name+':'+p+'". '+err +' '+ verts);
@@ -180,10 +180,10 @@
 				}
 
 			} else {
-				floor = this.addBox(v(x, y+mapElement.depth), mapElement.mWidth, mapElement.mHeight);
-				floor.depth = mapElement.depth;
-				floor.collision_type = ec.Collisions.MAP;
-				mapElement.body = floor.body;
+				floorShape = this.addBox(v(x, y+mapElement.depth), mapElement.mWidth, mapElement.mHeight);
+				floorShape.depth = mapElement.depth;
+				floorShape.collision_type = ec.Collisions.MAP;
+				mapElement.setBody(floorShape.body);
 			}
 			this.elements.push(mapElement);
 
@@ -191,7 +191,7 @@
 			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
 			steps.depth = mapElement.depth;
 			steps.collision_type = ec.Collisions.MAP;
-			mapElement.body = steps.body;
+			mapElement.setBody(steps.body);
 			this.elements.push(mapElement);
 
 		} else if (mapElement.mapType === 'container' || mapElement.mapType === 'parallax') {

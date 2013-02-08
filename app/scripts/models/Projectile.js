@@ -13,7 +13,7 @@
 		this.shape.setElasticity(1);
 		this.shape.setFriction(1);
 
-		this.shape.collision_type = ec.Collisions.MONSTER_PROJECTILE;
+		this.shape.collision_type = ec.Collisions.PROJECTILE;
 
 		this.vx = 0;
 		this.vy = 0;
@@ -92,6 +92,10 @@
 			var friction = damping;
 			this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
 		}
+	};
+
+	proto.hit = function(arbiter, forceDamage) {//pushed
+
 	};
 
 	proto.hitMapWall = function(delta) {

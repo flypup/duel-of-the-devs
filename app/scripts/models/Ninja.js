@@ -96,7 +96,7 @@
 		ec.world.add(throwingStar);
 	};
 
-	proto.hit = function(arbiter, world, damage) {
+	proto.hit = function(arbiter, damage) {
 		var energy = (arbiter && arbiter.totalKE()) || 1000;
 		//console.log('HIT', this, 'KE', energy);
 		if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
