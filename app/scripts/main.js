@@ -1,12 +1,9 @@
-var ec = ec || {};
-ec.version = '0.1.304';
-ec.debug = 0;
-
 (function(window) {
 	'use strict';
 
-	window.ec = ec;
-	var document = window.document;
+	var ec = window.ec = {};
+	ec.version = '0.1.304';
+	ec.debug = 0;
 	
 	var world;
 	var collisions;
@@ -53,7 +50,6 @@ ec.debug = 0;
 
 		begin: function() {
 			console.log('begin');
-			//window.onReady(core.init);
 			cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame( core.load );
 
@@ -75,6 +71,7 @@ ec.debug = 0;
 		},
 
 		load: function(time) {
+			var document = window.document;
 			var appCache = ec.appCache || {};
 			if ((!appCache.complete && !appCache.timedout) ||
 				ec.ready !== true ||
@@ -498,7 +495,7 @@ ec.debug = 0;
 
 		fullscreen: function() {
 			if (ec.fullscreen) {
-				var element = document.body;
+				var element = window.document.body;
 				element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
 				element.requestFullscreen();
 			}
@@ -652,12 +649,6 @@ ec.debug = 0;
 		return target;
 	};
 
-	ec.create = function(obj) {
-		function F() {}
-		F.prototype = obj;
-		return new F();
-	};
-
 	ec.delegate = function(obj, func) {
 		return function() {
 			return func.apply(obj, arguments);
@@ -671,23 +662,6 @@ ec.debug = 0;
 		}
 		return propArray;
 	};
-
-	// tests
-
-	function prefixed(str, obj) {
-		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
-	}
-
-	ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
-	ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
-	ec.ios = (/iPhone|iPad|iPod/).test(navigator.userAgent);
-	ec.ipad = (/iPad/).test(navigator.userAgent);
-	ec.android = (/Android/).test(navigator.userAgent);
-	ec.standalone = !!navigator.standalone;
-	ec.webgl = !!window.WebGLRenderingContext;
-	ec.fullscreen = !!prefixed('cancelFullScreen', document);
-	ec.webaudio   = !!prefixed('AudioContext', window);
-	ec.gamepads   = !!prefixed('getGamepads', navigator);
 
 	ec.bind = function(obj, event, func, bool) {
 		bool = bool || false;
@@ -714,13 +688,30 @@ ec.debug = 0;
 
 	//document ready
 	function docReadyHandler() {
-		ec.unbind(document, 'DOMContentLoaded', docReadyHandler, false);
+		ec.unbind(window.document, 'DOMContentLoaded', docReadyHandler, false);
 		ec.unbind(window, 'load', docReadyHandler, false);
 		ec.ready = true;
 	}
-	ec.bind(document, 'DOMContentLoaded', docReadyHandler, false);
+	ec.bind(window.document, 'DOMContentLoaded', docReadyHandler, false);
 	ec.bind(window, 'load', docReadyHandler, false);
 
+	// tests
+	!function() {
+		var prefixed = function(str, obj) {
+			return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
+		}
+		var document = window.document;
+		ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
+		ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
+		ec.ios = (/iPhone|iPad|iPod/).test(navigator.userAgent);
+		ec.ipad = (/iPad/).test(navigator.userAgent);
+		ec.android = (/Android/).test(navigator.userAgent);
+		ec.standalone = !!navigator.standalone;
+		ec.webgl = !!window.WebGLRenderingContext;
+		ec.fullscreen = !!prefixed('cancelFullScreen', document);
+		ec.webaudio   = !!prefixed('AudioContext', window);
+		ec.gamepads   = !!prefixed('getGamepads', navigator);
+	}();
 
 	ec.core.begin();
 

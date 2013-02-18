@@ -66,38 +66,6 @@
 
 	// UNIT FORMATION PATH FINDING
 
-	/*
-	proto.updateUnitsFill = function(positions, length) {
-		// TODO: Hungarian algorithm
-		positions = positions.slice(0);
-		var positionLen = positions.length;
-		length = length || positionLen;
-		var bodies = this.getUnits(length);
-		for (var i=0; i<length; i++) {
-			var body = bodies[i];
-			var userData = body.userData;
-			var formationVect = userData.formationVect;
-			userData.target = this.target;
-
-			var index = 0;
-			var minDistanceSq = Infinity;
-			var bPos = body.getPos();
-			for (var j=0; j<positionLen; j++) {
-				var distanceSq = v.lengthsq(v.sub(bPos, positions[j]));
-				if (distanceSq < minDistanceSq) {
-					minDistanceSq = distanceSq;
-					index = j;
-				}
-			}
-			formationVect.x = positions[index].x;
-			formationVect.y = positions[index].y;
-			userData.moveToSensor.setAngle(positions[index].angle);
-			positions.splice(index, 1);
-			positionLen--;
-		}
-	};
-	*/
-
 	proto.updateUnitsHungarian = function(entities, positions, length) {
 		length = length || positions.length;
 		positions = positions.slice(0, length);
