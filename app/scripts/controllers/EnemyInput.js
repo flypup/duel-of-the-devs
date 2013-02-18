@@ -238,11 +238,11 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var positions = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
+			var formation = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
 
-			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
-			//assignPositions(shadowClones, positions, length, targetPos);
+			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
+			//assignPositions(shadowClones, formation, length, targetPos);
 
 			this.completeTask();
 		};
@@ -257,11 +257,11 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
+			var formation = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
 
-			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
-			//assignPositions(shadowClones, positions, length, targetPos);
+			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
+			//assignPositions(shadowClones, formation, length, targetPos);
 
 			this.completeTask();
 		};
@@ -275,22 +275,25 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var positions = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
+			var formation = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
 
-			var solution = this.formations.updateUnitsHungarian(shadowClones, positions, length);
-			assignPositionsUsingSolution(shadowClones, positions, solution, length, targetPos);
-			//assignPositions(shadowClones, positions, length, targetPos);
+			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
+			//assignPositions(shadowClones, formation, length, targetPos);
 
 			this.completeTask();
 		};
 	}
 
-	function assignPositionsUsingSolution(units, positions, solution, length, targetPos) {
+	function assignPositionsUsingSolution(units, formation, solution, length, targetPos) {
 		length = length || solution.length;
 		var targetX = targetPos ? targetPos.x : 0;
 		var targetY = targetPos ? targetPos.y : 0;
+		var positions = formation.positions;
+		var angles = formation.angles;
 		for (var i=0; i<length; i++) {
 			var pos       = positions[solution[i][0]];
+			var angle     = angles[solution[i][0]];
 			var entity    = units[solution[i][1]];
 			var unitInput = entity.input;
 			var formationPos = unitInput.targetPos || v(0,0);
@@ -300,7 +303,7 @@
 			if (unitInput.targetPos === null) {
 				unitInput.targetPos = formationPos;
 			}
-			unitInput.targetAngle = pos.angle;
+			unitInput.targetAngle = angle;
 
 			if (entity.isShadowClone) {
 				unitInput.setGoal({
@@ -313,12 +316,15 @@
 		}
 	}
 
-	function assignPositions(units, positions, length, targetPos) {
+	function assignPositions(units, formation, length, targetPos) {
 		length = length || units.length;
 		var targetX = targetPos ? targetPos.x : 0;
 		var targetY = targetPos ? targetPos.y : 0;
+		var positions = formation.positions;
+		var angles = formation.angles;
 		for (var i=0; i<length; i++) {
 			var pos       = positions[i];
+			var angle     = angles[i];
 			var entity    = units[i];
 			var unitInput = entity.input;
 			var formationPos = unitInput.targetPos || v(0,0);
@@ -328,7 +334,7 @@
 			if (unitInput.targetPos === null) {
 				unitInput.targetPos = formationPos;
 			}
-			unitInput.targetAngle = pos.angle;
+			unitInput.targetAngle = angle;
 			if (entity.isShadowClone) {
 				unitInput.setGoal({
 					name: 'move to',

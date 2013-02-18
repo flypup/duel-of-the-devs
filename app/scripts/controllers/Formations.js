@@ -35,14 +35,18 @@
 		var angle = Math.atan2(-vector.y, vector.x) + Math.PI;
 
 		var positions = this.getFormationVectors(length);
+		var angles = [];
 		for (var i=0; i<length; i++) {
 			positions[i].x = pos.x;
 			positions[i].y = pos.y;
-			positions[i].angle = angle;
+			angles[i] = angle;
 
 			pos.add(perp);
 		}
-		return positions;
+		return {
+			positions: positions,
+			angles: angles
+		};
 	};
 
 	proto.circlePositions = function(headPos, targetPos, length, radius) {
@@ -53,15 +57,19 @@
 		//this.radialMove += 20 / circumference;
 
 		var positions = this.getFormationVectors(length);
+		var angles = [];
 		for (var i=0; i<length; i++) {
 			var radian = pi2 * i / length;
 			//radian += this.radialMove;
 			var pos = v.forangle(radian).mult(radius);
 			positions[i].x = pos.x;
 			positions[i].y = pos.y;
-			positions[i].angle = Math.atan2(-pos.y, pos.x) + pi;
+			angles[i] = Math.atan2(-pos.y, pos.x) + pi;
 		}
-		return positions;
+		return {
+			positions: positions,
+			angles: angles
+		};
 	};
 
 	// UNIT FORMATION PATH FINDING
