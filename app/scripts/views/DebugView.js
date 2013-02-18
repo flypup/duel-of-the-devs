@@ -12,6 +12,10 @@
 		stats.domElement.style.left = '0px';
 		stats.domElement.style.top = '0px';
 	    //window.document.body.appendChild( stats.domElement );
+
+	    if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	DebugView.prototype.begin = function() {

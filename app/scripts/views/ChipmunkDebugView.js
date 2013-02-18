@@ -40,6 +40,10 @@
 		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(0, -this.orthoSize.y));
 		//document.body.appendChild( canvas );
 
+		this.maxArbiters = null;
+		this.maxContacts = null;
+		this.mouseDown = null;
+		
 		this.mouse = v(0,0);
 
 		var maxWidth = this.width - 10;
@@ -124,6 +128,10 @@
 			self.orthoSize.sub(sizeDiff);
 			self.orthoPos.sub(sizeDiff.mult(0.5));
 		};
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	ChipmunkDebugView.prototype.setSpace = function(space) {

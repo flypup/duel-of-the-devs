@@ -9,7 +9,10 @@
 		this.multiline = true;
 		this.x = x || 0;
 		this.y = y || 0;
-
+		this.width  = 0;
+		this.height = 0;
+		this.ratio = 1;
+		
 		this.canvas = document.createElement('canvas');
 		this.context = this.canvas.getContext('2d');
 		this.context.textAlign = 'start';
@@ -22,6 +25,9 @@
 		}
 		if (fillStyle) {
 			this.setStyle(fillStyle);
+		}
+		if (ec.debug > 1) {
+			Object.seal(this);
 		}
 	};
 

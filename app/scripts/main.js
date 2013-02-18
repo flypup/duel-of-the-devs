@@ -227,18 +227,12 @@
 			if (!player) {
 				ec.player =
 				player = new ec.Player().setInput(userInput);
-				if (ec.debug > 1) {
-					Object.seal(player);
-				}
 			}
 			world.add(player);
 			
 			// ninja
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
-				if (ec.debug > 1) {
-					Object.seal(boss);
-				}
 			}
 			world.add(boss);
 
@@ -700,11 +694,40 @@
 	ec.bind(window.document, 'DOMContentLoaded', docReadyHandler, false);
 	ec.bind(window, 'load', docReadyHandler, false);
 
+	//polyfills
+	if (!Date.now) {
+		Date.now = function now() {return +(new Date());};
+	}
+
+	var prefixed = function(str, obj) {
+		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
+	};
+
+	// requestAnimationFrame polyfill by Erik Möller
+	// fixes from Paul Irish and Tino Zijdel
+	var requestAnimationFrame = window.requestAnimationFrame || prefixed('RequestAnimationFrame', window);
+	var cancelAnimationFrame = window.cancelAnimationFrame || prefixed('CancelAnimationFrame', window) || prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
+	if (!requestAnimationFrame) {
+		var lastTime = 0;
+		requestAnimationFrame = function(callback) {
+			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
+			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
+			lastTime = currTime + timeToCall;
+			return id;
+		};
+	}
+
+	var localStorage = window.localStorage ||
+		{
+			_data       : {},
+			setItem     : function(id, val) { return this._data[id] = String(val); },
+			getItem     : function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : undefined; },
+			removeItem  : function(id) { return delete this._data[id]; },
+			clear       : function() { return this._data = {}; }
+		};
+
 	// tests
-	!function() {
-		var prefixed = function(str, obj) {
-			return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
-		}
+	(function() {
 		var document = window.document;
 		ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
 		ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
@@ -716,7 +739,7 @@
 		ec.fullscreen = !!prefixed('cancelFullScreen', document);
 		ec.webaudio   = !!prefixed('AudioContext', window);
 		ec.gamepads   = !!prefixed('getGamepads', navigator);
-	}();
+	})();
 
 	ec.core.begin();
 

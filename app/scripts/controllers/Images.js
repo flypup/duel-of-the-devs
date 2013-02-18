@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var document = window.document;
 	
 	var _images = {};
 	var _cache = {};
@@ -45,7 +44,7 @@
 	ec.appendCache = function(id, image) {
 		if (ec.debug === 1) {ec.core.traceTime('appendCache '+id);}
 
-		var canvas = document.createElement('canvas');
+		var canvas = window.document.createElement('canvas');
 		canvas.width  = image.width;
 		canvas.height = image.height;
 		var context = canvas.getContext('2d');

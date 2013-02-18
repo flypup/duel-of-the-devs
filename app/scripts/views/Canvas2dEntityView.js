@@ -8,6 +8,9 @@
 
 	var Canvas2dEntityView = ec.Canvas2dEntityView = function() {
 		// TODO: create one class-type & instance per entity instance or type with spritesheet(s)
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Canvas2dEntityView.prototype;

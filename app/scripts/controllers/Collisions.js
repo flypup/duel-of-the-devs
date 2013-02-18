@@ -3,7 +3,11 @@
 
 	var ec = window.ec;
 
-	var Collisions = ec.Collisions = function() {};
+	var Collisions = ec.Collisions = function() {
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
+	};
 
 	//shape groups
 	Collisions.PLAYER = 1;

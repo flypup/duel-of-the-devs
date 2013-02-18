@@ -20,6 +20,10 @@
 		this.shape.setFriction(0.6);
 		
 		this.shape.collision_type = ec.Collisions.PROP;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Box.prototype;

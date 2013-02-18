@@ -3,14 +3,44 @@
 
 	var ec = window.ec;
 
-	var MapElement = ec.MapElement = function() {
+	var MapElement = ec.MapElement = function(element) {
+		// Base Props
+		ec.extend(this, {
+			name: '',
+			x: 0.0,
+			y: 0.0,
+			z: 0.0,
+			width: 0,
+			height: 0,
+			regX: 0,
+			regY: 0,
+			matrix: null,
+			mapType: null,
+			mass: 0,
+			mDepth: 0,
+			mHeight: 0,
+			mWidth: 0,
+			mZ: 0,
+			shape: null,
+			type: null,
+			image: null,
+			layerNum: 0,
+			visible: true,
+			body: null,
+			imageData: null,
+			sortBounds: {top:0, front:0, back:0, inited: false},
+			label: null
+		});
 
+		ec.copy(this, element);
+		this.init();
+		
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = MapElement.prototype;
-	proto.z = 0;
-	proto.depth = 0;
-	proto.layerNum = 0;
 
 	proto.init = function() {
 		// TODO: get rid of drawX,Y - should all work the same way
@@ -107,12 +137,12 @@
 
 	proto.getSortBounds = function() {
 		var bounds = this.sortBounds;
-		if (!bounds) {
-			bounds = this.sortBounds = {top:0, front:0, back:0};
+		if (!bounds.inited) {
+			bounds.inited = true;
 			bounds.top = this.z + this.depth;
 			bounds.back = this.y - this.mHeight;
-		if (this.mapType === 'entity') {
-			throw('entity sorting should not be handled by element instances');
+			if (this.mapType === 'entity') {
+				throw('entity sorting should not be handled by element instances');
 
 			} else if (this.shape === 'polygons' && this.shapes) {
 				var shapes = this.shapes;
@@ -135,24 +165,22 @@
 				}
 				console.log(this.mapType, this.name, 'yd', this.y+this.depth, 'r', this.regY, 'offsetY', offsetY);
 
-		} else if (this.mapType === 'wall') {
-				bounds.front = this.y;
-				//bounds.back = this.y;
-		} else if (this.mapType === 'steps') {
-				bounds.front = this.y;
-		} else if (this.mapType === 'floor') {
-				bounds.back = this.y + this.depth - this.mHeight/2;
-				bounds.front = bounds.back + this.mHeight;
-		} else if (this.mapType === 'parallax') {
-				bounds.front = -1; // TODO: parallax sorting and depth
-				bounds.back = -1;
-		} else {
-			//throw('unexpected element mapType: ' + this.mapType);
-			//shape
+			} else if (this.mapType === 'wall') {
+					bounds.front = this.y;
+					//bounds.back = this.y;
+			} else if (this.mapType === 'steps') {
+					bounds.front = this.y;
+					bounds.top = this.z;
+			} else if (this.mapType === 'floor') {
+					bounds.back = this.y + this.depth - this.mHeight/2;
+					bounds.front = bounds.back + this.mHeight;
+			} else if (this.mapType === 'parallax') {
+					bounds.front = -1; // TODO: parallax sorting and depth
+					bounds.back = -1;
+			} else {
+				//throw('unexpected element mapType: ' + this.mapType);
+				//shape
 				bounds.front = this.y + this.mHeight;
-			}
-			if (this.mapType === 'steps') {
-				bounds.top = this.z;
 			}
 		}
 		return bounds;

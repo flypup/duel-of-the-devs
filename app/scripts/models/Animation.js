@@ -16,6 +16,10 @@
 		this.index = -1;
 		this.tween = null;
 		this.update = this.nextTween;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Animation.prototype;

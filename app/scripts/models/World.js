@@ -9,6 +9,12 @@
 		this.time = 0;
 		this.entities = [];
 		this.elements = [];
+		this.space = null;
+		this.map = null;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	//shape layers
@@ -42,8 +48,9 @@
 			space.sleepingComponents.length = 0;
 			space.constraints.length = 0;
 			space.arbiters.length = 0;
-			delete this.space;
 		}
+		this.space = null;
+		this.map = null;
 	};
 
 	proto.setMap = function(data) {
@@ -108,10 +115,7 @@
 		if (element instanceof ec.MapElement) {
 			return element;
 		}
-		var mapElement = new ec.MapElement();
-		ec.extend(mapElement, element);
-		mapElement.init();
-		return mapElement;
+		return new ec.MapElement(element);
 	};
 
 	proto.addMapElementBody = function(mapElement) {

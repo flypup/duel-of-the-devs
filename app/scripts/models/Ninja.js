@@ -28,9 +28,6 @@
 		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
-		if (ec.debug > 1) {
-			Object.seal(this.attack);
-		}
 		this.depth = 64;
 		this.type = 'Ninja';
 		
@@ -40,6 +37,10 @@
 		this.fx = null;
 
 		this.hitPoints = 100;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Ninja.prototype;
@@ -63,9 +64,6 @@
 		// use ShadowClone class and prototype or something cool to inherit stuff
 		var pos = this.getPos();
 		var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.ShadowCloneInput());
-		if (ec.debug > 1) {
-			Object.seal(shadowClone);
-		}
 		shadowClone.isShadowClone = true;
 		shadowClone.master = this;
 		if (!this.shadowClones) {
@@ -93,9 +91,6 @@
 	
 	proto.puffSmoke = function() {
 		var puff = new ec.Puff(this.groupId);
-		if (ec.debug > 1) {
-			Object.seal(puff);
-		}
 		ec.world.add(puff);
 		this.fx = puff;
 	};
@@ -110,9 +105,6 @@
 						.setPos(pos.x, pos.y, pos.z + 64)
 						.setAngle(angle, angleVelocity)
 						.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
-		if (ec.debug > 1) {
-			Object.seal(throwingStar);
-		}
 		throwingStar.shape.group = this.groupId;
 		ec.world.add(throwingStar);
 	};

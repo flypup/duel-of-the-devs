@@ -29,6 +29,10 @@
 		this.pressed = false;
 		this.vx =
 		this.vy = 0;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	//coordinates are relative to a container of this size:

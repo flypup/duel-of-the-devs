@@ -14,6 +14,10 @@
 		this.resize(ec.width, ec.height, ec.pixelRatio);
 
 		window.document.body.appendChild( this.canvas );
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Canvas2dView.prototype;

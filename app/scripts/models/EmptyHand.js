@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var cp = window.cp;
 	
 	var EmptyHand = ec.EmptyHand = function(radius, mass) {
 		this.setBaseProperties();
@@ -26,6 +25,10 @@
 		this.pushDuration = 1000 * 5/60;
 		this.grabDuration = 1000 * 10/60;
 		this.punchDuration = this.pushDuration + this.grabDuration/2;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	EmptyHand.PASSIVE = 0;

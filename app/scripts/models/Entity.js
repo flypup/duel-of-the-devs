@@ -7,6 +7,9 @@
 
 	var Entity = ec.Entity = function Entity() {
 		this.setBaseProperties();
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	Entity.groupId = 1;
@@ -89,9 +92,6 @@
 
 		setInput: function(input) {
 			this.input = input;
-			if (ec.debug > 1) {
-				Object.seal(input);
-			}
 			return this;
 		},
 
@@ -298,7 +298,7 @@
 				}
 			}
 			// if (ec.debug > 1) {
-			// 	Object.seal(body);
+			//	Object.seal(body);
 			// }
 			return body;
 		},

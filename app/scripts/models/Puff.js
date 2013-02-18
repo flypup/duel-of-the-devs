@@ -18,6 +18,10 @@
 		
 		this.time =
 		this.duration = 500;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Puff.prototype;

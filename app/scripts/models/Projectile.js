@@ -2,7 +2,6 @@
 	'use strict';
 
 	var ec = window.ec;
-	var cp = window.cp;
 
 	var Projectile = ec.Projectile = function(radius, mass) {
 		this.setBaseProperties();
@@ -22,6 +21,10 @@
 		this.distanceSq = 0;
 		this.maxDistanceSq = 8000*8000;
 		this.inactive = 0;
+		
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Projectile.prototype;

@@ -23,6 +23,10 @@
 		this.viewport = {
 			l: 0, t: 0, r: 0, b: 0
 		};
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Canvas2dWorldView.prototype;

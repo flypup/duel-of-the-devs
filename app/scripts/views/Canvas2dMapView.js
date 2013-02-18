@@ -5,6 +5,10 @@
 
 	var Canvas2dMapView = ec.Canvas2dMapView = function() {
 		this.layers = [];
+		
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Canvas2dMapView.prototype;
@@ -72,7 +76,7 @@
 		if (!element.visible) {
 			return false;
 		}
-		if (element.width === undefined || this.intersects(element, viewport)) {
+		if (element.width === 0 || this.intersects(element, viewport)) {
 			context.save();
 			context.globalAlpha = element.alpha;
 			var matrix = element.matrix;

@@ -30,12 +30,13 @@
 		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
-		if (ec.debug > 1) {
-			Object.seal(this.attack);
-		}
 		this.depth = 64;
 		this.type = 'Player';
 
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
+		
 		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 

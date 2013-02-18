@@ -25,6 +25,10 @@
 				console.error('Web Audio API not supported');
 			}
 		}
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Sound.prototype;

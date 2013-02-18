@@ -9,6 +9,9 @@
 	var Formations = ec.Formations = function() {
 		this.positions = [];
 		//this.radialMove = 0;
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Formations.prototype;

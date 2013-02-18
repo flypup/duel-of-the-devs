@@ -9,12 +9,20 @@
 		this.mapName = data.map;
 		this.fps = this.data.useFrames ? this.data.fps : 1;
 		this.duration = this.calculateTime(data.duration);
+		this.time = 0;
+		this.complete = false;
+		this.animations = null;
+		//this.actors = null;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = Scene.prototype;
 
 	proto.init = function(actors) {
-		this.actors = actors;
+		//this.actors = actors;
 		this.time = 0;
 		this.complete = false;
 

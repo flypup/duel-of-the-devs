@@ -8,6 +8,10 @@
 		this.skipAfter = 3500;
 		
 		this.overlay = ec.getImage('img/ui/credits.png');
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	// TODO: Extend 2d Overlay/Layer View

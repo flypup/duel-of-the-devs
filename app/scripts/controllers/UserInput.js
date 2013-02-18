@@ -16,10 +16,7 @@
 		for (var i = 0; i < 17; i++) {
 			buttons[i] = 0;
 		}
-		var axes = this.axes = [];
-		for (i = 0; i < 4; i++) {
-			axes[i] = 0;
-		}
+		this.axes = [0, 0, 0, 0];
 
 		if (ec.gamepads) {
 			ec.bind(window, 'MozGamepadConnected', this.onGamepadConnect, false);
@@ -30,6 +27,14 @@
 		this.keyboardAxes1 = false;
 		this.keyboardAxes2 = false;
 		this.overlays = [];
+
+		this.width  = 0;
+		this.height = 0;
+		this.pixelRatio = 1.0;
+
+		if (ec.debug > 1) {
+			Object.seal(this);
+		}
 	};
 
 	var proto = UserInput.prototype;

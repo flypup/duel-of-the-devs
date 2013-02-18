@@ -12,8 +12,9 @@
 		this.clones = 0;
 
 		this.formations = new ec.Formations();
+		
 		if (ec.debug > 1) {
-			Object.seal(this.formations);
+			Object.seal(this);
 		}
 	};
 
