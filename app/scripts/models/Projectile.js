@@ -5,6 +5,8 @@
 	var cp = window.cp;
 
 	var Projectile = ec.Projectile = function(radius, mass) {
+		this.setBaseProperties();
+		
 		radius = radius || 12;
 		mass = mass || 2;
 

@@ -5,6 +5,8 @@
 	var cp = window.cp;
 	
 	var EmptyHand = ec.EmptyHand = function(radius, mass) {
+		this.setBaseProperties();
+		
 		radius = radius || 24;
 		mass = mass || 1;
 

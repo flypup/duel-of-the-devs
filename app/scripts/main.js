@@ -4,7 +4,7 @@
 	var ec = window.ec = {};
 	ec.version = '0.1.304';
 	ec.debug = 0;
-	
+
 	var world;
 	var collisions;
 	var maps;
@@ -227,12 +227,18 @@
 			if (!player) {
 				ec.player =
 				player = new ec.Player().setInput(userInput);
+				if (ec.debug > 1) {
+					Object.seal(player);
+				}
 			}
 			world.add(player);
 			
 			// ninja
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
+				if (ec.debug > 1) {
+					Object.seal(boss);
+				}
 			}
 			world.add(boss);
 
@@ -439,10 +445,9 @@
 				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
 
 				if (boss.state === 'dead') {
-					boss.decomposed = boss.decomposed || 0;
 					boss.decomposed += delta;
 					if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
-						delete boss.decomposed;
+						boss.decomposed = 0;
 						ec.core.rollCredits();
 						return;
 					}

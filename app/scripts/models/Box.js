@@ -7,6 +7,8 @@
 	var BOX_HEIGHT = 64;
 
 	var Box = ec.Box = function(mass, width, height) {
+		this.setBaseProperties();
+
 		width  = width  || BOX_WIDTH;
 		height = height || BOX_HEIGHT;
 		if (mass === undefined) {

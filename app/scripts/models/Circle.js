@@ -6,6 +6,8 @@
 	var RADIUS = 32;
 
 	var Circle = ec.Circle = function(mass, radius, height) {
+		this.setBaseProperties();
+		
 		if (height) {
 			radius = radius/2;
 		}

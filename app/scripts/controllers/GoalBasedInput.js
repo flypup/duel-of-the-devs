@@ -5,12 +5,7 @@
 	var cp = window.cp;
 
 	var GoalBasedInput = ec.GoalBasedInput = function() {
-		this.axes = [];
-		for (var i = 0; i < 4; i++) {
-			this.axes[i] = 0;
-		}
-		this.goal = null;
-		this.goalIndex = -1;
+		this.setBaseProperties();
 	};
 
 	var proto = GoalBasedInput.prototype;
@@ -21,6 +16,21 @@
 	// - Yes: goal met?
 	//      - Yes: set next goal
 	//      -  No: goal sub-steps (tasks)
+
+	proto.getBaseProperties = function() {
+		return {
+			axes: [0, 0, 0, 0],
+			goal: null,
+			goalIndex: -1,
+			targetPos: null,
+			targetAngle: null,
+			targetEntity: null
+		};
+	};
+
+	proto.setBaseProperties = function() {
+		ec.extend(this, this.getBaseProperties());
+	};
 
 	proto.poll = function(entity, delta) {
 		if (this.state === 'dead') {
@@ -110,7 +120,10 @@
 			this.completeTask();
 			return targetPos;
 		}
-		this.targetPos = ec.copy(targetPos, this.targetEntity.getPos());
+		var pos = this.targetEntity.getPos();
+		targetPos.x = pos.x;
+		targetPos.y = pos.y;
+		this.targetPos = targetPos;
 		return targetPos;
 	};
 

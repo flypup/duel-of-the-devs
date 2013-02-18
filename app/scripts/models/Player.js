@@ -12,6 +12,7 @@
 	ec.playerInteractions = -1;
 	
 	var Player = ec.Player = function() {
+		this.setBaseProperties();
 		this.groupId = ec.Entity.groupId++;
 
 		var radius = 32;
@@ -29,6 +30,9 @@
 		this.walkCount = 0;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
+		if (ec.debug > 1) {
+			Object.seal(this.attack);
+		}
 		this.depth = 64;
 		this.type = 'Player';
 
@@ -38,6 +42,11 @@
 	var proto = Player.prototype;
 	Player.ready = function() {
 		ec.extend(proto, ec.Entity.prototype);
+	};
+
+	proto.term = function() {
+		ec.Entity.prototype.term.apply(this);
+		this.attack = null;
 	};
 
 	proto.punch = function(time, world, delta) {

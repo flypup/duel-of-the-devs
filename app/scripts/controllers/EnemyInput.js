@@ -6,14 +6,15 @@
 	var v = cp.v;
 
 	var EnemyInput = ec.EnemyInput = function() {
-		this.axes = [];
-		for (var i = 0; i < 4; i++) {
-			this.axes[i] = 0;
-		}
-		this.goal = null;
-		this.goalIndex = -1;
+		this.setBaseProperties();
+
+		this.turns = 0;
+		this.clones = 0;
 
 		this.formations = new ec.Formations();
+		if (ec.debug > 1) {
+			Object.seal(this.formations);
+		}
 	};
 
 	var proto = EnemyInput.prototype;
@@ -80,7 +81,7 @@
 				//reached target
 				//console.log('moved to target');
 				this.completeTask();
-				var angle = this.targetPos.angle;
+				var angle = this.targetAngle;
 				if (angle) {
 					entity.body.a = angle;
 				} else {
@@ -201,7 +202,6 @@
 				this.completeTask();
 				return;
 			}
-			this.turns = this.turns || 0;
 			this.turns += 0.5;
 			entity.body.a += 0.5;
 			if (this.turns > 11) {
@@ -218,7 +218,6 @@
 		maxNumberOfClones = maxNumberOfClones || 7;
 		numberOfClonesToMake = numberOfClonesToMake || numberOfClonesToMake;
 		return function makeClonesTask(entity) {
-			this.clones = this.clones || 0;
 			if (++this.clones > numberOfClonesToMake || entity.getClones().length >= maxNumberOfClones) {
 				this.clones = 0;
 				this.completeTask();
@@ -298,9 +297,11 @@
 
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
-			formationPos.angle = pos.angle;
+			if (unitInput.targetPos === null) {
+				unitInput.targetPos = formationPos;
+			}
+			unitInput.targetAngle = pos.angle;
 
-			unitInput.targetPos = formationPos;
 			if (entity.isShadowClone) {
 				unitInput.setGoal({
 					name: 'move to',
@@ -324,9 +325,10 @@
 
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
-			formationPos.angle = pos.angle;
-
-			unitInput.targetPos = formationPos;
+			if (unitInput.targetPos === null) {
+				unitInput.targetPos = formationPos;
+			}
+			unitInput.targetAngle = pos.angle;
 			if (entity.isShadowClone) {
 				unitInput.setGoal({
 					name: 'move to',

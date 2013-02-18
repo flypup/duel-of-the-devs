@@ -6,6 +6,7 @@
 	var RADIUS = 50;
 
 	var Puff = ec.Puff = function(groupId) {
+		this.setBaseProperties();
 		this.groupId = groupId || ec.Entity.groupId++;
 
 		this.assignCircleShape(RADIUS, 1);

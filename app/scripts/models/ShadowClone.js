@@ -8,6 +8,8 @@
 	var RADIUS = 32;
 
 	var ShadowClone = ec.ShadowClone = function(entity) {
+		this.setBaseProperties();
+		
 		this.assignCircleShape(RADIUS, 1);
 		
 		this.shape.setElasticity(0);
