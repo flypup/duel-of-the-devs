@@ -100,7 +100,7 @@
 	};
 
 	proto.hit = function(arbiter, forceDamage) {//pushed
-		console.log('projectile hit');
+		console.log('Projectile HIT. Force:', forceDamage, 'arbiter:', arbiter);
 		this.startFall(forceDamage);
 	};
 

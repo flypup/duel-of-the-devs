@@ -136,7 +136,7 @@
 				this.body.vx *= 2;
 				this.body.vy *= 2;
 			}
-			console.log('PLAYER HIT', this, this.hitPoints);
+			console.log('PLAYER HIT. Energy:', energy, 'HP:', this.hitPoints, this);
 			return this;
 		},
 
