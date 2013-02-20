@@ -458,7 +458,7 @@
 				targetNearestEnemy,
 				faceOffTarget(360),
 				kageNoBunshin(8),
-				makeClones(8),
+				//makeClones(8),
 				clonesFormCircle(200),
 				idle(1500)
 				
@@ -476,7 +476,8 @@
 			tasks: [
 				targetNearestEnemyPos,
 				moveTo(100),
-				shuv()
+				shuv(),
+				kageNoBunshin(18)
 			]
 		},
 		scatter: {
@@ -509,10 +510,13 @@
 		goalTree.waitForClones,
 		goalTree.throwStars,
 		goalTree.formCircleWithLeader,
-		//goalTree.circleTarget,
+		goalTree.circleTarget,
 		//goalTree.scatter,
 		goalTree.formCircle,
+		goalTree.rush
+		//goalTree.attack // TODO: hand-to-hand combat
 		//goalTree.rush
+		//goalTree.attack // TODO: hand-to-hand combat
 	];
 
 /** MATH UTILS ***********************************/
