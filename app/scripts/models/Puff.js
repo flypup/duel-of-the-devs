@@ -24,26 +24,32 @@
 		}
 	};
 
-	var proto = Puff.prototype;
 	Puff.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(Puff.prototype, ec.Entity.prototype);
 	};
 
-	proto.step = function(delta) {
-		this.time -= delta;
-		if (this.time <= 0) {
-			this.time = 0;
-			ec.world.remove(this);
-			this.term();
-		}
-	};
-
-	proto.update = function(entity) {
-		if (this.time > 0) {
+	Puff.prototype = {
+		track: function(entity) {
 			var pos = entity.getPos();
 			this.setPos(pos.x, pos.y+1, pos.z+1);
 			this.setVelocity(entity.body.vx, entity.body.vy, 0);
+		},
+
+		step: function(delta) {
+			this.time -= delta;
+			if (this.time <= 0) {
+				this.time = 0;
+				ec.world.remove(this);
+				this.term();
+			}
+		},
+
+		update: function(entity) {
+			if (this.time > 0) {
+				this.track(entity);
+			}
 		}
 	};
+
 
 })(window);

@@ -43,203 +43,205 @@
 		}
 	};
 
-	var proto = Ninja.prototype;
 	Ninja.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(Ninja.prototype, ec.Entity.prototype);
 	};
 
-	proto.term = function() {
-		ec.Entity.prototype.term.apply(this);
-		this.attack = null;
-		this.shadowClones = null;
-		this.master = null;
-		this.fx = null;
-	};
+	Ninja.prototype = {
+		term: function() {
+			ec.Entity.prototype.term.apply(this);
+			this.attack = null;
+			this.shadowClones = null;
+			this.master = null;
+			this.fx = null;
+		},
 
-	proto.shadowClone = function() {
-		if (this.isShadowClone) {
-			console.error('shadow clone tried to clone itself!');
-			return;
-		}
-		// use ShadowClone class and prototype or something cool to inherit stuff
-		var pos = this.getPos();
-		var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.ShadowCloneInput());
-		shadowClone.isShadowClone = true;
-		shadowClone.master = this;
-		if (!this.shadowClones) {
-			this.shadowClones = [];
-		}
-		this.shadowClones.push(shadowClone);
-		ec.world.add(shadowClone);
-		this.puffSmoke();
-		shadowClone.puffSmoke();
-	};
-
-	proto.getClones = function() {
-	// get number of shadow clones, clear 'dead' clone refs
-		var shadowClones = this.shadowClones;
-		if (!shadowClones) {
-			shadowClones = this.shadowClones = [];
-		}
-		for (var i = shadowClones.length; i-- > 0;) {
-			if (shadowClones[i].state === 'dead') {
-				shadowClones.splice(i, 1);
-			}
-		}
-		return shadowClones;
-	};
-	
-	proto.puffSmoke = function() {
-		var puff = new ec.Puff(this.groupId);
-		ec.world.add(puff);
-		this.fx = puff;
-	};
-
-	proto.throwStar = function() {
-		var pos = this.getPos();
-		var angle = this.body.a;
-		var velocity = 800;
-		var angleVelocity = 20;
-
-		var throwingStar = new ec.Projectile()
-						.setPos(pos.x, pos.y, pos.z + 64)
-						.setAngle(angle, angleVelocity)
-						.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
-		throwingStar.shape.group = this.groupId;
-		ec.world.add(throwingStar);
-	};
-
-	proto.hit = function(arbiter, damage) {
-		var energy = (arbiter && arbiter.totalKE()) || 1000;
-		//console.log('HIT', this, 'KE', energy);
-		if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
-			this.state = 'hit';
+		shadowClone: function() {
 			if (this.isShadowClone) {
-				//hit a clone
-				this.hitTime = 400;
-				this.hitPoints = damage ? 0 : this.hitPoints;
-			} else {
-				//hit ninja
-				this.hitPoints -= damage;
-				this.hitTime = 600;
+				console.error('shadow clone tried to clone itself!');
+				return;
 			}
-			this.input.completeTask();
-			this.hitDuration = this.hitTime;
-			// apply impulse
-			this.body.w = energy/10000;
-			this.body.vx *= 2;
-			this.body.vy *= 2;
-		}
-		return this;
-	};
-
-	proto.updateFx = function(delta) {
-		if (this.fx) {
-			if (this.fx.time > 0) {
-				this.fx.update(this);
-			} else {
-				this.fx = null;
+			// use ShadowClone class and prototype or something cool to inherit stuff
+			var pos = this.getPos();
+			var shadowClone = new ec.Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ec.ShadowCloneInput());
+			shadowClone.isShadowClone = true;
+			shadowClone.master = this;
+			if (!this.shadowClones) {
+				this.shadowClones = [];
 			}
-		}
-	};
-
-	proto.step = function(delta) {
-		if (this.hitTime > 0) {
-			if (this.isShadowClone && this.hitTime === this.hitDuration && this.hitPoints === 0) {
-				this.puffSmoke();
-			}
-			this.hitTime -= delta;
-			//hit animation
-			if (this.hitTime <= 0) {
-				this.hitTime = 0;
-				if (this.hitPoints <= 0) {
-					this.state = 'dead';
-					if (this.isShadowClone) {
-						ec.world.remove(this);
-						this.term();
-					}
-				} else {
-					this.state = 'standing'; //getting up
-				}
-			}
-			this.updateFx();
-			return this;
-
-		} else if (this.isShadowClone && this.master.hitPoints <= 0) {
+			this.shadowClones.push(shadowClone);
+			ec.world.add(shadowClone);
 			this.puffSmoke();
-			this.hit(null, ec.world, 1);
+			shadowClone.puffSmoke();
+		},
 
-		} else if (this.state === 'dead') {
-			this.body.vx = 0;
-			this.body.vy = 0;
-			this.body.w *= 0.5;
-			this.updateFx();
-			return this;
-		}
-
-		this.input.poll(this, delta);
-
-		this.resetForces();
+		getClones: function() {
+		// get number of shadow clones, clear 'dead' clone refs
+			var shadowClones = this.shadowClones;
+			if (!shadowClones) {
+				shadowClones = this.shadowClones = [];
+			}
+			for (var i = shadowClones.length; i-- > 0;) {
+				if (shadowClones[i].state === 'dead') {
+					shadowClones.splice(i, 1);
+				}
+			}
+			return shadowClones;
+		},
 		
-		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
-			direction.x = this.input.axes[0];
-			direction.y = this.input.axes[1];
-			if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
-				if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
-					// normalize the vector
-					direction.mult(1/v.len(direction));
+		puffSmoke: function() {
+			var puff = new ec.Puff(this.groupId);
+			ec.world.add(puff);
+			this.fx = puff;
+			this.fx.track(this);
+		},
+
+		throwStar: function() {
+			var pos = this.getPos();
+			var angle = this.body.a;
+			var velocity = 800;
+			var angleVelocity = 20;
+
+			var throwingStar = new ec.Projectile()
+							.setPos(pos.x, pos.y, pos.z + 64)
+							.setAngle(angle, angleVelocity)
+							.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
+			throwingStar.shape.group = this.groupId;
+			ec.world.add(throwingStar);
+		},
+
+		hit: function(arbiter, damage) {
+			var energy = (arbiter && arbiter.totalKE()) || 1000;
+			//console.log('HIT', this, 'KE', energy);
+			if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
+				this.state = 'hit';
+				if (this.isShadowClone) {
+					//hit a clone
+					this.hitTime = 400;
+					this.hitPoints = damage ? 0 : this.hitPoints;
+				} else {
+					//hit ninja
+					this.hitPoints -= damage;
+					this.hitTime = 600;
 				}
+				this.input.completeTask();
+				this.hitDuration = this.hitTime;
+				// apply impulse
+				this.body.w = energy/10000;
+				this.body.vx *= 2;
+				this.body.vy *= 2;
+			}
+			return this;
+		},
 
-				this.state = 'walking';
-
-				// console.log(this.input.axes, direction.x, direction.y);
-				// console.log('v', this.body.vx, this.body.vy);
-
-				direction.mult(this.speed*1000/delta);
-				this.body.activate();
-				this.body.vx += direction.x;
-				this.body.vy -= direction.y;
-				this.body.vx *= 0.5;
-				this.body.vy *= 0.5;
-				//this.body.applyForce(direction, cp.vzero);
-				// direction.mult(this.speed);
-				// this.body.applyImpulse(direction, cp.vzero);
-
-				if (delta) {
-					var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
-					this.walkCount += Math.max(0.15, velocity);
+		updateFx: function(delta) {
+			if (this.fx) {
+				if (this.fx.time > 0) {
+					this.fx.update(this);
+				} else {
+					this.fx = null;
 				}
-				
-				// TODO: tween angular motion
-				this.setAngle(direction, 0);
+			}
+		},
 
-			} else {
-				this.state = 'standing';
-				
+		step: function(delta) {
+			if (this.hitTime > 0) {
+				if (this.isShadowClone && this.hitTime === this.hitDuration && this.hitPoints === 0) {
+					this.puffSmoke();
+				}
+				this.hitTime -= delta;
+				//hit animation
+				if (this.hitTime <= 0) {
+					this.hitTime = 0;
+					if (this.hitPoints <= 0) {
+						this.state = 'dead';
+						if (this.isShadowClone) {
+							ec.world.remove(this);
+							this.term();
+						}
+					} else {
+						this.state = 'standing'; //getting up
+					}
+				}
+				this.updateFx();
+				return this;
+
+			} else if (this.isShadowClone && this.master.hitPoints <= 0) {
+				this.puffSmoke();
+				this.hit(null, ec.world, 1);
+
+			} else if (this.state === 'dead') {
 				this.body.vx = 0;
 				this.body.vy = 0;
-				this.body.w *= 0.99;
-				// if(!this.body.isSleeping() && this.body.space) {
-				//	this.body.space.deactivateBody(this.body);
-				// }
+				this.body.w *= 0.5;
+				this.updateFx();
+				return this;
 			}
-		}
-		intent.x =  this.input.axes[2];
-		intent.y = -this.input.axes[3];
-		if (abs(intent.x) > 0.1 || abs(intent.y) > 0.1) {
-			//if (abs(intent.x) > 0.7 || abs(intent.y) > 0.7) {
-			// normalize the vector
-			intent.mult(1/v.len(intent));
-			//}
 
-			//this.punch(ec.world.time, ec.world, delta);
-		} else {
-			intent.x = 0;
-			intent.y = 0;
-		}
+			this.input.poll(this, delta);
 
-		this.updateFx();
-		return this;
+			this.resetForces();
+			
+			if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
+				direction.x = this.input.axes[0];
+				direction.y = this.input.axes[1];
+				if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
+					if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
+						// normalize the vector
+						direction.mult(1/v.len(direction));
+					}
+
+					this.state = 'walking';
+
+					// console.log(this.input.axes, direction.x, direction.y);
+					// console.log('v', this.body.vx, this.body.vy);
+
+					direction.mult(this.speed*1000/delta);
+					this.body.activate();
+					this.body.vx += direction.x;
+					this.body.vy -= direction.y;
+					this.body.vx *= 0.5;
+					this.body.vy *= 0.5;
+					//this.body.applyForce(direction, cp.vzero);
+					// direction.mult(this.speed);
+					// this.body.applyImpulse(direction, cp.vzero);
+
+					if (delta) {
+						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
+						this.walkCount += Math.max(0.15, velocity);
+					}
+					
+					// TODO: tween angular motion
+					this.setAngle(direction, 0);
+
+				} else {
+					this.state = 'standing';
+					
+					this.body.vx = 0;
+					this.body.vy = 0;
+					this.body.w *= 0.99;
+					// if(!this.body.isSleeping() && this.body.space) {
+					//	this.body.space.deactivateBody(this.body);
+					// }
+				}
+			}
+			intent.x =  this.input.axes[2];
+			intent.y = -this.input.axes[3];
+			if (abs(intent.x) > 0.1 || abs(intent.y) > 0.1) {
+				//if (abs(intent.x) > 0.7 || abs(intent.y) > 0.7) {
+				// normalize the vector
+				intent.mult(1/v.len(intent));
+				//}
+
+				//this.punch(ec.world.time, ec.world, delta);
+			} else {
+				intent.x = 0;
+				intent.y = 0;
+			}
+
+			this.updateFx();
+			return this;
+		}
 	};
 
 })(window);
