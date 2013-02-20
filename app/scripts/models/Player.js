@@ -33,6 +33,8 @@
 		this.depth = 64;
 		this.type = 'Player';
 
+		this.hitPoints = 100;
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
@@ -40,172 +42,215 @@
 		ec.core.trackCustom(1, 'Player Interacted', 'No', 2);
 	};
 
-	var proto = Player.prototype;
 	Player.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(Player.prototype, ec.Entity.prototype);
 	};
 
-	proto.term = function() {
-		ec.Entity.prototype.term.apply(this);
-		this.attack = null;
-	};
+	Player.prototype = {
 
-	proto.punch = function(time, world, delta) {
-		if (this.passive()) {
-			return;
-		}
-		var attack = this.attack;
-		if (attack.shape.group === 0) {
-			attack.shape.group = this.groupId;
-			this.attack = attack;
-			//world.space.addConstraint(new cp.GrooveJoint(this.body, attack.body, v(40, 0), v(80 , 0), v(0,0)));
-		}
-		if (attack.phase > ec.EmptyHand.PASSIVE) {
-			//console.log('punch in progress', attack.time, 'now', time, 'dur', punchDuration);
-			return;
-		}
-		// restart attack
-		if (world.contains(attack)) {
-			world.remove(attack);
-		}
-		attack.time = 0;
-		attack.startTime = time;
-		attack.phase = ec.EmptyHand.PUSHING;
-		var pos = this.getPos();
-		attack.setPos(pos.x, pos.y, pos.z);
+		term: function() {
+			ec.Entity.prototype.term.apply(this);
+			this.attack = null;
+		},
 
-		// face direction of punch
-		// TODO: tween angular motion
-		this.setAngle(pushpull, 0);
-		attack.setAngle(pushpull, 0);
+		punch: function(time, world, delta) {
+			if (this.passive()) {
+				return;
+			}
+			var attack = this.attack;
+			if (attack.shape.group === 0) {
+				attack.shape.group = this.groupId;
+				this.attack = attack;
+				//world.space.addConstraint(new cp.GrooveJoint(this.body, attack.body, v(40, 0), v(80 , 0), v(0,0)));
+			}
+			if (attack.phase > ec.EmptyHand.PASSIVE) {
+				//console.log('punch in progress', attack.time, 'now', time, 'dur', punchDuration);
+				return;
+			}
+			// restart attack
+			if (world.contains(attack)) {
+				world.remove(attack);
+			}
+			attack.time = 0;
+			attack.startTime = time;
+			attack.phase = ec.EmptyHand.PUSHING;
+			var pos = this.getPos();
+			attack.setPos(pos.x, pos.y, pos.z);
 
-		// slow down while punching
-		var movementFriction = 0.75;
-		this.body.vx *= movementFriction;
-		this.body.vy *= movementFriction;
-		
-		// apply impulse to attack
-		
-		attack.resetForces();
+			// face direction of punch
+			// TODO: tween angular motion
+			this.setAngle(pushpull, 0);
+			attack.setAngle(pushpull, 0);
 
-		attack.body.activate();
-		var force = v.mult(pushpull, this.speed*1000/delta);
-		attack.body.vx =  force.x + direction.x * movementFriction;
-		attack.body.vy = -force.y - direction.y * movementFriction;
+			// slow down while punching
+			var movementFriction = 0.75;
+			this.body.vx *= movementFriction;
+			this.body.vy *= movementFriction;
+			
+			// apply impulse to attack
+			
+			attack.resetForces();
 
-		//attack.body.applyImpulse(attack.force, cp.vzero);
+			attack.body.activate();
+			var force = v.mult(pushpull, this.speed*1000/delta);
+			attack.body.vx =  force.x + direction.x * movementFriction;
+			attack.body.vy = -force.y - direction.y * movementFriction;
 
-		world.add(attack);
+			//attack.body.applyImpulse(attack.force, cp.vzero);
 
-		//console.log('punching');
-	};
+			world.add(attack);
 
-	proto.attackEnd = function(time, world) {
-		var attack = this.attack;
-		attack.time = 0;
-		attack.startTime = -1;
-		attack.phase = ec.EmptyHand.PASSIVE;
-		if (world.contains(attack)) {
-			world.remove(attack);
-		}
-		// TODO: short cool down
-		if (ec.playerInteractions === 2) {
-			ec.playerInteractions = 3;
-			ec.core.userPlaying();
-		}
-	};
+			//console.log('punching');
+		},
 
-	proto.passive = function() {
-		return pushpull.x === 0 && pushpull.y === 0;
-	};
+		attackEnd: function(time, world) {
+			var attack = this.attack;
+			attack.time = 0;
+			attack.startTime = -1;
+			attack.phase = ec.EmptyHand.PASSIVE;
+			if (world.contains(attack)) {
+				world.remove(attack);
+			}
+			// TODO: short cool down
+			if (ec.playerInteractions === 2) {
+				ec.playerInteractions = 3;
+				ec.core.userPlaying();
+			}
+		},
 
-	proto.step = function(delta) {
-		this.input.poll(this, delta);
+		passive: function() {
+			return pushpull.x === 0 && pushpull.y === 0;
+		},
 
-		this.resetForces();
+		hit: function(arbiter, damage) {
+			var energy = (arbiter && arbiter.totalKE()) || 1000;
+			//console.log('HIT', this, 'KE', energy);
+			if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
+				this.state = 'hit';
+				damage = damage || 10;
+				this.hitPoints -= damage;
+				this.hitTime = 600;
+				this.hitDuration = this.hitTime;
+				// apply impulse
+				this.body.w = energy/10000;
+				this.body.vx *= 2;
+				this.body.vy *= 2;
+			}
+			console.log('PLAYER HIT', this, this.hitPoints);
+			return this;
+		},
 
-		this.attack.entityStep(ec.world.time, ec.world, this);
-
-		if (ec.playerInteractions === -1) {
-			ec.playerInteractions = 0;
-			ec.core.userStarted();
-		}
-
-		if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
-			direction.x = this.input.axes[0];
-			direction.y = this.input.axes[1];
-			if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
-				if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
-					// normalize the vector
-					direction.mult(1/v.len(direction));
+		step: function(delta) {
+			if (this.hitTime > 0) {
+				this.hitTime -= delta;
+				//hit animation
+				if (this.hitTime <= 0) {
+					this.hitTime = 0;
+					if (this.hitPoints <= 0) {
+						this.state = 'dead';
+					} else {
+						this.state = 'standing'; //getting up
+					}
 				}
+				//this.updateFx();
+				return this;
 
-				this.state = 'walking';
+			} else if (this.state === 'dead') {
+				// this.body.vx = 0;
+				// this.body.vy = 0;
+				// this.body.w *= 0.5;
+				// //this.updateFx();
+				// return this;
+			}
 
-				// console.log(this.input.axes, direction.x, direction.y);
-				// console.log('v', this.body.vx, this.body.vy);
+			this.input.poll(this, delta);
 
-				direction.mult(this.speed*1000/delta);
-				this.body.activate();
-				this.body.vx += direction.x;
-				this.body.vy -= direction.y;
-				this.body.vx *= 0.5;
-				this.body.vy *= 0.5;
-				//this.body.applyForce(direction, cp.vzero);
-				// direction.mult(this.speed);
-				// this.body.applyImpulse(direction, cp.vzero);
+			this.resetForces();
 
-				if (delta) {
-					var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
-					this.walkCount += Math.max(0.15, velocity);
-				}
+			this.attack.entityStep(ec.world.time, ec.world, this);
 
-				// TODO: tween angular motion
-				this.setAngle(direction, 0);
+			if (ec.playerInteractions === -1) {
+				ec.playerInteractions = 0;
+				ec.core.userStarted();
+			}
 
-				if (ec.playerInteractions === 0) {
-					ec.playerInteractions = 1;
-					ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
-				}
+			if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
+				direction.x = this.input.axes[0];
+				direction.y = this.input.axes[1];
+				if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
+					if (abs(direction.x) > 0.7 || abs(direction.y) > 0.7) {
+						// normalize the vector
+						direction.mult(1/v.len(direction));
+					}
 
-			} else {
-				this.state = 'standing';
-				this.walkCount = 0;
-				this.body.vx = 0;
-				this.body.vy = 0;
-				this.body.w *= 0.99;
-				// if(!this.body.isSleeping() && this.body.space) {
-				//	this.body.space.deactivateBody(this.body);
-				// }
+					this.state = 'walking';
 
-				if (ec.playerInteractions === 1) {
-					ec.playerInteractions = 2;
-					ec.core.userReady();
+					// console.log(this.input.axes, direction.x, direction.y);
+					// console.log('v', this.body.vx, this.body.vy);
+
+					direction.mult(this.speed*1000/delta);
+					this.body.activate();
+					this.body.vx += direction.x;
+					this.body.vy -= direction.y;
+					this.body.vx *= 0.5;
+					this.body.vy *= 0.5;
+					//this.body.applyForce(direction, cp.vzero);
+					// direction.mult(this.speed);
+					// this.body.applyImpulse(direction, cp.vzero);
+
+					if (delta) {
+						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
+						this.walkCount += Math.max(0.15, velocity);
+					}
+
+					// TODO: tween angular motion
+					this.setAngle(direction, 0);
+
+					if (ec.playerInteractions === 0) {
+						ec.playerInteractions = 1;
+						ec.core.trackCustom(1, 'Player Interacted', 'Yes', 2);
+					}
+
+				} else {
+					this.state = 'standing';
+					this.walkCount = 0;
+					this.body.vx = 0;
+					this.body.vy = 0;
+					this.body.w *= 0.99;
+					// if(!this.body.isSleeping() && this.body.space) {
+					//	this.body.space.deactivateBody(this.body);
+					// }
+
+					if (ec.playerInteractions === 1) {
+						ec.playerInteractions = 2;
+						ec.core.userReady();
+					}
 				}
 			}
-		}
-		pushpull.x = this.input.axes[2];
-		pushpull.y = this.input.axes[3];
-		if (this.input.buttons[0] > 0) {
-			//v.forangle(this.body.a);
-			pushpull.x = Math.cos(this.body.a);
-			pushpull.y = -Math.sin(this.body.a);
-		}
-		if (abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
-			//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
-			// normalize the vector
-			pushpull.mult(1/v.len(pushpull));
-			//}
+			pushpull.x = this.input.axes[2];
+			pushpull.y = this.input.axes[3];
+			if (this.input.buttons[0] > 0) {
+				//v.forangle(this.body.a);
+				pushpull.x = Math.cos(this.body.a);
+				pushpull.y = -Math.sin(this.body.a);
+			}
+			if (abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
+				//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
+				// normalize the vector
+				pushpull.mult(1/v.len(pushpull));
+				//}
 
-			this.punch(ec.world.time, ec.world, delta);
-			this.state = 'punching';
+				this.punch(ec.world.time, ec.world, delta);
+				this.state = 'punching';
 
-		} else {
-			pushpull.x = 0;
-			pushpull.y = 0;
+			} else {
+				pushpull.x = 0;
+				pushpull.y = 0;
+			}
+
+			return this;
 		}
-
-		return this;
 	};
+	
 
 })(window);
