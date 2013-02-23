@@ -3,3 +3,4 @@ art/sprite_minimonk.js
 art/sprite_minimonk.png
 dist
 node_modules
+*breaks.json
