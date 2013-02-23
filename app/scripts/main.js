@@ -123,7 +123,7 @@
 			if (!sound) {
 				sound = new ec.Sound();
 				// TODO: separate music and sound effect volume
-				sound.setVolume(ec.core.getLocal('soundVolume', 0, parseFloat));
+				sound.setVolume(ec.core.getLocal('soundVolume', 0.5, parseFloat));
 			}
 			ec.sound = sound;
 
@@ -469,6 +469,7 @@
 			console.log('pause');
 			paused = true;
 			view.pause();
+			sound.pause();
 			ec.allowPinchZoom();
 			userInput.clearKeys();
 		},
@@ -477,6 +478,7 @@
 			console.log('resume');
 			paused = false;
 			view.resume();
+			sound.resume();
 			ec.preventPinchZoom();
 		},
 
