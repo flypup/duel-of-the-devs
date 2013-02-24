@@ -35,7 +35,10 @@ module.exports = function (grunt) {
                     '{.tmp,<%= yeoman.app %>}/styles/*.css',
                     '{.tmp,<%= yeoman.app %>}/scripts/*.js',
                     '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
-                    '<%= yeoman.app %>/images/*.{png,jpg,jpeg}'
+                    '{.tmp,<%= yeoman.app %>}/data/**/*.js',
+                    '{.tmp,<%= yeoman.app %>}/components/**/*.js',
+                    '<%= yeoman.app %>/img/*.{png,jpg,jpeg}',
+                    '<%= yeoman.app %>/audio/*.{m4a,ogg}'
                 ],
                 tasks: ['livereload']
             }
@@ -90,8 +93,8 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%= yeoman.app %>/scripts/*.js',
-                '<%= yeoman.app %>/scripts/**/*.js',
+                // '<%= yeoman.app %>/scripts/*.js',
+                // '<%= yeoman.app %>/scripts/**/*.js',
                 'test/spec/*.js'
             ]
         },
@@ -103,26 +106,26 @@ module.exports = function (grunt) {
                 }
             }
         },
-        coffee: {
-            dist: {
-                files: {
-                    '.tmp/scripts/coffee.js': '<%= yeoman.app %>/scripts/*.coffee'
-                }
-            },
-            test: {
-                files: [{
-                    expand: true,
-                    cwd: '.tmp/spec',
-                    src: '*.coffee',
-                    dest: 'test/spec'
-                }]
-            }
-        },
+        // coffee: {
+        //     dist: {
+        //         files: {
+        //             '.tmp/scripts/coffee.js': '<%= yeoman.app %>/scripts/*.coffee'
+        //         }
+        //     },
+        //     test: {
+        //         files: [{
+        //             expand: true,
+        //             cwd: '.tmp/spec',
+        //             src: '*.coffee',
+        //             dest: 'test/spec'
+        //         }]
+        //     }
+        // },
         // compass: {
         //     options: {
         //         sassDir: '<%= yeoman.app %>/styles',
         //         cssDir: '.tmp/styles',
-        //         imagesDir: '<%= yeoman.app %>/images',
+        //         imagesDir: '<%= yeoman.app %>/img',
         //         javascriptsDir: '<%= yeoman.app %>/scripts',
         //         fontsDir: '<%= yeoman.app %>/styles/fonts',
         //         importPath: 'app/components',
@@ -145,8 +148,17 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     '<%= yeoman.dist %>/scripts/main.js': [
-                        '.tmp/scripts/*.js',
+                        //'.tmp/scripts/*.js',
                         '<%= yeoman.app %>/scripts/*.js'
+                    ],
+                    '<%= yeoman.dist %>/data/scenes/enter_the_ninja.js': [
+                        '<%= yeoman.app %>/data/scenes/enter_the_ninja.js'
+                    ],
+                    '<%= yeoman.dist %>/data/courtyard/data.js': [
+                        '<%= yeoman.app %>/data/courtyard/data.js'
+                    ],
+                    '<%= yeoman.dist %>/data/testmap/data.js': [
+                        '<%= yeoman.app %>/data/testmap/data.js'
                     ],
                 }
             }
@@ -168,9 +180,9 @@ module.exports = function (grunt) {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: '<%= yeoman.app %>/images',
-                    src: '*.{png,jpg,jpeg}',
-                    dest: '<%= yeoman.dist %>/images'
+                    cwd: '<%= yeoman.app %>/img',
+                    src: '**/*.{png,jpg,jpeg}',
+                    dest: '<%= yeoman.dist %>/img'
                 }]
             }
         },
@@ -214,7 +226,9 @@ module.exports = function (grunt) {
                     dest: '<%= yeoman.dist %>',
                     src: [
                         '*.{ico,txt}',
-                        '.htaccess'
+                        '.htaccess',
+                        'audio/*.{m4a,ogg}',
+                        'data/**/*'
                     ]
                 }]
             }
