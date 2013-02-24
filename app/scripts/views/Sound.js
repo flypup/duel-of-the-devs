@@ -39,7 +39,7 @@
 			},
 			strikes: {
 				name: 'strikes',
-				urls: ['audio/strikes.m4a', 'strikes/steps.ogg'],
+				urls: ['audio/strikes.m4a', 'audio/strikes.ogg'],
 				sprites: {
 					strike1: [0, 18400/48000],
                     strike2: [18208/48000, 13210/48000],
@@ -85,24 +85,115 @@
 		};
 		this.buffers = {};
 		this.sources = {};
+
+		var context;
 		if (ec.webaudio) {
 			try {
-				var context;
 				if (window.AudioContext) {
 					context = new window.AudioContext();
 				} else if (window.webkitAudioContext) {
 					context = new window.webkitAudioContext();
 				}
-				if (context) {
-					this.gainNode = context.createGainNode();
-					this.gainNode.gain.value = this.volume;
-					this.gainNode.connect(context.destination);
-					this.context = context;
-				}
 			} catch(e) {
 				console.error('Web Audio API not supported');
 			}
 		}
+
+		if (!context) {
+			ec.webaudio = false;
+
+			// Web Audio API Polyfill
+			var BufferSourcePolyfill = function() {
+				ec.extend(this, {
+					audio: new Audio(),
+					buffer: null,
+					loop: false,
+					gain: {value: 1},
+					playbackState: 0
+				});
+			};
+			BufferSourcePolyfill.prototype = {
+				connect: function(node){
+					this.gain = node.gain || this.gain;
+					context.pool.push(this);
+				},
+				disconnect: function(){
+					var index = context.pool.indexOf(this);
+					if (index > -1) {
+						context.pool.splice(index, 1);
+					}
+					this.audio = null;
+					this.playbackState = 3;
+				},
+				noteGrainOn: function(i, pos, duration){
+					i = 0;
+					var audio = this.audio;
+					audio.id = Date.now() + '';
+					audio.src = this.buffer.url;
+					audio.preload = 'auto';
+					audio.volume = this.gain.value * ec.sound.volume;
+					audio.loop = this.loop;
+					this.playbackState = 1;
+					var self = this;
+					var ended = function() {
+						audio.removeEventListener('ended', ended, false);
+						audio.removeEventListener('paused', ended, false);
+						self.disconnect();
+					};
+					var playthrough = function() {
+						//pos, duration
+						audio.currentTime = pos;
+						audio.play();
+						self.playbackState = self.PLAYING_STATE;
+						if (!self.loop) {
+							audio.addEventListener('ended', ended, false);
+							audio.addEventListener('paused', ended, false);
+						}
+						if (duration > 0) {
+							setTimeout(function() {
+								self.noteOff(0);
+							}, duration * 1000);
+						}
+						audio.removeEventListener('canplay', playthrough, false);
+					};
+					audio.addEventListener('canplay', playthrough, false);
+					audio.load();
+				},
+				noteOn: function(i){
+					this.noteGrainOn(i, 0, 0);
+				},
+				noteOff: function(i) {
+					i = 0;
+					if (this.audio) {
+						this.audio.pause();
+					}
+					this.disconnect();
+				},
+				PLAYING_STATE: 2
+			};
+			context = {
+				pool: [],
+				destination: null,
+				createBufferSource: function() {
+					return new BufferSourcePolyfill();
+				},
+				createGainNode: function() {
+					return {
+						gain: {
+							value: 1
+						},
+						connect: function(){},
+						disconnect: function(){}
+					};
+				}
+			};
+			// end Web Audio API Polyfill
+		}
+
+		this.gainNode = context.createGainNode();
+		this.gainNode.gain.value = this.volume;
+		this.gainNode.connect(context.destination);
+		this.context = context;
 
 		if (ec.debug > 1) {
 			Object.seal(this);
@@ -188,7 +279,7 @@
 					// instance of sound may be playing, but we're going to play a new one
 					// TODO:  resource.maxInstances = 5
 					if (resource.maxInstances === 1 && source.playbackState > 0) {
-
+						return;
 					}
 				}
 				source = this.sources[resource.name] = this.context.createBufferSource();
@@ -258,8 +349,6 @@
 
 		loadSound: function(resource, autoPlay) {
 			if (!resource.state) {
-				var context = this.context;
-				var request = new XMLHttpRequest();
 				
 				var url = null;
 				for (var i=0; i<resource.urls.length; i++) {
@@ -269,9 +358,8 @@
 						break;
 					}
 				}
+
 				resource.state = 1;
-				request.open('GET', url, true);
-				request.responseType = 'arraybuffer';
 
 				var soundLoaded = ec.delegate(this, function(buffer) {
 					this.buffers[resource.name] = buffer;
@@ -280,6 +368,18 @@
 						this.playSound(resource);
 					}
 				});
+
+				if (ec.webaudio === false) {
+					// TODO: use polyfill
+					var fakeBuffer = {url: url};
+					soundLoaded(fakeBuffer);
+					return;
+				}
+
+				var context = this.context;
+				var request = new XMLHttpRequest();
+				request.open('GET', url, true);
+				request.responseType = 'arraybuffer';
 
 				// Decode asynchronously
 				request.onload = function() {
