@@ -58,3 +58,21 @@ div, canvas{
 	}
 }
 
+
+/* Windows 8 */
+
+@media screen and (-ms-view-state: full-screen) {
+	
+}
+
+@media screen and (-ms-view-state: device-portrait) {
+	
+}
+
+@media screen and (-ms-view-state: snapped) {
+	
+}
+
+@media screen and (-ms-view-state: fill) {
+	
+}
