@@ -97,17 +97,20 @@
 		},
 
 		throwStar: function() {
-			var pos = this.getPos();
-			var angle = this.body.a;
-			var velocity = 800;
-			var angleVelocity = 20;
+			if (this.state !== 'hit' && this.state !== 'dead') {
+				var pos = this.getPos();
+				var angle = this.body.a;
+				var velocity = 800;
+				var angleVelocity = 20;
 
-			var throwingStar = new ec.Projectile()
-							.setPos(pos.x, pos.y, pos.z + 64)
-							.setAngle(angle, angleVelocity)
-							.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
-			throwingStar.shape.group = this.groupId;
-			ec.world.add(throwingStar);
+				var throwingStar = new ec.Projectile()
+								.setPos(pos.x, pos.y, pos.z + 64)
+								.setAngle(angle, angleVelocity)
+								.setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
+				throwingStar.shape.group = this.groupId;
+				ec.world.add(throwingStar);
+				//this.state = 'throwing'; // can be walking or standing
+			}
 		},
 
 		hit: function(arbiter, damage) {

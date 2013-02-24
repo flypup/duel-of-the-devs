@@ -125,6 +125,9 @@
 				// TODO: separate music and sound effect volume
 				sound.setVolume(ec.core.getLocal('soundVolume', 0.5, parseFloat));
 				sound.loadSound(sound.sounds.game);
+				sound.loadSound(sound.sounds.stars);
+				sound.loadSound(sound.sounds.strikes);
+				sound.loadSound(sound.sounds.hits);
 			}
 			ec.sound = sound;
 

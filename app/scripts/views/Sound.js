@@ -6,6 +6,7 @@
 	var Sound = ec.Sound = function() {
 		this.codecs = testAudio();
 		this.volume = 1.0;
+		this.paused = false;
 		this.sounds = { //resources
 			game: {
 				name: 'game',
@@ -52,7 +53,7 @@
                     strike10: [200840/48000, 17173/48000]
 				},
 				maxInstances: 3,
-				//volume: 0.1,
+				volume: 0.6,
 				state: 0
 			},
 			hits: {
@@ -67,7 +68,18 @@
                     hit6: [116292/48000, 21496/48000]
 				},
 				maxInstances: 5,
-				//volume: 0.1,
+				volume: 0.5,
+				state: 0
+			},
+			stars: {
+				name: 'stars',
+				urls: ['audio/stars.m4a', 'audio/stars.ogg'],
+				sprites: {
+					star1: [0, 18094/48000],
+                    star2: [18094/48000, 22488/48000]
+				},
+				maxInstances: 6,
+				volume: 0.2,
 				state: 0
 			}
 		};
@@ -138,18 +150,23 @@
 
 		// global commands
 		pause: function() {
-			this.pauseSound(this.sounds.game);
-			this.pauseSound(this.sounds.ending);
+			this.paused = true;
+			for (var prop in this.sources) {
+				this.pauseSound(this.sounds[prop]);
+			}
 		},
 
 		resume: function() {
-			this.resumeSound(this.sounds.game);
-			this.resumeSound(this.sounds.ending);
+			this.paused = false;
+			for (var prop in this.sources) {
+				this.resumeSound(this.sounds[prop]);
+			}
 		},
 
 		stop: function() {
-			this.stopSound(this.sounds.ending);
-			this.stopSound(this.sounds.game);
+			for (var prop in this.sources) {
+				this.stopSound(this.sounds[prop]);
+			}
 		},
 
 		setVolume: function(value) {
@@ -161,7 +178,7 @@
 
 		//resource / instance specific commands
 		playSound: function(resource, spriteName) {
-			if (this.volume < 0) {
+			if (this.paused || this.volume < 0) {
 				return;
 			}
 			var buffer = this.buffers[resource.name];
@@ -213,6 +230,10 @@
 		},
 
 		resumeSound: function(resource) {
+			// TODO: handle resuming sprites (which sprite span)
+			if (resource.sprites) {
+				return;
+			}
 			var source = this.sources[resource.name];
 			if (source) {
 				if (source.playbackState !== source.PLAYING_STATE) {
@@ -222,8 +243,6 @@
 					resumedSource.connect(this.gainNode);
 					resumedSource.noteOn(0);
 				}
-			//} else {
-			//	this.playSound(resource);
 			}
 		},
 

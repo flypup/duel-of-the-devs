@@ -78,6 +78,12 @@
 			frame = floor(entity.body.a * frames / pi) % frames;
 			o = spriteSheet.getFrame(frame);
 
+			// SOUND //
+			if (entity.lifetime === 0) {
+				ec.sound.playSound(ec.sound.sounds.stars, '*');
+			}
+			entity.lifetime += delta;
+			
 		} else if (entity instanceof ec.Player) {
 			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
 			// SOUND //

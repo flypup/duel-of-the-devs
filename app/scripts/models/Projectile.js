@@ -21,7 +21,8 @@
 		this.distanceSq = 0;
 		this.maxDistanceSq = 8000*8000;
 		this.inactive = 0;
-		
+		this.lifetime = 0;
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
