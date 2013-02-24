@@ -286,7 +286,13 @@
 					resource.state = 2;
 					context.decodeAudioData(request.response, soundLoaded, this.onError);
 				};
-				request.send();
+				try {
+					request.send();
+				} catch (err) {
+					console.log(err);
+					resource.state = 0;
+				}
+				
 			}
 		},
 
