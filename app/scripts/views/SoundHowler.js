@@ -9,12 +9,20 @@
 		ec.extend(this, {
 			background: null,
 			game: new Howl({
-				urls: ['audio/game.aac', 'audio/game.ogg'],
+				urls: ['audio/crickets.m4a', 'audio/crickets.ogg'],
 				loop: true
 			}),
 			ending: new Howl({
-				urls: ['audio/ending.aac', 'audio/ending.ogg'],
-				loop: true
+				urls: ['audio/ending.m4a', 'audio/ending.ogg']
+			}),
+			steps: new Howl({
+				urls: ['audio/steps.m4a', 'audio/steps.ogg'],
+				sprite: {
+					step1: [403/48, 2807/48],
+					step2: [6405/48, 2798/48],
+					step3: [12403/48, 2806/48],
+					step4: [18397/48, 2806/48]
+				}
 			})
 		});
 		if (ec.debug > 1) {

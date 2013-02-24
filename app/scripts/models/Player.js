@@ -28,6 +28,7 @@
 		this.shape.group = this.groupId;
 		this.state = 'standing';
 		this.walkCount = 0;
+		this.nextStep = 2-0.05;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
 		this.depth = 64;

@@ -57,6 +57,12 @@
 
 		if (entity instanceof ec.Ninja) {
 			o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
+			// SOUND //
+			if (entity.state === 'hit') {
+				if (entity.hitTime === entity.hitDuration) {
+					ec.sound.playSound(ec.sound.sounds.hits, '*');
+				}
+			}
 
 		} else if (entity instanceof ec.Puff) {
 			var ninjaSheet = ec.SpriteSheets.ninja;
@@ -74,6 +80,24 @@
 
 		} else if (entity instanceof ec.Player) {
 			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
+			// SOUND //
+			if (entity.state === 'walking') {
+				if (entity.walkCount >= entity.nextStep) {
+					entity.nextStep += 2;
+					ec.sound.playSound(ec.sound.sounds.steps, '*');
+				}
+			} else if (entity.state === 'standing') {
+				if (entity.nextStep !== 0) {
+					entity.nextStep = 0;
+					ec.sound.playSound(ec.sound.sounds.steps, '*');
+				}
+			} else if (entity.state === 'punching') {
+				if (entity.attack.time === 0) {
+					// entity.attack.pushDuration;
+					ec.sound.playSound(ec.sound.sounds.strikes, '*');
+					entity.nextStep = 1;
+				}
+			}
 
 		} else if (entity instanceof ec.Box) {
 			o = ec.SpriteSheets.lion.getFrame(0);
@@ -169,7 +193,7 @@
 				animationFrame = Math.min(3, floor(progress * 3));
 				frame = animation.frames[0] + animationFrame;
 			} else {
-				console.error('no walk_'+ frame);
+				console.error('no punch_'+ frame);
 			}
 		} else if (entity.state === 'hit' || entity.state === 'dead') {//entity.hitPoints <= 0) {//entity.state === 'hit') {
 			animation = spriteSheet.getAnimation('fall');
