@@ -124,6 +124,7 @@
 				sound = new ec.Sound();
 				// TODO: separate music and sound effect volume
 				sound.setVolume(ec.core.getLocal('soundVolume', 0.5, parseFloat));
+				sound.loadSound(sound.sounds.game);
 			}
 			ec.sound = sound;
 
