@@ -109,21 +109,19 @@
 					buffer: null,
 					loop: false,
 					gain: {value: 1},
-					playbackState: 0
+					playbackState: 0,
+					timeoutId: -1
 				});
 			};
 			BufferSourcePolyfill.prototype = {
 				connect: function(node){
 					this.gain = node.gain || this.gain;
-					context.pool.push(this);
 				},
 				disconnect: function(){
-					var index = context.pool.indexOf(this);
-					if (index > -1) {
-						context.pool.splice(index, 1);
-					}
-					this.audio = null;
 					this.playbackState = 3;
+					if (this.timeoutId > -1) {
+						clearTimeout(this.timeoutId);
+					}
 				},
 				noteGrainOn: function(i, pos, duration){
 					i = 0;
@@ -150,9 +148,9 @@
 							audio.addEventListener('paused', ended, false);
 						}
 						if (duration > 0) {
-							setTimeout(function() {
+							self.timeoutId = setTimeout(function() {
 								self.noteOff(0);
-							}, duration * 1000);
+							}, duration * 1000 - 16.7);
 						}
 						audio.removeEventListener('canplay', playthrough, false);
 					};
@@ -164,9 +162,7 @@
 				},
 				noteOff: function(i) {
 					i = 0;
-					if (this.audio) {
-						this.audio.pause();
-					}
+					this.audio.pause();
 					this.disconnect();
 				},
 				PLAYING_STATE: 2
@@ -175,7 +171,21 @@
 				pool: [],
 				destination: null,
 				createBufferSource: function() {
-					return new BufferSourcePolyfill();
+					var source;
+					if (this.pool.length > 8) {
+						for (var i=this.pool.length; i-- > 0;) {
+							var pooledSource = this.pool[i];
+							if (pooledSource.playbackState === 3) {
+								source = pooledSource;
+								break;
+							}
+						}
+					}
+					if (!source) {
+						source = new BufferSourcePolyfill();
+						this.pool.push(source);
+					}
+					return source;
 				},
 				createGainNode: function() {
 					return {
