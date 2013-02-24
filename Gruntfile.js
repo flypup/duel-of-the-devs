@@ -17,23 +17,24 @@ module.exports = function (grunt) {
     grunt.initConfig({
         yeoman: yeomanConfig,
         watch: {
-            coffee: {
-                files: ['<%= yeoman.app %>/scripts/*.coffee'],
-                tasks: ['coffee:dist']
-            },
-            coffeeTest: {
-                files: ['test/spec/*.coffee'],
-                tasks: ['coffee:test']
-            },
-            compass: {
-                files: ['<%= yeoman.app %>/styles/*.{scss,sass}'],
-                tasks: ['compass']
-            },
+            // coffee: {
+            //     files: ['<%= yeoman.app %>/scripts/*.coffee'],
+            //     tasks: ['coffee:dist']
+            // },
+            // coffeeTest: {
+            //     files: ['test/spec/*.coffee'],
+            //     tasks: ['coffee:test']
+            // },
+            // compass: {
+            //     files: ['<%= yeoman.app %>/styles/*.{scss,sass}'],
+            //     tasks: ['compass']
+            // },
             livereload: {
                 files: [
                     '<%= yeoman.app %>/*.html',
                     '{.tmp,<%= yeoman.app %>}/styles/*.css',
                     '{.tmp,<%= yeoman.app %>}/scripts/*.js',
+                    '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
                     '<%= yeoman.app %>/images/*.{png,jpg,jpeg}'
                 ],
                 tasks: ['livereload']
@@ -90,6 +91,7 @@ module.exports = function (grunt) {
             all: [
                 'Gruntfile.js',
                 '<%= yeoman.app %>/scripts/*.js',
+                '<%= yeoman.app %>/scripts/**/*.js',
                 'test/spec/*.js'
             ]
         },
@@ -116,23 +118,23 @@ module.exports = function (grunt) {
                 }]
             }
         },
-        compass: {
-            options: {
-                sassDir: '<%= yeoman.app %>/styles',
-                cssDir: '.tmp/styles',
-                imagesDir: '<%= yeoman.app %>/images',
-                javascriptsDir: '<%= yeoman.app %>/scripts',
-                fontsDir: '<%= yeoman.app %>/styles/fonts',
-                importPath: 'app/components',
-                relativeAssets: true
-            },
-            dist: {},
-            server: {
-                options: {
-                    debugInfo: true
-                }
-            }
-        },
+        // compass: {
+        //     options: {
+        //         sassDir: '<%= yeoman.app %>/styles',
+        //         cssDir: '.tmp/styles',
+        //         imagesDir: '<%= yeoman.app %>/images',
+        //         javascriptsDir: '<%= yeoman.app %>/scripts',
+        //         fontsDir: '<%= yeoman.app %>/styles/fonts',
+        //         importPath: 'app/components',
+        //         relativeAssets: true
+        //     },
+        //     dist: {},
+        //     server: {
+        //         options: {
+        //             debugInfo: true
+        //         }
+        //     }
+        // },
         // not used since Uglify task does concat,
         // but still available if needed
         /*concat: {
@@ -234,8 +236,8 @@ module.exports = function (grunt) {
 
         grunt.task.run([
             'clean:server',
-            'coffee:dist',
-            'compass:server',
+            // 'coffee:dist',
+            // 'compass:server',
             'livereload-start',
             'connect:livereload',
             'open',
@@ -245,8 +247,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', [
         'clean:server',
-        'coffee',
-        'compass',
+        // 'coffee',
+        // 'compass',
         'connect:test',
         'mocha'
     ]);
@@ -255,8 +257,8 @@ module.exports = function (grunt) {
         'clean:dist',
         'jshint',
         'test',
-        'coffee',
-        'compass:dist',
+        // 'coffee',
+        // 'compass:dist',
         'useminPrepare',
         'imagemin',
         'cssmin',
