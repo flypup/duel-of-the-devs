@@ -36,12 +36,10 @@
 			var y = pos.y - entity.groundZ;
 			var rect = o.rect;
 			if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
-				context.save();
 				if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
 				var drawable = ec.getCached(o.image);
 				context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
-				context.restore();
 			}
 		}
 	};
