@@ -43,7 +43,7 @@
 		this.maxArbiters = null;
 		this.maxContacts = null;
 		this.mouseDown = null;
-		
+		this.mouseJoint = null;
 		this.mouse = v(0,0);
 
 		var maxWidth = this.width - 10;
