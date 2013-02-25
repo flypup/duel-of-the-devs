@@ -44,11 +44,6 @@ var polyValidate = function(verts)
 /// The vertexes must be convex and have a clockwise winding.
 var PolyShape = cp.PolyShape = function(body, verts, offset)
 {
-	assert(verts.length >= 4, "Polygons require some verts");
-	assert(typeof(verts[0]) === 'number', 'Polygon verticies should be specified in a flattened list');
-	// Fail if the user attempts to pass a concave poly, or a bad winding.
-	assert(polyValidate(verts), "Polygon is concave or has a reversed winding.");
-	
 	this.setVerts(verts, offset);
 	this.type = 'poly';
 	Shape.call(this, body);
@@ -56,13 +51,26 @@ var PolyShape = cp.PolyShape = function(body, verts, offset)
 
 PolyShape.prototype = Object.create(Shape.prototype);
 
-var Axis = function(n, d) {
+var SplittingPlane = function(n, d)
+{
 	this.n = n;
 	this.d = d;
 };
 
+SplittingPlane.prototype.compare = function(v)
+{
+	return vdot(this.n, v) - this.d;
+};
+
 PolyShape.prototype.setVerts = function(verts, offset)
 {
+	assert(verts.length >= 4, "Polygons require some verts");
+	assert(typeof(verts[0]) === 'number',
+			'Polygon verticies should be specified in a flattened list (eg [x1,y1,x2,y2,x3,y3,...])');
+
+	// Fail if the user attempts to pass a concave poly, or a bad winding.
+	assert(polyValidate(verts), "Polygon is concave or has a reversed winding. Consider using cpConvexHull()");
+	
 	var len = verts.length;
 	var numVerts = len >> 1;
 
@@ -70,8 +78,8 @@ PolyShape.prototype.setVerts = function(verts, offset)
 	// the code similar to the C.
 	this.verts = new Array(len);
 	this.tVerts = new Array(len);
-	this.axes = new Array(numVerts);
-	this.tAxes = new Array(numVerts);
+	this.planes = new Array(numVerts);
+	this.tPlanes = new Array(numVerts);
 	
 	for(var i=0; i<len; i+=2){
 		//var a = vadd(offset, verts[i]);
@@ -86,8 +94,8 @@ PolyShape.prototype.setVerts = function(verts, offset)
 
 		this.verts[i  ] = ax;
 		this.verts[i+1] = ay;
-		this.axes[i>>1] = new Axis(n, vdot2(n.x, n.y, ax, ay));
-		this.tAxes[i>>1] = new Axis(new Vect(0,0), 0);
+		this.planes[i>>1] = new SplittingPlane(n, vdot2(n.x, n.y, ax, ay));
+		this.tPlanes[i>>1] = new SplittingPlane(new Vect(0,0), 0);
 	}
 };
 
@@ -148,8 +156,8 @@ PolyShape.prototype.transformVerts = function(p, rot)
 
 PolyShape.prototype.transformAxes = function(p, rot)
 {
-	var src = this.axes;
-	var dst = this.tAxes;
+	var src = this.planes;
+	var dst = this.tPlanes;
 	
 	for(var i=0; i<src.length; i++){
 		var n = vrotate(src[i].n, rot);
@@ -164,32 +172,40 @@ PolyShape.prototype.cacheData = function(p, rot)
 	this.transformVerts(p, rot);
 };
 
-PolyShape.prototype.pointQuery = function(p)
+PolyShape.prototype.nearestPointQuery = function(p)
 {
-//	if(!bbContainsVect(this.shape.bb, p)) return;
-	if(!bbContainsVect2(this.bb_l, this.bb_b, this.bb_r, this.bb_t, p)) return;
+	var planes = this.tPlanes;
+	var verts = this.tVerts;
 	
-	var info = new PointQueryExtendedInfo(this);
+	var v0x = verts[verts.length - 2];
+	var v0y = verts[verts.length - 1];
+	var minDist = Infinity;
+	var closestPoint = vzero;
+	var outside = false;
 	
-	var axes = this.tAxes;
-	for(var i=0; i<axes.length; i++){
-		var n = axes[i].n;
-		var dist = axes[i].d - vdot(n, p);
+	for(var i=0; i<planes.length; i++){
+		if(planes[i].compare(p) > 0) outside = true;
 		
-		if(dist < 0){
-			return;
-		} else if(dist < info.d){
-			info.d = dist;
-			info.n = n;
+		var v1x = verts[i*2];
+		var v1y = verts[i*2 + 1];
+		var closest = closestPointOnSegment2(p.x, p.y, v0x, v0y, v1x, v1y);
+		
+		var dist = vdist(p, closest);
+		if(dist < minDist){
+			minDist = dist;
+			closestPoint = closest;
 		}
+		
+		v0x = v1x;
+		v0y = v1y;
 	}
 	
-	return info;
+	return new NearestPointQueryInfo(this, closestPoint, (outside ? minDist : -minDist));
 };
 
 PolyShape.prototype.segmentQuery = function(a, b)
 {
-	var axes = this.tAxes;
+	var axes = this.tPlanes;
 	var verts = this.tVerts;
 	var numVerts = axes.length;
 	var len = numVerts * 2;
@@ -231,11 +247,11 @@ PolyShape.prototype.valueOnAxis = function(n, d)
 
 PolyShape.prototype.containsVert = function(vx, vy)
 {
-	var axes = this.tAxes;
+	var planes = this.tPlanes;
 	
-	for(var i=0; i<axes.length; i++){
-		var n = axes[i].n;
-		var dist = vdot2(n.x, n.y, vx, vy) - axes[i].d;
+	for(var i=0; i<planes.length; i++){
+		var n = planes[i].n;
+		var dist = vdot2(n.x, n.y, vx, vy) - planes[i].d;
 		if(dist > 0) return false;
 	}
 	
@@ -244,12 +260,12 @@ PolyShape.prototype.containsVert = function(vx, vy)
 
 PolyShape.prototype.containsVertPartial = function(vx, vy, n)
 {
-	var axes = this.tAxes;
+	var planes = this.tPlanes;
 	
-	for(var i=0; i<axes.length; i++){
-		var n2 = axes[i].n;
+	for(var i=0; i<planes.length; i++){
+		var n2 = planes[i].n;
 		if(vdot(n2, n) < 0) continue;
-		var dist = vdot2(n2.x, n2.y, vx, vy) - axes[i].d;
+		var dist = vdot2(n2.x, n2.y, vx, vy) - planes[i].d;
 		if(dist > 0) return false;
 	}
 	

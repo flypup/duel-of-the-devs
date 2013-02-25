@@ -88,13 +88,13 @@ Shape.prototype.getBody = function() { return this.body; };
 
 Shape.prototype.active = function()
 {
-// return shape->prev || shape->body->shapeList == shape;
+// return shape->prev || (shape->body && shape->body->shapeList == shape);
 	return this.body && this.body.shapeList.indexOf(this) !== -1;
 };
 
 Shape.prototype.setBody = function(body)
 {
-	assert(!this.active(), "You cannot change the body on an active shape. You must remove the shape, then ");
+	assert(!this.active(), "You cannot change the body on an active shape. You must remove the shape from the space before changing the body.");
 	this.body = body;
 };
 
@@ -108,6 +108,12 @@ Shape.prototype.update = function(pos, rot)
 	assert(!isNaN(rot.x), 'Rotation is NaN');
 	assert(!isNaN(pos.x), 'Position is NaN');
 	this.cacheData(pos, rot);
+};
+
+Shape.prototype.pointQuery = function(p)
+{
+	var info = this.nearestPointQuery(p);
+	if (info.d < 0) return info;
 };
 
 Shape.prototype.getBB = function()
@@ -131,7 +137,8 @@ CP_DefineShapeStructProperty(cpLayers, layers, Layers, cpTrue);
 */
 
 /// Extended point query info struct. Returned from calling pointQuery on a shape.
-var PointQueryExtendedInfo = function(shape){
+var PointQueryExtendedInfo = function(shape)
+{
 	/// Shape that was hit, NULL if no collision occurred.
 	this.shape = shape;
 	/// Depth of the point inside the shape.
@@ -140,7 +147,18 @@ var PointQueryExtendedInfo = function(shape){
 	this.n = vzero;
 };
 
-var SegmentQueryInfo = function(shape, t, n){
+var NearestPointQueryInfo = function(shape, p, d)
+{
+	/// The nearest shape, NULL if no shape was within range.
+	this.shape = shape;
+	/// The closest point on the shape's surface. (in world space coordinates)
+	this.p = p;
+	/// The distance to the point. The distance is negative if the point is inside the shape.
+	this.d = d;
+};
+
+var SegmentQueryInfo = function(shape, t, n)
+{
 	/// The shape that was hit, NULL if no collision occured.
 	this.shape = shape;
 	/// The normalized distance along the query segment in the range [0, 1].
@@ -188,7 +206,7 @@ CircleShape.prototype.cacheData = function(p, rot)
 };
 
 /// Test if a point lies within a shape.
-CircleShape.prototype.pointQuery = function(p)
+/*CircleShape.prototype.pointQuery = function(p)
 {
 	var delta = vsub(p, this.tc);
 	var distsq = vlengthsq(delta);
@@ -202,6 +220,17 @@ CircleShape.prototype.pointQuery = function(p)
 		info.n = vmult(delta, 1/dist);
 		return info;
 	}
+};*/
+
+CircleShape.prototype.nearestPointQuery = function(p)
+{
+	var deltax = p.x - this.tc.x;
+	var deltay = p.y - this.tc.y;
+	var d = vlength2(deltax, deltay);
+	var r = this.r;
+	
+	var nearestp = new Vect(this.tc.x + deltax * r/d, this.tc.y + deltay * r/d);
+	return new NearestPointQueryInfo(this, nearestp, d - r);
 };
 
 var circleSegmentQuery = function(shape, center, r, a, b, info)
@@ -296,29 +325,17 @@ SegmentShape.prototype.cacheData = function(p, rot)
 	this.bb_t = t + rad;
 };
 
-SegmentShape.prototype.pointQuery = function(p)
+SegmentShape.prototype.nearestPointQuery = function(p)
 {
-	if(!bbContainsVect2(this.bb_l, this.bb_b, this.bb_r, this.bb_t, p)) return;
-	
-	var a = this.ta;
-	var b = this.tb;
-	
-	var seg_delta = vsub(b, a);
-	var closest_t = clamp01(vdot(seg_delta, vsub(p, a))/vlengthsq(seg_delta));
-	var closest = vadd(a, vmult(seg_delta, closest_t));
-
-	var delta = vsub(p, closest);
-	var distsq = vlengthsq(delta);
+	var closest = closestPointOnSegment(p, this.ta, this.tb);
+		
+	var deltax = p.x - closest.x;
+	var deltay = p.y - closest.y;
+	var d = vlength2(deltax, deltay);
 	var r = this.r;
-
-	if (distsq < r*r){
-		var info = new PointQueryExtendedInfo(this);
-
-		var dist = Math.sqrt(distsq);
-		info.d = r - dist;
-		info.n = vmult(delta, 1/dist);
-		return info;
-	}
+	
+	var nearestp = (d ? vadd(closest, vmult(new Vect(deltax, deltay), r/d)) : closest);
+	return new NearestPointQueryInfo(this, nearestp, d - r);
 };
 
 SegmentShape.prototype.segmentQuery = function(a, b)

@@ -58,7 +58,7 @@
 		var entity     = entityBody.userData.parent;
 		var mapElement = mapBody.userData.parent;
 		if (ec.debug > 0) {
-			//console.log('mapBegin', entity.type, mapElement);
+			console.log('mapBegin', entity.type, mapElement);
 		}
 		// Add Map Element to Entity's Checklist
 		entity.addMapCollision(mapElement);
@@ -72,7 +72,7 @@
 		var entity     = entityBody.userData.parent;
 		var mapElement = mapBody.userData.parent;
 		if (ec.debug > 0) {
-			//console.log('mapSeparate', entity.type, mapElement);
+			console.log('mapSeparate', entity.type, mapElement);
 		}
 		// Remove Map Element from Entity's Checklist
 		entity.removeMapCollision(mapElement);
@@ -126,7 +126,7 @@
 			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		depthTest,	_,			entitiesCollide,_);
 			
 			// Projectile to Obstacle / Target
-			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		depthTest,	_, 			entitiesCollide,_);
+			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		depthTest,	_,			entitiesCollide,_);
 			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PLAYER,		depthTest,	_,			pushCollision,	_);
 
 			// Entity to Map

@@ -13,7 +13,8 @@ var Demo = function() {
 	this.remainder = 0;
 	this.fps = 0;
 	this.mouse = v(0,0);
-	this.timeTaken = 0;
+	this.simulationTime = 0;
+	this.drawTime = 0;
 
 	var self = this;
 	var canvas2point = this.canvas2point = function(x, y) {
@@ -43,8 +44,12 @@ var Demo = function() {
 
 	var mouseBody = this.mouseBody = new cp.Body(Infinity, Infinity);
 
+	this.canvas.oncontextmenu = function(e) { return false; }
+
 	this.canvas.onmousedown = function(e) {
+		e.preventDefault();
 		var rightclick = e.which === 3; // or e.button === 2;
+		self.mouse = canvas2point(e.clientX, e.clientY);
 
 		if(!rightclick && !self.mouseJoint) {
 			var point = canvas2point(e.clientX, e.clientY);
@@ -59,10 +64,15 @@ var Demo = function() {
 				space.addConstraint(mouseJoint);
 			}
 		}
+
+		if(rightclick) {
+			self.rightClick = true;
+		}
 	};
 
 	this.canvas.onmouseup = function(e) {
 		var rightclick = e.which === 3; // or e.button === 2;
+		self.mouse = canvas2point(e.clientX, e.clientY);
 
 		if(!rightclick) {
 			if(self.mouseJoint) {
@@ -70,15 +80,15 @@ var Demo = function() {
 				self.mouseJoint = null;
 			}
 		}
+
+		if(rightclick) {
+			self.rightClick = false;
+		}
 	};
 
 };
 
 var canvas = Demo.prototype.canvas = document.getElementsByTagName('canvas')[0];
-
-canvas.style.position = "absolute";
-canvas.style.top = "0";
-canvas.style.left = "0";
 
 var ctx = Demo.prototype.ctx = canvas.getContext('2d');
 
@@ -99,7 +109,7 @@ window.onresize = function(e) {
 };
 window.onresize();
 
-var requestAnimationFrame = window.requestAnimationFrame
+var raf = window.requestAnimationFrame
 	|| window.webkitRequestAnimationFrame
 	|| window.mozRequestAnimationFrame
 	|| window.oRequestAnimationFrame
@@ -139,7 +149,8 @@ Demo.prototype.drawInfo = function() {
 	}
 	this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
 	this.ctx.fillText("Contact points: " + contacts + " (Max: " + this.maxContacts + ")", 10, 140, maxWidth);
-	this.ctx.fillText("Time taken: " + this.timeTaken, 10, 170, maxWidth);
+	this.ctx.fillText("Simulation time: " + this.simulationTime + " ms", 10, 170, maxWidth);
+	this.ctx.fillText("Draw time: " + this.drawTime + " ms", 10, 200, maxWidth);
 
 	if (this.message) {
 		this.ctx.fillText(this.message, 10, this.height - 50, maxWidth);
@@ -207,15 +218,18 @@ Demo.prototype.run = function() {
 	this.running = true;
 
 	var self = this;
-	var step = function() {
-		self.step();
+
+	var lastTime = 0;
+	var step = function(time) {
+		self.step(time - lastTime);
+		lastTime = time;
+
 		if (self.running) {
-			requestAnimationFrame(step);
+			raf(step);
 		}
 	};
 
-	this.lastStep = Date.now();
-	step();
+	step(0);
 };
 
 var soon = function(fn) { setTimeout(fn, 1); };
@@ -241,14 +255,10 @@ Demo.prototype.stop = function() {
 	this.running = false;
 };
 
-Demo.prototype.step = function() {
-	var now = Date.now();
-	var dt = (now - this.lastStep) / 1000;
-	this.lastStep = now;
-
+Demo.prototype.step = function(dt) {
 	// Update FPS
 	if(dt > 0) {
-		this.fps = 0.7*this.fps + 0.3*(1/dt);
+		this.fps = 0.9*this.fps + 0.1*(1000/dt);
 	}
 
 	// Move mouse body toward the mouse
@@ -258,18 +268,15 @@ Demo.prototype.step = function() {
 
 	var lastNumActiveShapes = this.space.activeShapes.count;
 
-	// Limit the amount of time thats passed to 0.1 - if the user switches tabs or
-	// has a slow computer, we'll just slow the simulation down.
-	dt = Math.min(dt, 1/25);
-
+	var now = Date.now();
 	this.update(1/60);
-
-	var afterUpdate = Date.now();
-	this.timeTaken += afterUpdate - now;
+	this.simulationTime += Date.now() - now;
 
 	// Only redraw if the simulation isn't asleep.
 	if (lastNumActiveShapes > 0 || Demo.resized) {
+		now = Date.now();
 		this.draw();
+		this.drawTime += Date.now() - now;
 		Demo.resized = false;
 	}
 };
@@ -312,6 +319,12 @@ var drawLine = function(ctx, point2canvas, a, b) {
 	ctx.moveTo(a.x, a.y);
 	ctx.lineTo(b.x, b.y);
 	ctx.stroke();
+};
+
+var drawRect = function(ctx, point2canvas, pos, size) {
+	var pos_ = point2canvas(pos);
+	var size_ = cp.v.sub(point2canvas(cp.v.add(pos, size)), pos_);
+	ctx.fillRect(pos_.x, pos_.y, size_.x, size_.y);
 };
 
 var springPoints = [

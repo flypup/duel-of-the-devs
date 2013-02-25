@@ -53,7 +53,7 @@ Space.prototype.unlock = function(runPostStep)
 	this.locked--;
 	assert(this.locked >= 0, "Internal Error: Space lock underflow.");
 
-	if(!this.locked && runPostStep){
+	if(this.locked === 0 && runPostStep){
 		var waking = this.rousedBodies;
 		for(var i=0; i<waking.length; i++){
 			this.activateBody(waking[i]);
@@ -361,7 +361,6 @@ Space.prototype.step = function(dt)
 		}
 
 		// Run the impulse solver.
-		//cpSpaceArbiterApplyImpulseFunc applyImpulse = this.arbiterApplyImpulse;
 		for(i=0; i<this.iterations; i++){
 			for(j=0; j<arbiters.length; j++){
 				arbiters[j].applyImpulse();

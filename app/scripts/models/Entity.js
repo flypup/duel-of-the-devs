@@ -112,7 +112,7 @@
 			// get floor. target z = floor z
 			// no floor? target z = 0
 			var targetZ = this.getTargetZ(this.climbHeight);
-
+			
 			distance = targetZ - this.z;
 			if (distance > 0) {
 				// TODO: update state and modify velX,velY when climbing or falling

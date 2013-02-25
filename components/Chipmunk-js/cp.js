@@ -106,6 +106,21 @@ var deleteObjFromList = function(arr, obj)
 	}
 };
 
+var closestPointOnSegment = function(p, a, b)
+{
+	var delta = vsub(a, b);
+	var t = clamp01(vdot(delta, vsub(p, b))/vlengthsq(delta));
+	return vadd(b, vmult(delta, t));
+};
+
+var closestPointOnSegment2 = function(px, py, ax, ay, bx, by)
+{
+	var deltax = ax - bx;
+	var deltay = ay - by;
+	var t = clamp01(vdot2(deltax, deltay, px - bx, py - by)/vlengthsq2(deltax, deltay));
+	return new Vect(bx + deltax * t, by + deltay * t);
+};
+
 var momentForCircle = cp.momentForCircle = function(m, r1, r2, offset)
 {
 	return m*(0.5*(r1*r1 + r2*r2) + vlengthsq(offset));
@@ -118,10 +133,8 @@ var areaForCircle = cp.areaForCircle = function(r1, r2)
 
 var momentForSegment = cp.momentForSegment = function(m, a, b)
 {
-	var length = vlength(vsub(b, a));
-	var offset = vmult(vadd(a, b), 1/2);
-	
-	return m*(length*length/12 + vlengthsq(offset));
+	var offset = vmult(vadd(a, b), 0.5);
+	return m*(vdistsq(b, a)/12 + vlengthsq(offset));
 };
 
 var areaForSegment = cp.areaForSegment = function(a, b, r)
@@ -194,12 +207,151 @@ var momentForBox = cp.momentForBox = function(m, width, height)
 
 var momentForBox2 = cp.momentForBox2 = function(m, box)
 {
-	width = box.r - box.l;
-	height = box.t - box.b;
-	offset = vmult([box.l + box.r, box.b + box.t], 0.5);
+	var width = box.r - box.l;
+	var height = box.t - box.b;
+	var offset = vmult([box.l + box.r, box.b + box.t], 0.5);
 	
 	// TODO NaN when offset is 0 and m is INFINITY	
 	return momentForBox(m, width, height) + m*vlengthsq(offset);
+};
+
+// Quick hull
+
+var loopIndexes = cp.loopIndexes = function(verts)
+{
+	var start = 0, end = 0;
+	var minx, miny, maxx, maxy;
+	minx = maxx = verts[0];
+	miny = maxy = verts[1];
+	
+	var count = verts.length >> 1;
+  for(var i=1; i<count; i++){
+		var x = verts[i*2];
+		var y = verts[i*2 + 1];
+		
+    if(x < minx || (x == minx && y < miny)){
+			minx = x;
+			miny = y;
+      start = i;
+    } else if(x > maxx || (x == maxx && y > maxy)){
+			maxx = x;
+			maxy = y;
+			end = i;
+		}
+	}
+	return [start, end];
+};
+
+var SWAP = function(arr, idx1, idx2)
+{
+	var tmp = arr[idx1*2];
+	arr[idx1*2] = arr[idx2*2];
+	arr[idx2*2] = tmp;
+
+	tmp = arr[idx1*2+1];
+	arr[idx1*2+1] = arr[idx2*2+1];
+	arr[idx2*2+1] = tmp;
+};
+
+var QHullPartition = function(verts, offs, count, a, b, tol)
+{
+	if(count === 0) return 0;
+	
+	var max = 0;
+	var pivot = offs;
+	
+	var delta = vsub(b, a);
+	var valueTol = tol * vlength(delta);
+	
+	var head = offs;
+	for(var tail = offs+count-1; head <= tail;){
+		var v = new Vect(verts[head * 2], verts[head * 2 + 1]);
+		var value = vcross(delta, vsub(v, a));
+		if(value > valueTol){
+			if(value > max){
+				max = value;
+				pivot = head;
+			}
+			
+			head++;
+		} else {
+			SWAP(verts, head, tail);
+			tail--;
+		}
+	}
+	
+	// move the new pivot to the front if it's not already there.
+	if(pivot != offs) SWAP(verts, offs, pivot);
+	return head - offs;
+};
+
+var QHullReduce = function(tol, verts, offs, count, a, pivot, b, resultPos)
+{
+	if(count < 0){
+		return 0;
+	} else if(count == 0) {
+		verts[resultPos*2] = pivot.x;
+		verts[resultPos*2+1] = pivot.y;
+		return 1;
+	} else {
+		var left_count = QHullPartition(verts, offs, count, a, pivot, tol);
+		var left = new Vect(verts[offs*2], verts[offs*2+1]);
+		var index = QHullReduce(tol, verts, offs + 1, left_count - 1, a, left, pivot, resultPos);
+		
+		var pivotPos = resultPos + index++;
+		verts[pivotPos*2] = pivot.x;
+		verts[pivotPos*2+1] = pivot.y;
+		
+		var right_count = QHullPartition(verts, offs + left_count, count - left_count, pivot, b, tol);
+		var right = new Vect(verts[(offs+left_count)*2], verts[(offs+left_count)*2+1]);
+		return index + QHullReduce(tol, verts, offs + left_count + 1, right_count - 1, pivot, right, b, resultPos + index);
+	}
+};
+
+// QuickHull seemed like a neat algorithm, and efficient-ish for large input sets.
+// My implementation performs an in place reduction using the result array as scratch space.
+//
+// Pass an Array into result to put the result of the calculation there. Otherwise, pass null
+// and the verts list will be edited in-place.
+//
+// Expects the verts to be described in the same way as cpPolyShape - which is to say, it should
+// be a list of [x1,y1,x2,y2,x3,y3,...].
+var convexHull = cp.convexHull = function(verts, result, tol)
+{
+	if(result){
+		// Copy the line vertexes into the empty part of the result polyline to use as a scratch buffer.
+		for (var i = 0; i < verts.length; i++){
+			result[i] = verts[i];
+		}
+	} else {
+		// If a result array was not specified, reduce the input instead.
+		result = verts;
+	}
+	
+	// Degenerate case, all points are the same.
+	var indexes = loopIndexes(verts);
+	var start = indexes[0], end = indexes[1];
+	if(start == end){
+		//if(first) (*first) = 0;
+		result.length = 2;
+		return result;
+	}
+	
+	SWAP(result, 0, start);
+	SWAP(result, 1, end == 0 ? start : end);
+	
+	var a = new Vect(result[0], result[1]);
+	var b = new Vect(result[2], result[3]);
+	
+	var count = verts.length >> 1;
+	//if(first) (*first) = start;
+	var resultCount = QHullReduce(tol, result, 2, count - 2, a, b, a, 1) + 1;
+	result.length = resultCount*2;
+
+	assertSoft(polyValidate(result),
+		"Internal error: cpConvexHull() and cpPolyValidate() did not agree." +
+		"Please report this error with as much info as you can.");
+	return result;
 };
 
 /// Clamp @c f to be between @c min and @c max.
@@ -287,6 +439,11 @@ var vdot2 = function(x1, y1, x2, y2)
 var vlength = cp.v.len = function(v)
 {
 	return Math.sqrt(vdot(v, v));
+};
+
+var vlength2 = cp.v.len2 = function(x, y)
+{
+	return Math.sqrt(x*x + y*y);
 };
 
 /// Check if two vectors are equal. (Be careful when comparing floating point numbers!)
@@ -407,6 +564,11 @@ var vunrotate = cp.v.unrotate = function(v1, v2)
 var vlengthsq = cp.v.lengthsq = function(v)
 {
 	return vdot(v, v);
+};
+
+var vlengthsq2 = cp.v.lengthsq2 = function(x, y)
+{
+	return x*x + y*y;
 };
 
 /// Linearly interpolate between v1 and v2.
@@ -724,13 +886,13 @@ Shape.prototype.getBody = function() { return this.body; };
 
 Shape.prototype.active = function()
 {
-// return shape->prev || shape->body->shapeList == shape;
+// return shape->prev || (shape->body && shape->body->shapeList == shape);
 	return this.body && this.body.shapeList.indexOf(this) !== -1;
 };
 
 Shape.prototype.setBody = function(body)
 {
-	assert(!this.active(), "You cannot change the body on an active shape. You must remove the shape, then ");
+	assert(!this.active(), "You cannot change the body on an active shape. You must remove the shape from the space before changing the body.");
 	this.body = body;
 };
 
@@ -744,6 +906,12 @@ Shape.prototype.update = function(pos, rot)
 	assert(!isNaN(rot.x), 'Rotation is NaN');
 	assert(!isNaN(pos.x), 'Position is NaN');
 	this.cacheData(pos, rot);
+};
+
+Shape.prototype.pointQuery = function(p)
+{
+	var info = this.nearestPointQuery(p);
+	if (info.d < 0) return info;
 };
 
 Shape.prototype.getBB = function()
@@ -767,7 +935,8 @@ CP_DefineShapeStructProperty(cpLayers, layers, Layers, cpTrue);
 */
 
 /// Extended point query info struct. Returned from calling pointQuery on a shape.
-var PointQueryExtendedInfo = function(shape){
+var PointQueryExtendedInfo = function(shape)
+{
 	/// Shape that was hit, NULL if no collision occurred.
 	this.shape = shape;
 	/// Depth of the point inside the shape.
@@ -776,7 +945,18 @@ var PointQueryExtendedInfo = function(shape){
 	this.n = vzero;
 };
 
-var SegmentQueryInfo = function(shape, t, n){
+var NearestPointQueryInfo = function(shape, p, d)
+{
+	/// The nearest shape, NULL if no shape was within range.
+	this.shape = shape;
+	/// The closest point on the shape's surface. (in world space coordinates)
+	this.p = p;
+	/// The distance to the point. The distance is negative if the point is inside the shape.
+	this.d = d;
+};
+
+var SegmentQueryInfo = function(shape, t, n)
+{
 	/// The shape that was hit, NULL if no collision occured.
 	this.shape = shape;
 	/// The normalized distance along the query segment in the range [0, 1].
@@ -824,7 +1004,7 @@ CircleShape.prototype.cacheData = function(p, rot)
 };
 
 /// Test if a point lies within a shape.
-CircleShape.prototype.pointQuery = function(p)
+/*CircleShape.prototype.pointQuery = function(p)
 {
 	var delta = vsub(p, this.tc);
 	var distsq = vlengthsq(delta);
@@ -838,6 +1018,17 @@ CircleShape.prototype.pointQuery = function(p)
 		info.n = vmult(delta, 1/dist);
 		return info;
 	}
+};*/
+
+CircleShape.prototype.nearestPointQuery = function(p)
+{
+	var deltax = p.x - this.tc.x;
+	var deltay = p.y - this.tc.y;
+	var d = vlength2(deltax, deltay);
+	var r = this.r;
+	
+	var nearestp = new Vect(this.tc.x + deltax * r/d, this.tc.y + deltay * r/d);
+	return new NearestPointQueryInfo(this, nearestp, d - r);
 };
 
 var circleSegmentQuery = function(shape, center, r, a, b, info)
@@ -932,29 +1123,17 @@ SegmentShape.prototype.cacheData = function(p, rot)
 	this.bb_t = t + rad;
 };
 
-SegmentShape.prototype.pointQuery = function(p)
+SegmentShape.prototype.nearestPointQuery = function(p)
 {
-	if(!bbContainsVect2(this.bb_l, this.bb_b, this.bb_r, this.bb_t, p)) return;
-	
-	var a = this.ta;
-	var b = this.tb;
-	
-	var seg_delta = vsub(b, a);
-	var closest_t = clamp01(vdot(seg_delta, vsub(p, a))/vlengthsq(seg_delta));
-	var closest = vadd(a, vmult(seg_delta, closest_t));
-
-	var delta = vsub(p, closest);
-	var distsq = vlengthsq(delta);
+	var closest = closestPointOnSegment(p, this.ta, this.tb);
+		
+	var deltax = p.x - closest.x;
+	var deltay = p.y - closest.y;
+	var d = vlength2(deltax, deltay);
 	var r = this.r;
-
-	if (distsq < r*r){
-		var info = new PointQueryExtendedInfo(this);
-
-		var dist = Math.sqrt(distsq);
-		info.d = r - dist;
-		info.n = vmult(delta, 1/dist);
-		return info;
-	}
+	
+	var nearestp = (d ? vadd(closest, vmult(new Vect(deltax, deltay), r/d)) : closest);
+	return new NearestPointQueryInfo(this, nearestp, d - r);
 };
 
 SegmentShape.prototype.segmentQuery = function(a, b)
@@ -1062,11 +1241,6 @@ var polyValidate = function(verts)
 /// The vertexes must be convex and have a clockwise winding.
 var PolyShape = cp.PolyShape = function(body, verts, offset)
 {
-	assert(verts.length >= 4, "Polygons require some verts");
-	assert(typeof(verts[0]) === 'number', 'Polygon verticies should be specified in a flattened list');
-	// Fail if the user attempts to pass a concave poly, or a bad winding.
-	assert(polyValidate(verts), "Polygon is concave or has a reversed winding.");
-	
 	this.setVerts(verts, offset);
 	this.type = 'poly';
 	Shape.call(this, body);
@@ -1074,13 +1248,26 @@ var PolyShape = cp.PolyShape = function(body, verts, offset)
 
 PolyShape.prototype = Object.create(Shape.prototype);
 
-var Axis = function(n, d) {
+var SplittingPlane = function(n, d)
+{
 	this.n = n;
 	this.d = d;
 };
 
+SplittingPlane.prototype.compare = function(v)
+{
+	return vdot(this.n, v) - this.d;
+};
+
 PolyShape.prototype.setVerts = function(verts, offset)
 {
+	assert(verts.length >= 4, "Polygons require some verts");
+	assert(typeof(verts[0]) === 'number',
+			'Polygon verticies should be specified in a flattened list (eg [x1,y1,x2,y2,x3,y3,...])');
+
+	// Fail if the user attempts to pass a concave poly, or a bad winding.
+	assert(polyValidate(verts), "Polygon is concave or has a reversed winding. Consider using cpConvexHull()");
+	
 	var len = verts.length;
 	var numVerts = len >> 1;
 
@@ -1088,8 +1275,8 @@ PolyShape.prototype.setVerts = function(verts, offset)
 	// the code similar to the C.
 	this.verts = new Array(len);
 	this.tVerts = new Array(len);
-	this.axes = new Array(numVerts);
-	this.tAxes = new Array(numVerts);
+	this.planes = new Array(numVerts);
+	this.tPlanes = new Array(numVerts);
 	
 	for(var i=0; i<len; i+=2){
 		//var a = vadd(offset, verts[i]);
@@ -1104,8 +1291,8 @@ PolyShape.prototype.setVerts = function(verts, offset)
 
 		this.verts[i  ] = ax;
 		this.verts[i+1] = ay;
-		this.axes[i>>1] = new Axis(n, vdot2(n.x, n.y, ax, ay));
-		this.tAxes[i>>1] = new Axis(new Vect(0,0), 0);
+		this.planes[i>>1] = new SplittingPlane(n, vdot2(n.x, n.y, ax, ay));
+		this.tPlanes[i>>1] = new SplittingPlane(new Vect(0,0), 0);
 	}
 };
 
@@ -1166,8 +1353,8 @@ PolyShape.prototype.transformVerts = function(p, rot)
 
 PolyShape.prototype.transformAxes = function(p, rot)
 {
-	var src = this.axes;
-	var dst = this.tAxes;
+	var src = this.planes;
+	var dst = this.tPlanes;
 	
 	for(var i=0; i<src.length; i++){
 		var n = vrotate(src[i].n, rot);
@@ -1182,32 +1369,40 @@ PolyShape.prototype.cacheData = function(p, rot)
 	this.transformVerts(p, rot);
 };
 
-PolyShape.prototype.pointQuery = function(p)
+PolyShape.prototype.nearestPointQuery = function(p)
 {
-//	if(!bbContainsVect(this.shape.bb, p)) return;
-	if(!bbContainsVect2(this.bb_l, this.bb_b, this.bb_r, this.bb_t, p)) return;
+	var planes = this.tPlanes;
+	var verts = this.tVerts;
 	
-	var info = new PointQueryExtendedInfo(this);
+	var v0x = verts[verts.length - 2];
+	var v0y = verts[verts.length - 1];
+	var minDist = Infinity;
+	var closestPoint = vzero;
+	var outside = false;
 	
-	var axes = this.tAxes;
-	for(var i=0; i<axes.length; i++){
-		var n = axes[i].n;
-		var dist = axes[i].d - vdot(n, p);
+	for(var i=0; i<planes.length; i++){
+		if(planes[i].compare(p) > 0) outside = true;
 		
-		if(dist < 0){
-			return;
-		} else if(dist < info.d){
-			info.d = dist;
-			info.n = n;
+		var v1x = verts[i*2];
+		var v1y = verts[i*2 + 1];
+		var closest = closestPointOnSegment2(p.x, p.y, v0x, v0y, v1x, v1y);
+		
+		var dist = vdist(p, closest);
+		if(dist < minDist){
+			minDist = dist;
+			closestPoint = closest;
 		}
+		
+		v0x = v1x;
+		v0y = v1y;
 	}
 	
-	return info;
+	return new NearestPointQueryInfo(this, closestPoint, (outside ? minDist : -minDist));
 };
 
 PolyShape.prototype.segmentQuery = function(a, b)
 {
-	var axes = this.tAxes;
+	var axes = this.tPlanes;
 	var verts = this.tVerts;
 	var numVerts = axes.length;
 	var len = numVerts * 2;
@@ -1249,11 +1444,11 @@ PolyShape.prototype.valueOnAxis = function(n, d)
 
 PolyShape.prototype.containsVert = function(vx, vy)
 {
-	var axes = this.tAxes;
+	var planes = this.tPlanes;
 	
-	for(var i=0; i<axes.length; i++){
-		var n = axes[i].n;
-		var dist = vdot2(n.x, n.y, vx, vy) - axes[i].d;
+	for(var i=0; i<planes.length; i++){
+		var n = planes[i].n;
+		var dist = vdot2(n.x, n.y, vx, vy) - planes[i].d;
 		if(dist > 0) return false;
 	}
 	
@@ -1262,12 +1457,12 @@ PolyShape.prototype.containsVert = function(vx, vy)
 
 PolyShape.prototype.containsVertPartial = function(vx, vy, n)
 {
-	var axes = this.tAxes;
+	var planes = this.tPlanes;
 	
-	for(var i=0; i<axes.length; i++){
-		var n2 = axes[i].n;
+	for(var i=0; i<planes.length; i++){
+		var n2 = planes[i].n;
 		if(vdot(n2, n) < 0) continue;
-		var dist = vdot2(n2.x, n2.y, vx, vy) - axes[i].d;
+		var dist = vdot2(n2.x, n2.y, vx, vy) - planes[i].d;
 		if(dist > 0) return false;
 	}
 	
@@ -1375,7 +1570,7 @@ var Body = cp.Body = function(m, i) {
 // I wonder if this should use the constructor style like Body...
 var createStaticBody = function()
 {
-	body = new Body(Infinity, Infinity);
+	var body = new Body(Infinity, Infinity);
 	body.nodeIdleTime = Infinity;
 
 	return body;
@@ -1400,7 +1595,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
 		assert(this.w === this.w && Math.abs(this.w) !== Infinity, "Body's angular velocity is invalid.");
 		assert(this.t === this.t && Math.abs(this.t) !== Infinity, "Body's torque is invalid.");
 
-		v_assert_sane(this.rot, "Internal error: Body's rotation vector is invalid.");
+		v_assert_sane(this.rot, "Body's rotation vector is invalid.");
 
 		assert(this.v_limit === this.v_limit, "Body's velocity limit is invalid.");
 		assert(this.w_limit === this.w_limit, "Body's angular velocity limit is invalid.");
@@ -2046,7 +2241,7 @@ var bbTreeMergedArea = function(a, b)
 
 var bbProximity = function(a, b)
 {
-	return Math.abs(a.bb_l + a.bb_r - b.bb_l - b.bb_r) + Math.abs(a.bb_b + b.bb_t - b.bb_b - b.bb_t);
+	return Math.abs(a.bb_l + a.bb_r - b.bb_l - b.bb_r) + Math.abs(a.bb_b + a.bb_t - b.bb_b - b.bb_t);
 };
 
 var subtreeInsert = function(subtree, leaf, tree)
@@ -2353,10 +2548,11 @@ BBTree.prototype.reindexObject = function(obj, hashid)
 
 // **** Query
 
+// This has since been removed from upstream Chipmunk - which recommends you just use query() below
+// directly.
 BBTree.prototype.pointQuery = function(point, func)
 {
-	// The base collision object is the provided point.
-	if(this.root) subtreeQuery(this.root, new BB(point.x, point.y, point.x, point.y), func);
+	this.query(new BB(point.x, point.y, point.x, point.y), func);
 };
 
 BBTree.prototype.segmentQuery = function(a, b, t_exit, func)
@@ -3100,14 +3296,14 @@ var circle2segment = function(circleShape, segmentShape)
 //
 // See: http://jsperf.com/return-two-values-from-function/2
 var last_MSA_min = 0;
-var findMSA = function(poly, axes)
+var findMSA = function(poly, planes)
 {
 	var min_index = 0;
-	var min = poly.valueOnAxis(axes[0].n, axes[0].d);
+	var min = poly.valueOnAxis(planes[0].n, planes[0].d);
 	if(min > 0) return -1;
 	
-	for(var i=1; i<axes.length; i++){
-		var dist = poly.valueOnAxis(axes[i].n, axes[i].d);
+	for(var i=1; i<planes.length; i++){
+		var dist = poly.valueOnAxis(planes[i].n, planes[i].d);
 		if(dist > 0) {
 			return -1;
 		} else if(dist > min){
@@ -3177,19 +3373,19 @@ var findVerts = function(poly1, poly2, n, dist)
 // Collide poly shapes together.
 var poly2poly = function(poly1, poly2)
 {
-	var mini1 = findMSA(poly2, poly1.tAxes);
+	var mini1 = findMSA(poly2, poly1.tPlanes);
 	if(mini1 == -1) return NONE;
 	var min1 = last_MSA_min;
 	
-	var mini2 = findMSA(poly1, poly2.tAxes);
+	var mini2 = findMSA(poly1, poly2.tPlanes);
 	if(mini2 == -1) return NONE;
 	var min2 = last_MSA_min;
 	
 	// There is overlap, find the penetrating verts
 	if(min1 > min2)
-		return findVerts(poly1, poly2, poly1.tAxes[mini1].n, min1);
+		return findVerts(poly1, poly2, poly1.tPlanes[mini1].n, min1);
 	else
-		return findVerts(poly1, poly2, vneg(poly2.tAxes[mini2].n), min2);
+		return findVerts(poly1, poly2, vneg(poly2.tPlanes[mini2].n), min2);
 };
 
 // Like cpPolyValueOnAxis(), but for segments.
@@ -3226,8 +3422,8 @@ var seg2poly = function(seg, poly)
 {
 	var arr = [];
 
-	var axes = poly.tAxes;
-	var numVerts = axes.length;
+	var planes = poly.tPlanes;
+	var numVerts = planes.length;
 	
 	var segD = vdot(seg.tn, seg.ta);
 	var minNorm = poly.valueOnAxis(seg.tn, segD) - seg.r;
@@ -3235,10 +3431,10 @@ var seg2poly = function(seg, poly)
 	if(minNeg > 0 || minNorm > 0) return NONE;
 	
 	var mini = 0;
-	var poly_min = segValueOnAxis(seg, axes[0].n, axes[0].d);
+	var poly_min = segValueOnAxis(seg, planes[0].n, planes[0].d);
 	if(poly_min > 0) return NONE;
 	for(var i=0; i<numVerts; i++){
-		var dist = segValueOnAxis(seg, axes[i].n, axes[i].d);
+		var dist = segValueOnAxis(seg, planes[i].n, planes[i].d);
 		if(dist > 0){
 			return NONE;
 		} else if(dist > poly_min){
@@ -3247,7 +3443,7 @@ var seg2poly = function(seg, poly)
 		}
 	}
 	
-	var poly_n = vneg(axes[mini].n);
+	var poly_n = vneg(planes[mini].n);
 	
 	var va = vadd(seg.ta, vmult(poly_n, seg.r));
 	var vb = vadd(seg.tb, vmult(poly_n, seg.r));
@@ -3284,7 +3480,7 @@ var seg2poly = function(seg, poly)
 		if((con = circle2circleQuery(seg.tb, poly_b, seg.r, 0, arr))) return [con];
 	}
 
-//	console.log(poly.tVerts, poly.tAxes);
+//	console.log(poly.tVerts, poly.tPlanes);
 //	console.log('seg2poly', arr);
 	return arr;
 };
@@ -3293,12 +3489,12 @@ var seg2poly = function(seg, poly)
 // TODO: Comment me!
 var circle2poly = function(circ, poly)
 {
-	var axes = poly.tAxes;
+	var planes = poly.tPlanes;
 	
 	var mini = 0;
-	var min = vdot(axes[0].n, circ.tc) - axes[0].d - circ.r;
-	for(var i=0; i<axes.length; i++){
-		var dist = vdot(axes[i].n, circ.tc) - axes[i].d - circ.r;
+	var min = vdot(planes[0].n, circ.tc) - planes[0].d - circ.r;
+	for(var i=0; i<planes.length; i++){
+		var dist = vdot(planes[i].n, circ.tc) - planes[i].d - circ.r;
 		if(dist > 0){
 			return NONE;
 		} else if(dist > min) {
@@ -3307,7 +3503,7 @@ var circle2poly = function(circ, poly)
 		}
 	}
 	
-	var n = axes[mini].n;
+	var n = planes[mini].n;
 
 	var verts = poly.tVerts;
 	var len = verts.length;
@@ -3358,7 +3554,7 @@ CircleShape.prototype.collisionTable = [
 
 SegmentShape.prototype.collisionTable = [
 	null,
-	function(seg, seg) { return NONE; }, // seg2seg
+	function(segA, segB) { return NONE; }, // seg2seg
 	seg2poly
 ];
 
@@ -3474,6 +3670,8 @@ var Space = cp.Space = function() {
 };
 
 Space.prototype.getCurrentTimeStep = function() { return this.curr_dt; };
+
+Space.prototype.setIterations = function(iter) { this.iterations = iter; };
 
 /// returns true from inside a callback and objects cannot be added/removed.
 Space.prototype.isLocked = function()
@@ -4046,6 +4244,7 @@ Space.prototype.processComponents = function(dt)
 		assertSoft(body.nodeRoot === null, "Internal Error: Dangling root pointer detected in contact graph.");
 	}
 
+	// Calculate the kinetic energy of all the bodies
 	if(sleep){
 		var dv = this.idleSpeedThreshold;
 		var dvsq = (dv ? dv*dv : vlengthsq(this.gravity)*dt*dt);
@@ -4187,6 +4386,8 @@ Space.prototype.activateShapesTouchingShape = function(shape){
  * SOFTWARE.
  */
 
+// Point query functions
+
 /// Query the space at a point and call @c func for each shape found.
 Space.prototype.pointQuery = function(point, layers, group, func)
 {
@@ -4199,9 +4400,10 @@ Space.prototype.pointQuery = function(point, layers, group, func)
 		}
 	};
 
+	var bb = new BB(point.x, point.y, point.x, point.y);
 	this.lock(); {
-		this.activeShapes.pointQuery(point, helper);
-		this.staticShapes.pointQuery(point, helper);
+		this.activeShapes.query(bb, helper);
+		this.staticShapes.query(bb, helper);
 	} this.unlock(true);
 };
 
@@ -4214,6 +4416,47 @@ Space.prototype.pointQueryFirst = function(point, layers, group)
 	});
 	
 	return outShape;
+};
+
+// Nearest point query functions
+
+Space.prototype.nearestPointQuery = function(point, maxDistance, layers, group, func)
+{
+	var helper = function(shape){
+		if(!(shape.group && group === shape.group) && (layers & shape.layers)){
+			var info = shape.nearestPointQuery(point);
+
+			if(info.d < maxDistance) func(shape, info.d, info.p);
+		}
+	};
+
+	var bb = bbNewForCircle(point, maxDistance);
+
+	this.lock(); {
+		this.activeShapes.query(bb, helper);
+		this.staticShapes.query(bb, helper);
+	} this.unlock(true);
+};
+
+// Unlike the version in chipmunk, this returns a NearestPointQueryInfo object. Use its .shape
+// property to get the actual shape.
+Space.prototype.nearestPointQueryNearest = function(point, maxDistance, layers, group)
+{
+	var out;
+
+	var helper = function(shape){
+		if(!(shape.group && group === shape.group) && (layers & shape.layers) && !shape.sensor){
+			var info = shape.nearestPointQuery(point);
+
+			if(info.d < maxDistance && (!out || info.d < out.d)) out = info;
+		}
+	};
+
+	var bb = bbNewForCircle(point, maxDistance);
+	this.activeShapes.query(bb, helper);
+	this.staticShapes.query(bb, helper);
+
+	return out;
 };
 
 /// Perform a directed line segment query (like a raycast) against the space calling @c func for each shape intersected.
@@ -4394,7 +4637,7 @@ Space.prototype.unlock = function(runPostStep)
 	this.locked--;
 	assert(this.locked >= 0, "Internal Error: Space lock underflow.");
 
-	if(!this.locked && runPostStep){
+	if(this.locked === 0 && runPostStep){
 		var waking = this.rousedBodies;
 		for(var i=0; i<waking.length; i++){
 			this.activateBody(waking[i]);
@@ -4702,7 +4945,6 @@ Space.prototype.step = function(dt)
 		}
 
 		// Run the impulse solver.
-		//cpSpaceArbiterApplyImpulseFunc applyImpulse = this.arbiterApplyImpulse;
 		for(i=0; i<this.iterations; i++){
 			for(j=0; j<arbiters.length; j++){
 				arbiters[j].applyImpulse();

@@ -91,7 +91,7 @@ var Body = cp.Body = function(m, i) {
 // I wonder if this should use the constructor style like Body...
 var createStaticBody = function()
 {
-	body = new Body(Infinity, Infinity);
+	var body = new Body(Infinity, Infinity);
 	body.nodeIdleTime = Infinity;
 
 	return body;
@@ -116,7 +116,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
 		assert(this.w === this.w && Math.abs(this.w) !== Infinity, "Body's angular velocity is invalid.");
 		assert(this.t === this.t && Math.abs(this.t) !== Infinity, "Body's torque is invalid.");
 
-		v_assert_sane(this.rot, "Internal error: Body's rotation vector is invalid.");
+		v_assert_sane(this.rot, "Body's rotation vector is invalid.");
 
 		assert(this.v_limit === this.v_limit, "Body's velocity limit is invalid.");
 		assert(this.w_limit === this.w_limit, "Body's angular velocity limit is invalid.");

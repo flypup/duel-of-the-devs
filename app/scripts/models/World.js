@@ -212,7 +212,7 @@
 		this.addBox(v(right +64,  (bottom-top)/2 ), 128, bottom-top);
 		this.addBox(v(left  -64,  (bottom-top)/2 ), 128, bottom-top);
 	};
-
+	
 	proto.addBox = function(v1, w, h) {
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
