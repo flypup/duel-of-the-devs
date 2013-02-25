@@ -202,7 +202,7 @@
 			// we're good here
 
 		} else {
-			throw('can\'t make cp shape for map shape: '+ mapElement.mapType);
+			throw(mapElement +' World.addMapElementBody(): Invalid Map Type: '+ this.mapType);
 		}
 	};
 

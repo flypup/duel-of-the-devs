@@ -121,10 +121,14 @@
 					return true;
 				}
 			} else {
-				throw('can\'t test if element contains entity '+ this.mapType);
+				throw(this +' isBehindEntity(): Invalid Map Type: '+ this.mapType);
 			}
 		}
 		return false;
+	};
+
+	proto.toString = function() {
+		return '[MapElement "'+this.name+'"]';
 	};
 
 	proto.getTop = function(x, y) {

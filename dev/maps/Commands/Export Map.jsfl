@@ -352,8 +352,9 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 	} else if (el.elementType === "instance") {
 
 		if (el.instanceType === "symbol") {
+			libItem = el.libraryItem;
 			if (!exportImage) {
-				eData.name = el.name || ("instance" + el.depth);
+				eData.name = el.name || libItem.name.split('/').pop() || ("instance" + el.depth);
 			}
 			eData.x = el.x + regX;
 			eData.y = el.y + regY;
@@ -377,7 +378,6 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				eData.y -= regY;
 			}
 
-			libItem = el.libraryItem;
 			//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
 			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 			if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
@@ -433,17 +433,17 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 			}
 
 		} else if (el.instanceType === "bitmap") {
-			eData.name = el.name || ("instance" + el.depth);
+			libItem = el.libraryItem;
+			eData.name = el.name || libItem.name.split('/').pop() || ("instance" + el.depth);
 			eData.x = el.x + regX;
 			eData.y = el.y + regY;
 			eData.width  = el.width;
 			eData.height = el.height;
 
-			libItem = el.libraryItem;
 			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
 			if (libItem.itemType === "bitmap") {
 				if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
-					fl.trace('\t\texporting bitmap "'+libItem.name+'" to file: '+eData.fillImage);
+					fl.trace('\t\texporting bitmap "'+libItem.name+'" to file: '+libItem.name);
 					libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
 					exported.push(exportDir +'/'+ libItem.name +'.png');
 				}
