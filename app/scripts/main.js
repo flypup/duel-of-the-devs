@@ -270,10 +270,10 @@
 		cycleMap: function() {
 			var map;
 			if (world.map === maps.courtyard) {
-				map = maps.testmap;
-			} else if (world.map === maps.testmap) {
 				map = maps.testmap2;
 			} else if (world.map === maps.testmap2) {
+				map = maps.testmap;
+			} else if (world.map === maps.testmap) {
 				map = maps.courtyard;
 			}
 			ec.core.setupMap(map, null);
