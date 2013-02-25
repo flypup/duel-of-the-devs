@@ -141,6 +141,23 @@
 			return this;
 		},
 
+		getHeartRate: function() {
+			var rate = 1.0;
+			if (this.state === 'hit') {
+				rate = Math.min(3.0, rate * 1.2);
+
+			} else if (this.state === 'standing') {
+				rate = Math.max(0.8, rate - 0.01);
+
+			} else if (this.state === 'punching') {
+				rate = Math.min(2.0, rate + 0.05);
+
+			} else if (this.state === 'dead') {
+				rate = 0;
+			}
+			return rate;
+		},
+
 		step: function(delta) {
 			if (this.hitTime > 0) {
 				this.hitTime -= delta;

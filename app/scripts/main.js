@@ -12,6 +12,7 @@
 	var scene;
 	var view;
 	var worldView;
+	var hudView;
 	var creditsView;
 	var debugView;
 	var cpDebugView;
@@ -147,8 +148,10 @@
 			view = view || new ec.Canvas2dView();
 			view.removeAll();
 			worldView = worldView || new ec.Canvas2dWorldView(world);
+			hudView = new ec.HUDView();
 			view.add(worldView);
 			view.add(userInput);
+			view.add(hudView);
 			ec.view = view;
 
 			//-------- UI --------//
@@ -178,6 +181,7 @@
 
 			paused = true;
 			overlay = ec.getImage('img/ui/startscreen.png');
+			hudView.alpha = 0;
 
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.start, false);
 
@@ -304,6 +308,7 @@
 				overlay = ec.getImage('img/ui/guide-touch.png');
 				ec.core.trackEvent('game', 'guide', 'guide-touch');
 			}
+			hudView.alpha = 1.0;
 		},
 
 		userReady: function() {
@@ -447,6 +452,8 @@
 				}
 
 				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
+				hudView.health = player.hitPoints / 100;
+				hudView.rate = player.getHeartRate();
 
 				if (boss.state === 'dead') {
 					boss.decomposed += delta;
