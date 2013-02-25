@@ -1,20 +1,17 @@
 CACHE MANIFEST
 
-# Time: Mon Feb 18 2013 10:52:40 GMT-0500 (EST)
+# Time: Mon Feb 24 2013 06:09:40 GMT-0500 (EST)
 
 CACHE:
 index.html
-img/sprite/ninja_64.png
-img/sprite/minimonk_64.png
 img/sprite/cauldron_64.png
 img/sprite/lion_64.png
-img/sprite/shadow_64.png
-img/ui/credits.png
-img/ui/guide-fight-desktop.png
-img/ui/guide-move-desktop.png
-img/ui/guide-touch.png
-img/ui/screenshot.jpg
+img/sprite/sprites_64.png
 img/ui/startscreen.png
+img/ui/guide-move-desktop.png
+img/ui/guide-fight-desktop.png
+img/ui/guide-touch.png
+img/ui/credits.png
 data/courtyard/elements/fills/bricksgray2_64.png
 data/courtyard/elements/fills/rooftiles_64.png
 data/courtyard/elements/bannister.png
@@ -26,13 +23,21 @@ data/courtyard/elements/templefront.png
 data/courtyard/elements/trees.png
 data/testmap/map/grass.png
 data/testmap/map/wallWindow.png
-data/courtyard/data.js
 data/scenes/enter_the_ninja.js
+data/courtyard/data.js
 data/testmap/data.js
-audio/ending.ogg
-audio/game.ogg
-scripts/9bb3601e.scripts.js
-styles/df3dc908.main.css
+audio/crickets.m4a
+audio/crickets.ogg
+audio/hits.m4a
+audio/hits.ogg
+audio/stars.m4a
+audio/stars.ogg
+audio/steps.m4a
+audio/steps.ogg
+audio/strikes.m4a
+audio/strikes.ogg
+scripts/scripts.js
+styles/main.css
 
 NETWORK:
 http://www.google-analytics.com/ga.js
