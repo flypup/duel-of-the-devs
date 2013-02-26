@@ -6,21 +6,18 @@
 	var MapElement = ec.MapElement = function(element) {
 		// Base Props
 		ec.extend(this, {
-			name: '',
+			// name: '',
 			x: 0.0,
 			y: 0.0,
 			z: 0.0,
 			width: 0,
 			height: 0,
-			regX: 0,
-			regY: 0,
+			depth: 0,
+			regX: null,
+			regY: null,
 			matrix: null,
-			mapType: null,
+			mapType: 'notset',
 			mass: 0,
-			mDepth: 0,
-			mHeight: 0,
-			mWidth: 0,
-			mZ: 0,
 			shape: null,
 			type: null,
 			image: null,
@@ -57,7 +54,6 @@
 		this.z = this.mZ || this.z;
 		this.y = this.y + this.z;
 		this.depth = this.mDepth || this.depth;
-		//visible
 		
 		if (this.children) {
 			for (var i=this.children.length; i-- > 0;) {

@@ -244,7 +244,7 @@
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 			}
-			//world.add(boss);
+			world.add(boss);
 
 			// scene
 			cancelAnimationFrame(rafId);
