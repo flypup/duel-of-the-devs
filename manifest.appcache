@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# Time: Mon Feb 26 2013 00:55:00 GMT-0500 (EST)
+# Time: Mon Feb 26 2013 23:19:00 GMT-0500 (EST)
 
 CACHE:
 index.html
@@ -25,16 +25,6 @@ data/courtyard/elements/trees.png
 data/courtyard/elements/moon.png
 data/courtyard/data.js
 data/scenes/enter_the_ninja.js
-audio/crickets.m4a
-audio/steps.m4a
-audio/strikes.m4a
-audio/hits.m4a
-audio/stars.m4a
-audio/crickets.ogg
-audio/steps.ogg
-audio/strikes.ogg
-audio/hits.ogg
-audio/stars.ogg
 
 NETWORK:
 http://www.google-analytics.com/ga.js
