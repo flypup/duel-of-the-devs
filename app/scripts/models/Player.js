@@ -31,7 +31,7 @@
 		this.nextStep = 2-0.05;
 		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
-		this.depth = 64;
+		this.depth = 118;
 		this.type = 'Player';
 
 		this.hitPoints = 100;

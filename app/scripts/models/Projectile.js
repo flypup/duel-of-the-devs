@@ -7,8 +7,9 @@
 		this.setBaseProperties();
 		
 		radius = radius || 12;
-		mass = mass || 2;
+		mass = mass || 1;
 
+		this.depth = 1;
 		this.assignCircleShape(radius, mass);
 
 		this.shape.setElasticity(1);

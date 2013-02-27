@@ -26,7 +26,9 @@
 	function pushCollision(arbiter, space) {
 		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
 		// if (contact) {
-		//console.log('push collision', arbiter);
+		if (ec.debug > 0) {
+			//console.log('push collision', arbiter);
+		}
 		var pushedBody   = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var pushedEntity = pushedBody.userData.parent;
 		if (pushedEntity) {
@@ -58,7 +60,7 @@
 		var entity     = entityBody.userData.parent;
 		var mapElement = mapBody.userData.parent;
 		if (ec.debug > 0) {
-			console.log('mapBegin', entity.type, mapElement);
+			//console.log('mapBegin', entity.type, mapElement);
 		}
 		// Add Map Element to Entity's Checklist
 		entity.addMapCollision(mapElement);
@@ -72,7 +74,7 @@
 		var entity     = entityBody.userData.parent;
 		var mapElement = mapBody.userData.parent;
 		if (ec.debug > 0) {
-			console.log('mapSeparate', entity.type, mapElement);
+			//console.log('mapSeparate', entity.type, mapElement);
 		}
 		// Remove Map Element from Entity's Checklist
 		entity.removeMapCollision(mapElement);
@@ -80,7 +82,47 @@
 
 	// ENTITY OR MAP
 
+	function debugDepthTest(arbiter, space) {
+		var bodyA = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
+		var bodyB = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+
+		if (ec.debug > 0) {
+			if (bodyB.userData && bodyB.userData.parent && bodyB.userData.parent instanceof ec.Player) {
+				console.log('wawawaw', bodyB.userData.parent);
+			}
+		}
+
+		//return depthCollision(bodyA.userData.parent, bodyB.userData.parent);
+		var a = bodyA.userData.parent;
+		var b = bodyB.userData.parent;
+
+		var aBounds = a.getSortBounds();
+		//standing under
+		if ( aBounds.top < b.z ) {
+			console.log('standing under', a, b);
+			return false;
+		}
+		var bBounds = b.getSortBounds();
+		//standing over - fall
+		if ( a.z > bBounds.top) {
+			console.log('standing over - fall', a, b);
+			return false;
+		}
+		//standing on
+		if ( a.z === bBounds.top) {
+			console.log('standing on', a, b);
+			return false;
+		}
+
+		if (ec.debug > 0) {
+			console.log('depth Collision', a, b);
+		}
+		//collision
+		return true;
+	}
+
 	function depthTest(arbiter, space) {
+		//this one happens on every step and must be very efficient
 		var bodyA = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var bodyB = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		return depthCollision(bodyA.userData.parent, bodyB.userData.parent);
@@ -105,7 +147,7 @@
 		}
 
 		if (ec.debug > 0) {
-			//console.log('map', a, b);
+			//console.log('depth Collision', a, b);
 		}
 		//collision
 		return true;
@@ -119,22 +161,22 @@
 		init: function(space) {
 			var _ = null;
 			// Player Attacks
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MONSTER,	depthTest,	_,			pushCollision,	_);
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.PROJECTILE,depthTest,	_,			pushCollision,	_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MONSTER,	_,	depthTest,			pushCollision,	_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.PROJECTILE,_,	depthTest,			pushCollision,	_);
 
 			// Entity to Entity
-			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		depthTest,	_,			entitiesCollide,_);
+			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		_,	depthTest,			entitiesCollide,_);
 			
 			// Projectile to Obstacle / Target
-			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		depthTest,	_,			entitiesCollide,_);
-			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PLAYER,		depthTest,	_,			pushCollision,	_);
+			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		_,	depthTest,			entitiesCollide,_);
+			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PLAYER,		_,	depthTest,			pushCollision,	_);
 
 			// Entity to Map
 			space.addCollisionHandler(Collisions.PLAYER,	Collisions.MAP,			mapBegin,	depthTest,	_,				mapSeparate);
 			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MAP,			mapBegin,	depthTest,	_,				mapSeparate);
 			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.MAP,		mapBegin,	depthTest,	_,				mapSeparate);
 			
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MAP,		depthTest,	_,			_,				_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MAP,		_,	depthTest,			_,				_);
 			
 		},
 
