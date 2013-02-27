@@ -513,9 +513,7 @@
 
 		fullscreen: function() {
 			if (ec.fullscreen) {
-				var element = window.document.body;
-				element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
-				element.requestFullscreen();
+				window.document.body.requestFullscreen();
 			}
 		},
 
@@ -713,51 +711,21 @@
 	ec.bind(window.document, 'DOMContentLoaded', docReadyHandler, false);
 	ec.bind(window, 'load', docReadyHandler, false);
 
-	//polyfills
-	if (!Date.now) {
-		Date.now = function now() {return +(new Date());};
-	}
-
-	var prefixed = function(str, obj) {
-		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
-	};
-
-	// requestAnimationFrame polyfill by Erik Möller
-	// fixes from Paul Irish and Tino Zijdel
-	var requestAnimationFrame = window.requestAnimationFrame || prefixed('RequestAnimationFrame', window);
-	var cancelAnimationFrame = window.cancelAnimationFrame || prefixed('CancelAnimationFrame', window) || prefixed('CancelRequestAnimationFrame', window) || function ( id ) { window.clearTimeout( id ); };
-	if (!requestAnimationFrame) {
-		var lastTime = 0;
-		requestAnimationFrame = function(callback) {
-			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
-			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
-			lastTime = currTime + timeToCall;
-			return id;
-		};
-	}
-
-	var localStorage = window.localStorage ||
-		{
-			_data       : {},
-			setItem     : function(id, val) { return this._data[id] = String(val); },
-			getItem     : function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : undefined; },
-			removeItem  : function(id) { return delete this._data[id]; },
-			clear       : function() { return this._data = {}; }
-		};
-
 	// tests
 	(function() {
 		var document = window.document;
+		var navigator = window.navigator;
 		ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
+		ec.msTouch = navigator.msPointerEnabled;
 		ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
 		ec.ios = (/iPhone|iPad|iPod/).test(navigator.userAgent);
 		ec.ipad = (/iPad/).test(navigator.userAgent);
 		ec.android = (/Android/).test(navigator.userAgent);
 		ec.standalone = !!navigator.standalone;
 		ec.webgl = !!window.WebGLRenderingContext;
-		ec.fullscreen = !!prefixed('cancelFullScreen', document);
-		ec.webaudio   = !!prefixed('AudioContext', window);
-		ec.gamepads   = !!prefixed('getGamepads', navigator);
+		ec.fullscreen = !!document.cancelFullScreen;
+		ec.webaudio   = !!window.AudioContext;
+		ec.gamepads   = !!navigator.getGamepads;
 	})();
 
 	ec.core.begin();
