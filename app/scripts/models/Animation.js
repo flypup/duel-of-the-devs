@@ -1,5 +1,4 @@
 (function(window) {
-	'use strict';
 
 	var ec = window.ec;
 	var direction = {x:0, y:0};

@@ -1,5 +1,4 @@
 (function(window) {
-	'use strict';
 
 	var ec = window.ec;
 	var dummyGamePadList = [undefined, undefined, undefined, undefined];

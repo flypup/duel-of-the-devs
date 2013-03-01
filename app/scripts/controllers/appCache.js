@@ -1,5 +1,4 @@
 (function(window) {
-	'use strict';
 	
 	window.ec = window.ec || {};
 	var appCache = window.applicationCache;

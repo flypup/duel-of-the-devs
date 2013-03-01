@@ -7,7 +7,6 @@
 * http://www.public.iastate.edu/~ddoty/HungarianAlgorithm.html // Non-square
 */
 (function(window) {
-	'use strict';
 
 	var HG = window.Hungarian = {
 
