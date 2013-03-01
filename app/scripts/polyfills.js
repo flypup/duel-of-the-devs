@@ -1,19 +1,20 @@
-!function(window) {
+(function(window) {
 
-	if (!Date.now) {
-		Date.now = function now() {
-			return +(new Date());
-		};
+	function prefixed(str, obj) {
+		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
 	}
 
-	var prefixed = function(str, obj) {
-		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
-	};
+	var date = Date;
+	if (!date.now) {
+		date.now = function() {
+			return +(new date());
+		};
+	}
 
 	if (!window.requestAnimationFrame) {
 		var lastTime = 0;
 		window.requestAnimationFrame = prefixed('RequestAnimationFrame', window) || function(callback) {
-			var currTime = Date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
+			var currTime = date.now(), timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) );
 			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
 			lastTime = currTime + timeToCall;
 			return id;
@@ -52,4 +53,4 @@
 		navigator.getGamepads = prefixed('GetGamepads', navigator);
 	}
 
-}(window);
+})(window);
