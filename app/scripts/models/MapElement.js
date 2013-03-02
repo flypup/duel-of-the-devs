@@ -89,9 +89,9 @@
 
 	proto.isBehindEntity = function(entity) {
 		switch (this.mapType) {
-			case 'container':
-			case 'parallax':
-				return false;
+		case 'container':
+		case 'parallax':
+			return false;
 		}
 		var mapBounds = this.getSortBounds();
 		if (this.mapType === 'floor') {
@@ -165,17 +165,17 @@
 				console.log(this.mapType, this.name, 'yd', this.y+this.depth, 'r', this.regY, 'offsetY', offsetY);
 
 			} else if (this.mapType === 'wall') {
-					bounds.front = this.y;
-					//bounds.back = this.y;
+				bounds.front = this.y;
+				//bounds.back = this.y;
 			} else if (this.mapType === 'steps') {
-					bounds.front = this.y;
-					bounds.top = this.z;
+				bounds.front = this.y;
+				bounds.top = this.z;
 			} else if (this.mapType === 'floor') {
-					bounds.back = this.y + this.depth - this.mHeight/2;
-					bounds.front = bounds.back + this.mHeight;
+				bounds.back = this.y + this.depth - this.mHeight/2;
+				bounds.front = bounds.back + this.mHeight;
 			} else if (this.mapType === 'parallax') {
-					bounds.front = -1; // TODO: parallax sorting and depth
-					bounds.back = -1;
+				bounds.front = -1; // TODO: parallax sorting and depth
+				bounds.back = -1;
 			} else {
 				//throw('unexpected element mapType: ' + this.mapType);
 				//shape

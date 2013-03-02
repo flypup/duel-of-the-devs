@@ -67,26 +67,25 @@
 			layer.layerNum = i;
 
 			var elements = layer.elements || [];
+			var entities = layer.entities = layer.entities || [];
 			var shapes = layer.shapes || [];
 
 			var j, mapElement;
 			for (j=elements.length; j-- > 0;) {
 				if (elements[j].mapType === 'entity') {
-					mapElement = this.add(this.initMapEntity(elements[j]));
+					entities.push(elements.splice(j, 1)[0]);
 				} else {
 					mapElement = this.initMapElement(elements[j]);
 					this.addMapElementBody(mapElement);
-				}
-				mapElement.layerNum = i;
-				if (mapElement.isEntity) {
-					// entity
-					elements.splice(j, 1);
-				} else {
+					mapElement.layerNum = i;
 					mapElement.visible = !!mapElement.image || !!mapElement.children;
 					// ew!
 					elements[j] = mapElement;
 				}
-
+			}
+			for (j=entities.length; j-- > 0;) {
+				mapElement = this.add(this.initMapEntity(entities[j]));
+				mapElement.layerNum = i;
 			}
 			layer.elements = elements;
 			layer.shapes = shapes;
