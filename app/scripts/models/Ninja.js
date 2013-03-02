@@ -47,6 +47,14 @@
 	};
 
 	Ninja.prototype = {
+
+		removed: function() {
+			this.mapCollision.length = 0;
+			if (this.shadowClones) {
+				this.shadowClones.length = 0;
+			}
+		},
+
 		term: function() {
 			ec.Entity.prototype.term.apply(this);
 			this.attack = null;

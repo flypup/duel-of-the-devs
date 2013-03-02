@@ -276,7 +276,7 @@
 			}
 			this.space.removeShape(entity.shape);
 			this.entities.splice(index, 1);
-			entity.mapCollision.length = 0;
+			entity.removed();
 			return entity;
 		}
 		console.error('entity not a child of world', entity);

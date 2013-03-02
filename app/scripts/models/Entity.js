@@ -64,6 +64,10 @@
 			ec.extend(this, this.getBaseProperties());
 		},
 
+		removed: function() {
+			this.mapCollision.length = 0;
+		},
+
 		term: function() {
 			this.shape = null;
 			if (this.body) {
