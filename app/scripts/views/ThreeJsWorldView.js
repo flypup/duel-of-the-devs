@@ -255,9 +255,10 @@
 			return this.renderer.domElement;
 		},
 
-		resize: function() {
-			var width = ec.width /2;
-			var height = ec.height /2;
+		resize: function(reduce) {
+			reduce = reduce || 2;
+			var width = ec.width / reduce;
+			var height = ec.height / reduce;
 			var ratioX = ec.pixelRatio;
 			var ratioY = ec.pixelRatioY || ratioX;
 			var renderer = this.renderer;
@@ -270,15 +271,16 @@
 	        //this.camera.updateMatrixWorld();
 		},
 
-		show: function() {
+		show: function(fullsize) {
 			this.renderer.domElement.style.display = 'block';
 			window.document.body.appendChild( this.renderer.domElement );
+			this.resize(fullsize ? 1 : 2);
 		},
 
 		hide: function() {
 			this.renderer.domElement.style.display = 'none';
 			if (this.renderer.domElement.parentNode) {
-				window.document.body.appendChild( this.renderer.domElement );
+				window.document.body.removeChild( this.renderer.domElement );
 			}
 			this.removeDebugGuis();
 		},

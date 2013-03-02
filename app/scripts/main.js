@@ -598,29 +598,28 @@
 			}
 			cpDebugView = cpDebugView || new ec.ChipmunkDebugView(world.space);
 			debugView = debugView || new ec.DebugView();
+			view3d = view3d || new ec.ThreeJsWorldView();
 
 			debugView.hide();
 			cpDebugView.hide();
+			view3d.hide();
+
 			switch (level) {
 			case 4:
 			case 3:
 				cpDebugView.show();
-				/*falls through*/
-			case 2:
-			case 1:
-				debugView.show();
-			}
-			if (level === 3) {
-				var addGui = !view3d && !ec.touch;
-				view3d = view3d || new ec.ThreeJsWorldView();
-				view3d.show();
+				view3d.show(level === 4);
+				view3d.draw(world);
+				view3d.getDom().style.pointerEvents = 'none';
 				if (!ec.touch) {
 					// debugView.worldGui(world);
 					// view.debugGui(debugView);
 					view3d.debugGui(debugView);
 				}
-			} else if (view3d) {
-				view3d.hide();
+				/*falls through*/
+			case 2:
+			case 1:
+				debugView.show();
 			}
 			ec.debug = level;
 			ec.core.setLocal('debug', level);

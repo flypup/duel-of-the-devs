@@ -33,7 +33,7 @@
 	DebugView.prototype.hide = function() {
 		this.stats.domElement.style.display = 'none';
 		if (this.stats.domElement.parentNode) {
-			window.document.body.appendChild( this.stats.domElement );
+			window.document.body.removeChild( this.stats.domElement );
 		}
 	};
 
