@@ -42,11 +42,21 @@
 		var space = this.space;
 		if (space) {
 			space.locked = 0;
-			space.collisionHandlers.length = 0;
+			space.staticShapes.each(function(shape){space.removeStaticShape(shape);});
+			space.activeShapes.each(function(shape){space.removeShape(shape);});
+			var hash;
+			for(hash in space.collisionHandlers) {
+				delete space.collisionHandlers[hash];
+			}
+			for(hash in space.cachedArbiters) {
+				delete space.cachedArbiters[hash];
+			}
 			space.bodies.length = 0;
+			space.rousedBodies.length = 0;
 			space.sleepingComponents.length = 0;
 			space.constraints.length = 0;
 			space.arbiters.length = 0;
+			space.postStepCallbacks.length = 0;
 		}
 		this.space = null;
 		this.map = null;
