@@ -15,7 +15,8 @@
 	var creditsView;
 	var debugView;
 	var cpDebugView;
-	
+	var view3d;
+
 	var TIME_STEP = ec.TIME_STEP = 1000/60;
 	var paused = false;
 	var deltaTime, remainder;
@@ -33,7 +34,7 @@
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 
 	var loadingViewNode;
-	
+
 	var hasProperties = function(obj, props) {
 		if (!obj) {
 			return false;
@@ -110,7 +111,7 @@
 			console.log('init');
 			deltaTime = time;
 			remainder = 0;
-			
+
 			player = null;
 			boss   = null;
 			userInput = new ec.UserInput();
@@ -135,9 +136,6 @@
 			ec.resizeDisplay();
 
 			ec.SpriteSheets.init();
-
-			// THREE.js View
-			// view = new ec.ThreeJsWorldView();
 
 			// Dummy View
 			// view = {};
@@ -188,7 +186,7 @@
 
 			var sceneData = scenes.enter_the_ninja;
 			scene = new ec.Scene(sceneData);
-			
+
 			//-------- MAP INIT --------//
 
 			var map = maps[scene.mapName];
@@ -200,13 +198,12 @@
 				ec.core.setDebugLevel(ec.debug);
 			}
 
-			if (!ec.touch) {
-				// debugView.worldGui(world);
-				// view.debugGui(debugView);
-			}
-
 			//-------- TRACKING --------//
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
+
+			// ec.core.resume();
+			// ec.core.start({type: ec.touch ? 'touchend' : 'mouseup'});
+			// ec.core.skipScene({type: ec.touch ? 'touchend' : 'mouseup'});
 		},
 
 		setupMap: function(map, scene) {
@@ -220,10 +217,10 @@
 				world.remove(player);
 				world.remove(boss);
 			}
-			
+
 			world.setMap(map);
 			collisions.init(world.space);
-			
+
 			worldView.loadMap();
 			if (cpDebugView) {
 				cpDebugView.setSpace(world.space);
@@ -238,7 +235,7 @@
 				player = new ec.Player().setInput(userInput);
 			}
 			world.add(player);
-			
+
 			// ninja
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
@@ -286,9 +283,9 @@
 			// remove title screen
 			ec.unbind(ec.core.getViewDom(), e.type, ec.core.start, false);
 			overlay = null;
-			
+
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.skipScene, false);
-			
+
 			sound.playGameMusic();
 		},
 
@@ -424,6 +421,11 @@
 			}
 
 			if (ec.debug > 0) {
+				if (view3d && !paused) {
+					var cam = worldView.camera;
+					view3d.lookAt(cam.x + cam.width/2, cam.y + cam.height/2, 0);
+					view3d.draw(world);
+				}
 				if (ec.debug > 2) {cpDebugView.step(view);}
 				if (ec.debug === 1) {ec.core.traceTimeEnd('animateScene');}
 				debugView.end();
@@ -437,7 +439,7 @@
 			}
 
 			rafId = requestAnimationFrame( core.animate );
-			
+
 			var delta = (time - deltaTime);
 			deltaTime = time;
 
@@ -465,12 +467,16 @@
 			} else {
 				delta = 0;
 			}
-			
+
 			if (ec.debug !== 4) {
 				view.draw(delta);
 			}
 
 			if (ec.debug > 0) {
+				if (view3d && !paused) {
+					view3d.lookAt(player.body.p.x, -player.body.p.y, player.z + 60);
+					view3d.draw(world);
+				}
 				if (ec.debug > 2) {cpDebugView.step(view);}
 				if (ec.debug === 1) {ec.core.traceTimeEnd('animate');}
 				debugView.end();
@@ -592,17 +598,29 @@
 			}
 			cpDebugView = cpDebugView || new ec.ChipmunkDebugView(world.space);
 			debugView = debugView || new ec.DebugView();
-			
+
 			debugView.hide();
 			cpDebugView.hide();
 			switch (level) {
-				case 4:
-				case 3:
-					cpDebugView.show();
-					/*falls through*/
-				case 2:
-				case 1:
-					debugView.show();
+			case 4:
+			case 3:
+				cpDebugView.show();
+				/*falls through*/
+			case 2:
+			case 1:
+				debugView.show();
+			}
+			if (level === 3) {
+				var addGui = !view3d && !ec.touch;
+				view3d = view3d || new ec.ThreeJsWorldView();
+				view3d.show();
+				if (!ec.touch) {
+					// debugView.worldGui(world);
+					// view.debugGui(debugView);
+					view3d.debugGui(debugView);
+				}
+			} else if (view3d) {
+				view3d.hide();
 			}
 			ec.debug = level;
 			ec.core.setLocal('debug', level);
@@ -689,7 +707,7 @@
 			obj['on' + event] = func;
 		}
 	};
-	
+
 	ec.unbind = function(obj, event, func, bool) {
 		bool = bool || false;
 		if (obj.removeEventListener) {
