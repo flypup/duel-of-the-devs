@@ -280,7 +280,7 @@
 		hide: function() {
 			this.renderer.domElement.style.display = 'none';
 			if (this.renderer.domElement.parentNode) {
-				window.document.body.removeChild( this.renderer.domElement );
+				window.document.body.appendChild( this.renderer.domElement );
 			}
 			this.removeDebugGuis();
 		},
@@ -288,11 +288,13 @@
 		debugGui: function(debugView) {
 			this.removeDebugGuis();
 			var view = this;
-			var lookAtCenter = function() {//e) {//e.object, e.property
-				//view.lookAt(0, 0, 0);
-			};
 			var updateMatrix = function() {
 				view.camera.updateProjectionMatrix();
+				view.renderer.render( view.scene, view.camera );
+			};
+			var lookAtCenter = function() {//e) {//e.object, e.property
+				view.camera.lookAt(view.lookV3);
+				updateMatrix();
 			};
 			var cameraProps = [];
 			if (view.camera instanceof THREE.PerspectiveCamera || view.camera instanceof THREE.CombinedCamera) {
