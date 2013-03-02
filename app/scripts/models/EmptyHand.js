@@ -35,63 +35,70 @@
 	EmptyHand.GRABBING = 2;
 	EmptyHand.PULLING = 3;
 
-	var proto = EmptyHand.prototype;
 	EmptyHand.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(EmptyHand.prototype, ec.Entity.prototype);
 	};
 
-	proto.entityStep = function(time, world, entity) {
-		if (this.phase) {
-			this.time = time - this.startTime;
+	EmptyHand.prototype = {
 
-			if (this.phase === ec.EmptyHand.PUSHING) {
-				if (this.time < this.punchDuration) {
-					//punching
-					// TODO: check for early hit - GRAB/PUSH
+		postStep: function(delta) {
+			return this;
+		},
 
-				} else if (entity.passive()) {
-					//done punching
-					entity.attackEnd(time, world);
-					//console.log('punch ended passively');
+		entityStep: function(time, world, entity) {
+			if (this.phase) {
+				this.z = entity.z;
+				this.time = time - this.startTime;
 
-				} else if (this.time > this.pushDuration) {
-					this.phase = ec.EmptyHand.GRABBING;
-					//console.log('grabbing');
-				}
+				if (this.phase === ec.EmptyHand.PUSHING) {
+					if (this.time < this.punchDuration) {
+						//punching
+						// TODO: check for early hit - GRAB/PUSH
 
-			} else if (this.phase === ec.EmptyHand.GRABBING) {
-				this.body.vx *= 0.9;
-				this.body.vy *= 0.9;
-				if (entity.passive()) {
-					//done punching
-					entity.attackEnd(time, world);
-					//console.log('grab ended passively');
-
-				} else if (this.time > this.pushDuration + this.grabDuration) {
-					// TODO: did we grab anyone?
-					var grabbedTarget = false;
-					if (!grabbedTarget) {
+					} else if (entity.passive()) {
 						//done punching
 						entity.attackEnd(time, world);
-						//console.log('grab ended empty handed');
-					} else {
+						//console.log('punch ended passively');
 
-						// TODO: this.phase = ec.EmptyHand.PULLING;
-
-						// add constraints
-						//world.space.addConstraint(new cp.GrooveJoint(entity.body, this.body, v(40, 0), v(80 , 0), v(0,0)));
+					} else if (this.time > this.pushDuration) {
+						this.phase = ec.EmptyHand.GRABBING;
+						//console.log('grabbing');
 					}
+
+				} else if (this.phase === ec.EmptyHand.GRABBING) {
+					this.body.vx *= 0.9;
+					this.body.vy *= 0.9;
+					if (entity.passive()) {
+						//done punching
+						entity.attackEnd(time, world);
+						//console.log('grab ended passively');
+
+					} else if (this.time > this.pushDuration + this.grabDuration) {
+						// TODO: did we grab anyone?
+						var grabbedTarget = false;
+						if (!grabbedTarget) {
+							//done punching
+							entity.attackEnd(time, world);
+							//console.log('grab ended empty handed');
+						} else {
+
+							// TODO: this.phase = ec.EmptyHand.PULLING;
+
+							// add constraints
+							//world.space.addConstraint(new cp.GrooveJoint(entity.body, this.body, v(40, 0), v(80 , 0), v(0,0)));
+						}
+					}
+
+				} else if (this.phase === ec.EmptyHand.PULLING) {
+					// TODO: how long can we keep this up?
+
+					if (entity.passive()) {
+						//done punching
+						entity.attackEnd(time, world);
+						console.log('pull ended passively');
+					}
+
 				}
-
-			} else if (this.phase === ec.EmptyHand.PULLING) {
-				// TODO: how long can we keep this up?
-
-				if (entity.passive()) {
-					//done punching
-					entity.attackEnd(time, world);
-					console.log('pull ended passively');
-				}
-
 			}
 		}
 	};
