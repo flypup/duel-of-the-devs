@@ -36,7 +36,7 @@
 	};
 
 	proto.term = function() {
-		// TODO: call remove on all entities > bodies > shapes
+		// TODO: -> call remove on all entities > bodies > shapes
 		this.entities.length = 0;
 		this.elements.length = 0;
 		var space = this.space;
@@ -70,22 +70,22 @@
 		// TODO: remember / remove walls - AKA ViewPort Bounds
 		this.addWalls(0, 0, data.width, data.height);
 
-		// add entities / mapElements
+		// add mapElements, extract entities
+		var entities = data.entities = data.entities || [];
 		var layers = data.layers;
-		for (var i=0; i<layers.length; i++) {
+		var i, j;
+		for (i=0; i<layers.length; i++) {
 			var layer = layers[i];
 			layer.layerNum = i;
 
 			var elements = layer.elements || [];
-			var entities = layer.entities = layer.entities || [];
 			var shapes = layer.shapes || [];
 
-			var j, mapElement;
 			for (j=elements.length; j-- > 0;) {
 				if (elements[j].mapType === 'entity') {
 					entities.push(elements.splice(j, 1)[0]);
 				} else {
-					mapElement = this.initMapElement(elements[j]);
+					var mapElement = this.initMapElement(elements[j]);
 					this.addMapElementBody(mapElement);
 					mapElement.layerNum = i;
 					mapElement.visible = !!mapElement.image || !!mapElement.children;
@@ -93,14 +93,17 @@
 					elements[j] = mapElement;
 				}
 			}
-			for (j=entities.length; j-- > 0;) {
-				mapElement = this.add(this.initMapEntity(entities[j]));
-				mapElement.layerNum = i;
-			}
 			layer.elements = elements;
 			layer.shapes = shapes;
 		}
-
+		// add entities
+		var entity;
+		for (i=entities.length; j-- > 0;) {
+			entity = entities[j];
+			console.log('Map Entity', entity);
+			this.add(this.initMapEntity(entity));
+			entity.layerNum = 0;
+		}
 		this.map = data;
 	};
 
@@ -148,7 +151,8 @@
 							verts[i] = -verts[i];
 						}
 						try {
-							wall = this.addPolygons(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+							// WALL - SHAPE IS BOTTOM OF OBJECT (COLLISION BASE) - DEPTH IS HOW TALL THE WALL IS
+							wall = this.addConvexHull(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 							wall.depth = mapElement.depth;
 							wall.collision_type = ec.Collisions.MAP;
 							console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regY+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
@@ -181,7 +185,8 @@
 							verts[i] = -verts[i];
 						}
 						try {
-							floorShape = this.addPolygons(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
+							// FLOOR - SHAPE IS TOP OF OBJECT SO WE ADD DEPTH - DEPTH IS HOW THICK/DEEP THE FLOOR IS
+							floorShape = this.addConvexHull(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
 							floorShape.depth = mapElement.depth;
 							floorShape.collision_type = ec.Collisions.MAP;
 							console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
@@ -245,6 +250,11 @@
 		shape.setLayers(NOT_GRABABLE_MASK);
 
 		return shape;
+	};
+
+	proto.addConvexHull = function(v1, verts, body, offset) {
+		cp.convexHull(verts, null, 2);
+		return this.addPolygons(v1, verts, body, offset);
 	};
 
 	proto.addLineSegment = function(v1, v2) {

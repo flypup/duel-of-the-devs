@@ -39,8 +39,14 @@
 	var proto = MapElement.prototype;
 
 	proto.init = function() {
-		// TODO: get rid of drawX,Y - should all work the same way
-		if (this.regX) {
+		if (this.mZ) {
+			this.z = this.mZ;
+			this.y = this.y + this.z;
+		}
+		if (this.mDepth) {
+			this.depth = this.mDepth;
+		}
+		if (this.regX || this.regY) {
 			this.drawX = this.x - this.regX;
 			this.drawY = this.y - this.regY;
 		} else {
@@ -49,10 +55,7 @@
 			this.regX = 0;
 			this.regY = 0;
 		}
-		// TODO: just use z and depth in MapComponent/editor
-		this.z = this.mZ || this.z;
-		this.y = this.y + this.z;
-		this.depth = this.mDepth || this.depth;
+		this.drawY -= this.z;
 		
 		if (this.children) {
 			for (var i=this.children.length; i-- > 0;) {
