@@ -212,9 +212,9 @@
 	function testAudio() {
 		var audioTest = new Audio();
 		return {
-			m4a: !!(audioTest.canPlayType('audio/x-m4a;') || audioTest.canPlayType('audio/aac;')).replace(/^no$/,''),
+			m4a: !!(audioTest.canPlayType('audio/mp4') || audioTest.canPlayType('audio/x-m4a;') || audioTest.canPlayType('audio/aac;')).replace(/^no$/,''),
 			ogg: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,'')
-			// wav: !!audioTest.canPlayType('audio/wav; codecs="1"').replace(/^no$/,''),
+			// wav: !!(audioTest.canPlayType('audio/x-wav') || audioTest.canPlayType('audio/wav; codecs="1"')).replace(/^no$/,''),
 			// mp3: !!audioTest.canPlayType('audio/mpeg;').replace(/^no$/,''),
 			// webm: !!audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/,'')
 		};
