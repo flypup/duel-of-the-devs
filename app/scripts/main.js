@@ -76,7 +76,8 @@
 			var appCache = ec.appCache || {};
 			if ((!appCache.complete && !appCache.timedout) ||
 				ec.ready !== true ||
-				!hasProperties(maps, ('courtyard').split(',')) ||
+				!hasProperties(maps, ('testmap3S').split(',')) ||
+				//!hasProperties(maps, ('courtyard').split(',')) ||
 				//!hasProperties(maps, ('testmap,testmap2,courtyard').split(',')) ||
 				!hasProperties(scenes, ['enter_the_ninja'])) {
 				rafId = requestAnimationFrame( core.load );
@@ -190,7 +191,10 @@
 			//-------- MAP INIT --------//
 
 			var map = maps[scene.mapName];
-			//var map = maps.testmap2;
+			// test map
+			scene = null;
+			map = maps.testmap3S;
+			//
 			ec.core.setupMap(map, scene);
 
 			//-------- DEBUG / GUI --------//
@@ -270,6 +274,8 @@
 		cycleMap: function() {
 			var map;
 			if (world.map === maps.courtyard) {
+				map = maps.testmap3S;
+			} else if (world.map === maps.testmap3S) {
 				map = maps.testmap2;
 			} else if (world.map === maps.testmap2) {
 				map = maps.testmap;

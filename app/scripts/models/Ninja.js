@@ -50,8 +50,11 @@
 
 		removed: function() {
 			this.mapCollision.length = 0;
-			if (this.shadowClones) {
+			if (this.shadowClones) { //maybe keep these
 				this.shadowClones.length = 0;
+			}
+			if (this.master) {
+				// TODO: tell em to remove from shadowClones
 			}
 		},
 
@@ -89,6 +92,7 @@
 				shadowClones = this.shadowClones = [];
 			}
 			for (var i = shadowClones.length; i-- > 0;) {
+				// TODO: check if they've been removed
 				if (shadowClones[i].state === 'dead') {
 					shadowClones.splice(i, 1);
 				}
