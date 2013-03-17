@@ -44,7 +44,7 @@
 				body: null,
 				groupId: cp.NO_GROUP,
 				//map layering and sprite sorting
-				sortBounds: {top: 0.0, front: 0.0, back: 0.0},
+				sortBounds: {top:0, bottom: 0, front:0, back:0, left: 0, right: 0},
 				mapCollision: [],
 				maxCollisionTopZ: 0.0,
 				layerNum: 0,
@@ -216,10 +216,35 @@
 		},
 
 		getSortBounds: function() {
-			this.sortBounds.top = this.z + this.depth;
-			this.sortBounds.front = -this.radius/2 -this.body.p.y
-			this.sortBounds.back  =  this.radius/2 -this.body.p.y;
-			return this.sortBounds;
+			var bounds = this.sortBounds;
+			var radius = this.radius;
+			bounds.bottom = this.z;
+			bounds.top = this.z + this.depth;
+			bounds.front =  radius/2 -this.body.p.y;
+			bounds.back  = -radius/2 -this.body.p.y;
+			bounds.left  = -radius   +this.body.p.x;
+			bounds.right =  radius   +this.body.p.x;
+
+			//test bounds:
+			if (ec.debug > 0) {
+				var dimension = bounds.right - bounds.left;
+				if (!assertSoft(dimension > 0, this +' bounds width '+ dimension)) {
+					throw('bounds width should be greater than 0');
+				}
+				dimension = bounds.front - bounds.back;
+				if (!assertSoft(dimension > 0, this +' bounds height '+ dimension)) {
+					if (dimension < 0) {
+						throw('bounds height cannot be a negative number');
+					} 
+				}
+				dimension = bounds.top - bounds.bottom;
+				if (!assertSoft(dimension > 0, this +' bounds depth '+ dimension)) {
+					if (dimension < 0) {
+						throw('bounds depth cannot be a negative number');
+					}
+				}
+			}
+			return bounds;
 		},
 
 		// Physics
@@ -339,5 +364,12 @@
 			};
 		}
 	};
+
+	function assertSoft(value, message) {
+		if (!value) {
+			console.warn('Assertion failed: ' + message);
+		}
+		return value;
+	}
 
 })(window);
