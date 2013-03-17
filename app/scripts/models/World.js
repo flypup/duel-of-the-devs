@@ -20,6 +20,12 @@
 	var GRABABLE_MASK_BIT = 1<<31;
 	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
+	function assert(value, message) {
+		if (!value) {
+			throw new Error('Assertion failed: ' + message);
+		}
+	}
+
 	var proto = World.prototype;
 
 
@@ -86,7 +92,7 @@
 					entities.push(elements.splice(j, 1)[0]);
 				} else {
 					var mapElement = this.initMapElement(elements[j]);
-					this.addMapElementBody(mapElement);
+					mapElement.addMapElementBody(this);
 					mapElement.layerNum = i;
 					mapElement.visible = !!mapElement.image || !!mapElement.children;
 					// ew!
@@ -129,96 +135,6 @@
 		return new ec.MapElement(element);
 	};
 
-	proto.addMapElementBody = function(mapElement) {
-		var x = mapElement.x;
-		var y = mapElement.y;
-		//var z = mapElement.z;
-		var shapes, shape, verts, o, p, i;
-
-		if (mapElement.mapType === 'wall') {
-			var wall;
-			shapes = mapElement.shapes;
-			if (mapElement.shape === 'polygons' && shapes) {
-				mapElement.setBody(new cp.Body(Infinity, Infinity));
-				//poly to verts
-				for (o in shapes) {
-					verts = [];
-					shape = shapes[o];
-					for (p in shape.polygons) {
-						verts = verts.concat.apply(verts, shape.polygons[p]);
-						// reverse y
-						for (i=1; i<verts.length; i+=2) {
-							verts[i] = -verts[i];
-						}
-						try {
-							// WALL - SHAPE IS BOTTOM OF OBJECT (COLLISION BASE) - DEPTH IS HOW TALL THE WALL IS
-							wall = this.addConvexHull(v(x, y), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
-							wall.depth = mapElement.depth;
-							wall.collision_type = ec.Collisions.MAP;
-							console.log('Wall Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+']['+mapElement.regY+','+mapElement.regY+'] ['+shape.x+','+shape.y+']'+ verts);
-						} catch (err) {
-							console.error('Bad Wall Polygon in "'+mapElement.name+'". '+err +' '+ verts);
-						}
-					}
-				}
-			} else {
-				wall = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
-				wall.depth = mapElement.depth;
-				wall.collision_type = ec.Collisions.MAP;
-				mapElement.setBody(wall.body);
-			}
-			this.elements.push(mapElement);
-
-		} else if (mapElement.mapType === 'floor') {
-			var floorShape;
-			shapes = mapElement.shapes;
-			if (mapElement.shape === 'polygons' && shapes) {
-				mapElement.setBody(new cp.Body(Infinity, Infinity));
-				//poly to verts... 2d array to flat array
-				for (o in shapes) {
-					verts = [];
-					shape = shapes[o];
-					for (p in shape.polygons) {
-						verts = verts.concat.apply(verts, shape.polygons[p]);
-						// reverse y
-						for (i=1; i<verts.length; i+=2) {
-							verts[i] = -verts[i];
-						}
-						try {
-							// FLOOR - SHAPE IS TOP OF OBJECT SO WE ADD DEPTH - DEPTH IS HOW THICK/DEEP THE FLOOR IS
-							floorShape = this.addConvexHull(v(x, y+mapElement.depth), verts, mapElement.body, v(shape.x-mapElement.regX, mapElement.regY-shape.y));
-							floorShape.depth = mapElement.depth;
-							floorShape.collision_type = ec.Collisions.MAP;
-							console.log('Floor Polygon verts "'+mapElement.name+'" ['+mapElement.x+','+mapElement.y+'] '+ verts);
-						} catch (err) {
-							console.error('Bad Floor Polygon in "'+mapElement.name+':'+p+'". '+err +' '+ verts);
-						}
-					}
-				}
-
-			} else {
-				floorShape = this.addBox(v(x, y+mapElement.depth), mapElement.mWidth, mapElement.mHeight);
-				floorShape.depth = mapElement.depth;
-				floorShape.collision_type = ec.Collisions.MAP;
-				mapElement.setBody(floorShape.body);
-			}
-			this.elements.push(mapElement);
-
-		} else if (mapElement.mapType === 'steps') {
-			var steps = this.addBox(v(x, y-(mapElement.mHeight/2)), mapElement.mWidth, mapElement.mHeight);
-			steps.depth = mapElement.depth;
-			steps.collision_type = ec.Collisions.MAP;
-			mapElement.setBody(steps.body);
-			this.elements.push(mapElement);
-
-		} else if (mapElement.mapType === 'container' || mapElement.mapType === 'parallax') {
-			// we're good here
-
-		} else {
-			throw(mapElement +' World.addMapElementBody(): Invalid Map Type: '+ this.mapType);
-		}
-	};
-
 	proto.addWalls = function(left, top, right, bottom) {
 		this.addBox(v( (right-left)/2, top   -64), 256+right-left, 128);
 		this.addBox(v( (right-left)/2, bottom+64), 256+right-left, 128);
@@ -227,11 +143,25 @@
 	};
 	
 	proto.addBox = function(v1, w, h) {
+		assert(w > 0 && h > 0, 'addBox width and height must be positive and non-zero');
 		var body = new cp.Body(Infinity, Infinity);
 		body.nodeIdleTime = Infinity;
 		v1.y = -v1.y;
 		body.p = v1;
 		var shape = this.space.addShape(new cp.BoxShape(body, w, h));
+		shape.setElasticity(0);
+		shape.setFriction(1);
+		shape.setLayers(NOT_GRABABLE_MASK);
+		return shape;
+	};
+
+	proto.addCircle = function(v1, r) { // TODO: Oval
+		assert(r > 0, 'addBox width and height must be positive and non-zero');
+		var body = new cp.Body(Infinity, Infinity);
+		body.nodeIdleTime = Infinity;
+		v1.y = -v1.y;
+		body.p = v1;
+		var shape = this.space.addShape(new cp.CircleShape(body, r, v(0, 0)));
 		shape.setElasticity(0);
 		shape.setFriction(1);
 		shape.setLayers(NOT_GRABABLE_MASK);
