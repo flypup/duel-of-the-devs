@@ -386,7 +386,11 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				//"component"
 				extend(eData, parseParameters(el.parameters));
 				if (eData.mWidth !== undefined) eData.mWidth = eData.mWidth || eData.width;
-				if (eData.mHeight !== undefined) eData.mHeight = eData.mHeight || eData.height;
+				if (eData.mHeight !== undefined) {
+					if (eData.mapType !== "wall") {
+						eData.mHeight = eData.mHeight || eData.height;
+					}
+				}
 				if (!eData.notes) eData.notes = undefined;
 
 				if (eData.mapType !== "entity") {
