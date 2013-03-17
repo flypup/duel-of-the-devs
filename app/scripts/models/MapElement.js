@@ -396,19 +396,21 @@
 				if (this.shape === 'polygons') {
 					bounds.front = -Infinity;
 					bounds.back  = Infinity;
-					bounds.left  = -Infinity;
-					bounds.right = Infinity;
+					bounds.left  = Infinity;
+					bounds.right = -Infinity;
+
 					var offsetX, offsetY;
-					for (var o in shapes) {
-						offsetX = this.x - (this.regX - shapes[o].x);
-						offsetY = this.y - (this.regY - shapes[o].y);
+					for (var i = this.shapes.length; i-- > 0;) {
+						var shape = this.shapes[i];
+						offsetX = this.x - (this.regX - shape.x);
+						offsetY = this.y - (this.regY - shape.y);
 						if (this.mapType === 'floor') {
 							offsetY += this.depth;
 						}
-						for (var p in shapes[o].polygons) {
-							var polys = shapes[o].polygons[p];
-							for (var i=0; i<polys.length; i++) {
-								var vert = polys[i];
+						for (var p in shape.polygons) {
+							var polys = shape.polygons[p];
+							for (var j = polys.length; j-- > 0;) {
+								var vert = polys[j];
 								bounds.front = Math.max(bounds.front, offsetY+vert[1]);
 								bounds.back  = Math.min(bounds.back,  offsetY+vert[1]);
 								bounds.left  = Math.min(bounds.left,  offsetX+vert[0]);
@@ -473,6 +475,14 @@
 						if (dimension < 0) {
 							throw('bounds depth cannot be a negative number');
 						}
+					}
+					if (!assertSoft(
+						bounds.front !== -Infinity &&
+						bounds.back  !== Infinity &&
+						bounds.left  !== -Infinity &&
+						bounds.right !== Infinity,
+						this +' bounds not set')) {
+						throw('bounds cannot be infinite');
 					}
 				}
 			}
