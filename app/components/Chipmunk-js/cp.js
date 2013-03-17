@@ -685,6 +685,10 @@ var numBB = 0;
 // Bounding boxes are JS objects with {l, b, r, t} = left, bottom, right, top, respectively.
 var BB = cp.BB = function(l, b, r, t)
 {
+	assert(!isNaN(l), 'Bounding Box left is NaN.');
+	assert(!isNaN(b), 'Bounding Box bottom is NaN.');
+	assert(!isNaN(r), 'Bounding Box right is NaN.');
+	assert(!isNaN(t), 'Bounding Box top is NaN.');
 	this.l = l;
 	this.b = b;
 	this.r = r;
@@ -1299,6 +1303,9 @@ PolyShape.prototype.setVerts = function(verts, offset)
 /// Initialize a box shaped polygon shape.
 var BoxShape = cp.BoxShape = function(body, width, height)
 {
+
+	assert(width > 0 && height > 0, "Box width and height must be positive and non-zero");
+
 	var hw = width/2;
 	var hh = height/2;
 	

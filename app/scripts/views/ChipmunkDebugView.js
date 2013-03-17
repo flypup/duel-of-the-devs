@@ -36,7 +36,8 @@
 		this.ctx = canvas.getContext('2d');
 		this.resize();
 		this.scale = 0.1;
-		this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(0, -this.orthoSize.y));
+		//this.orthoPos = v.mult(this.orthoSize, 0.5).add(pv(0, -this.orthoSize.y));
+		this.orthoPos = v(1220, 420);
 		//document.body.appendChild( canvas );
 
 		this.maxArbiters = null;
@@ -48,10 +49,11 @@
 		var maxWidth = this.width - 10;
 		var getY = verticalSpacer(5, 15);
 		var infoFields = this.infoFields = [];
-		for (var i=6; i-->0;) {
+		var fieldCount = 7;
+		for (var i=fieldCount; i--;) {
 			infoFields.push(new ec.TextField(this.ctx, 5, getY(), maxWidth));
 		}
-		infoFields[5].setPos(5, this.height - 50);
+		infoFields[fieldCount-1].setPos(5, this.height - 50);
 
 		var self = this;
 		var canvas2point = this.canvas2point = function(x, y) {
@@ -270,6 +272,9 @@
 		infoFields[index++].setText('Contact points: ' + contacts + ' (Max: ' + this.maxContacts + ')');
 
 		infoFields[index++].setText('Mouse: ' + this.mouse.x.toFixed(0) +', '+ this.mouse.y.toFixed(0));
+
+		infoFields[index++].setText('OrPos: ' + this.orthoPos.x.toFixed(0) +', '+ this.orthoPos.y.toFixed(0));
+		
 
 		if (this.message) {
 			infoFields[index++].setText(this.message);

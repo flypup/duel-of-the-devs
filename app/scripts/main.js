@@ -244,7 +244,7 @@
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 			}
-			world.add(boss);
+			//world.add(boss);
 
 			// scene
 			cancelAnimationFrame(rafId);
@@ -252,7 +252,9 @@
 				scene ? core.animateScene : core.animate
 			);
 
-			player.setPos(map.width/2, map.height/2+450, 0);
+			//player.setPos(map.width/2, map.height/2+450, 0);
+			player.setPos(818, 690, 0);
+
 			boss.setPos(map.width/2+200, map.height/2, 0);
 
 			//worldView.zoom(0.75);
