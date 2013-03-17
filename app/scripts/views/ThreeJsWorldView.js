@@ -256,7 +256,7 @@
 		},
 
 		resize: function(reduce) {
-			reduce = reduce || 2;
+			reduce = reduce || 2.5;
 			var width = ec.width / reduce;
 			var height = ec.height / reduce;
 			var ratioX = ec.pixelRatio;
@@ -274,7 +274,7 @@
 		show: function(fullsize) {
 			this.renderer.domElement.style.display = 'block';
 			window.document.body.appendChild( this.renderer.domElement );
-			this.resize(fullsize ? 1 : 2);
+			this.resize(fullsize ? 1 : 2.5);
 		},
 
 		hide: function() {

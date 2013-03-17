@@ -3,6 +3,13 @@
 	var ec = window.ec;
 	var v = window.cp.v;
 
+	function assertSoft(value, message) {
+		if (!value) {
+			console.warn('Assertion failed: ' + message);
+		}
+		return value;
+	}
+
 	var MapElement = ec.MapElement = function(element) {
 		// Base Props
 		ec.extend(this, {
@@ -31,7 +38,8 @@
 
 		ec.copy(this, element);
 		this.init();
-		
+		this.assignShapes();
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
@@ -43,14 +51,14 @@
 				this.z = this.mZ;
 				this.y = this.y + this.z;
 			}
-			if (this.mDepth) {
+			if (this.mDepth !== undefined) {
 				this.depth = this.mDepth;
 			}
-			if (this.mHeight) {
+			if (this.mHeight !== undefined) {
 				this.shapes = this.shapes || [{}];
 				this.shapes[0].height = this.mHeight;
 			}
-			if (this.mWidth) {
+			if (this.mWidth !== undefined) {
 				this.shapes = this.shapes || [{}];
 				this.shapes[0].width = this.mWidth;
 			}
@@ -89,108 +97,6 @@
 					this.loadImages.apply(this.children[i], [path]);
 				}
 			}
-		},
-
-		addMapElementBody: function(world) {
-			var x = this.x;
-			var y = this.y;
-			//var z = this.z;
-			var shapes = this.shapes,
-				shape, verts, o, p, i;
-
-			if (this.mapType === 'wall') {
-				var wall;
-				if (this.shape === 'polygons' && shapes) {
-					this.setBody(new cp.Body(Infinity, Infinity));
-					//poly to verts
-					for (o in shapes) {
-						verts = [];
-						shape = shapes[o];
-						for (p in shape.polygons) {
-							verts = verts.concat.apply(verts, shape.polygons[p]);
-							// reverse y
-							for (i=1; i<verts.length; i+=2) {
-								verts[i] = -verts[i];
-							}
-							try {
-								// WALL - SHAPE IS BOTTOM OF OBJECT (COLLISION BASE) - DEPTH IS HOW TALL THE WALL IS
-								wall = world.addConvexHull(v(x, y), verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
-								wall.depth = this.depth;
-								wall.collision_type = ec.Collisions.MAP;
-								console.log('Wall Polygon verts "'+this.name+'" ['+this.x+','+this.y+']['+this.regY+','+this.regY+'] ['+shape.x+','+shape.y+']'+ verts);
-							} catch (err) {
-								console.error('Bad Wall Polygon in "'+this.name+'". '+err +' '+ verts);
-							}
-						}
-					}
-				} else {
-					wall = world.addBox(v(x, y-(shapes[0].height/2)), shapes[0].width, shapes[0].height);
-					wall.depth = this.depth;
-					wall.collision_type = ec.Collisions.MAP;
-					this.setBody(wall.body);
-				}
-				world.elements.push(this);
-
-			} else if (this.mapType === 'floor') {
-				var floorShape;
-				if (this.shape === 'polygons' && shapes) {
-					this.setBody(new cp.Body(Infinity, Infinity));
-					//poly to verts... 2d array to flat array
-					for (o in shapes) {
-						verts = [];
-						shape = shapes[o];
-						for (p in shape.polygons) {
-							verts = verts.concat.apply(verts, shape.polygons[p]);
-							// reverse y
-							for (i=1; i<verts.length; i+=2) {
-								verts[i] = -verts[i];
-							}
-							try {
-								// FLOOR - SHAPE IS TOP OF OBJECT SO WE ADD DEPTH - DEPTH IS HOW THICK/DEEP THE FLOOR IS
-								floorShape = world.addConvexHull(v(x, y+this.depth), verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
-								floorShape.depth = this.depth;
-								floorShape.collision_type = ec.Collisions.MAP;
-								console.log('Floor Polygon verts "'+this.name+'" ['+this.x+','+this.y+'] '+ verts);
-							} catch (err) {
-								console.error('Bad Floor Polygon in "'+this.name+':'+p+'". '+err +' '+ verts);
-							}
-						}
-					}
-				} else if (this.shape === 'oval') {
-					floorShape = world.addCircle(
-						v(x + shapes[0].x, y + shapes[0].y + this.depth),
-						(shapes[0].width + shapes[0].height)/4);
-					floorShape.depth = this.depth;
-					floorShape.collision_type = ec.Collisions.MAP;
-					this.setBody(floorShape.body);
-				} else {
-					floorShape = world.addBox(v(x, y+this.depth), shapes[0].width, shapes[0].height);
-					floorShape.depth = this.depth;
-					floorShape.collision_type = ec.Collisions.MAP;
-					this.setBody(floorShape.body);
-				}
-				world.elements.push(this);
-
-			} else if (this.mapType === 'steps') {
-				var steps = world.addBox(v(x, y-(shapes[0].height/2)), shapes[0].width, shapes[0].height);
-				steps.depth = this.depth;
-				steps.collision_type = ec.Collisions.MAP;
-				this.setBody(steps.body);
-				world.elements.push(this);
-
-			} else if (this.mapType === 'container' || this.mapType === 'parallax') {
-				// we're good here
-
-			} else {
-				throw(this +' World.addMapElementBody(): Invalid Map Type: '+ world.mapType);
-			}
-		},
-
-		setBody: function(body) {
-			this.body = body;
-			body.userData = {
-				parent: this
-			};
 		},
 
 		isBehindEntity: function(entity) {
@@ -238,46 +144,180 @@
 			// TODO: raycast a->b normal
 			
 			//steps ~ inside == infront
-			if (entity.z >= this.z && entityBounds.front > mapBounds.back) {
-				return true;
-			}
+			// if (entity.z >= this.z && entityBounds.front > mapBounds.back) {
+			// 	return true;
+			// }
 
 			return false;
 		},
 
-		isBehindEntity2: function(entity) {
-			switch (this.mapType) {
-			case 'container':
-			case 'parallax':
-				return false;
-			}
-			var mapBounds = this.getSortBounds();
-			if (this.mapType === 'floor') {
-				if (entity.mapCollision.length) {
-					if (entity.mapCollision.indexOf(this) > -1) {
-						if (entity.z >= mapBounds.top) {
-							return true;
+		// TODO: subclass these map types
+		assignShapes: function() {
+			var x = this.x;
+			var y = this.y;
+			//var z = this.z;
+			var shapes = this.shapes,
+				shape, verts, o, p, i, pos;
+
+			if (this.mapType === 'wall') {
+				var wall;
+				if (this.shape === 'polygons' && shapes) {
+					this.setBody(new cp.Body(Infinity, Infinity));
+					//poly to verts
+					for (o in shapes) {
+						verts = [];
+						shape = shapes[o];
+						for (p in shape.polygons) {
+							verts = verts.concat.apply(verts, shape.polygons[p]);
+							// reverse y
+							for (i=1; i<verts.length; i+=2) {
+								verts[i] = -verts[i];
+							}
+							try {
+								// WALL - SHAPE IS BOTTOM OF OBJECT (COLLISION BASE) - DEPTH IS HOW TALL THE WALL IS
+								pos = v(x, y);
+								wall = shape.cpShape = this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
+								wall.depth = this.depth;
+								wall.collision_type = ec.Collisions.MAP;
+								console.log('Wall Polygon verts "'+this.name+'" ['+this.x+','+this.y+']['+this.regY+','+this.regY+'] ['+shape.x+','+shape.y+']'+ verts);
+							} catch (err) {
+								console.error('Bad Wall Polygon in "'+this.name+'". '+err +' '+ verts);
+							}
 						}
 					}
-				} else if (entity.z >= mapBounds.top) {
-					return true;
-				}
-			} else {
-				var entityBounds = entity.getSortBounds();
-				if (this.mapType === 'wall') {
-					// TODO: raycast a->b normal
-					if (entityBounds.front > mapBounds.front) {
-						return true;
-					}
-				} else if (this.mapType === 'steps') {
-					if (entity.z >= this.z && entityBounds.front > mapBounds.back) {
-						return true;
-					}
 				} else {
-					throw(this +' isBehindEntity(): Invalid Map Type: '+ this.mapType);
+					shape = shapes[0];
+					pos = v(x, y-(shape.height/2));
+					wall = shape.cpShape = this.addBox(pos, shape.width, shape.height);
+					if (wall) {
+						wall.depth = this.depth;
+						wall.collision_type = ec.Collisions.MAP;
+						this.setBody(wall.body);
+					}
 				}
+
+			} else if (this.mapType === 'floor') {
+				var floorShape;
+				if (this.shape === 'polygons' && shapes) {
+					this.setBody(new cp.Body(Infinity, Infinity));
+					//poly to verts... 2d array to flat array
+					for (o in shapes) {
+						verts = [];
+						shape = shapes[o];
+						for (p in shape.polygons) {
+							verts = verts.concat.apply(verts, shape.polygons[p]);
+							// reverse y
+							for (i=1; i<verts.length; i+=2) {
+								verts[i] = -verts[i];
+							}
+							try {
+								// FLOOR - SHAPE IS TOP OF OBJECT SO WE ADD DEPTH - DEPTH IS HOW THICK/DEEP THE FLOOR IS
+								pos = v(x, y+this.depth);
+								floorShape = shape.cpShape = this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
+								floorShape.depth = this.depth;
+								floorShape.collision_type = ec.Collisions.MAP;
+								console.log('Floor Polygon verts "'+this.name+'" ['+this.x+','+this.y+'] '+ verts);
+							} catch (err) {
+								console.error('Bad Floor Polygon in "'+this.name+':'+p+'". '+err +' '+ verts);
+							}
+						}
+					}
+				} else if (this.shape === 'oval') {
+					shape = shapes[0];
+					pos = v(x + shape.x, y + shape.y + this.depth);
+					var radius = (shape.width + shape.height)/4;
+					floorShape = shape.cpShape = this.addCircle(pos, radius);
+					floorShape.depth = this.depth;
+					floorShape.collision_type = ec.Collisions.MAP;
+					this.setBody(floorShape.body);
+				} else {
+					shape = shapes[0];
+					pos = v(x, y+this.depth);
+					floorShape = shape.cpShape = this.addBox(pos, shape.width, shape.height);
+					floorShape.depth = this.depth;
+					floorShape.collision_type = ec.Collisions.MAP;
+					this.setBody(floorShape.body);
+				}
+
+			} else if (this.mapType === 'steps') {
+				shape = shapes[0];
+				pos = v(x, y-(shape.height/2));
+				var steps = shape.cpShape = this.addBox(pos, shape.width, shape.height);
+				steps.depth = this.depth;
+				steps.collision_type = ec.Collisions.MAP;
+				this.setBody(steps.body);
+
+			} else if (this.mapType === 'container' || this.mapType === 'parallax') {
+				// we're good here
+
+			} else {
+				throw(this +'.addMapElementBody(): Invalid Map Type: '+ this.mapType);
 			}
-			return false;
+			return this;
+		},
+
+		addBox: function(v1, w, h) {
+			if (!assertSoft(w > 0 && h > 0, 'addBox width and height must be positive and non-zero')) {
+				return;
+			}
+			var body = new cp.Body(Infinity, Infinity);
+			body.nodeIdleTime = Infinity;
+			v1.y = -v1.y;
+			body.p = v1;
+			var shape = new cp.BoxShape(body, w, h);
+			shape.setElasticity(0);
+			shape.setFriction(1);
+			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			return shape;
+		},
+
+		addCircle: function(v1, r) { // TODO: Oval
+			if (!assertSoft(r > 0, 'addCircle radius must be positive and non-zero')) {
+				return;
+			}
+			var body = new cp.Body(Infinity, Infinity);
+			body.nodeIdleTime = Infinity;
+			v1.y = -v1.y;
+			body.p = v1;
+			var shape = new cp.CircleShape(body, r, v(0, 0));
+			shape.setElasticity(0);
+			shape.setFriction(1);
+			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			return shape;
+		},
+
+		addPolygons: function(v1, verts, body, offset) {
+			body = body || new cp.Body(Infinity, Infinity);
+			offset = offset || v(0,0);
+			body.nodeIdleTime = Infinity;
+			v1.y = -v1.y;
+			body.p = v1;
+			var shape = new cp.PolyShape(body, verts, offset);
+			shape.setElasticity(0);
+			shape.setFriction(1);
+			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+
+			return shape;
+		},
+
+		addConvexHull: function(v1, verts, body, offset) {
+			cp.convexHull(verts, null, 2);
+			return this.addPolygons(v1, verts, body, offset);
+		},
+
+		addLineSegment: function(v1, v2) {
+			var shape = new cp.SegmentShape(this.space.staticBody, v1, v2, 0);
+			shape.setElasticity(0);
+			shape.setFriction(1);
+			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			return shape;
+		},
+
+		setBody: function(body) {
+			this.body = body;
+			body.userData = {
+				parent: this
+			};
 		},
 
 		toString: function() {
@@ -295,14 +335,18 @@
 		getSortBounds: function() {
 			var bounds = this.sortBounds;
 			if (!bounds.inited) {
+				var shapes = this.shapes;
 				bounds.inited = true;
 				bounds.top = this.z + this.depth;
-				bounds.back = this.y - this.shapes[0].height;
+				if (shapes) {
+					bounds.back = this.y - shapes[0].height;
+				} else {
+					bounds.back = this.y;
+				}
 				if (this.mapType === 'entity') {
 					throw('entity sorting should not be handled by element instances');
 
-				} else if (this.shape === 'polygons' && this.shapes) {
-					var shapes = this.shapes;
+				} else if (this.shape === 'polygons') {
 					bounds.front = -Infinity;
 					bounds.back  = Infinity;
 					var offsetY;
@@ -329,15 +373,18 @@
 					bounds.front = this.y;
 					bounds.top = this.z;
 				} else if (this.mapType === 'floor') {
-					bounds.back = this.y + this.depth - this.shapes[0].height/2;
-					bounds.front = bounds.back + this.shapes[0].height;
+					bounds.back = this.y + this.depth - shapes[0].height/2;
+					bounds.front = bounds.back + shapes[0].height;
 				} else if (this.mapType === 'parallax') {
 					bounds.front = -1; // TODO: parallax sorting and depth
 					bounds.back = -1;
 				} else {
 					//throw('unexpected element mapType: ' + this.mapType);
-					//shape
-					bounds.front = this.y + this.shapes[0].height;
+					if (shapes) {
+						bounds.front = this.y + shapes[0].height;
+					} else {
+						bounds.front = this.y;
+					}
 				}
 			}
 			return bounds;

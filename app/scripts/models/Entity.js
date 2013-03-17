@@ -35,13 +35,16 @@
 				groundZ: 0.0,
 				z: 0.0,
 				velZ: 0.0,
+				width: 0,
+				height: 0,
+				radius: 0,
 				depth: 32.0,
 				//physics
 				shape: null,
 				body: null,
 				groupId: cp.NO_GROUP,
 				//map layering and sprite sorting
-				sortBounds: {top: 0.0, front: 0.0},
+				sortBounds: {top: 0.0, front: 0.0, back: 0.0},
 				mapCollision: [],
 				maxCollisionTopZ: 0.0,
 				layerNum: 0,
@@ -214,7 +217,8 @@
 
 		getSortBounds: function() {
 			this.sortBounds.top = this.z + this.depth;
-			this.sortBounds.front = -this.body.p.y; // - height/2;
+			this.sortBounds.front = -this.radius/2 -this.body.p.y
+			this.sortBounds.back  =  this.radius/2 -this.body.p.y;
 			return this.sortBounds;
 		},
 
@@ -309,6 +313,8 @@
 		assignCircleShape: function(radius, mass, moment) {
 			moment = moment || cp.momentForCircle(mass, 0, radius, v(0, 0));//cp.vzero);
 			this.radius = radius;
+			this.width = radius*2;
+			this.height = radius*2;
 			var body = this.getBody(mass, moment);
 			this.setBody(body);
 			this.shape = new cp.CircleShape(body, radius, v(0, 0));
@@ -319,6 +325,7 @@
 			moment = moment || cp.momentForBox(mass, width, height);
 			this.width = width;
 			this.height = height;
+			this.radius = (width + height)/4;
 			var body = this.getBody(mass, moment);
 			this.setBody(body);
 			this.shape = new cp.BoxShape(body, width, height);

@@ -8,6 +8,11 @@
 		}
 	};
 
+	//shape layers
+	Collisions.GRABABLE_MASK_BIT = 1<<31;
+	Collisions.NOT_GRABABLE_MASK = ~Collisions.GRABABLE_MASK_BIT;
+	
+	
 	//shape groups
 	Collisions.PLAYER = 1;
 	Collisions.PLAYER_HAND = 2;
