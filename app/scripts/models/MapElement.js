@@ -137,11 +137,33 @@
 
 				switch (this.shape) {
 				case 'box':
-					// TODO: is it rotated? if so fall through to polygon check
-					return false;
-
+					// if rotated fall through to polygon check
+					if (!this.body || this.body.a === 0) {
+						return false;
+					}
+					/*falls through*/
 				case 'polygons':
-					// TODO: raycast a->b normal
+					// test all shape edges
+					var point, distance = Infinity;
+					for (var i = this.shapes.length; i-- > 0;) {
+						var shape = this.shapes[i];
+						var cpShape = shape.cpShape;
+						var info = cpShape.nearestPointQuery(entity.body.p);
+						if (info.d < distance) {
+							distance = info.d;
+							point = info.p;
+						}
+					}
+					// get Y direction of vector from entity to point ('normal')
+					var direction = point.y - entity.body.p.y;
+					if (distance > 0) { // Entity is outside Element shape
+						// Entity is in front of edge
+						if (direction > 0) {
+							return true;
+						}
+					} else { // Entity is inside Element shape
+						console.error(entity +' is inside '+ this);
+					}
 					break;
 
 				case 'oval':
