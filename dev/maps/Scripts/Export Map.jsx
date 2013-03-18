@@ -4,7 +4,7 @@
 
 
 // enable double clicking from the Macintosh Finder or the Windows Explorer
-//#target photoshop
+#target photoshop
 
 // in case we double clicked the file
 //app.bringToFront();
@@ -54,10 +54,7 @@
         },
         rep;
 
-
     function quote(string) {
-
-
         escapable.lastIndex = 0;
         return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
             var c = meta[a];
@@ -66,72 +63,47 @@
         }) + '"' : '"' + string + '"';
     }
 
-
     function str(key, holder) {
-
-
         var i, k, v, length,
             mind = gap,
             partial,
             value = holder[key];
-
 
         if (value && typeof value === 'object' &&
                 typeof value.toJSON === 'function') {
             value = value.toJSON(key);
         }
 
-
         if (typeof rep === 'function') {
             value = rep.call(holder, key, value);
         }
 
-
         switch (typeof value) {
         case 'string':
             return quote(value);
-
         case 'number':
-
-
             return isFinite(value) ? String(value) : 'null';
-
         case 'boolean':
         case 'null':
-
-
             return String(value);
-
-
         case 'object':
-
-
             if (!value) {
                 return 'null';
             }
-
-
             gap += indent;
             partial = [];
 
-
             if (Object.prototype.toString.apply(value) === '[object Array]') {
-
-
                 length = value.length;
                 for (i = 0; i < length; i += 1) {
                     partial[i] = str(i, value) || 'null';
                 }
-
-
                 v = partial.length === 0 ? '[]'
                     : gap ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
                     : '[' + partial.join(',') + ']';
                 gap = mind;
                 return v;
             }
-
-
             if (rep && typeof rep === 'object') {
                 length = rep.length;
                 for (i = 0; i < length; i += 1) {
@@ -154,7 +126,6 @@
                     }
                 }
             }
-
             v = partial.length === 0 ? '{}'
                 : gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
                 : '{' + partial.join(',') + '}';
@@ -165,8 +136,6 @@
 
     if (typeof JSON.stringify !== 'function') {
         JSON.stringify = function (value, replacer, space) {
-
-
             var i;
             gap = '';
             indent = '';
@@ -175,19 +144,15 @@
                 for (i = 0; i < space; i += 1) {
                     indent += ' ';
                 }
-
             } else if (typeof space === 'string') {
                 indent = space;
             }
-
             rep = replacer;
             if (replacer && typeof replacer !== 'function' &&
                     (typeof replacer !== 'object' ||
                     typeof replacer.length !== 'number')) {
                 throw new Error('JSON.stringify');
             }
-
-
             return str('', {'': value});
         };
     }
@@ -244,7 +209,16 @@ function main() {
     var activeLayer = doc.activeLayer;
 
     var mapName = doc.name.replace(/\.psd/, '');
-    var exportPath = doc.path.toString() +'/../../app/data/'+ mapName;
+
+    var exportPath  = doc.path.toString() +'/../../app/data/'+ mapName;
+    var relativePath = '/../app';
+    for (var i=3; i--;) {
+        if (new Folder(doc.path.toString() +relativePath).exists) {
+            exportPath = doc.path.toString() +relativePath+'/data/'+ mapName;
+            break;
+        }
+        relativePath = '/..'+ relativePath;
+    }
 
     log('map Name:', mapName);
     log('export Path:', exportPath);
@@ -257,7 +231,6 @@ function main() {
     created = exports.elementsFolder.create();
     assert(created, 'Could not create elements export folder', quote(exports.elementsFolder));
     //exports.entitiesFolder
-
 
     data.name = mapName;
     data.path = 'data/'+ mapName;
@@ -384,7 +357,7 @@ function parseLayerSet(layerSet, mapLayer) {
         });
 
         // TODO: determine if this set will be exported as one image, or if we export sub layers:
-        var otherLayers = elementData.layers;
+        //var otherLayers = elementData.layers;
         delete elementData.layers;
         //parseLayers(otherLayers, mapLayer, elementData);
 
@@ -455,9 +428,8 @@ function exportLayer(layer, filepath) {
     app.activeDocument = doc;
     var dupeLayer = layer.duplicate(tempDoc, ElementPlacement.PLACEATBEGINNING);
     app.activeDocument = tempDoc;
-    tempDoc.trim(TrimType.TRANSPARENT);
-    // hide depth, shape, data AFTER trimming or width/height will be invalid
     hideElementData(dupeLayer);
+    tempDoc.trim(TrimType.TRANSPARENT);
 
     // check width and height
     if ( getLayerWidth(dupeLayer) ) {
@@ -485,7 +457,7 @@ function exportJSON(data, filepath) {
     var exportFile = new File(filepath);
     var opened = exportFile.open('w');
     assert(opened, 'Could not access file', quote(exportFile));
-    var written = exportFile.write('ec && ec.loadMap('+output+');');
+    var written = exportFile.write('ec && ec.loadMap('+output+');\n');
     assert(written, 'Could not write to file', quote(exportFile));
     log('exported:', exportFile.toString());
 }
@@ -511,6 +483,8 @@ function hideElementData(layer) {
 }
 
 function getElementData(layerSet) {
+    hideElementData(layerSet);
+
     var elementData = {
         name: '',
         mapType: 'floor', //'extrusion',
@@ -541,19 +515,9 @@ function getElementData(layerSet) {
         } else if (name.indexOf('shape') > -1) {
             shapesLayer = layer; // TODO: there can be more than one
             log('\t...found shape "'+ name + '" ' + layer.kind );
-            shapes = getPathData(layer, elementData.x, elementData.y);
-
-            width = getLayerWidth(layer);
-            height = getLayerHeight(layer);
-
+            
             elementData.shape = 'polygons';
-            elementData.shapes.push({
-                x: 0,//getLayerX(layer) + width/2,
-                y: 0,//getLayerY(layer) + height/2,
-                width : width,
-                height: height,
-                'polygons': shapes
-            });
+            elementData.shapes = getPathData(layer, elementData.x, elementData.y);
 
             //var polygons = contoursToPolygons(el.contours, regX-eData.x, regY-eData.y);
 
@@ -592,6 +556,11 @@ function getElementData(layerSet) {
 }
 
 function getPathData(layer, offsetX, offsetY) {
+    // var width = getLayerWidth(layer);
+    // var height = getLayerHeight(layer);
+
+    var shapes = [];
+
     doc.activeLayer = layer;
     var path = doc.pathItems[doc.pathItems.length - 1];
     // var originalRulerUnits = app.preferences.rulerUnits;
@@ -601,19 +570,29 @@ function getPathData(layer, offsetX, offsetY) {
         alert('Please set your ruler units to pixels.');
         app.preferences.rulerUnits = Units.PIXELS;
     }
-    var polygons = [];
     for (var b = 0; b < path.subPathItems.length; b++) {
+        var polygons = [];
+        shapes.push({
+            x: 0,//getLayerX(layer) + width/2,
+            y: 0,//getLayerY(layer) + height/2,
+            // width : width,
+            // height: height,
+            'polygons': polygons
+        });
+
         var poly = [];
-        polygons[b] = poly;
+        polygons.push(poly);
+        
         var points = path.subPathItems[b].pathPoints;
         for (var c = 0; c < points.length; c++) {
             //points[c].kind
             //PointKind.SMOOTHPOINT (elipse?)
             //PointKind.CORNERPOINT
-            var point = points[c].anchor.slice(0);
-            point[0] -= offsetX;
-            point[1] -= offsetY;
-            poly[c] = point;
+            var point = points[c].anchor;//.slice(0);
+            poly[c] = [
+                Math.round((point[0]-offsetX)*10)/10,
+                Math.round((point[1]-offsetY)*10)/10
+            ];
             //     points[c].leftDirection
             //     points[c].rightDirection
             //     points[c].kind
@@ -621,7 +600,7 @@ function getPathData(layer, offsetX, offsetY) {
         //var theClose = thePath.subPathItems[b].closed;
     }
     // app.preferences.rulerUnits = originalRulerUnits;
-    return polygons;
+    return shapes;
 }
 
 function getPolygonCentroid(verts) {
@@ -788,7 +767,8 @@ function getOldElementData(el, exportImage, regX, regY, noFills) {
 				//'component'
 				extend(eData, parseParameters(el.parameters));
 				if (eData.mWidth !== undefined) {eData.mWidth = eData.mWidth || eData.width;}
-				if (eData.mHeight !== undefined) {eData.mHeight = eData.mHeight || eData.height;}
+				if (eData.mHeight !== undefined) {eData.mHeight = eData.mHeight;}// || eData.height;}
+                
 				if (!eData.notes) {eData.notes = undefined;}
 
 				if (eData.mapType !== 'entity') {
