@@ -251,6 +251,8 @@ function main() {
 function parseLayers(layers, mapLayer) {
     log('>', layers.length, 'Layers');
 
+    var elementCount = 0;
+
     for (var i = layers.length; i-- > 0;) {
         var layer = layers[i];
 
@@ -275,12 +277,18 @@ function parseLayers(layers, mapLayer) {
         }
 
         if (layer.typename === 'ArtLayer') {
-            parseArtLayer(layer, mapLayer);
+            elementCount += parseArtLayer(layer, mapLayer);
 
         } else if (layer.typename === 'LayerSet') {
-            parseLayerSet(layer, mapLayer);
+            var elementsFound = parseLayerSet(layer, mapLayer);
+            elementCount += elementsFound;
+            if (elementsFound === 0) {
+                log('- FOUND NO ELEMENTS IN', quote(layer.name));
+            }
         }
     }
+
+    return elementCount;
 }
 
 //-----------
@@ -291,10 +299,12 @@ function parseArtLayer(layer, mapLayer) {
     /*
     LayerKind.NORMAL,      <--- export image?
     LayerKind.PATTERNFILL, <---
-    LayerKind.SMARTOBJECT, <---
+    LayerKind.SMARTOBJECT, <---  return 1 or more
     LayerKind.SOLIDFILL,   <--- (Paths)
     LayerKind.TEXT         <--- Data?
     */
+
+    return 0;
 }
 
 function parseLayerSet(layerSet, mapLayer) {
@@ -332,7 +342,6 @@ function parseLayerSet(layerSet, mapLayer) {
     var elementData = getElementData(layerSet);
     if (elementData.shapes.length) {
         log('\t+ new element');
-        // Get the other stuff (images, childres, etc...)
         elements.push(elementData);
 
         //reg point
@@ -356,43 +365,65 @@ function parseLayerSet(layerSet, mapLayer) {
             height: getLayerHeight(layerSet)
         });
 
-        // TODO: determine if this set will be exported as one image, or if we export sub layers:
-        //var otherLayers = elementData.layers;
-        delete elementData.layers;
-        //parseLayers(otherLayers, mapLayer, elementData);
+        exportElement(elementData, layerSet);
 
-        // export PNG
-        var filename = getLayerImageName(layerSet) +'.png';
-        var filepath = exports.elementsFolder.toString() +'/'+ filename;
-        exportLayer(layerSet, filepath);
-        elementData.image = 'elements/'+filename;
+        return 1;
+    }
 
-    } else {
-        parseLayers(layerSet.layers, mapLayer);
-    } // else add children, if (!mapType) mapType = 'container'
+    var elementCount = parseLayers(layerSet.layers, mapLayer);
+    if (elementCount === 0) {
+        var width = getLayerWidth(layerSet);
+        var height = getLayerHeight(layerSet);
+        if (width && height) {
+            log('\t+ new bitmap element');
+            elements.push(elementData);
 
-    //-------------
-        // var layerContainer = {
-        //     mapType: 'container',//'parallax'
-        //     children: []
-        // };
-        // var layerFrameElements = [];//layerSet.frames[0].elements;
-        // for (var j=0;  j<layerFrameElements.length;  j++) {
-        //     var element = layerFrameElements[j];
-        //     var eData = getOldElementData(element);
-        //     if (element.elementType === 'instance') {
-        //         elements.push(eData);
-        //     } else if (element.elementType === 'shape' || element.elementType === 'bitmap') {
-        //         layerContainer.children.push(eData);
-        //     }
-        // }
-        // if (layerContainer.children.length) {
-        //     elements.push(layerContainer);
-        // }
-        // log(layerIndex+'\t\t"'+
-        //     layerSet.name +'"\t\t'+
-        //     (layerContainer.children.length ? (layerContainer.children.length+' children') : (elements.length+' elements'))
-    // );
+            extend(elementData, {
+                name: layerSet.name,
+                mapType: 'parallax',
+                x: getLayerX(layerSet),
+                y: getLayerY(layerSet),
+                width : width,
+                height: height
+            });
+            delete elementData.shape;
+            delete elementData.shapes;
+
+            exportElement(elementData, layerSet);
+
+            elementCount++;
+        }
+    }
+    
+    // Use container for pattern fill
+    // if (elementData.shapes.length === 0) {
+    //     log('\t+ new container element');
+    //     //make this a bitmap container
+    //     var container = {
+    //         mapType: 'container',//'parallax'
+    //         children: [elementData] // fillImage: , rectangle:true
+    //     };
+    //     elements.push(container);
+    // } else {
+    //     log('\t+ new element');
+    //     // Get the other stuff (images, childres, etc...)
+    //     elements.push(elementData);
+    // }
+
+    return elementCount;
+}
+
+function exportElement(elementData, layerSet) {
+    // TODO: determine if this set will be exported as one image, or if we export sub layers:
+    //var otherLayers = elementData.layers;
+    delete elementData.layers;
+    //parseLayers(otherLayers, mapLayer, elementData);
+
+    // export PNG
+    var filename = getLayerImageName(layerSet) +'.png';
+    var filepath = exports.elementsFolder.toString() +'/'+ filename;
+    exportLayer(layerSet, filepath);
+    elementData.image = 'elements/'+filename;
 }
 
 function getLayerImageName(layer) {
@@ -505,7 +536,6 @@ function getElementData(layerSet) {
     var layers = layerSet.artLayers;
     for (var i = layers.length; i-- > 0;) {
         var layer = layers[i];
-        var shapes;
         var name = layer.name.toLowerCase();
         var width;
         var height;
@@ -582,17 +612,17 @@ function getPathData(layer, offsetX, offsetY) {
 
         var poly = [];
         polygons.push(poly);
-        
+
         var points = path.subPathItems[b].pathPoints;
         for (var c = 0; c < points.length; c++) {
             //points[c].kind
             //PointKind.SMOOTHPOINT (elipse?)
             //PointKind.CORNERPOINT
             var point = points[c].anchor;//.slice(0);
-            poly[c] = [
+            poly.push([
                 Math.round((point[0]-offsetX)*10)/10,
                 Math.round((point[1]-offsetY)*10)/10
-            ];
+            ]);
             //     points[c].leftDirection
             //     points[c].rightDirection
             //     points[c].kind

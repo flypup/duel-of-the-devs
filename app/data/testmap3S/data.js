@@ -94,6 +94,19 @@ ec && ec.loadMap({
           "image": "elements/wall.png"
         },
         {
+          "name": "little floor",
+          "mapType": "parallax",
+          "x": 169,
+          "y": 887,
+          "z": 0,
+          "width": 259,
+          "height": 70,
+          "depth": 0,
+          "regX": 0,
+          "regY": 0,
+          "image": "elements/little_floor.png"
+        },
+        {
           "name": "floor",
           "mapType": "floor",
           "x": 694,
