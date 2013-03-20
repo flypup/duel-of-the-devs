@@ -275,7 +275,10 @@
 
 		cycleMap: function() {
 			var map;
+
 			if (world.map === maps.courtyard) {
+				map = maps.noodleshop3S;
+			} else if (world.map === maps.noodleshop3S) {
 				map = maps.testmap3S;
 			} else if (world.map === maps.testmap3S) {
 				map = maps.testmap2;

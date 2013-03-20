@@ -5,6 +5,81 @@ ec && ec.loadMap({
   "height": 1002,
   "layers": [
     {
+      "name": "bounds",
+      "elements": [
+        {
+          "name": "bounds left",
+          "mapType": "wall",
+          "x": 43,
+          "y": 283,
+          "z": 0,
+          "width": 695,
+          "height": 1410,
+          "depth": 780,
+          "regX": 48,
+          "regY": 995,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    2,
+                    793
+                  ],
+                  [
+                    5,
+                    1393
+                  ],
+                  [
+                    137,
+                    799
+                  ]
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "name": "bounds top",
+          "mapType": "wall",
+          "x": 805,
+          "y": 86,
+          "z": 0,
+          "width": 1422,
+          "height": 875,
+          "depth": 780,
+          "regX": 792,
+          "regY": 798,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    1,
+                    804
+                  ],
+                  [
+                    1409,
+                    872
+                  ],
+                  [
+                    966,
+                    718
+                  ]
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "background",
       "elements": [
         {
@@ -44,8 +119,7 @@ ec && ec.loadMap({
                 ]
               ]
             }
-          ],
-          "image": "elements/full_area.png"
+          ]
         }
       ]
     },
@@ -98,12 +172,8 @@ ec && ec.loadMap({
           "mapType": "parallax",
           "x": 169,
           "y": 887,
-          "z": 0,
           "width": 259,
           "height": 70,
-          "depth": 0,
-          "regX": 0,
-          "regY": 0,
           "image": "elements/little_floor.png"
         },
         {
@@ -455,7 +525,5 @@ ec && ec.loadMap({
       ]
     }
   ],
-  "entities": [
-    
-  ]
+  "entities": []
 });

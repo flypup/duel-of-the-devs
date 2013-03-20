@@ -56,7 +56,6 @@ function main() {
 	log('========================================');
 
 	app.displayDialogs = DialogModes.ALL;
-	var activeLayer = doc.activeLayer;
 
 	var mapName = doc.name.replace(/\.psd/, '');
 
@@ -100,11 +99,12 @@ function main() {
 	log('----------------------------------------');
 
 	exportJSON(data, exports.folder.toString() +'/data.js');
-
-	doc.activeLayer = activeLayer;
 }
 
 function parseLayers(layers, mapLayer, prepend) {
+	if (layers.length === 0) {
+		return 0;
+	}
 	log(prepend, '>', layers.length, 'Layers');
 
 	var elementCount = 0;
@@ -152,7 +152,7 @@ function newMapLayer(layer, prepend) {
 	layerIndex++;
 	log(prepend, '\t+ ('+ layerIndex +') new layer');
 	var mapLayer = {
-		name: layer.name,
+		name: layer.name.replace(/\s*\{.*\}\s*/, ''),
 		elements: []
 	};
 	if (!layer.visible) {
@@ -172,6 +172,7 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	}
 
 	if (layerSet.name.toLowerCase().indexOf('entities') > -1) {
+		layerSet.visible = false;
 		// TODO: parse Entity sub layers
 		return;
 	}
@@ -184,9 +185,9 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	// layer set with shape data is element
 	var elementData = getElementData(layerSet, getLayerX(layerSet), getLayerY(layerSet));
 	if (elementData.shapes.length) {
-		log(prepend, '\t+ new element');
+		getElementPosition(layerSet, elementData, prepend);
+		log(prepend, '\t+ new element', quote(elementData.name), elementData.mapType);
 
-		getElementPosition(layerSet, elementData);
 		elements.push(elementData);
 		exportElement(elementData, layerSet, mapLayer, prepend);
 
@@ -197,9 +198,9 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	var elementCount = parseLayers(layerSet.layers, mapLayer, prepend+'\t');
 	if (elementCount === 0) {
 
-		getElementPosition(layerSet, elementData);
+		getElementPosition(layerSet, elementData, prepend);
 		if (elementData.width && elementData.height) {
-			log(prepend, '\t+ new bitmap element');
+			log(prepend, '\t+ new bitmap element', quote(elementData.name));
 			
 			elementData.mapType = 'parallax';
 			delete elementData.z;
@@ -228,8 +229,9 @@ function parseArtLayer(layer, mapLayer, prepend) {
 		var x = getLayerX(layer);
 		var y = getLayerY(layer);
 		
+		var parentDoc = app.activeDocument;
 		if ( getLayerWidth(layer) ) {
-			doc.activeLayer = layer;
+			parentDoc.activeLayer = layer;
 			var idAction = stringIDToTypeID('placedLayerEditContents');
 			var idDesc = new ActionDescriptor();
 			executeAction(idAction, idDesc, DialogModes.NO);
@@ -239,35 +241,40 @@ function parseArtLayer(layer, mapLayer, prepend) {
 		}
 
 		var smartDoc = app.activeDocument;
-		if (smartDoc !== doc) {
+		if (smartDoc !== parentDoc) {
 			var name = smartDoc.name;
 
 			smartObject = smartObjects[name];
 			if (!smartObject) {
 				log(prepend, 'SMART DOC', name);
+				elementData = getElementData(smartDoc, 0, 0);//x, y);
 				smartObject = smartObjects[name] = {
 					doc: smartDoc,
 					isGameObect: false,
-					exported: 0
+					exported: 0,
+					elementData: elementData
 				};
-				elementData = getElementData(smartDoc, x, y);
 				if (elementData.shapes.length || elementData.depth) {
 					smartObject.isGameObect = true;
+					var filename = getLayerImageName(layer) +'.png';
+					elementData.image = 'elements/'+filename;
 				}
 			}
+			smartObject.elementData.x = x;
+			smartObject.elementData.x = y;
+			elementData = extend({}, smartObject.elementData);
 			//smartDoc.close(SaveOptions.DONOTSAVECHANGES);
 		} else {
 			log('** FAILED TO OPEN SMART OBJECT DOC **', quote(layer.name));
 			return 0;
 		}
 		//restore doc
-		app.activeDocument = doc;
+		app.activeDocument = parentDoc;
 
 		if (elementData && smartObject.isGameObect) {
-			getElementPosition(layer, elementData);
+			getElementPosition(layer, elementData, prepend);
 
-			var filename = getLayerImageName(layer) +'.png';
-			elementData.image = 'elements/'+filename;
+			log(prepend, '\t+ new element from smartobject', quote(elementData.name));
 
 			mapLayer = mapLayer || newMapLayer(layer, prepend);
 			var elements = mapLayer.elements;
@@ -313,16 +320,48 @@ function exportElement(elementData, layer, mapLayer, prepend) {
 	// extract any layers that should be exported as separate elements (Smart Objects):
 	parseLayers(elementData.layers, mapLayer, prepend+'\t');
 	delete elementData.layers;
-	
-	// export PNG
-	var filename = getLayerImageName(layer) +'.png';
-	var filepath = exports.elementsFolder.toString() +'/'+ filename;
-	exportLayer(layer, filepath, prepend);
-	elementData.image = 'elements/'+filename;
+
+	if (hasVisibleContents(layer, prepend)) {
+		// export PNG
+		var filename = getLayerImageName(layer) +'.png';
+		var filepath = exports.elementsFolder.toString() +'/'+ filename;
+		exportLayer(layer, filepath, prepend);
+		elementData.image = 'elements/'+filename;
+	}
 }
 
+function hasVisibleContents(layer, prepend) {
+	var width = getLayerWidth(layer);
+	var height = getLayerHeight(layer);
+	log(prepend, '\t? contents', quote(layer.name), width+'x'+height);
+	// check width and height
+	if (width && height) {
+		if (!layer.layers) {
+			return layer.visible;
+		}
+		var i, layers, subLayer;
+		layers = layer.layerSets;
+		for (i = layers.length; i-- > 0;) {
+			subLayer = layers[i];
+			if (subLayer.visible && hasVisibleContents(subLayer, '\t'+prepend)) {
+				return true;
+			}
+		}
+		layers = layer.artLayers;
+		for (i = layers.length; i-- > 0;) {
+			subLayer = layers[i];
+			if (subLayer.visible && getLayerWidth(subLayer) && getLayerHeight(subLayer)) {
+				log(prepend, '\t+ visible', quote(subLayer.name), subLayer.width, subLayer.height);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 function getLayerImageName(layer) {
-	var name = layer.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+	var name = layer.name.replace(/\s*\{.*\}\s*/, '').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
 	if (exports.names[name]) {
 		alert('A layer with the same name was already exported: '+quote(name));
 		log('\tWARNING: Layer name', quote(name), 'is not unique. x', exports.names[name]);
@@ -341,10 +380,11 @@ function exportLayer(layer, filepath, prepend) {
 		return;
 	}
 
+	var parentDoc = app.activeDocument;
 	app.displayDialogs = DialogModes.ERROR; //DialogModes.NO;
 	// duplicate layer into new document and trim
 	var tempDoc = app.documents.add(
-		doc.width, doc.height, doc.resolution,
+		parentDoc.width, parentDoc.height, parentDoc.resolution,
 		layer.name, // replace spaces with underscore
 		NewDocumentMode.RGB,
 		DocumentFill.TRANSPARENT,
@@ -352,30 +392,27 @@ function exportLayer(layer, filepath, prepend) {
 		BitsPerChannelType.EIGHT,
 		'' // color profile
 	);
-	app.activeDocument = doc;
+	app.activeDocument = parentDoc;
 	var dupeLayer = layer.duplicate(tempDoc, ElementPlacement.PLACEATBEGINNING);
 	app.activeDocument = tempDoc;
 	hideElementData(dupeLayer);
 	tempDoc.trim(TrimType.TRANSPARENT);
 
-	// check width and height
-	if ( getLayerWidth(dupeLayer) ) {
-		// export PNG
-		var opts = new ExportOptionsSaveForWeb();
-		opts.format = SaveDocumentType.PNG;
-		opts.PNG8 = false;
-		opts.quality = 100;
-		//opts.matteColor = RGB black, white or best match ?
+	// export PNG
+	var opts = new ExportOptionsSaveForWeb();
+	opts.format = SaveDocumentType.PNG;
+	opts.PNG8 = false;
+	opts.quality = 100;
+	//opts.matteColor = RGB black, white or best match ?
 
-		file = exports.files[filepath] = new File(filepath);
-		log(prepend, '\texported:', quote(file));
-		tempDoc.exportDocument(file, ExportType.SAVEFORWEB, opts);
-	}
+	file = exports.files[filepath] = new File(filepath);
+	log(prepend, '\texported:', quote(file));
+	tempDoc.exportDocument(file, ExportType.SAVEFORWEB, opts);
 
 	tempDoc.close(SaveOptions.DONOTSAVECHANGES);
 
 	//restore doc
-	app.activeDocument = doc;
+	app.activeDocument = parentDoc;
 	app.displayDialogs = DialogModes.ALL;
 }
 
@@ -392,25 +429,49 @@ function exportJSON(data, filepath) {
 //-----------
 
 function hideElementData(layer) {
+	if (!layer.layers) {
+		return;
+	}
+	var i, subLayer, name;
+	var layerSets = layer.layerSets;
+	for (i = layerSets.length; i-- > 0;) {
+		subLayer = layerSets[i];
+		name = subLayer.name.toLowerCase();
+		if (
+			(name.indexOf('data') > -1) ||
+			(name.indexOf('entities') > -1)
+			) {
+			subLayer.visible = false;
+			return;
+		}
+	}
 	var layers = layer.artLayers;
-	if (layers) {
-		for (var i = layers.length; i-- > 0;) {
-			var subLayer = layers[i];
-			var name = subLayer.name.toLowerCase();
-			if (
-				(name.indexOf('data') > -1 && subLayer.kind === LayerKind.TEXT) ||
-				(name.indexOf('shape') > -1) ||
-				(name.indexOf('ellipse') > -1) ||
-				(name.indexOf('depth') > -1)
-				) {
-				subLayer.visible = false;
-			}
+	for (i = layers.length; i-- > 0;) {
+		subLayer = layers[i];
+		name = subLayer.name.toLowerCase();
+		if (
+			(name.indexOf('data') > -1 && subLayer.kind === LayerKind.TEXT) ||
+			(name.indexOf('shape') > -1) ||
+			(name.indexOf('ellipse') > -1) ||
+			(name.indexOf('depth') > -1)
+			) {
+			subLayer.visible = false;
 		}
 	}
 }
 
 function getElementData(layerSet, x, y) {
-	hideElementData(layerSet);
+	var i;
+
+	//find data layerset
+	var layerSets = layerSet.layerSets;
+	for (i = layerSets.length; i-- > 0;) {
+		var subLayer = layerSets[i];
+		var name = subLayer.name.toLowerCase();
+		if (name.indexOf('data') > -1) {
+			return getElementData(subLayer, x, y);
+		}
+	}
 
 	var elementData = {
 		name: '',
@@ -430,7 +491,7 @@ function getElementData(layerSet, x, y) {
 	var depthLayer;
 	var shapesLayer;
 	var layers = layerSet.artLayers;
-	for (var i = layers.length; i-- > 0;) {
+	for (i = layers.length; i-- > 0;) {
 		var layer = layers[i];
 		var name = layer.name.toLowerCase();
 		var width;
@@ -481,7 +542,9 @@ function getElementData(layerSet, x, y) {
 	return elementData;
 }
 
-function getElementPosition(layer, elementData) {
+function getElementPosition(layer, elementData, prepend) {
+	hideElementData(layer);
+
 	//reg point
 	var regX = 0, regY = 0;
 	if (elementData.shape === 'polygons') {
@@ -501,10 +564,12 @@ function getElementPosition(layer, elementData) {
 	var jsonMatch = name.match(jsonRegExp);
 	if (jsonMatch && jsonMatch.length) {
 		props = JSON.parse(jsonMatch[0]);
-		log('parsed json', props);
+		log(prepend, '\t~ parsed json', jsonMatch[0]);
 		name = name.replace(jsonRegExp, '');
 	}
-
+	if (props) {
+		extend(elementData, props);
+	}
 	extend(elementData, {
 		name: name,
 		x: getLayerX(layer) + regX,
@@ -514,9 +579,6 @@ function getElementPosition(layer, elementData) {
 		width : getLayerWidth(layer),
 		height: getLayerHeight(layer)
 	});
-	if (props) {
-		extend(elementData, props);
-	}
 }
 
 function getPathData(layer, offsetX, offsetY) {
@@ -525,8 +587,9 @@ function getPathData(layer, offsetX, offsetY) {
 
 	var shapes = [];
 
-	doc.activeLayer = layer;
-	var path = doc.pathItems[doc.pathItems.length - 1];
+	var parentDoc = app.activeDocument;
+	parentDoc.activeLayer = layer;
+	var path = parentDoc.pathItems[parentDoc.pathItems.length - 1];
 	// var originalRulerUnits = app.preferences.rulerUnits;
 	// app.preferences.rulerUnits = Units.PIXELS;
 	// log('ruler units', originalRulerUnits);
@@ -588,11 +651,11 @@ function getLayerY(layer) {
 }
 function getLayerWidth(layer) {
 	var bounds = layer.bounds;
-	return bounds[2].value - bounds[0].value;
+	return (bounds[2].value - bounds[0].value)|0;
 }
 function getLayerHeight(layer) {
 	var bounds = layer.bounds;
-	return bounds[3].value - bounds[1].value;
+	return (bounds[3].value - bounds[1].value)|0;
 }
 
 function parseDataIni(str) {
