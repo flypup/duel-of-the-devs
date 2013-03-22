@@ -88,7 +88,7 @@ function main() {
 	data.layers = [];
 	data.entities = [];
 
-	parseLayers(doc.layers, null, '');
+	parseLayers(doc.layers, null, null, '');
 
 	//close smart objects
 	for (var o in smartObjects) {
@@ -101,7 +101,7 @@ function main() {
 	exportJSON(data, exports.folder.toString() +'/data.js');
 }
 
-function parseLayers(layers, mapLayer, prepend) {
+function parseLayers(layers, mapLayer, inherit, prepend) {
 	if (layers.length === 0) {
 		return 0;
 	}
@@ -133,13 +133,13 @@ function parseLayers(layers, mapLayer, prepend) {
 		}
 
 		if (layer.typename === 'LayerSet') {
-			var elementsFound = parseLayerSet(layer, mapLayer, prepend);
+			var elementsFound = parseLayerSet(layer, mapLayer, inherit, prepend);
 			elementCount += elementsFound;
 			if (elementsFound === 0) {
 				log(prepend, '- FOUND NO ELEMENTS IN', quote(layer.name));
 			}
 		} else if (layer.typename === 'ArtLayer') {
-			elementCount += parseArtLayer(layer, mapLayer, prepend);
+			elementCount += parseArtLayer(layer, mapLayer, inherit, prepend);
 		}
 	}
 
@@ -151,10 +151,8 @@ function parseLayers(layers, mapLayer, prepend) {
 function newMapLayer(layer, prepend) {
 	layerIndex++;
 	log(prepend, '\t+ ('+ layerIndex +') new layer');
-	var mapLayer = {
-		name: layer.name.replace(/\s*\{.*\}\s*/, ''),
-		elements: []
-	};
+	var mapLayer = getLayerNameJSON(layer);
+	mapLayer.elements = [];
 	if (!layer.visible) {
 		mapLayer.visible = false;
 	}
@@ -162,11 +160,14 @@ function newMapLayer(layer, prepend) {
 	return mapLayer;
 }
 
-function parseLayerSet(layerSet, mapLayer, prepend) {
+function parseLayerSet(layerSet, mapLayer, inherit, prepend) {
 	if (layerSet.name.toLowerCase().indexOf('group') > -1) {
 	//if (layerSet.blendMode === BlendMode.PASSTHROUGH) {
-		log(prepend, '----- passing through group -----');
-		parseLayers(layerSet.layers, mapLayer, prepend+'\t');
+		
+		inherit = extend(inherit, getLayerNameJSON(layerSet));
+		log(prepend, '----- passing through group -----', JSON.stringify(inherit));
+		delete inherit.name;
+		parseLayers(layerSet.layers, mapLayer, inherit, prepend+'\t');
 		log(prepend, '---------------------------------');
 		return;
 	}
@@ -183,7 +184,7 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	var elements = mapLayer.elements;
 
 	// layer set with shape data is element
-	var elementData = getElementData(layerSet, getLayerX(layerSet), getLayerY(layerSet));
+	var elementData = getElementData(layerSet, getLayerX(layerSet), getLayerY(layerSet), inherit);
 	if (elementData.shapes.length) {
 		getElementPosition(layerSet, elementData, prepend);
 		log(prepend, '\t+ new element', quote(elementData.name), elementData.mapType);
@@ -195,7 +196,7 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	}
 
 	// layer set with no shape data or child elements is bitmap element
-	var elementCount = parseLayers(layerSet.layers, mapLayer, prepend+'\t');
+	var elementCount = parseLayers(layerSet.layers, mapLayer, null, prepend+'\t');
 	if (elementCount === 0) {
 
 		getElementPosition(layerSet, elementData, prepend);
@@ -220,7 +221,7 @@ function parseLayerSet(layerSet, mapLayer, prepend) {
 	return elementCount;
 }
 
-function parseArtLayer(layer, mapLayer, prepend) {
+function parseArtLayer(layer, mapLayer, inherit, prepend) {
 	//log('\t*** parseArtLayer *** ', layer, mapLayer);
 	if (layer.kind === LayerKind.SMARTOBJECT) {
 		var elementData;
@@ -247,7 +248,7 @@ function parseArtLayer(layer, mapLayer, prepend) {
 			smartObject = smartObjects[name];
 			if (!smartObject) {
 				log(prepend, 'SMART DOC', name);
-				elementData = getElementData(smartDoc, 0, 0);//x, y);
+				elementData = getElementData(smartDoc, 0, 0, inherit);//x, y);
 				smartObject = smartObjects[name] = {
 					doc: smartDoc,
 					isGameObect: false,
@@ -262,7 +263,7 @@ function parseArtLayer(layer, mapLayer, prepend) {
 			}
 			smartObject.elementData.x = x;
 			smartObject.elementData.x = y;
-			elementData = extend({}, smartObject.elementData);
+			elementData = clone(smartObject.elementData);
 			//smartDoc.close(SaveOptions.DONOTSAVECHANGES);
 		} else {
 			log('** FAILED TO OPEN SMART OBJECT DOC **', quote(layer.name));
@@ -272,6 +273,7 @@ function parseArtLayer(layer, mapLayer, prepend) {
 		app.activeDocument = parentDoc;
 
 		if (elementData && smartObject.isGameObect) {
+			extend(elementData, getLayerNameJSON(layer));
 			getElementPosition(layer, elementData, prepend);
 
 			log(prepend, '\t+ new element from smartobject', quote(elementData.name));
@@ -318,9 +320,11 @@ function parseArtLayer(layer, mapLayer, prepend) {
 
 function exportElement(elementData, layer, mapLayer, prepend) {
 	// extract any layers that should be exported as separate elements (Smart Objects):
-	parseLayers(elementData.layers, mapLayer, prepend+'\t');
+	parseLayers(elementData.layers, mapLayer, null, prepend+'\t');
 	delete elementData.layers;
 
+	log(JSON.stringify(elementData));
+	
 	if (hasVisibleContents(layer, prepend)) {
 		// export PNG
 		var filename = getLayerImageName(layer) +'.png';
@@ -460,20 +464,25 @@ function hideElementData(layer) {
 	}
 }
 
-function getElementData(layerSet, x, y) {
-	var i;
+function getElementData(layerSet, x, y, inherit) {
+	var i, name, elementData;
 
+	// find any json in the name
+	var props = getLayerNameJSON(layerSet);
+	
 	//find data layerset
 	var layerSets = layerSet.layerSets;
 	for (i = layerSets.length; i-- > 0;) {
 		var subLayer = layerSets[i];
-		var name = subLayer.name.toLowerCase();
+		name = subLayer.name.toLowerCase();
 		if (name.indexOf('data') > -1) {
-			return getElementData(subLayer, x, y);
+			elementData = getElementData(subLayer, x, y, inherit);
+			extend(elementData, props);
+			return elementData;
 		}
 	}
 
-	var elementData = {
+	elementData = extend({
 		name: '',
 		mapType: 'floor', //'extrusion',
 		x: x|0,
@@ -487,15 +496,16 @@ function getElementData(layerSet, x, y) {
 		shape: null,
 		shapes: [],
 		layers: []
-	};
+	}, inherit);
+
 	var depthLayer;
 	var shapesLayer;
 	var layers = layerSet.artLayers;
 	for (i = layers.length; i-- > 0;) {
 		var layer = layers[i];
-		var name = layer.name.toLowerCase();
 		var width;
 		var height;
+		name = layer.name.toLowerCase();
 		if (name.indexOf('data') > -1 && layer.kind === LayerKind.TEXT) {
 			extend(elementData, parseDataIni(layer.textItem.contents));
 
@@ -504,7 +514,7 @@ function getElementData(layerSet, x, y) {
 			log('\t...found shape "'+ name + '" ' + layer.kind );
 			
 			elementData.shape = 'polygons';
-			elementData.shapes = getPathData(layer, elementData.x, elementData.y);
+			elementData.shapes = elementData.shapes.concat(getPathData(layer, elementData.x, elementData.y));
 
 			//var polygons = contoursToPolygons(el.contours, regX-eData.x, regY-eData.y);
 
@@ -538,7 +548,7 @@ function getElementData(layerSet, x, y) {
 			elementData.mapType = 'wall';
 		}
 	}
-
+	extend(elementData, props);
 	return elementData;
 }
 
@@ -548,7 +558,7 @@ function getElementPosition(layer, elementData, prepend) {
 	//reg point
 	var regX = 0, regY = 0;
 	if (elementData.shape === 'polygons') {
-		var regPoint = getPolygonCentroid(elementData.shapes[0].polygons[0]);
+		var regPoint = getShapesCentroid(elementData.shapes);
 		regX = Math.round(regPoint[0]);
 		regY = Math.round(regPoint[1]);
 	} else if (elementData.shape === 'oval') {
@@ -556,22 +566,7 @@ function getElementPosition(layer, elementData, prepend) {
 		regY = elementData.shapes[0].height /2;
 	}
 
-	var name = layer.name;
-
-	// find any json in the name
-	var props;
-	var jsonRegExp = /\s*\{.*\}\s*/;
-	var jsonMatch = name.match(jsonRegExp);
-	if (jsonMatch && jsonMatch.length) {
-		props = JSON.parse(jsonMatch[0]);
-		log(prepend, '\t~ parsed json', jsonMatch[0]);
-		name = name.replace(jsonRegExp, '');
-	}
-	if (props) {
-		extend(elementData, props);
-	}
 	extend(elementData, {
-		name: name,
 		x: getLayerX(layer) + regX,
 		y: getLayerY(layer) + regY + elementData.z,
 		regX: regX,
@@ -579,6 +574,18 @@ function getElementPosition(layer, elementData, prepend) {
 		width : getLayerWidth(layer),
 		height: getLayerHeight(layer)
 	});
+}
+
+function getLayerNameJSON(layer) {
+	var jsonRegExp = /\s*\{.*\}\s*/;
+	var props = {
+		name: layer.name.replace(jsonRegExp, '')
+	};
+	var jsonMatch = layer.name.match(jsonRegExp);
+	if (jsonMatch && jsonMatch.length) {
+		extend(props, JSON.parse(jsonMatch[0]));
+	}
+	return props;
 }
 
 function getPathData(layer, offsetX, offsetY) {
@@ -628,6 +635,18 @@ function getPathData(layer, offsetX, offsetY) {
 	}
 	// app.preferences.rulerUnits = originalRulerUnits;
 	return shapes;
+}
+
+function getShapesCentroid(shapes) {
+    var vector = [0,0];
+    for(var i=0, len=shapes.length; i<len; i++){
+        var v = getPolygonCentroid(shapes[i].polygons[0]);
+        vector[0] += v[0];
+        vector[1] += v[1];
+    }
+    vector[0] /= len;
+    vector[1] /= len;
+    return vector;
 }
 
 function getPolygonCentroid(verts) {
@@ -698,17 +717,24 @@ function log() {
 // =====================================================================
 
 function extend(target, source) {
-	for ( var prop in source ) {
-        if ( source.hasOwnProperty( prop ) ) {
-		//if ( !target.hasOwnProperty( prop ) ) {
-            var copy = source[ prop ];
-            if (copy !== undefined) {
-                target[ prop ] = source[ prop ];
-            }
-		//}
+	target = target || {};
+	if (source) {
+		for ( var prop in source ) {
+	        if ( source.hasOwnProperty( prop ) ) {
+			//if ( !target.hasOwnProperty( prop ) ) {
+	            var copy = source[ prop ];
+	            if (copy !== undefined) {
+	                target[ prop ] = source[ prop ];
+	            }
+			//}
+			}
 		}
 	}
 	return target;
+}
+
+function clone(source) {
+	return extend(null, source);
 }
 
 /* -------------------------------------------------------------------------

@@ -190,7 +190,6 @@
 				shape, verts, o, p, i, pos, radius;
 
 			if (this.mapType === 'wall') {
-				var wall;
 				if (this.shape === 'polygons') {
 					this.setBody(new cp.Body(Infinity, Infinity));
 					//poly to verts
@@ -206,9 +205,7 @@
 							try {
 								// WALL - SHAPE IS BOTTOM OF OBJECT (COLLISION BASE) - DEPTH IS HOW TALL THE WALL IS
 								pos = v(x, y);
-								wall = shape.cpShape = this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
-								wall.depth = this.depth;
-								wall.collision_type = ec.Collisions.MAP;
+								this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y), shape);
 								console.log('Wall Polygon verts "'+this.name+'" ['+this.x+','+this.y+']['+this.regY+','+this.regY+'] ['+shape.x+','+shape.y+']'+ verts);
 							} catch (err) {
 								console.error('Bad Wall Polygon in "'+this.name+'". '+err +' '+ verts);
@@ -219,25 +216,14 @@
 					shape = shapes[0];
 					pos = v(x + shape.x, y + shape.y);
 					radius = (shape.width + shape.height)/4;
-					wall = shape.cpShape = this.addCircle(pos, radius);
-					if (wall) {
-						wall.depth = this.depth;
-						wall.collision_type = ec.Collisions.MAP;
-						this.setBody(wall.body);
-					}
+					this.addCircle(pos, radius, shape);
 				} else { // TEST BOX?
 					shape = shapes[0];
 					pos = v(x, y-(shape.height/2));
-					wall = shape.cpShape = this.addBox(pos, shape.width, shape.height);
-					if (wall) {
-						wall.depth = this.depth;
-						wall.collision_type = ec.Collisions.MAP;
-						this.setBody(wall.body);
-					}
+					this.addBox(pos, shape.width, shape.height, shape);
 				}
 
 			} else if (this.mapType === 'floor') {
-				var floorShape;
 				if (this.shape === 'polygons') {
 					this.setBody(new cp.Body(Infinity, Infinity));
 					//poly to verts... 2d array to flat array
@@ -253,9 +239,7 @@
 							try {
 								// FLOOR - SHAPE IS TOP OF OBJECT SO WE ADD DEPTH - DEPTH IS HOW THICK/DEEP THE FLOOR IS
 								pos = v(x, y+this.depth);
-								floorShape = shape.cpShape = this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y));
-								floorShape.depth = this.depth;
-								floorShape.collision_type = ec.Collisions.MAP;
+								this.addConvexHull(pos, verts, this.body, v(shape.x-this.regX, this.regY-shape.y), shape);
 								console.log('Floor Polygon verts "'+this.name+'" ['+this.x+','+this.y+'] '+ verts);
 							} catch (err) {
 								console.error('Bad Floor Polygon in "'+this.name+':'+p+'". '+err +' '+ verts);
@@ -266,30 +250,17 @@
 					shape = shapes[0];
 					pos = v(x + shape.x, y + shape.y + this.depth);
 					radius = (shape.width + shape.height)/4;
-					floorShape = shape.cpShape = this.addCircle(pos, radius);
-					if (floorShape) {
-						floorShape.depth = this.depth;
-						floorShape.collision_type = ec.Collisions.MAP;
-						this.setBody(floorShape.body);
-					}
+					this.addCircle(pos, radius, shape);
 				} else { // TEST BOX?
 					shape = shapes[0];
 					pos = v(x, y+this.depth);
-					floorShape = shape.cpShape = this.addBox(pos, shape.width, shape.height);
-					if (floorShape) {
-						floorShape.depth = this.depth;
-						floorShape.collision_type = ec.Collisions.MAP;
-						this.setBody(floorShape.body);
-					}
+					this.addBox(pos, shape.width, shape.height, shape);
 				}
 
 			} else if (this.mapType === 'steps') {
 				shape = shapes[0];
 				pos = v(x, y-(shape.height/2));
-				var steps = shape.cpShape = this.addBox(pos, shape.width, shape.height);
-				steps.depth = this.depth;
-				steps.collision_type = ec.Collisions.MAP;
-				this.setBody(steps.body);
+				this.addBox(pos, shape.width, shape.height, shape);
 
 			} else if (this.mapType === 'container' || this.mapType === 'parallax') {
 				// we're good here
@@ -300,7 +271,7 @@
 			return this;
 		},
 
-		addBox: function(v1, w, h) {
+		addBox: function(v1, w, h, mapShape) {
 			if (!assertSoft(w > 0 && h > 0, this +' addBox width and height must be positive and non-zero')) {
 				return;
 			}
@@ -312,10 +283,11 @@
 			shape.setElasticity(0);
 			shape.setFriction(1);
 			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			this.addShape(shape, mapShape);
 			return shape;
 		},
 
-		addCircle: function(v1, r) { // TODO: Oval
+		addCircle: function(v1, r, mapShape) { // TODO: Oval
 			if (!assertSoft(r > 0, this +' addCircle radius must be positive and non-zero')) {
 				return;
 			}
@@ -327,10 +299,11 @@
 			shape.setElasticity(0);
 			shape.setFriction(1);
 			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			this.addShape(shape, mapShape);
 			return shape;
 		},
 
-		addPolygons: function(v1, verts, body, offset) {
+		addPolygons: function(v1, verts, body, offset, mapShape) {
 			body = body || new cp.Body(Infinity, Infinity);
 			offset = offset || v(0,0);
 			body.nodeIdleTime = Infinity;
@@ -340,21 +313,32 @@
 			shape.setElasticity(0);
 			shape.setFriction(1);
 			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
-
+			this.addShape(shape, mapShape);
 			return shape;
 		},
 
-		addConvexHull: function(v1, verts, body, offset) {
+		addConvexHull: function(v1, verts, body, offset, mapShape) {
 			cp.convexHull(verts, null, 2);
-			return this.addPolygons(v1, verts, body, offset);
+			return this.addPolygons(v1, verts, body, offset, mapShape);
 		},
 
-		addLineSegment: function(v1, v2) {
+		addLineSegment: function(v1, v2, mapShape) {
 			var shape = new cp.SegmentShape(this.space.staticBody, v1, v2, 0);
 			shape.setElasticity(0);
 			shape.setFriction(1);
 			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
+			this.addShape(shape, mapShape);
 			return shape;
+		},
+
+		addShape: function(shape, mapShape) {
+			//negative depth implies impassable bounds
+			if (this.depth >= 0) {
+				shape.depth = this.depth;
+				shape.collision_type = ec.Collisions.MAP;
+			}
+			mapShape.cpShape = shape;
+			this.setBody(shape.body);
 		},
 
 		setBody: function(body) {

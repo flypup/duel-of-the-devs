@@ -71,10 +71,12 @@
 			// TODO: remember / remove walls - AKA ViewPort Bounds
 			this.addWalls(0, 0, data.width, data.height);
 
-			// add mapElements, extract entities
-			var entities = data.entities = data.entities || [];
+			// add mapElements, extract entities and bounds
 			var layers = data.layers;
+			var entities = data.entities = data.entities || [];
+			var bounds = data.bounds = data.bounds || [];
 			var i, j;
+			// add mapElements
 			for (i=0; i<layers.length; i++) {
 				var layer = layers[i];
 				layer.layerNum = i;
@@ -88,12 +90,18 @@
 					} else {
 						var mapElement = this.initMapElement(elements[j]);
 						if (mapElement) {
-							mapElement.layerNum = i;
-							mapElement.visible = !!mapElement.image || !!mapElement.children;
-							this.addMapElement(mapElement);
+							//negative depth implies impassable bounds
+							if (mapElement.depth < 0) {
+								elements.splice(j, 1);
+								bounds.push(mapElement);
+							} else {
+								mapElement.layerNum = i;
+								mapElement.visible = !!mapElement.image || !!mapElement.children;
+								this.addMapElement(mapElement);
 
-							// ew! updating the data we're parsing
-							elements[j] = mapElement;
+								// ew! updating the data we're parsing
+								elements[j] = mapElement;
+							}
 						}
 					}
 				}
@@ -102,11 +110,18 @@
 			}
 			// add entities
 			var entity;
-			for (i=entities.length; j-- > 0;) {
-				entity = entities[j];
+			for (i=entities.length; i-- > 0;) {
+				entity = entities[i];
 				console.log('Map Entity', entity);
 				this.add(this.initMapEntity(entity));
 				entity.layerNum = 0;
+			}
+			//add bounds
+			var boundsElement;
+			for (i=bounds.length; i-- > 0;) {
+				boundsElement = bounds[i];
+				console.log('Map Bounds', boundsElement);
+				this.addMapElement(boundsElement);
 			}
 			this.map = data;
 		},
@@ -168,7 +183,10 @@
 		},
 
 		addMapElement: function(mapElement) {
-			this.elements.push(mapElement);
+			//negative depth implies impassable bounds
+			if (mapElement.depth >= 0) {
+				this.elements.push(mapElement);
+			}
 			for (var i in mapElement.shapes) {
 				var shapeData = mapElement.shapes[i];
 				var shape = shapeData.cpShape;

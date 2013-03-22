@@ -6,18 +6,19 @@ ec && ec.loadMap({
   "layers": [
     {
       "name": "bounds",
+      "depth": -1,
       "elements": [
         {
-          "name": "bounds left",
-          "mapType": "wall",
-          "x": 95,
-          "y": 531,
+          "name": "bounds",
+          "mapType": "floor",
+          "x": 926,
+          "y": 757,
           "z": 0,
-          "width": 558,
-          "height": 2063,
-          "depth": 1132,
-          "regX": 67,
-          "regY": 1128,
+          "width": 2272,
+          "height": 1400,
+          "depth": -1,
+          "regX": 925,
+          "regY": 691,
           "shape": "polygons",
           "shapes": [
             {
@@ -26,121 +27,96 @@ ec && ec.loadMap({
               "polygons": [
                 [
                   [
-                    4,
-                    685
+                    583,
+                    1358
                   ],
                   [
-                    78,
-                    2019
+                    29,
+                    838
                   ],
                   [
-                    118,
-                    681
+                    29,
+                    1352
                   ]
                 ]
               ]
-            }
-          ]
-        },
-        {
-          "name": "bounds bottom",
-          "mapType": "wall",
-          "x": 1501,
-          "y": 1353,
-          "z": 0,
-          "width": 2239,
-          "height": 1145,
-          "depth": 1132,
-          "regX": 1503,
-          "regY": 1064,
-          "shape": "polygons",
-          "shapes": [
+            },
             {
               "x": 0,
               "y": 0,
               "polygons": [
                 [
                   [
-                    2239,
-                    905
+                    31,
+                    22
                   ],
                   [
-                    38,
-                    1143
+                    105,
+                    1356
                   ],
                   [
-                    2233,
-                    1143
+                    145,
+                    18
                   ]
                 ]
               ]
-            }
-          ]
-        },
-        {
-          "name": "bounds right",
-          "mapType": "wall",
-          "x": 2030,
-          "y": 460,
-          "z": 0,
-          "width": 646,
-          "height": 1945,
-          "depth": 1132,
-          "regX": 429,
-          "regY": 1159,
-          "shape": "polygons",
-          "shapes": [
+            },
             {
               "x": 0,
               "y": 0,
               "polygons": [
                 [
                   [
-                    2,
-                    769
+                    2236,
+                    1128
                   ],
                   [
-                    640,
-                    1937
+                    35,
+                    1366
                   ],
                   [
-                    644,
-                    771
+                    2230,
+                    1366
                   ]
                 ]
               ]
-            }
-          ]
-        },
-        {
-          "name": "bounds top",
-          "mapType": "wall",
-          "x": 787,
-          "y": 193,
-          "z": 0,
-          "width": 2220,
-          "height": 1202,
-          "depth": 1132,
-          "regX": 734,
-          "regY": 1023,
-          "shape": "polygons",
-          "shapes": [
+            },
             {
               "x": 0,
               "y": 0,
               "polygons": [
                 [
                   [
-                    0,
-                    1200
+                    1602,
+                    4
                   ],
                   [
-                    2192,
-                    970
+                    2240,
+                    1172
                   ],
                   [
-                    11,
-                    898
+                    2244,
+                    6
+                  ]
+                ]
+              ]
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    52,
+                    304
+                  ],
+                  [
+                    2244,
+                    74
+                  ],
+                  [
+                    63,
+                    2
                   ]
                 ]
               ]
@@ -165,6 +141,8 @@ ec && ec.loadMap({
     },
     {
       "name": "floor 1",
+      "z": 31,
+      "material": "wood",
       "elements": [
         {
           "name": "floor 1",
@@ -270,14 +248,74 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "pillar2-2",
+      "elements": [
+        {
+          "name": "pillar2-2",
+          "mapType": "wall",
+          "x": 1596,
+          "y": 1049,
+          "z": 31,
+          "width": 99,
+          "height": 629,
+          "depth": 594,
+          "regX": 50,
+          "regY": 612,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    25,
+                    628
+                  ],
+                  [
+                    0,
+                    604
+                  ],
+                  [
+                    74,
+                    596
+                  ],
+                  [
+                    99,
+                    620
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar2_2.png"
+        }
+      ]
+    },
+    {
+      "name": "floor over pillar",
+      "elements": [
+        {
+          "name": "floor over pillar",
+          "mapType": "parallax",
+          "x": 1540,
+          "y": 698,
+          "width": 31,
+          "height": 28,
+          "image": "elements/floor_over_pillar.png"
+        }
+      ]
+    },
+    {
       "name": "railing",
+      "z": 374,
       "elements": [
         {
           "name": "railing",
           "mapType": "floor",
           "x": 1253,
-          "y": 1179,
-          "z": 514,
+          "y": 1039,
+          "z": 374,
           "width": 1209,
           "height": 190,
           "depth": 93,
@@ -315,78 +353,19 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "pillar2-2",
-      "elements": [
-        {
-          "name": "pillar2-2",
-          "mapType": "floor",
-          "x": 1596,
-          "y": 453,
-          "z": 31,
-          "width": 99,
-          "height": 629,
-          "depth": 594,
-          "regX": 50,
-          "regY": 16,
-          "shape": "polygons",
-          "shapes": [
-            {
-              "x": 0,
-              "y": 0,
-              "polygons": [
-                [
-                  [
-                    25,
-                    32
-                  ],
-                  [
-                    0,
-                    8
-                  ],
-                  [
-                    74,
-                    0
-                  ],
-                  [
-                    99,
-                    24
-                  ]
-                ]
-              ]
-            }
-          ],
-          "image": "elements/pillar2_2.png"
-        }
-      ]
-    },
-    {
-      "name": "floor over pillar",
-      "elements": [
-        {
-          "name": "floor over pillar",
-          "mapType": "parallax",
-          "x": 1540,
-          "y": 667,
-          "width": 31,
-          "height": 28,
-          "image": "elements/floor_over_pillar.png"
-        }
-      ]
-    },
-    {
       "name": "pillar2",
       "elements": [
         {
           "name": "pillar2",
-          "mapType": "floor",
+          "mapType": "wall",
           "x": 605,
-          "y": 556,
+          "y": 1152,
           "z": 31,
           "width": 99,
           "height": 629,
           "depth": 594,
           "regX": 50,
-          "regY": 16,
+          "regY": 612,
           "shape": "polygons",
           "shapes": [
             {
@@ -396,19 +375,19 @@ ec && ec.loadMap({
                 [
                   [
                     25,
-                    32
+                    628
                   ],
                   [
                     0,
-                    8
+                    604
                   ],
                   [
                     74,
-                    0
+                    596
                   ],
                   [
                     99,
-                    24
+                    620
                   ]
                 ]
               ]
@@ -420,14 +399,14 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "steptop",
+      "name": "steps",
       "elements": [
         {
           "name": "steptop",
           "mapType": "floor",
           "x": 397,
-          "y": 1149,
-          "z": 403,
+          "y": 1058,
+          "z": 312,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -461,18 +440,13 @@ ec && ec.loadMap({
             }
           ],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 413,
-          "y": 1172,
-          "z": 385,
+          "y": 1074,
+          "z": 287,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -507,18 +481,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 429,
-          "y": 1193,
-          "z": 365,
+          "y": 1090,
+          "z": 262,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -553,18 +522,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 445,
-          "y": 1214,
-          "z": 345,
+          "y": 1106,
+          "z": 237,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -599,18 +563,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 461,
-          "y": 1234,
-          "z": 325,
+          "y": 1121,
+          "z": 212,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -645,18 +604,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 477,
-          "y": 1255,
-          "z": 305,
+          "y": 1137,
+          "z": 187,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -691,18 +645,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 492,
-          "y": 1276,
-          "z": 285,
+          "y": 1153,
+          "z": 162,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -737,18 +686,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 508,
-          "y": 1296,
-          "z": 265,
+          "y": 1168,
+          "z": 137,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -783,18 +727,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 524,
-          "y": 1290,
-          "z": 218,
+          "y": 1184,
+          "z": 112,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -829,18 +768,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 540,
-          "y": 1297,
-          "z": 185,
+          "y": 1199,
+          "z": 87,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -875,18 +809,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "step",
-      "elements": [
+        },
         {
           "name": "step",
           "mapType": "floor",
           "x": 555,
-          "y": 1308,
-          "z": 155,
+          "y": 1215,
+          "z": 62,
           "width": 171,
           "height": 82,
           "depth": 50,
@@ -921,18 +850,13 @@ ec && ec.loadMap({
           ],
           "layers": [],
           "image": "elements/steptop.png"
-        }
-      ]
-    },
-    {
-      "name": "stepbottom step",
-      "elements": [
+        },
         {
           "name": "stepbottom step",
           "mapType": "floor",
           "x": 571,
-          "y": 1329,
-          "z": 135,
+          "y": 1231,
+          "z": 37,
           "width": 171,
           "height": 82,
           "depth": 50,
