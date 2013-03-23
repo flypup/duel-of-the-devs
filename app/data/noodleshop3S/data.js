@@ -408,53 +408,7 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "pillar2",
-      "elements": [
-        {
-          "name": "pillar2",
-          "mapType": "wall",
-          "x": 605,
-          "y": 1152,
-          "z": 31,
-          "width": 99,
-          "height": 629,
-          "depth": 594,
-          "regX": 50,
-          "regY": 612,
-          "shape": "polygons",
-          "shapes": [
-            {
-              "x": 0,
-              "y": 0,
-              "polygons": [
-                [
-                  [
-                    25,
-                    628
-                  ],
-                  [
-                    0,
-                    604
-                  ],
-                  [
-                    74,
-                    596
-                  ],
-                  [
-                    99,
-                    620
-                  ]
-                ]
-              ]
-            }
-          ],
-          "layers": [],
-          "image": "elements/pillar2_2.png"
-        }
-      ]
-    },
-    {
-      "name": "steps",
+      "name": "steps top back",
       "z": 31,
       "elements": [
         {
@@ -535,7 +489,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -576,9 +529,59 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
-        },
+        }
+      ]
+    },
+    {
+      "name": "pillar2",
+      "elements": [
+        {
+          "name": "pillar2",
+          "mapType": "wall",
+          "x": 605,
+          "y": 1152,
+          "z": 31,
+          "width": 99,
+          "height": 629,
+          "depth": 594,
+          "regX": 50,
+          "regY": 612,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    25,
+                    628
+                  ],
+                  [
+                    0,
+                    604
+                  ],
+                  [
+                    74,
+                    596
+                  ],
+                  [
+                    99,
+                    620
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar2_2.png"
+        }
+      ]
+    },
+    {
+      "name": "steps front",
+      "z": 31,
+      "elements": [
         {
           "name": "step 9",
           "mapType": "floor",
@@ -617,7 +620,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -658,7 +660,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -699,7 +700,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -740,7 +740,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -781,7 +780,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -822,7 +820,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -863,7 +860,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -904,7 +900,6 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         },
         {
@@ -945,11 +940,11 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "layers": [],
           "image": "elements/step_12t.png"
         }
       ],
       "bounds": {
+        "mapType": "bounds",
         "x": 303,
         "y": 555,
         "z": 31,
