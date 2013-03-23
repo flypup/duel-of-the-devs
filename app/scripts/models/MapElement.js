@@ -101,17 +101,30 @@
 
 			// -- CHECK IF ENTITY IS IN FRONT --
 			var mapBounds = this.getSortBounds();
+			var entityBounds = entity.getSortBounds();
 
 			// Entity is above Element
 			if (entity.z >= mapBounds.top) {
-				return true;
+				// Entity is not behind Element
+				if (entityBounds.front > mapBounds.back) {
+					if (ec.debug > 0) {
+						entity.sortReason = 'above '+this.name;
+					}
+					return true;
+				}
+				return false;
 			}
-
-			var entityBounds = entity.getSortBounds();
 
 			// Entity is in front of Element
 			if (entityBounds.back > mapBounds.front) {
-				return true;
+				// Entity is not under Element
+				if (entityBounds.top > this.z) {
+					if (ec.debug > 0) {
+						entity.sortReason = 'before '+this.name;
+					}
+					return true;
+				}
+				return false;
 			}
 
 			// -- CHECK IF ENTITY IS BEHIND --
@@ -159,6 +172,9 @@
 					if (distance > 0) { // Entity is outside Element shape
 						// Entity is in front of edge
 						if (direction > 0) {
+							if (ec.debug > 0) {
+								entity.sortReason = 'edge '+this.name;
+							}
 							return true;
 						}
 					} else { // Entity is inside Element shape
@@ -169,6 +185,9 @@
 				case 'oval':
 					// Entity is in front of Element
 					if ((entityBounds.front + entityBounds.back)/2 > (mapBounds.front + mapBounds.back)/2) {
+						if (ec.debug > 0) {
+							entity.sortReason = 'center '+this.name;
+						}
 						return true;
 					}
 					break;

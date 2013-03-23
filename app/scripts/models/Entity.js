@@ -51,6 +51,7 @@
 				layerName: '',
 				// debug
 				label: null,
+				sortReason: null,
 				// character specific
 				input: null,
 				climbHeight: 128.0,

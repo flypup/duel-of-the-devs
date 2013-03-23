@@ -149,10 +149,11 @@
 			var fieldHeight = 48;
 			entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
 			entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
-			var info = ''+ entity.layerNum +': '+ entity.layerName +' z: '+ entity.z.toFixed(1);
+			var info = ''+ entity.layerNum +': '+ entity.layerName +', '+ entity.sortReason;
 			if (entity.mapCollision.length) {
 				info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
 			}
+			info += '\rz: '+ entity.z.toFixed(1);
 			if (entity.input) {
 				var goal = entity.input.goal;
 				if (goal) {
