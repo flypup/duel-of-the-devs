@@ -87,21 +87,18 @@
 				for (j=elements.length; j-- > 0;) {
 					if (elements[j].mapType === 'entity') {
 						entities.push(elements.splice(j, 1)[0]);
+					} else if (elements[j].depth < 0) {
+						//negative depth implies impassable bounds
+						bounds.push(elements.splice(j, 1)[0]);
 					} else {
 						var mapElement = this.initMapElement(elements[j]);
 						if (mapElement) {
-							//negative depth implies impassable bounds
-							if (mapElement.depth < 0) {
-								elements.splice(j, 1);
-								bounds.push(mapElement);
-							} else {
-								mapElement.layerNum = i;
-								mapElement.visible = !!mapElement.image || !!mapElement.children;
-								this.addMapElement(mapElement);
+							mapElement.layerNum = i;
+							mapElement.visible = !!mapElement.image || !!mapElement.children;
+							this.addMapElement(mapElement);
 
-								// ew! updating the data we're parsing
-								elements[j] = mapElement;
-							}
+							// ew! updating the data we're parsing
+							elements[j] = mapElement;
 						}
 					}
 				}
@@ -121,7 +118,7 @@
 			for (i=bounds.length; i-- > 0;) {
 				boundsElement = bounds[i];
 				console.log('Map Bounds', boundsElement);
-				this.addMapElement(boundsElement);
+				this.addMapElement(this.initMapElement(boundsElement));
 			}
 			this.map = data;
 		},
