@@ -26,6 +26,7 @@
 			body: null,
 			imageData: null,
 			sortBounds: {top:0, bottom: 0, front:0, back:0, left: 0, right: 0, inited: false},
+			spawnPoints: null, // []
 			label: null
 		});
 
@@ -93,7 +94,7 @@
 		},
 
 		intersectsEntity: function (entity) {
-			/* extend class for these types */
+			// TODO: subclass mapType(s)
 			switch (this.mapType) {
 			case 'container':
 			case 'parallax':
@@ -174,7 +175,7 @@
 		},
 
 		isBehindEntity: function(entity) {
-			/* extend class for these types */
+			// TODO: subclass mapType(s)
 			switch (this.mapType) {
 			case 'container':
 			case 'parallax':
@@ -460,6 +461,14 @@
 				return Math.min(this.z + this.depth, Math.max(0, top));
 			}
 			return this.z + this.depth;
+		},
+
+		getPos: function() {
+			return {
+				x: this.x,
+				y: this.y,
+				z: this.z
+			};
 		},
 
 		// TODO: subclass mapType(s)

@@ -74,12 +74,13 @@
 		load: function(time) {
 			var document = window.document;
 			var appCache = ec.appCache || {};
-			if ((!appCache.complete && !appCache.timedout) ||
-				ec.ready !== true ||
-				!hasProperties(maps, ('testmap3S').split(',')) ||
-				//!hasProperties(maps, ('courtyard').split(',')) ||
-				//!hasProperties(maps, ('testmap,testmap2,courtyard').split(',')) ||
-				!hasProperties(scenes, ['enter_the_ninja'])) {
+			if ((!appCache.complete && !appCache.timedout)
+				|| ec.ready !== true
+				|| !hasProperties(maps, ('noodleshop3S').split(','))
+				// || !hasProperties(maps, ('courtyard').split(','))
+				// || !hasProperties(maps, ('testmap,testmap2,courtyard').split(','))
+				// || !hasProperties(scenes, ['enter_the_ninja'])
+			) {
 				rafId = requestAnimationFrame( core.load );
 				// TODO: Loading screen drawn to canvas
 				if (!loadingViewNode) {
@@ -185,15 +186,15 @@
 
 			//-------- SCENE INIT --------//
 
-			var sceneData = scenes.enter_the_ninja;
-			scene = new ec.Scene(sceneData);
+			//var sceneData = scenes.enter_the_ninja;
+			//scene = new ec.Scene(sceneData);
 
 			//-------- MAP INIT --------//
 
-			var map = maps[scene.mapName];
+			var map = maps.noodleshop3S;//scene.mapName];
 			// test map
 			scene = null;
-			map = maps.testmap3S;
+			//map = maps.testmap3S;
 			//
 			ec.core.setupMap(map, scene);
 
@@ -244,7 +245,7 @@
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 			}
-			world.add(boss);
+			//world.add(boss);
 
 			// scene
 			cancelAnimationFrame(rafId);
@@ -252,9 +253,16 @@
 				scene ? core.animateScene : core.animate
 			);
 
-			//player.setPos(map.width/2, map.height/2+450, 0);
-			player.setPos(850, 1150, 0);
+			// TODO: map.getElementsByType('floor').getPos();
 
+			// TODO: map.getSpawnPoint('Player');
+			var spawnPoint = {x: map.width/2, y: map.height/2+450, z: 0};
+			if (map.spawnPoints && map.spawnPoints.length) {
+				spawnPoint = map.spawnPoints[0];
+			}
+			player.setPos(spawnPoint.x, spawnPoint.y, spawnPoint.z);
+
+			// TODO: map.getSpawnPoint('Ninja');
 			boss.setPos(map.width/2+200, map.height/2, 0);
 
 			//worldView.zoom(0.75);

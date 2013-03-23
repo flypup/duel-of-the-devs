@@ -1027,6 +1027,49 @@ ec && ec.loadMap({
       ]
     }
   ],
-  "entities": [],
-  "bounds": []
+  "entities": [
+    {
+      "name": "cauldron",
+      "mapType": "entity",
+      "x": 966,
+      "y": 1088,
+      "z": 31,
+      "width": 192,
+      "height": 192,
+      "depth": 48,
+      "mass": 0,
+      "shape": "circle",
+      "type": "Circle"
+      //,"image": ""
+    },
+    {
+      "name": "lion statue",
+      "mapType": "entity",
+      "x": 1496,
+      "y": 1136,
+      "z": 31,
+      "width": 64,
+      "height": 64,
+      "depth": 148,
+      "mass": 0,
+      "shape": "box",
+      "type": "Box"
+      //,"image": ""
+    }
+  ],
+  "bounds": [],
+  "spawnPoints": [
+    {
+      "type": "Player",
+      "x": 850,
+      "y": 1150,
+      "z": 31
+    },
+    {
+      "type": "Ninja",
+      "x": 1250,
+      "y": 1050,
+      "z": 31
+    }
+  ]
 });
