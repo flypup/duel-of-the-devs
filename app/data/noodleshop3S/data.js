@@ -130,11 +130,66 @@ ec && ec.loadMap({
       "elements": [
         {
           "name": "bg",
-          "mapType": "parallax",
-          "x": 115,
-          "y": 190,
-          "width": 1982,
+          "mapType": "wall",
+          "x": 1374,
+          "y": 963,
+          "z": 0,
+          "width": 1984,
           "height": 1025,
+          "depth": 653,
+          "regX": 1261,
+          "regY": 773,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    1516,
+                    628
+                  ],
+                  [
+                    1561,
+                    624
+                  ],
+                  [
+                    1981,
+                    1020
+                  ],
+                  [
+                    1936,
+                    1024
+                  ]
+                ]
+              ]
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    0,
+                    790
+                  ],
+                  [
+                    1519,
+                    626
+                  ],
+                  [
+                    1545,
+                    653
+                  ],
+                  [
+                    26,
+                    817
+                  ]
+                ]
+              ]
+            }
+          ],
           "image": "elements/bg.png"
         }
       ]
@@ -307,20 +362,20 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "railing",
+      "name": "railing 3",
       "z": 374,
       "elements": [
         {
-          "name": "railing",
+          "name": "railing 3",
           "mapType": "floor",
-          "x": 1253,
-          "y": 1039,
+          "x": 1747,
+          "y": 986,
           "z": 374,
-          "width": 1209,
-          "height": 190,
+          "width": 221,
+          "height": 107,
           "depth": 93,
-          "regX": 605,
-          "regY": 69,
+          "regX": 111,
+          "regY": 16,
           "shape": "polygons",
           "shapes": [
             {
@@ -330,25 +385,25 @@ ec && ec.loadMap({
                 [
                   [
                     7,
-                    137
+                    31
                   ],
                   [
-                    1208,
+                    220,
                     8
                   ],
                   [
-                    1202,
+                    214,
                     1
                   ],
                   [
                     1,
-                    130
+                    24
                   ]
                 ]
               ]
             }
           ],
-          "image": "elements/railing.png"
+          "image": "elements/railing_3.png"
         }
       ]
     },
@@ -400,9 +455,10 @@ ec && ec.loadMap({
     },
     {
       "name": "steps",
+      "z": 31,
       "elements": [
         {
-          "name": "steptop",
+          "name": "step 12t",
           "mapType": "floor",
           "x": 397,
           "y": 1058,
@@ -439,10 +495,10 @@ ec && ec.loadMap({
               ]
             }
           ],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 11",
           "mapType": "floor",
           "x": 413,
           "y": 1074,
@@ -480,10 +536,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 10",
           "mapType": "floor",
           "x": 429,
           "y": 1090,
@@ -521,10 +577,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 9",
           "mapType": "floor",
           "x": 445,
           "y": 1106,
@@ -562,10 +618,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 8",
           "mapType": "floor",
           "x": 461,
           "y": 1121,
@@ -603,10 +659,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 7",
           "mapType": "floor",
           "x": 477,
           "y": 1137,
@@ -644,10 +700,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 6",
           "mapType": "floor",
           "x": 492,
           "y": 1153,
@@ -685,10 +741,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 5",
           "mapType": "floor",
           "x": 508,
           "y": 1168,
@@ -726,10 +782,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 4",
           "mapType": "floor",
           "x": 524,
           "y": 1184,
@@ -767,10 +823,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 3",
           "mapType": "floor",
           "x": 540,
           "y": 1199,
@@ -808,10 +864,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "step",
+          "name": "step 2",
           "mapType": "floor",
           "x": 555,
           "y": 1215,
@@ -849,10 +905,10 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
         },
         {
-          "name": "stepbottom step",
+          "name": "step 1b",
           "mapType": "floor",
           "x": 571,
           "y": 1231,
@@ -890,10 +946,92 @@ ec && ec.loadMap({
             }
           ],
           "layers": [],
-          "image": "elements/steptop.png"
+          "image": "elements/step_12t.png"
+        }
+      ],
+      "bounds": {
+        "x": 303,
+        "y": 555,
+        "z": 31,
+        "depth": 485,
+        "regX": 0,
+        "regY": 0,
+        "shape": "polygons",
+        "shapes": [
+          {
+            "x": 0,
+            "y": 0,
+            "polygons": [
+              [
+                [
+                  0,
+                  485
+                ],
+                [
+                  161,
+                  469
+                ],
+                [
+                  358,
+                  665
+                ],
+                [
+                  197,
+                  681
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "railing 14",
+      "z": 374,
+      "elements": [
+        {
+          "name": "railing 14",
+          "mapType": "floor",
+          "x": 1111,
+          "y": 1055,
+          "z": 374,
+          "width": 924,
+          "height": 159,
+          "depth": 93,
+          "regX": 462,
+          "regY": 54,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    6,
+                    106
+                  ],
+                  [
+                    924,
+                    8
+                  ],
+                  [
+                    918,
+                    1
+                  ],
+                  [
+                    0,
+                    99
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/railing_14.png"
         }
       ]
     }
   ],
-  "entities": []
+  "entities": [],
+  "bounds": []
 });

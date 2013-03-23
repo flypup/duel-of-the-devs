@@ -253,7 +253,7 @@
 			);
 
 			//player.setPos(map.width/2, map.height/2+450, 0);
-			player.setPos(818, 690, 0);
+			player.setPos(850, 1150, 0);
 
 			boss.setPos(map.width/2+200, map.height/2, 0);
 

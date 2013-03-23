@@ -87,6 +87,7 @@ function main() {
 	data.height = doc.height.value;
 	data.layers = [];
 	data.entities = [];
+    data.bounds = [];
 
 	parseLayers(doc.layers, null, null, '');
 
@@ -161,7 +162,8 @@ function newMapLayer(layer, prepend) {
 }
 
 function parseLayerSet(layerSet, mapLayer, inherit, prepend) {
-	if (layerSet.name.toLowerCase().indexOf('group') > -1) {
+    var nameTest = layerSet.name.toLowerCase();
+	if (nameTest.indexOf('group') > -1) {
 	//if (layerSet.blendMode === BlendMode.PASSTHROUGH) {
 		
 		inherit = extend(inherit, getLayerNameJSON(layerSet));
@@ -170,13 +172,14 @@ function parseLayerSet(layerSet, mapLayer, inherit, prepend) {
 		parseLayers(layerSet.layers, mapLayer, inherit, prepend+'\t');
 		log(prepend, '---------------------------------');
 		return;
-	}
-
-	if (layerSet.name.toLowerCase().indexOf('entities') > -1) {
+	} else if (nameTest.indexOf('entities') > -1) {
 		layerSet.visible = false;
 		// TODO: parse Entity sub layers
 		return;
-	}
+	} else if (nameTest.indexOf('data') > -1) {
+        layerSet.visible = false;
+        return;
+    }
 
 	// new map layer
 	mapLayer = mapLayer || newMapLayer(layerSet);
@@ -184,7 +187,7 @@ function parseLayerSet(layerSet, mapLayer, inherit, prepend) {
 	var elements = mapLayer.elements;
 
 	// layer set with shape data is element
-	var elementData = getElementData(layerSet, getLayerX(layerSet), getLayerY(layerSet), inherit);
+	var elementData = getElementData(layerSet, getLayerX(layerSet), getLayerY(layerSet), inherit, mapLayer);
 	if (elementData.shapes.length) {
 		getElementPosition(layerSet, elementData, prepend);
 		log(prepend, '\t+ new element', quote(elementData.name), elementData.mapType);
@@ -248,7 +251,7 @@ function parseArtLayer(layer, mapLayer, inherit, prepend) {
 			smartObject = smartObjects[name];
 			if (!smartObject) {
 				log(prepend, 'SMART DOC', name);
-				elementData = getElementData(smartDoc, 0, 0, inherit);//x, y);
+				elementData = getElementData(smartDoc, 0, 0, inherit, mapLayer);//x, y);
 				smartObject = smartObjects[name] = {
 					doc: smartDoc,
 					isGameObect: false,
@@ -402,6 +405,12 @@ function exportLayer(layer, filepath, prepend) {
 	hideElementData(dupeLayer);
 	tempDoc.trim(TrimType.TRANSPARENT);
 
+    // check size
+    if (tempDoc.width > 1024 || tempDoc.height > 1024) {
+        log('WARNING:', quote(layer.name), 'is', tempDoc.width +'x'+ tempDoc.height +'.',
+            'Consider dividing it into pieces 1024x1024 or smaller.');
+    }
+
 	// export PNG
 	var opts = new ExportOptionsSaveForWeb();
 	opts.format = SaveDocumentType.PNG;
@@ -464,20 +473,32 @@ function hideElementData(layer) {
 	}
 }
 
-function getElementData(layerSet, x, y, inherit) {
+function getElementData(layerSet, x, y, inherit, mapLayer) {
 	var i, name, elementData;
 
 	// find any json in the name
-	var props = getLayerNameJSON(layerSet);
+	var inheritParentProps = getLayerNameJSON(layerSet);
 	
 	//find data layerset
 	var layerSets = layerSet.layerSets;
 	for (i = layerSets.length; i-- > 0;) {
 		var subLayer = layerSets[i];
 		name = subLayer.name.toLowerCase();
-		if (name.indexOf('data') > -1) {
-			elementData = getElementData(subLayer, x, y, inherit);
-			extend(elementData, props);
+		if (name.indexOf('layer_data') > -1) {
+            //layer bounds
+            var layerData = getElementData(subLayer, x, y, inherit, mapLayer);
+            extend(layerData, inheritParentProps);
+            delete layerData.name;
+            delete layerData.mapType;
+            delete layerData.width;
+            delete layerData.height;
+            delete layerData.layers;
+            mapLayer.bounds = layerData;
+            log('Map Bounds Inherit', JSON.stringify(inherit));
+
+        } else if (name.indexOf('data') > -1) {
+			elementData = getElementData(subLayer, x, y, inherit, mapLayer);
+			extend(elementData, inheritParentProps);
 			return elementData;
 		}
 	}
@@ -548,7 +569,7 @@ function getElementData(layerSet, x, y, inherit) {
 			elementData.mapType = 'wall';
 		}
 	}
-	extend(elementData, props);
+	extend(elementData, inheritParentProps);
 	return elementData;
 }
 
