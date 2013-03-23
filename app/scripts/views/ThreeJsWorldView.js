@@ -95,9 +95,15 @@
 	    var materials = {};
 	    var shapes = this.shapes = [];
 		this.updateShapeView = (function(scene) {
-			var getMaterial = function(name, color) {
-				materials[name] = materials[name] || //new THREE.MeshBasicMaterial( {color: color, wireframe: true} );
-				[ new THREE.MeshLambertMaterial( { color: color } ), new THREE.MeshBasicMaterial( { color: color, wireframe: true, transparent: true } ) ];
+			var getMaterial = function(name, color, wireframeOnly) {
+				if (!materials[name]) {
+					var multi = [new THREE.MeshBasicMaterial( { color: color, wireframe: true, transparent: true } )];
+					if (!wireframeOnly) {
+						multi.unshift(new THREE.MeshLambertMaterial( { color: color } ));
+					}
+					materials[name] = multi;
+					//materials[name] = new THREE.MeshBasicMaterial( {color: color, wireframe: true} );
+				}
 				return materials[name];
 			};
 			var getEntityMaterial = function(entity) {
@@ -128,6 +134,8 @@
 							return getMaterial('wall', 0x228800);
 						} else if (entity.mapType === 'steps') {
 							return getMaterial('steps', 0x009900);
+						} else if (entity.mapType === 'bounds') {
+							return getMaterial('map', 0x00ff00, true);
 						} else {
 							return getMaterial('map', 0x00ff00);
 						}

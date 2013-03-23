@@ -92,17 +92,112 @@
 			}
 		},
 
-		isBehindEntity: function(entity) {
+		intersectsEntity: function (entity) {
+			/* extend class for these types */
 			switch (this.mapType) {
 			case 'container':
 			case 'parallax':
 				return false;
 			}
 
-			// -- CHECK IF ENTITY IS IN FRONT --
 			var mapBounds = this.getSortBounds();
 			var entityBounds = entity.getSortBounds();
 
+			// -- CHECK IF ENTITY IS BEHIND --
+
+			// Entity is under Element
+			if (entityBounds.top < this.z) {//mapBounds.bottom? or z?
+				return false;
+			}
+
+			// Entity is behind Element
+			if (entityBounds.front < mapBounds.back) {
+				return false;
+			}
+
+			// -- CHECK IF ENTITY IS IN FRONT --
+			
+			// Entity is above Element
+			if (entity.z >= mapBounds.top) {
+				return false;
+			}
+
+			// Entity is in front of Element
+			if (entityBounds.back > mapBounds.front) {
+				return false;
+			}
+
+			// -- ENTITY IS TO THE SIDE OF OVERLAPS --
+
+			if (entityBounds.right < mapBounds.left || entityBounds.left > mapBounds.right) {
+				// Entity is outside the left or right of Element
+				return false;
+			}
+			else {
+				// Entity BB overlaps with Element BB
+
+				switch (this.shape) {
+				case 'box':
+					// if rotated fall through to polygon check
+					if (!this.body || this.body.a === 0) {
+						return false;
+					}
+					/*falls through*/
+				case 'polygons':
+					// test all shape edges
+					var point, distance = Infinity;
+					for (var i = this.shapes.length; i-- > 0;) {
+						var shape = this.shapes[i];
+						var cpShape = shape.cpShape;
+						var info = cpShape.nearestPointQuery(entity.body.p);
+						if (info.d < distance) {
+							distance = info.d;
+							point = info.p;
+						}
+					}
+					if (distance > 0) {
+						// Entity is outside Element shape
+						return false;
+					}
+					break;
+
+				case 'oval':
+					// TODO: test distance from center
+					break;
+
+				default:
+					throw('Invalid map shape type: '+ this.shape);
+				}
+			}
+
+			return true;
+		},
+
+		isBehindEntity: function(entity) {
+			/* extend class for these types */
+			switch (this.mapType) {
+			case 'container':
+			case 'parallax':
+				return false;
+			}
+
+			var mapBounds = this.getSortBounds();
+			var entityBounds = entity.getSortBounds();
+
+			// -- CHECK IF ENTITY IS BEHIND --
+
+			// Entity is under Element
+			if (entityBounds.top < this.z) {//mapBounds.bottom? or z?
+				return false;
+			}
+
+			// Entity is behind Element
+			if (entityBounds.front < mapBounds.back) {
+				return false;
+			}
+
+			// -- CHECK IF ENTITY IS IN FRONT --
+			
 			// Entity is above Element
 			if (entity.z >= mapBounds.top) {
 				// Entity is not behind Element
@@ -124,18 +219,6 @@
 					}
 					return true;
 				}
-				return false;
-			}
-
-			// -- CHECK IF ENTITY IS BEHIND --
-
-			// Entity is under Element
-			if (entityBounds.top < this.z) {//mapBounds.bottom? or z?
-				return false;
-			}
-
-			// Entity is behind Element
-			if (entityBounds.front < mapBounds.back) {
 				return false;
 			}
 
@@ -242,7 +325,7 @@
 					this.addBox(pos, shape.width, shape.height, shape);
 				}
 
-			} else if (this.mapType === 'floor') {
+			} else if (this.mapType === 'floor' || this.mapType === 'bounds') {
 				if (this.shape === 'polygons') {
 					this.setBody(new cp.Body(Infinity, Infinity));
 					//poly to verts... 2d array to flat array

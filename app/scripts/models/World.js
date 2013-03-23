@@ -82,8 +82,15 @@
 				layer.layerNum = i;
 
 				var elements = layer.elements || [];
-				var shapes = layer.shapes || [];
-
+				//var shapes = layer.shapes || [];
+				var layerBounds = layer.bounds;
+				if (layerBounds) {
+					// ew! updating the data we're parsing
+					layerBounds.mapType = 'bounds';
+					layer.bounds = this.initMapElement(layerBounds);
+					this.addMapElement(layer.bounds);
+				}
+				
 				for (j=elements.length; j-- > 0;) {
 					if (elements[j].mapType === 'entity') {
 						entities.push(elements.splice(j, 1)[0]);
@@ -103,7 +110,7 @@
 					}
 				}
 				layer.elements = elements;
-				layer.shapes = shapes;
+				//layer.shapes = shapes;
 			}
 			// add entities
 			var entity;
@@ -181,7 +188,7 @@
 
 		addMapElement: function(mapElement) {
 			//negative depth implies impassable bounds
-			if (mapElement.depth >= 0) {
+			if (mapElement.depth >= 0 && mapElement.mapType !== 'bounds') {
 				this.elements.push(mapElement);
 			}
 			for (var i in mapElement.shapes) {
