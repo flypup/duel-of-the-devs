@@ -137,7 +137,7 @@
 						} else if (entity.mapType === 'bounds') {
 							return getMaterial('map', 0x00ff00, true);
 						} else {
-							return getMaterial('map', 0x00ff00);
+							return getMaterial('map', 0xff0000);
 						}
 					} else {
 						return getMaterial('entity', 0xffff00);

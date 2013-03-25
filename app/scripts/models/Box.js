@@ -20,6 +20,8 @@
 		
 		this.shape.collision_type = ec.Collisions.PROP;
 
+		this.type = 'Box';
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
