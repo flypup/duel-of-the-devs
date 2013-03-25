@@ -73,7 +73,7 @@
 				return false;
 			}
 			var elements = layer.elements;
-			for (var i=elements.length; i-- > 0;) {
+			for (var i=0, len=elements.length; i<len; i++) {
 				//elements[i].alpha = layer.alpha || 1;
 				this.drawElement(elements[i], context, viewport, delta);
 			}
