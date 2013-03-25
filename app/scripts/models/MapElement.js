@@ -292,7 +292,7 @@
 			var shapes = this.shapes,
 				shape, verts, o, p, i, pos, radius;
 
-			if (this.mapType === 'wall') {
+			if (this.mapType === 'wall' || this.mapType === 'bounds') {
 				if (this.shape === 'polygons') {
 					this.setBody(new cp.Body(Infinity, Infinity));
 					//poly to verts
@@ -326,7 +326,7 @@
 					this.addBox(pos, shape.width, shape.height, shape);
 				}
 
-			} else if (this.mapType === 'floor' || this.mapType === 'bounds') {
+			} else if (this.mapType === 'floor') {
 				if (this.shape === 'polygons') {
 					this.setBody(new cp.Body(Infinity, Infinity));
 					//poly to verts... 2d array to flat array

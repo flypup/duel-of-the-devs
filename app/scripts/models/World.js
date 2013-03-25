@@ -131,17 +131,29 @@
 		},
 
 		initMapEntity: function(element) {
+			if (element.mZ) {
+				element.z = element.mZ;
+			}
+			if (element.mWidth) {
+				element.width = element.mWidth;
+			}
+			if (element.mHeight) {
+				element.height = element.mHeight;
+			}
+			if (element.mDepth) {
+				element.depth = element.mDepth;
+			}
 			var x = element.x;
 			var y = element.y;
-			var z = element.mZ;
+			var z = element.z;
 			var EntityClass = ec[element.type];
 			console.log('map entity', element.type, x, y, z);
 			var entity = new EntityClass(
 				element.mass,
-				element.mWidth,
-				element.mHeight
+				element.width,
+				element.height
 			).setPos(x, y, z);
-			entity.depth = element.mDepth;
+			entity.depth = element.depth;
 			return entity;
 		},
 
@@ -188,13 +200,17 @@
 
 		addMapElement: function(mapElement) {
 			//negative depth implies impassable bounds
-			if (mapElement.depth >= 0 && mapElement.mapType !== 'bounds') {
+			var isLayerBounds = mapElement.mapType === 'bounds';
+			if (mapElement.depth >= 0 && !isLayerBounds) {
 				this.elements.push(mapElement);
 			}
 			for (var i in mapElement.shapes) {
 				var shapeData = mapElement.shapes[i];
 				var shape = shapeData.cpShape;
 				if (shape) {
+					if (isLayerBounds) {
+						shape.sensor = true;
+					}
 					this.space.addShape(shape);
 				}
 			}
