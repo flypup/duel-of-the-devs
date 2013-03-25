@@ -4,7 +4,7 @@
 
 
 // enable double clicking from the Macintosh Finder or the Windows Explorer
-#target photoshop
+//#target photoshop
 
 // in case we double clicked the file
 //app.bringToFront();
@@ -112,6 +112,8 @@ function parseLayers(layers, mapLayer, inherit, prepend) {
 
 	for (var i = layers.length; i-- > 0;) {
 		var layer = layers[i];
+
+		log('\n');
 
 		if (layer.typename === 'ArtLayer') {
 			log(prepend, '--', layerIndex, layer.typename +' "'+ layer.name +'",', layer.kind +',', (layer.visible?'':' hidden'));
@@ -260,7 +262,7 @@ function parseArtLayer(layer, mapLayer, inherit, prepend) {
 				};
 				if (elementData.shapes.length || elementData.depth) {
 					smartObject.isGameObect = true;
-					var filename = getLayerImageName(layer) +'.png';
+					var filename = getLayerImageName(layer, elementData) +'.png';
 					elementData.image = 'elements/'+filename;
 				}
 			}
@@ -274,7 +276,6 @@ function parseArtLayer(layer, mapLayer, inherit, prepend) {
 		}
 		//restore doc
 		app.activeDocument = parentDoc;
-
 		if (elementData && smartObject.isGameObect) {
 			extend(elementData, getLayerNameJSON(layer));
 			getElementPosition(layer, elementData, prepend);
@@ -287,6 +288,8 @@ function parseArtLayer(layer, mapLayer, inherit, prepend) {
 			if (smartObject.exported === 0) {
 				exportElement(elementData, layer, mapLayer, prepend);
 			}
+			delete elementData.layers;
+			delete elementData.dupe;
 			layer.visible = false;
 			smartObject.exported++;
 			return 1;
@@ -330,10 +333,11 @@ function exportElement(elementData, layer, mapLayer, prepend) {
 	
 	if (hasVisibleContents(layer, prepend)) {
 		// export PNG
-		var filename = getLayerImageName(layer) +'.png';
+		var filename = getLayerImageName(layer, elementData) +'.png';
 		var filepath = exports.elementsFolder.toString() +'/'+ filename;
 		exportLayer(layer, filepath, prepend);
 		elementData.image = 'elements/'+filename;
+		delete elementData.dupe;
 	}
 }
 
@@ -367,11 +371,13 @@ function hasVisibleContents(layer, prepend) {
 }
 
 
-function getLayerImageName(layer) {
+function getLayerImageName(layer, elementData) {
 	var name = layer.name.replace(/\s*\{.*\}\s*/, '').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
 	if (exports.names[name]) {
-		alert('A layer with the same name was already exported: '+quote(name));
-		log('\tWARNING: Layer name', quote(name), 'is not unique. x', exports.names[name]);
+		if (!elementData.dupe) {
+			alert('A layer with the same name was already exported: '+quote(name));
+			log('\tWARNING: Layer name', quote(name), 'is not unique. x', exports.names[name]);
+		}
 		exports.names[name]++;
 	} else {
     
@@ -455,7 +461,6 @@ function hideElementData(layer) {
 			(name.indexOf('entities') > -1)
 			) {
 			subLayer.visible = false;
-			return;
 		}
 	}
 	var layers = layer.artLayers;
@@ -484,17 +489,17 @@ function getElementData(layerSet, x, y, inherit, mapLayer) {
 	for (i = layerSets.length; i-- > 0;) {
 		var subLayer = layerSets[i];
 		name = subLayer.name.toLowerCase();
-		if (name.indexOf('layer_data') > -1) {
+		if (name.indexOf('layer_data') > -1 && subLayer.visible) {
             //layer bounds
             var layerData = getElementData(subLayer, x, y, inherit, mapLayer);
             extend(layerData, inheritParentProps);
+            layerData.mapType = 'bounds';
+            getElementPosition(subLayer, layerData, 'bounds: ');
             delete layerData.name;
-            delete layerData.mapType;
+            delete layerData.layers;
             delete layerData.width;
             delete layerData.height;
-            delete layerData.layers;
             mapLayer.bounds = layerData;
-            log('Map Bounds Inherit', JSON.stringify(inherit));
 
         } else if (name.indexOf('data') > -1) {
 			elementData = getElementData(subLayer, x, y, inherit, mapLayer);

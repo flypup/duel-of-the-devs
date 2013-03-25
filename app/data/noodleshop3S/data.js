@@ -196,18 +196,18 @@ ec && ec.loadMap({
     },
     {
       "name": "floor 1",
-      "z": 31,
+      "z": 0,
       "material": "wood",
       "elements": [
         {
           "name": "floor 1",
           "mapType": "floor",
           "x": 1095,
-          "y": 1111,
-          "z": 31,
+          "y": 1080,
+          "z": 0,
           "width": 1912,
-          "height": 565,
-          "depth": 32,
+          "height": 564,
+          "depth": 30,
           "regX": 955,
           "regY": 268,
           "shape": "polygons",
@@ -244,14 +244,46 @@ ec && ec.loadMap({
     },
     {
       "name": "lilpillar",
+      "z": 31,
       "elements": [
         {
           "name": "lilpillar",
-          "mapType": "parallax",
-          "x": 139,
-          "y": 629,
-          "width": 136,
-          "height": 437,
+          "mapType": "wall",
+          "x": 246,
+          "y": 1086,
+          "z": 31,
+          "width": 58,
+          "height": 348,
+          "depth": 344,
+          "regX": 29,
+          "regY": 337,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    0,
+                    329
+                  ],
+                  [
+                    38,
+                    325
+                  ],
+                  [
+                    58,
+                    344
+                  ],
+                  [
+                    20,
+                    348
+                  ]
+                ]
+              ]
+            }
+          ],
           "image": "elements/lilpillar.png"
         }
       ]
@@ -260,15 +292,15 @@ ec && ec.loadMap({
       "name": "floor 2",
       "elements": [
         {
-          "name": "floor 2",
+          "name": "balcony",
           "mapType": "floor",
           "x": 1117,
-          "y": 1010,
-          "z": 377,
-          "width": 1720,
-          "height": 565,
-          "depth": 32,
-          "regX": 977,
+          "y": 976,
+          "z": 344,
+          "width": 1484,
+          "height": 360,
+          "depth": 30,
+          "regX": 741,
           "regY": 166,
           "shape": "polygons",
           "shapes": [
@@ -278,19 +310,19 @@ ec && ec.loadMap({
               "polygons": [
                 [
                   [
-                    240,
+                    4,
                     140
                   ],
                   [
-                    1514.2,
+                    1278.2,
                     1.7
                   ],
                   [
-                    1714.4,
+                    1478.4,
                     192.3
                   ],
                   [
-                    439,
+                    203,
                     330.1
                   ]
                 ]
@@ -298,84 +330,19 @@ ec && ec.loadMap({
             }
           ],
           "material": "wood",
-          "image": "elements/floor_2.png"
-        }
-      ]
-    },
-    {
-      "name": "pillar2-2",
-      "elements": [
+          "image": "elements/balcony.png"
+        },
         {
-          "name": "pillar2-2",
-          "mapType": "wall",
-          "x": 1596,
-          "y": 1049,
-          "z": 31,
-          "width": 99,
-          "height": 629,
-          "depth": 594,
-          "regX": 50,
-          "regY": 612,
-          "shape": "polygons",
-          "shapes": [
-            {
-              "x": 0,
-              "y": 0,
-              "polygons": [
-                [
-                  [
-                    25,
-                    628
-                  ],
-                  [
-                    0,
-                    604
-                  ],
-                  [
-                    74,
-                    596
-                  ],
-                  [
-                    99,
-                    620
-                  ]
-                ]
-              ]
-            }
-          ],
-          "image": "elements/pillar2_2.png"
-        }
-      ]
-    },
-    {
-      "name": "floor over pillar",
-      "elements": [
-        {
-          "name": "floor over pillar",
-          "mapType": "parallax",
-          "x": 1540,
-          "y": 698,
-          "width": 31,
-          "height": 28,
-          "image": "elements/floor_over_pillar.png"
-        }
-      ]
-    },
-    {
-      "name": "railing 3",
-      "z": 374,
-      "elements": [
-        {
-          "name": "railing 3",
+          "name": "landing",
           "mapType": "floor",
-          "x": 1747,
-          "y": 986,
-          "z": 374,
-          "width": 221,
-          "height": 107,
-          "depth": 93,
-          "regX": 111,
-          "regY": 16,
+          "x": 307,
+          "y": 1009,
+          "z": 346,
+          "width": 409,
+          "height": 196,
+          "depth": 30,
+          "regX": 168,
+          "regY": 60,
           "shape": "polygons",
           "shapes": [
             {
@@ -384,32 +351,33 @@ ec && ec.loadMap({
               "polygons": [
                 [
                   [
-                    7,
-                    31
+                    3,
+                    28
                   ],
                   [
-                    220,
-                    8
+                    238.2,
+                    1.7
                   ],
                   [
-                    214,
-                    1
+                    333,
+                    93
                   ],
                   [
-                    1,
-                    24
+                    98,
+                    118.1
                   ]
                 ]
               ]
             }
           ],
-          "image": "elements/railing_3.png"
+          "material": "wood",
+          "image": "elements/landing.png"
         }
       ]
     },
     {
-      "name": "steps top back",
-      "z": 31,
+      "name": "steps top",
+      "z": 281,
       "elements": [
         {
           "name": "step 12t",
@@ -534,6 +502,157 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "railing 3",
+      "z": 336,
+      "elements": [
+        {
+          "name": "railing 3",
+          "mapType": "floor",
+          "x": 1747,
+          "y": 948,
+          "z": 336,
+          "width": 221,
+          "height": 107,
+          "depth": 93,
+          "regX": 111,
+          "regY": 16,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    7,
+                    31
+                  ],
+                  [
+                    220,
+                    8
+                  ],
+                  [
+                    214,
+                    1
+                  ],
+                  [
+                    1,
+                    24
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/railing_3.png"
+        }
+      ]
+    },
+    {
+      "name": "pillar2-2",
+      "elements": [
+        {
+          "name": "pillar2-2",
+          "mapType": "wall",
+          "x": 1596,
+          "y": 1049,
+          "z": 31,
+          "width": 99,
+          "height": 629,
+          "depth": 594,
+          "regX": 50,
+          "regY": 612,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    25,
+                    628
+                  ],
+                  [
+                    0,
+                    604
+                  ],
+                  [
+                    74,
+                    596
+                  ],
+                  [
+                    99,
+                    620
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar2_2.png"
+        }
+      ]
+    },
+    {
+      "name": "floor over pillar",
+      "elements": [
+        {
+          "name": "floor over pillar",
+          "mapType": "parallax",
+          "x": 1540,
+          "y": 698,
+          "width": 31,
+          "height": 28,
+          "image": "elements/floor_over_pillar.png"
+        }
+      ]
+    },
+    {
+      "name": "railing 14",
+      "z": 336,
+      "elements": [
+        {
+          "name": "railing 14",
+          "mapType": "floor",
+          "x": 1111,
+          "y": 1017,
+          "z": 336,
+          "width": 924,
+          "height": 159,
+          "depth": 93,
+          "regX": 462,
+          "regY": 54,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    6,
+                    106
+                  ],
+                  [
+                    924,
+                    8
+                  ],
+                  [
+                    918,
+                    1
+                  ],
+                  [
+                    0,
+                    99
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/railing_14.png"
+        }
+      ]
+    },
+    {
       "name": "pillar2",
       "elements": [
         {
@@ -579,7 +698,7 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "steps front",
+      "name": "steps",
       "z": 31,
       "elements": [
         {
@@ -942,59 +1061,22 @@ ec && ec.loadMap({
           ],
           "image": "elements/step_12t.png"
         }
-      ],
-      "bounds": {
-        "mapType": "bounds",
-        "x": 303,
-        "y": 555,
-        "z": 31,
-        "depth": 485,
-        "regX": 0,
-        "regY": 0,
-        "shape": "polygons",
-        "shapes": [
-          {
-            "x": 0,
-            "y": 0,
-            "polygons": [
-              [
-                [
-                  0,
-                  485
-                ],
-                [
-                  161,
-                  469
-                ],
-                [
-                  358,
-                  665
-                ],
-                [
-                  197,
-                  681
-                ]
-              ]
-            ]
-          }
-        ]
-      }
+      ]
     },
     {
-      "name": "railing 14",
-      "z": 374,
+      "name": "pillar1-2",
       "elements": [
         {
-          "name": "railing 14",
+          "name": "pillar1 top",
           "mapType": "floor",
-          "x": 1111,
-          "y": 1055,
-          "z": 374,
-          "width": 924,
-          "height": 159,
-          "depth": 93,
-          "regX": 462,
-          "regY": 54,
+          "x": 1651,
+          "y": 1123,
+          "z": 340,
+          "width": 222,
+          "height": 206,
+          "depth": 36,
+          "regX": 111,
+          "regY": 93,
           "shape": "polygons",
           "shapes": [
             {
@@ -1003,73 +1085,155 @@ ec && ec.loadMap({
               "polygons": [
                 [
                   [
-                    6,
-                    106
-                  ],
-                  [
-                    924,
-                    8
-                  ],
-                  [
-                    918,
+                    31,
                     1
                   ],
                   [
                     0,
-                    99
+                    4
+                  ],
+                  [
+                    191,
+                    184
+                  ],
+                  [
+                    222,
+                    181
                   ]
                 ]
               ]
             }
           ],
-          "image": "elements/railing_14.png"
+          "image": "elements/pillar1_top.png"
+        },
+        {
+          "name": "pillar1 front",
+          "mapType": "wall",
+          "x": 1738,
+          "y": 1238,
+          "z": 31,
+          "width": 48,
+          "height": 347,
+          "depth": 345,
+          "regX": 24,
+          "regY": 336,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    31,
+                    326
+                  ],
+                  [
+                    0,
+                    329
+                  ],
+                  [
+                    17,
+                    346
+                  ],
+                  [
+                    48,
+                    343
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar1_front.png"
+        }
+      ]
+    },
+    {
+      "name": "pillar1",
+      "elements": [
+        {
+          "name": "pillar1 top",
+          "mapType": "floor",
+          "x": 765,
+          "y": 1219,
+          "z": 340,
+          "width": 222,
+          "height": 206,
+          "depth": 36,
+          "regX": 111,
+          "regY": 93,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    31,
+                    1
+                  ],
+                  [
+                    0,
+                    4
+                  ],
+                  [
+                    191,
+                    184
+                  ],
+                  [
+                    222,
+                    181
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar1_top.png"
+        },
+        {
+          "name": "pillar1 front",
+          "mapType": "wall",
+          "x": 852,
+          "y": 1334,
+          "z": 31,
+          "width": 48,
+          "height": 347,
+          "depth": 345,
+          "regX": 24,
+          "regY": 336,
+          "shape": "polygons",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "polygons": [
+                [
+                  [
+                    31,
+                    326
+                  ],
+                  [
+                    0,
+                    329
+                  ],
+                  [
+                    17,
+                    346
+                  ],
+                  [
+                    48,
+                    343
+                  ]
+                ]
+              ]
+            }
+          ],
+          "image": "elements/pillar1_front.png"
         }
       ]
     }
   ],
-  "entities": [
-    {
-      "name": "cauldron",
-      "mapType": "entity",
-      "x": 966,
-      "y": 1088,
-      "z": 31,
-      "width": 192,
-      "height": 192,
-      "depth": 48,
-      "mass": 0,
-      "shape": "circle",
-      "type": "Circle"
-      //,"image": ""
-    },
-    {
-      "name": "lion statue",
-      "mapType": "entity",
-      "x": 1496,
-      "y": 1136,
-      "z": 31,
-      "width": 64,
-      "height": 64,
-      "depth": 148,
-      "mass": 0,
-      "shape": "box",
-      "type": "Box"
-      //,"image": ""
-    }
-  ],
-  "bounds": [],
-  "spawnPoints": [
-    {
-      "type": "Player",
-      "x": 850,
-      "y": 1150,
-      "z": 31
-    },
-    {
-      "type": "Ninja",
-      "x": 1250,
-      "y": 1050,
-      "z": 31
-    }
-  ]
+  "entities": [],
+  "bounds": []
 });
