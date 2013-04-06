@@ -74,12 +74,9 @@
 		load: function(time) {
 			var document = window.document;
 			var appCache = ec.appCache || {};
-			if ((!appCache.complete && !appCache.timedout)
-				|| ec.ready !== true
-				|| !hasProperties(maps, ('noodleshop3S').split(','))
-				// || !hasProperties(maps, ('courtyard').split(','))
-				// || !hasProperties(maps, ('testmap,testmap2,courtyard').split(','))
-				// || !hasProperties(scenes, ['enter_the_ninja'])
+			if ((!appCache.complete && !appCache.timedout) || ec.ready !== true ||
+				!hasProperties(maps, ('noodleshop3S').split(','))
+				//!hasProperties(maps, ('testmap3S,noodleshop3S,testmap,testmap2,courtyard').split(','))
 			) {
 				rafId = requestAnimationFrame( core.load );
 				// TODO: Loading screen drawn to canvas
@@ -188,14 +185,13 @@
 
 			//var sceneData = scenes.enter_the_ninja;
 			//scene = new ec.Scene(sceneData);
+			scene = null;
 
 			//-------- MAP INIT --------//
 
-			var map = maps.noodleshop3S;//scene.mapName];
-			// test map
-			scene = null;
-			//map = maps.testmap3S;
-			//
+			//var map = maps[scene.mapName];
+			var map = maps.noodleshop3S;
+			
 			ec.core.setupMap(map, scene);
 
 			//-------- DEBUG / GUI --------//

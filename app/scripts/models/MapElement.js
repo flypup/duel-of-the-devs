@@ -262,7 +262,8 @@
 							return true;
 						}
 					} else { // Entity is inside Element shape
-						console.error(entity +' is inside '+ this);
+						/// console.error(entity +' is inside '+ this);
+						entity.z = mapBounds.top; //hack
 					}
 					break;
 
