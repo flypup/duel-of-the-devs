@@ -15,7 +15,7 @@ ec && ec.loadMap({
           "z": 0,
           "width": 695,
           "height": 1410,
-          "depth": 780,
+          "depth": -1,
           "regX": 48,
           "regY": 995,
           "shape": "polygons",
@@ -50,7 +50,7 @@ ec && ec.loadMap({
           "z": 0,
           "width": 1422,
           "height": 875,
-          "depth": 780,
+          "depth": -1,
           "regX": 792,
           "regY": 798,
           "shape": "polygons",
@@ -525,5 +525,18 @@ ec && ec.loadMap({
       ]
     }
   ],
-  "entities": []
+  "entities": [],
+  "bounds": [],
+  "spawnPoints": [
+    {
+      x: 757,
+      y: 785,
+      z: 35
+    },
+    {
+      x: 823,
+      y: 714,
+      z: 325
+    }
+  ]
 });

@@ -941,5 +941,19 @@ ec && ec.loadMap({
         }
       ]
     }
+  ],
+  "entities": [],
+  "bounds": [],
+  "spawnPoints": [
+    {
+      x: 577,
+      y: 667,
+      z: 0
+    },
+    {
+      x: 691,
+      y: 1043,
+      z: 0
+    }
   ]
 });
