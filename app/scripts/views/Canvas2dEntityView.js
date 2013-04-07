@@ -153,7 +153,7 @@
 			if (entity.mapCollision.length) {
 				info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
 			}
-			info += '\rz: '+ entity.z.toFixed(1) + ' x: '+ entity.body.p.x.toFixed(1) + ' y: '+ entity.body.p.y.toFixed(1);
+			info += '\rz: '+ entity.z.toFixed(1) + ' x: '+ entity.body.p.x.toFixed(1) + ' y: '+ (-entity.body.p.y).toFixed(1);
 			if (entity.input) {
 				var goal = entity.input.goal;
 				if (goal) {
