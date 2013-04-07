@@ -122,7 +122,7 @@ ec && ec.loadMap({
           "visible": false,
           "mapType": "floor",
           "mass": 0,
-          "mDepth": 0,
+          "mDepth": 1,
           "mHeight": 2048,
           "mWidth": 2560,
           "mZ": 0,
@@ -593,6 +593,33 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "ledge wall",
+      "group": "ledge",
+      "elements": [
+        {
+          "mapType": "container",
+          "children": [
+            {
+              "x": 80,
+              "y": 1664,
+              "width": 960,
+              "height": 128,
+              "rectangle": true,
+              "fillImage": "elements/fills/bricksgray2_64.png"
+            },
+            {
+              "x": 1520,
+              "y": 1664,
+              "width": 960,
+              "height": 128,
+              "rectangle": true,
+              "fillImage": "elements/fills/bricksgray2_64.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "steps",
       "group": "ledge",
       "elements": [
@@ -620,33 +647,6 @@ ec && ec.loadMap({
           "shape": "box",
           "type": "Box",
           "image": "elements/steps.png"
-        }
-      ]
-    },
-    {
-      "name": "ledge wall",
-      "group": "ledge",
-      "elements": [
-        {
-          "mapType": "container",
-          "children": [
-            {
-              "x": 80,
-              "y": 1664,
-              "width": 960,
-              "height": 128,
-              "rectangle": true,
-              "fillImage": "elements/fills/bricksgray2_64.png"
-            },
-            {
-              "x": 1520,
-              "y": 1664,
-              "width": 960,
-              "height": 128,
-              "rectangle": true,
-              "fillImage": "elements/fills/bricksgray2_64.png"
-            }
-          ]
         }
       ]
     },

@@ -131,7 +131,7 @@
 		},
 
 		initMapEntity: function(element) {
-			if (element.mZ) {
+			if (element.mZ !== undefined) {
 				element.z = element.mZ;
 			}
 			if (element.mWidth) {
