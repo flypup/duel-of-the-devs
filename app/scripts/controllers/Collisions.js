@@ -44,12 +44,15 @@
 	}
 
 	function entitiesCollide(arbiter, space) {
-		var entityA = arbiter.body_a.userData.parent;
-		var entityB = arbiter.body_b.userData.parent;
+		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
+		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
 		if (entityA && entityB) {
 			if (entityA.hitTime && !entityB.hitTime) {
 				entityB.hit(arbiter, 0);
 			} else if (entityB.hitTime && !entityA.hitTime) {
+				if (arbiter.handler.a === Collisions.PLAYER) {
+					return;
+				}
 				entityA.hit(arbiter, 0);
 			}
 		}
@@ -170,6 +173,7 @@
 
 			// Entity to Entity
 			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		_,	depthTest,			entitiesCollide,_);
+			space.addCollisionHandler(Collisions.PLAYER,	Collisions.MONSTER,		_,	depthTest,			entitiesCollide,_);
 			
 			// Projectile to Obstacle / Target
 			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		_,	depthTest,			entitiesCollide,_);
