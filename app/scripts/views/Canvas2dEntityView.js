@@ -166,22 +166,24 @@
 
 	function spriteSheetFrame(entity, spriteSheet, delta) {
 		//var numFrames = spriteSheet.getNumFrames();
-		var a = entity.body.a;
-		var degrees = 6;
-		var radians = a + pi/6;
+		var x = entity.body.rot.x*2|0;
+		var y = entity.body.rot.y*5|0;//1.43|0;
+		var frame;
+		// 0 = down, 1-5 clockwise
+		if (x) {
+			if (y > 0) {
+				frame = (x > 0) ? 4 : 2;
+			} else {
+				frame = (x > 0) ? 5 : 1;
+			}
+		} else {
+			frame = (y > 0) ? 3 : 0;
+		}
+
 		var animation;
 		var animationFrame;
 		var progress;
-		if (a === 0) {
-			radians -= 0.1;
-		}
-		var frame = (5 - round(radians * 3 / pi)) % 6;
-		// 0 = down, 1-5 clockwise
 
-		//console.log(radians / pi, (6 - round(radians * 4 / pi)), frame);
-		while (frame < 0) {
-			frame += degrees;
-		}
 		if (entity.state === 'walking') {
 			animation = spriteSheet.getAnimation('walk_'+ frame);
 			if (animation) {
