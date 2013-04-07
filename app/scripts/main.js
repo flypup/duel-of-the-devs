@@ -474,10 +474,6 @@
 					world.step(TIME_STEP);
 				}
 
-				worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
-				hudView.health = player.hitPoints / 100;
-				hudView.rate = player.getHeartRate();
-
 				if (boss.state === 'dead') {
 					boss.decomposed += delta;
 					if (boss.decomposed > WATCH_DEAD_BOSS_DURATION) {
@@ -489,6 +485,10 @@
 			} else {
 				delta = 0;
 			}
+
+			worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);
+			hudView.health = player.hitPoints / 100;
+			hudView.rate = player.getHeartRate(delta);
 
 			if (ec.debug !== 4) {
 				view.draw(delta);

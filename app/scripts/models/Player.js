@@ -140,7 +140,7 @@
 			return this;
 		},
 
-		getHeartRate: function() {
+		getHeartRate: function(delta) {
 			var rate = 1.0;
 			if (this.state === 'hit') {
 				rate = Math.min(3.0, rate * 1.2);
