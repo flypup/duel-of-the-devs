@@ -1234,18 +1234,48 @@ ec && ec.loadMap({
       ]
     }
   ],
-  "entities": [],
+  "entities": [
+    {
+      "name": "cauldron",
+      "x": 1172,
+      "y": 1090,
+      "z": 30,
+      "height": 192,
+      "width": 192,
+      "depth": 48,
+      "shape": "circle",
+      "type": "Circle",
+      "mass": 0
+    },
+    {
+      "name": "lionStatue",
+      "x": 836,
+      "y": 1052,
+      "z": 374,
+      "height": 64,
+      "width": 64,
+      "depth": 148,
+      "shape": "box",
+      "type": "Box",
+      "mass": 0
+    }
+  ],
   "bounds": [],
   "spawnPoints": [
     {
-      x: 1835,
-      y: 1116,
-      z: 30
+      x: 1048,
+      y: 1056,
+      z: 374
     },
     {
       x: 972,
       y: 1042,
       z: 374
+    },
+    {
+      x: 1835,
+      y: 1116,
+      z: 30
     }
   ]
 });

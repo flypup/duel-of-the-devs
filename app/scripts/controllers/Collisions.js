@@ -192,7 +192,10 @@
 			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MAP,			mapBegin,	depthTest,	_,				mapSeparate);
 			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.MAP,		mapBegin,	depthTest,	_,				mapSeparate);
 			
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MAP,		_,	depthTest,			_,				_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MAP,		_,	depthTest,			_, _);
+			space.addCollisionHandler(Collisions.PROP,  Collisions.MONSTER,		    _,	depthTest,			_, _);
+			space.addCollisionHandler(Collisions.PROP,	Collisions.PLAYER,		    _,	depthTest,			_, _);
+			space.addCollisionHandler(Collisions.PROP,	Collisions.PLAYER_HAND,		_,	depthTest,			_, _);
 			
 		},
 
