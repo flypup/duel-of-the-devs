@@ -194,6 +194,8 @@
 			
 			ec.core.setupMap(map, scene);
 
+			world.step(TIME_STEP);
+
 			//-------- DEBUG / GUI --------//
 			if (ec.debug) {
 				ec.core.setDebugLevel(ec.debug);
@@ -241,7 +243,7 @@
 			if (!boss) {
 				boss = new ec.Ninja().setInput(bossInput);
 			}
-			//world.add(boss);
+			world.add(boss);
 
 			// scene
 			cancelAnimationFrame(rafId);
@@ -252,14 +254,19 @@
 			// TODO: map.getElementsByType('floor').getPos();
 
 			// TODO: map.getSpawnPoint('Player');
-			var spawnPoint = {x: map.width/2, y: map.height/2+450, z: 0};
+			var spawnPoint = {x: map.width/2, y: map.height/2+450, z: 30};
 			if (map.spawnPoints && map.spawnPoints.length) {
 				spawnPoint = map.spawnPoints[0];
 			}
 			player.setPos(spawnPoint.x, spawnPoint.y, spawnPoint.z);
 
 			// TODO: map.getSpawnPoint('Ninja');
-			boss.setPos(map.width/2+200, map.height/2, 0);
+			if (map.spawnPoints && map.spawnPoints.length > 1) {
+				spawnPoint = map.spawnPoints[1];
+			} else {
+				spawnPoint = {x: map.width/2+200, y: map.height/2, z: 30};
+			}
+			boss.setPos(spawnPoint.x, spawnPoint.y, spawnPoint.z);
 
 			//worldView.zoom(0.75);
 			if (scene) {
