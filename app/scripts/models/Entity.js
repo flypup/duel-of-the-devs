@@ -108,6 +108,9 @@
 
 		postStep: function(delta) {
 			this.groundZ = this.z;
+			if (this.body.isStatic()) {
+				return this;
+			}
 
 			// TODO: some things regarding entity z movement need to be worked out
 			var distance;
@@ -161,6 +164,9 @@
 
 		postStepScene: function(delta) {
 			this.groundZ = this.z;
+			if (this.body.isStatic()) {
+				return this;
+			}
 
 			var distance;
 			var thisEntityCanClimb = 32;
@@ -269,16 +275,16 @@
 			// if (ec.debug > 0) {
 			//	console.log(this.type, 'pos', x, y, z, this.mapCollision);
 			// }
-			if (body.isStatic()) {
-				//space.reindexShapesForBody(body);
-				for(var i = 0; i < body.shapeList.length; i++){
-					var shape = body.shapeList[i];
-					shape.update(body.p, body.rot);
-					if (shape.space) {
-						shape.space.staticShapes.reindexObject(shape, shape.hashid);
-					}
-				}
-			}
+			// if (body.isStatic()) {
+			// 	//space.reindexShapesForBody(body);
+			// 	for(var i = 0; i < body.shapeList.length; i++){
+			// 		var shape = body.shapeList[i];
+			// 		shape.update(body.p, body.rot);
+			// 		if (shape.space) {
+			// 			shape.space.staticShapes.reindexObject(shape, shape.hashid);
+			// 		}
+			// 	}
+			// }
 			return this;
 		},
 		
