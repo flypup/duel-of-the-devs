@@ -113,12 +113,11 @@
 				//layer.shapes = shapes;
 			}
 			// add entities
-			var entity;
+			var entityData;
 			for (i=entities.length; i-- > 0;) {
-				entity = entities[i];
-				console.log('Map Entity', entity);
-				this.add(this.initMapEntity(entity));
-				entity.layerNum = 0;
+				entityData = entities[i];
+				console.log('Map Entity', entityData);
+				this.add(this.initMapEntity(entityData));
 			}
 			//add bounds
 			var boundsElement;
@@ -130,30 +129,30 @@
 			this.map = data;
 		},
 
-		initMapEntity: function(element) {
-			if (element.mZ !== undefined) {
-				element.z = element.mZ;
+		initMapEntity: function(entityData) {
+			if (entityData.mZ !== undefined) {
+				entityData.z = entityData.mZ;
 			}
-			if (element.mWidth) {
-				element.width = element.mWidth;
+			if (entityData.mWidth) {
+				entityData.width = entityData.mWidth;
 			}
-			if (element.mHeight) {
-				element.height = element.mHeight;
+			if (entityData.mHeight) {
+				entityData.height = entityData.mHeight;
 			}
-			if (element.mDepth) {
-				element.depth = element.mDepth;
+			if (entityData.mDepth) {
+				entityData.depth = entityData.mDepth;
 			}
-			var x = element.x;
-			var y = element.y;
-			var z = element.z;
-			var EntityClass = ec[element.type];
-			console.log('map entity', element.type, x, y, z);
+			var x = entityData.x;
+			var y = entityData.y;
+			var z = entityData.z;
+			var EntityClass = ec[entityData.type];
+			console.log('map entity', entityData.type, x, y, z);
 			var entity = new EntityClass(
-				element.mass,
-				element.width,
-				element.height
+				entityData.mass,
+				entityData.width,
+				entityData.height
 			).setPos(x, y, z);
-			entity.depth = element.depth;
+			entity.depth = entityData.depth;
 			return entity;
 		},
 
