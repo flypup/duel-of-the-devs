@@ -399,6 +399,7 @@
 			if (ec.debug !== 4) {
 				view.draw(delta);
 			}
+			userInput.pollGamepads();
 
 			if (ec.debug > 0) {
 				if (ec.debug === 1) {ec.core.traceTimeEnd('animateCredits');}
@@ -437,6 +438,7 @@
 			} else {
 				delta = 0;
 			}
+			userInput.pollGamepads();
 
 			if (ec.debug !== 4) {
 				view.draw(delta);
@@ -484,6 +486,7 @@
 				}
 			} else {
 				delta = 0;
+				userInput.pollGamepads();
 			}
 
 			worldView.lookAt(player.body.p.x, -player.body.p.y -player.z - 64);

@@ -166,8 +166,11 @@
 	};
 
 	// game loop
-
 	proto.poll = function(entity, delta) {
+		this.pollGamepads();
+	};
+
+	proto.pollGamepads = function() {
 		// virtial gamepad
 		if (this.leftStickOverlay && !this.keyboardAxes1) {
 			this.setAxes1(this.leftStickOverlay.vx/100, this.leftStickOverlay.vy/100);
