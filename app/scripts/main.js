@@ -1,14 +1,21 @@
 (function(window) {
 
+	// ec is our global namespace
 	var ec = window.ec = {};
 	ec.version = '0.1.304';
 	ec.debug = 0;
 
-	var world;
-	var collisions;
+	// data
 	var maps;
 	var scenes;
+	var player;
+	var boss;
+	
+	// entities
+	var world;
 	var scene;
+
+	//views
 	var view;
 	var worldView;
 	var hudView;
@@ -17,22 +24,21 @@
 	var cpDebugView;
 	var view3d;
 
+	// controllers
+	var collisions;
+	var userInput;
+	var bossInput;
+	var sound;
+
+	// main loop
 	var TIME_STEP = ec.TIME_STEP = 1000/60;
 	var paused = false;
 	var deltaTime, remainder;
-
-	var userInput;
-	var bossInput;
-	var player;
-	var boss;
-	var overlay = null;
-
 	var rafId;
 
-	var sound;
-
+	// and then there are these things (loading, game and menu/HUD controllers plz):
+	var overlay = null;
 	var WATCH_DEAD_BOSS_DURATION = 2000;
-
 	var loadingViewNode;
 
 	var hasProperties = function(obj, props) {

@@ -265,7 +265,9 @@
 			for(i = this.entities.length; i-- > 0;) {
 				this.entities[i].step(delta);
 			}
+			if (ec.debug === 1) {ec.core.traceTime('space.step');}
 			this.space.step(delta / 1000);
+			if (ec.debug === 1) {ec.core.traceTimeEnd('space.step');}
 			for(i = this.entities.length; i-- > 0;) {
 				this.entities[i].postStep(delta);
 			}
@@ -277,7 +279,9 @@
 			// for(i = this.entities.length; i-- > 0;) {
 			//	this.entities[i].step(delta);
 			// }
+			if (ec.debug === 1) {ec.core.traceTime('space.step');}
 			this.space.step(delta / 1000);
+			if (ec.debug === 1) {ec.core.traceTimeEnd('space.step');}
 			// TODO: if scenes hint map element collisions, this can work
 			for(i = this.entities.length; i-- > 0;) {
 				this.entities[i].postStepScene(delta);

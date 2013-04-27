@@ -1,6 +1,4 @@
-(function(window) {
-
-	var ec = window.ec;
+(function(ec) {
 
 	var Scene = ec.Scene = function(data) {
 		// TODO: clone data?
@@ -51,6 +49,7 @@
 				animation = this.animations[i];
 				if (animation.actor.shape) {
 					animation.actor.shape.sensor = animation.sensor;
+					//animation.actor.body.activate();
 				}
 			}
 		}
@@ -73,4 +72,4 @@
 		return value;
 	};
 
-})(window);
+})(ec);
