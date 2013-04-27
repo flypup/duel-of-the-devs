@@ -157,7 +157,12 @@
 			return false;
 		}
 		//standing on
-		if ( a.z === bBounds.top) {
+		//if ( a.z === bBounds.top) {
+		if ( a.z - bBounds.top > -2) { //with tolerance
+			if (a.z < bBounds.top) {
+				console.warn('corrected entity z in depth collision test', a.type, b.name);
+				a.z = bBounds.top; //correction
+			}
 			return false;
 		}
 

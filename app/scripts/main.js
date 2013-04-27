@@ -193,8 +193,6 @@
 			
 			ec.core.setupMap(map, scene);
 
-			world.step(TIME_STEP);
-
 			//-------- DEBUG / GUI --------//
 			if (ec.debug) {
 				ec.core.setDebugLevel(ec.debug);
@@ -267,6 +265,8 @@
 			}
 			boss.setPos(spawnPoint.x, spawnPoint.y, spawnPoint.z);
 
+			world.step(TIME_STEP);
+			
 			//worldView.zoom(0.75);
 			if (scene) {
 				scene.init({
@@ -407,17 +407,19 @@
 		},
 
 		animateScene: function(time) {
-			if (ec.debug > 0) {
-				debugView.begin();
-				if (ec.debug === 1) {ec.core.traceTime('animateScene');}
-			}
-
 			if (!scene.complete) {
 				rafId = requestAnimationFrame( core.animateScene );
 			} else {
+				console.log('animateScene complete', scene);
 				rafId = requestAnimationFrame( core.animate );
 				scene = null;
+				//Break when this changes: player.pos.x
 				return;
+			}
+
+			if (ec.debug > 0) {
+				debugView.begin();
+				if (ec.debug === 1) {ec.core.traceTime('animateScene');}
 			}
 
 			var delta = (time - deltaTime);
@@ -456,12 +458,12 @@
 		},
 
 		animate: function(time) {
+			rafId = requestAnimationFrame( core.animate );
+
 			if (ec.debug > 0) {
 				debugView.begin();
 				if (ec.debug === 1) {ec.core.traceTime('animate');}
 			}
-
-			rafId = requestAnimationFrame( core.animate );
 
 			var delta = (time - deltaTime);
 			deltaTime = time;
