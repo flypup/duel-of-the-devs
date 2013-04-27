@@ -75,8 +75,7 @@
 			var document = window.document;
 			var appCache = ec.appCache || {};
 			if ((!appCache.complete && !appCache.timedout) || ec.ready !== true ||
-				!hasProperties(maps, ('noodleshop3S').split(','))
-				//!hasProperties(maps, ('testmap3S,noodleshop3S,testmap,testmap2,courtyard').split(','))
+				!hasProperties(maps, ('testmap3S,noodleshop3S,testmap,testmap2,courtyard').split(','))
 			) {
 				rafId = requestAnimationFrame( core.load );
 				// TODO: Loading screen drawn to canvas
@@ -175,7 +174,7 @@
 			//-------- TITLE SCREEN SETUP --------//
 			sound.stop();
 
-			paused = true;
+			//paused = true;
 			overlay = ec.getImage('img/ui/startscreen.png');
 			hudView.alpha = 0;
 
@@ -183,14 +182,14 @@
 
 			//-------- SCENE INIT --------//
 
-			//var sceneData = scenes.enter_the_ninja;
-			//scene = new ec.Scene(sceneData);
-			scene = null;
+			var sceneData = scenes.enter_the_ninja;
+			scene = new ec.Scene(sceneData);
+			//scene = null;
 
 			//-------- MAP INIT --------//
 
-			//var map = maps[scene.mapName];
-			var map = maps.noodleshop3S;
+			var map = maps[scene.mapName];
+			//var map = maps.noodleshop3S;
 			
 			ec.core.setupMap(map, scene);
 
