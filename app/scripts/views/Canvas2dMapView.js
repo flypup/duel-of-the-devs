@@ -41,8 +41,9 @@
 				var entity = entities[i];
 				entity.layerNum = -1;
 				if (bounds) {
-					// skip layer if not entity is not intersecting
+					// skip layer if entity is not intersecting?
 					if (!bounds.intersectsEntity(entity)) {
+						// Can't skip it?
 						//continue;
 					} else {
 						//console.log('oh hello!', layer.name);
