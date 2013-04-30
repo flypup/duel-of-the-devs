@@ -745,7 +745,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         },
@@ -758,7 +758,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         },
@@ -771,7 +771,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         },
@@ -784,7 +784,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         },
@@ -797,7 +797,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         },
@@ -810,7 +810,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 0,
+          "mZ": 1,
           "shape": "box",
           "type": "Box"
         }
