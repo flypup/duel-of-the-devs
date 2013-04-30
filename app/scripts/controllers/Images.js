@@ -43,11 +43,13 @@
 	ec.appendCache = function(id, image) {
 		if (ec.debug === 1) {ec.core.traceTime('appendCache '+id);}
 
+		// FIXME: Image may not have loaded
 		var canvas = window.document.createElement('canvas');
 		canvas.width  = image.width;
 		canvas.height = image.height;
 		var context = canvas.getContext('2d');
 		context.drawImage(image, 0, 0);
+
 		_cache[id] = canvas;
 
 		if (ec.debug === 1) {ec.core.traceTimeEnd('appendCache '+id);}
