@@ -113,10 +113,10 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "courtyard",
+      "name": "ground",
       "elements": [
         {
-          "name": "empty",
+          "name": "ground",
           "x": 1280,
           "y": 2816,
           "visible": false,
@@ -126,6 +126,7 @@ ec && ec.loadMap({
           "mHeight": 2048,
           "mWidth": 2560,
           "mZ": 0,
+          "notes": "ground",
           "shape": "box",
           "type": "Box"
         },
@@ -620,37 +621,6 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "steps",
-      "group": "ledge",
-      "elements": [
-        {
-          "name": "stairs",
-          "x": 1280,
-          "y": 1920,
-          "width": 480,
-          "height": 256,
-          "regX": 240,
-          "regY": 256,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 1280,
-            "ty": 1920
-          },
-          "mapType": "steps",
-          "mDepth": 128,
-          "mHeight": 128,
-          "mWidth": 480,
-          "mZ": 0,
-          "shape": "box",
-          "type": "Box",
-          "image": "elements/steps.png"
-        }
-      ]
-    },
-    {
       "name": "ledge bannister",
       "group": "ledge",
       "elements": [
@@ -707,6 +677,37 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "steps",
+      "group": "ledge",
+      "elements": [
+        {
+          "name": "stairs",
+          "x": 1280,
+          "y": 1920,
+          "width": 480,
+          "height": 256,
+          "regX": 240,
+          "regY": 256,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 1280,
+            "ty": 1920
+          },
+          "mapType": "steps",
+          "mDepth": 128,
+          "mHeight": 128,
+          "mWidth": 480,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box",
+          "image": "elements/steps.png"
+        }
+      ]
+    },
+    {
       "name": "entities",
       "group": "entities",
       "elements": [
@@ -745,7 +746,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         },
@@ -758,7 +759,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         },
@@ -771,7 +772,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         },
@@ -784,7 +785,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         },
@@ -797,7 +798,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         },
@@ -810,7 +811,7 @@ ec && ec.loadMap({
           "mDepth": 148,
           "mHeight": 64,
           "mWidth": 64,
-          "mZ": 1,
+          "mZ": 0,
           "shape": "box",
           "type": "Box"
         }
