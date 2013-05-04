@@ -238,13 +238,13 @@
 			// monk
 			if (!player) {
 				ec.player =
-				player = new ec.Player({hitPoints: 30}).setInput(userInput);
+				player = new ec.Player({hitPoints: 50}).setInput(userInput);
 			}
 			world.add(player);
 
 			// ninja
 			if (!boss) {
-				boss = new ec.Ninja().setInput(bossInput);
+				boss = new ec.Ninja({hitPoints: 50}).setInput(bossInput);
 			}
 			world.add(boss);
 

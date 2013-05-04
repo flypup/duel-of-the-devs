@@ -9,7 +9,7 @@
 	var pushpull = v(0,0);
 
 	var defaults = {
-		speed: 8,
+		speed: 29,
 		hitPoints: 100
 	};
 
@@ -37,9 +37,9 @@
 		this.type = 'Player';
 		this.depth = 118;
 		
-		ec.extend(this, defaults);
+		ec.copy(this, defaults);
 		if (settings) {
-			ec.extend(this, settings);
+			ec.copy(this, settings);
 		}
 
 		if (ec.debug > 1) {

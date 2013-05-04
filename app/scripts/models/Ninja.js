@@ -8,7 +8,12 @@
 	var direction = v(0,0);
 	var intent = v(0,0);
 
-	var Ninja = ec.Ninja = function() {
+	var defaults = {
+		speed: 29,
+		hitPoints: 100
+	};
+
+	var Ninja = ec.Ninja = function(settings) {
 		this.setBaseProperties();
 		this.groupId = ec.Entity.groupId++;
 
@@ -25,17 +30,19 @@
 		this.shape.group = this.groupId;
 		this.state = 'standing';
 		this.walkCount = 0;
-		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
-		this.depth = 118;
 		this.type = 'Ninja';
+		this.depth = 118;
 		
 		this.isShadowClone = false;
 		this.shadowClones = null;
 		this.master = null;
 		this.fx = null;
 
-		this.hitPoints = 100;
+		ec.copy(this, defaults);
+		if (settings) {
+			ec.copy(this, settings);
+		}
 
 		if (ec.debug > 1) {
 			Object.seal(this);
