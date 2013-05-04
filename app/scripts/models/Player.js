@@ -202,7 +202,7 @@
 				// this.body.vy = 0;
 				// this.body.w *= 0.5;
 				// //this.updateFx();
-				// return this;
+				return this;
 			}
 
 			this.input.poll(this, delta);

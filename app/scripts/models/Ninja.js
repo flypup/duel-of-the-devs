@@ -159,7 +159,9 @@
 			//console.log('HIT', this, 'KE', energy);
 			if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
 				//ignore this collisions
-				arbiter && arbiter.ignore();
+				if (arbiter) {
+					arbiter.ignore();
+				}
 
 				var damage = 10; // TODO: relative damage
 			

@@ -182,6 +182,7 @@
 
 			//paused = true;
 			overlay = ec.getImage('img/ui/startscreen.png');
+			ec.getImage('img/ui/gameover.png');
 			hudView.alpha = 0;
 
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.start, false);
@@ -345,6 +346,18 @@
 			overlay = null;
 		},
 
+		gameOver: function() {
+			ec.core.trackEvent('game', 'gameover', ec.version);
+
+			cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame( core.animateGameOver );
+
+			overlay = ec.getImage('img/ui/gameover.png');
+			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.restart, false);
+
+			sound.playEndingMusic();
+		},
+
 		rollCredits: function() {
 			ec.playerInteractions = 36;
 			ec.core.trackEvent('game', 'credits', ec.version);
@@ -358,17 +371,13 @@
 			view.removeAll();
 			view.add(creditsView);
 
-			if (ec.touch) {
-				ec.bind(ec.core.getViewDom(), 'touchend', ec.core.restart, false);
-			} else {
-				ec.bind(ec.core.getViewDom(), 'mouseup', ec.core.restart, false);
-			}
+			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.restart, false);
 
 			sound.playEndingMusic();
 		},
 
 		restart: function(e) {
-			if (creditsView.creditsTime < creditsView.skipAfter) {
+			if (creditsView && creditsView.creditsTime < creditsView.skipAfter) {
 				return;
 			}
 			ec.unbind(ec.core.getViewDom(), e.type, ec.core.restart, false);
@@ -490,6 +499,9 @@
 						ec.core.rollCredits();
 						return;
 					}
+				} else if (player.state === 'dead') {
+					ec.core.gameOver();
+					return;
 				}
 			} else {
 				delta = 0;
@@ -511,6 +523,38 @@
 				}
 				if (ec.debug > 2) {cpDebugView.step(view);}
 				if (ec.debug === 1) {ec.core.traceTimeEnd('animate');}
+				debugView.end();
+			}
+		},
+
+		animateGameOver: function(time) {
+			rafId = requestAnimationFrame( core.animateGameOver );
+
+			if (ec.debug > 0) {
+				debugView.begin();
+				if (ec.debug === 1) {ec.core.traceTime('animateGameOver');}
+			}
+
+			var delta = (time - deltaTime);
+			deltaTime = time;
+			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10)) * 0.2;
+			world.step(delta);
+
+			worldView.lookAt(boss.body.p.x, -boss.body.p.y -boss.z - 64);
+			hudView.health = player.hitPoints / 100;
+			hudView.rate = player.getHeartRate(delta);
+
+			if (ec.debug !== 4) {
+				view.draw(delta);
+			}
+
+			if (ec.debug > 0) {
+				if (view3d && !paused) {
+					view3d.lookAt(player.body.p.x, -player.body.p.y, player.z + 60);
+					view3d.draw(world);
+				}
+				if (ec.debug > 2) {cpDebugView.step(view);}
+				if (ec.debug === 1) {ec.core.traceTimeEnd('animateGameOver');}
 				debugView.end();
 			}
 		},
