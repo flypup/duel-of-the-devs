@@ -8,9 +8,14 @@
 	var direction = v(0,0);
 	var pushpull = v(0,0);
 
+	var defaults = {
+		speed: 8,
+		hitPoints: 100
+	};
+
 	ec.playerInteractions = -2;
 	
-	var Player = ec.Player = function() {
+	var Player = ec.Player = function(settings) {
 		this.setBaseProperties();
 		this.groupId = ec.Entity.groupId++;
 
@@ -28,12 +33,14 @@
 		this.state = 'standing';
 		this.walkCount = 0;
 		this.nextStep = 2-0.05;
-		this.speed = 8;
 		this.attack = new ec.EmptyHand(radius-4, 1);
-		this.depth = 118;
 		this.type = 'Player';
-
-		this.hitPoints = 100;
+		this.depth = 118;
+		
+		ec.extend(this, defaults);
+		if (settings) {
+			ec.extend(this, settings);
+		}
 
 		if (ec.debug > 1) {
 			Object.seal(this);

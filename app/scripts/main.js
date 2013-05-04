@@ -238,7 +238,7 @@
 			// monk
 			if (!player) {
 				ec.player =
-				player = new ec.Player().setInput(userInput);
+				player = new ec.Player({hitPoints: 30}).setInput(userInput);
 			}
 			world.add(player);
 
