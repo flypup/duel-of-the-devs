@@ -9,7 +9,7 @@
 	var intent = v(0,0);
 
 	var defaults = {
-		speed: 29,
+		speed: 28,
 		hitPoints: 100
 	};
 
@@ -247,7 +247,7 @@
 					// console.log(this.input.axes, direction.x, direction.y);
 					// console.log('v', this.body.vx, this.body.vy);
 
-					direction.mult(this.speed*1000/delta);
+					direction.mult(this.speed*delta);
 					this.body.activate();
 					this.body.vx += direction.x;
 					this.body.vy -= direction.y;
@@ -258,7 +258,7 @@
 					// this.body.applyImpulse(direction, cp.vzero);
 
 					if (delta) {
-						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
+						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
 						this.walkCount += Math.max(0.15, velocity);
 					}
 					

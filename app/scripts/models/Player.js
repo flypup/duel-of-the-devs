@@ -9,7 +9,7 @@
 	var pushpull = v(0,0);
 
 	var defaults = {
-		speed: 29,
+		speed: 28,
 		hitPoints: 100
 	};
 
@@ -99,7 +99,7 @@
 			attack.resetForces();
 
 			attack.body.activate();
-			var force = v.mult(pushpull, this.speed*1000/delta);
+			var force = v.mult(pushpull, this.speed*delta);
 			attack.body.vx =  force.x + direction.x * movementFriction;
 			attack.body.vy = -force.y - direction.y * movementFriction;
 
@@ -232,18 +232,19 @@
 					// console.log(this.input.axes, direction.x, direction.y);
 					// console.log('v', this.body.vx, this.body.vy);
 
-					direction.mult(this.speed*1000/delta);
+					direction.mult(this.speed*delta);
 					this.body.activate();
 					this.body.vx += direction.x;
 					this.body.vy -= direction.y;
 					this.body.vx *= 0.5;
 					this.body.vy *= 0.5;
+
 					//this.body.applyForce(direction, cp.vzero);
 					// direction.mult(this.speed);
 					// this.body.applyImpulse(direction, cp.vzero);
 
 					if (delta) {
-						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 40000;
+						var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
 						this.walkCount += Math.max(0.15, velocity);
 					}
 

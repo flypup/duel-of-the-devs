@@ -57,7 +57,7 @@
 		return function scrambleTask(entity) {
 			//console.log('scramble');
 			this.targetPos = v(Math.random() * 1000, Math.random() * 1000 + 1000);
-			entity.speed = 6;
+			entity.speed = 22;
 			this.completeTask();
 		};
 	}
@@ -65,7 +65,7 @@
 	// MOVING  ----------------------
 	function moveTo(distance, speed) {
 		distance = distance || GOAL_DISTANCE;
-		speed = speed || 6;
+		speed = speed || 22;
 		return function moveToTask(entity) {
 			//console.log('moveTo', this.targetPos, this);
 			if (!this.targetPos) {
@@ -98,7 +98,7 @@
 
 	function moveAway(distance, speed) {
 		distance = distance || AVOID_DISTANCE;
-		speed = speed || 6;
+		speed = speed || 22;
 		return function moveAwayTask(entity) {
 			if (!this.targetPos) {
 				//nothing to run from
@@ -153,7 +153,7 @@
 	// STALK / FACE / AVOID  ----------------------
 	function approachTarget(distance, speed) {
 		distance = distance || GOAL_DISTANCE;
-		speed = speed || 6;
+		speed = speed || 22;
 		var move = moveTo(distance);
 		return function approachTargetTask(entity) {
 			entity.speed = speed;
@@ -164,7 +164,7 @@
 
 	function faceOffTarget(distance, speed) {
 		distance = distance || GOAL_DISTANCE;
-		speed = speed || 6;
+		speed = speed || 22;
 		var move = moveToDistance(distance);
 		return function faceOffTargetTask(entity) {
 			entity.speed = speed;
@@ -175,7 +175,7 @@
 
 	function evadeTarget(distance, speed) {
 		distance = distance || GOAL_DISTANCE;
-		speed = speed || 6;
+		speed = speed || 22;
 		var move = moveToDistance(distance);
 		return function evadeTargetTask(entity) {
 			entity.speed = speed;
@@ -185,7 +185,7 @@
 	}
 
 	function shuv() {
-		var move = moveTo(0, 8);
+		var move = moveTo(0, 29);
 		return function shuvTask(entity) {
 			//console.log('shuv');
 			targetNearestEnemy.apply(this, arguments);
@@ -403,7 +403,7 @@
 
 	var GOAL_DISTANCE = 64;
 	var AVOID_DISTANCE = 512;
-	var HIGH_SPEED = 12;
+	var HIGH_SPEED = 43;
 
 	var goalTree = {
 		faceOff: {
