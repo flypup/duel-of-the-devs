@@ -2,7 +2,6 @@
 
 	var ec = window.ec;
 	var pi = Math.PI;
-	var round = Math.round;
 	var floor = Math.floor;
 
 	var Canvas2dEntityView = ec.Canvas2dEntityView = function() {

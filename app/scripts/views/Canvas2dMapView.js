@@ -36,19 +36,19 @@
 		getItemsInLayer: function(layer, entities, inLayer) {
 			inLayer = inLayer || [];
 			var elements = layer.elements;
-			var bounds = layer.bounds;
+			//var bounds = layer.bounds;
 			for (var i = entities.length; i-- > 0;) {
 				var entity = entities[i];
 				entity.layerNum = -1;
-				if (bounds) {
-					// skip layer if entity is not intersecting?
-					if (!bounds.intersectsEntity(entity)) {
-						// Can't skip it?
-						//continue;
-					} else {
-						//console.log('oh hello!', layer.name);
-					}
-				}
+				// if (bounds) {
+				// 	// skip layer if entity is not intersecting?
+				// 	if (!bounds.intersectsEntity(entity)) {
+				// 		// Can't skip it?
+				// 		//continue;
+				// 	} else {
+				// 		//console.log('oh hello!', layer.name);
+				// 	}
+				// }
 				for (var j=elements.length; j-- > 0;) {
 					if (elements[j].isBehindEntity(entity)) {
 						entity.layerNum = layer.layerNum;
