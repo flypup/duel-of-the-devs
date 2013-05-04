@@ -27,7 +27,7 @@
 	
 	// ENTITY-ENTITY
 
-	function pushCollision(arbiter, space) {
+	function pushCollision(arbiter) {
 		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
 		// if (contact) {
 		if (ec.debug > 0) {
@@ -43,7 +43,7 @@
 		return (arbiter.contacts && arbiter.contacts.length);
 	}
 
-	function entitiesCollide(arbiter, space) {
+	function entitiesCollide(arbiter) {
 		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
 		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
 		if (entityA && entityB) {
@@ -57,6 +57,21 @@
 			}
 		}
 		return true;
+	}
+
+	function entityCollision(arbiter) {//, space) {
+		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
+		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
+		// TESTS
+		if (!(entityA && entityB)) {
+			throw('entityCollision: undefined entity');
+		}
+		if (!(arbiter.contacts && arbiter.contacts.length)) {
+			throw('entityCollision: no contacts');
+		}
+		// if either returns true, contact is ignored
+		var ignoreA = entityA.contact(entityB, arbiter);
+		return entityB.contact(entityA, arbiter) || ignoreA;
 	}
 
 	// ENTITY-MAP
@@ -186,16 +201,16 @@
 		init: function(space) {
 			var _ = null;
 			// Player Attacks
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MONSTER,	_,	depthTest,			pushCollision,	_);
-			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.PROJECTILE,_,	depthTest,			pushCollision,	_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MONSTER,	_,	depthTest,			entityCollision,	_);
+			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.PROJECTILE,_,	depthTest,			entityCollision,	_);
 
 			// Entity to Entity
-			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		_,	depthTest,			entitiesCollide,_);
-			space.addCollisionHandler(Collisions.PLAYER,	Collisions.MONSTER,		_,	depthTest,			entitiesCollide,_);
+			space.addCollisionHandler(Collisions.MONSTER,	Collisions.MONSTER,		_,	depthTest,			entityCollision,	_);
+			//space.addCollisionHandler(Collisions.MONSTER,	Collisions.PLAYER,		_,	depthTest,			entityCollision,	_);
 			
 			// Projectile to Obstacle / Target
-			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		_,	depthTest,			entitiesCollide,_);
-			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PLAYER,		_,	depthTest,			pushCollision,	_);
+			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PROP,		_,	depthTest,			entityCollision,	_);
+			space.addCollisionHandler(Collisions.PROJECTILE, Collisions.PLAYER,		_,	depthTest,			entityCollision,	_);
 
 			// Entity to Map
 			space.addCollisionHandler(Collisions.PLAYER,	Collisions.MAP,			mapBegin,	depthTest,	_,				mapSeparate);

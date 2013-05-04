@@ -217,9 +217,10 @@
 			}
 		},
 		
-		hit: function(arbiter) {
-			console.log('HIT', this);
-			return this;
+		contact: function(entity, arbiter) {
+			//console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
+			// ignore collision handlers?
+			return false;
 		},
 
 		getSortBounds: function() {

@@ -124,10 +124,38 @@
 			}
 		},
 
-		hit: function(arbiter, damage) {
+		contact: function(entity, arbiter) {
+			//console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
+			
+			// ignore if already hit
+			if (this.hitTime) {
+				return true;
+			}
+
+			// NINJA <-> NINJA
+			if (entity.type === this.type || entity.type === 'Player') {//+ ec.Collisions.BODY (PLAYER or MONSTER)
+				// TODO: Should this impact push me back?
+				if (entity.hitTime && !this.hitTime) {
+					return this.hit(arbiter);
+				}
+				//ignore this collision
+				arbiter.ignore();
+				return true;
+			}
+
+			// HIT
+			return this.hit(arbiter);
+		},
+
+		hit: function(arbiter) {
 			var energy = (arbiter && arbiter.totalKE()) || 1000;
 			//console.log('HIT', this, 'KE', energy);
 			if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
+				//ignore this collisions
+				arbiter && arbiter.ignore();
+
+				var damage = 10; // TODO: relative damage
+			
 				this.state = 'hit';
 				if (this.isShadowClone) {
 					//hit a clone
@@ -144,8 +172,9 @@
 				this.body.w = energy/10000;
 				this.body.vx *= 2;
 				this.body.vy *= 2;
+				return true;
 			}
-			return this;
+			return false;
 		},
 
 		updateFx: function(delta) {
@@ -181,8 +210,9 @@
 				return this;
 
 			} else if (this.isShadowClone && this.master.hitPoints <= 0) {
+				// HP 0 event for master
 				this.puffSmoke();
-				this.hit(null, ec.world, 1);
+				this.hit(null);
 
 			} else if (this.state === 'dead') {
 				this.body.vx = 0;

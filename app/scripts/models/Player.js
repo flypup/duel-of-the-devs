@@ -129,11 +129,27 @@
 			return pushpull.x === 0 && pushpull.y === 0;
 		},
 
-		hit: function(arbiter, damage) {
+		contact: function(entity, arbiter) {
+			console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
+			//(arbiter.state === 'first coll')
+			
+			// ignore if already hit
+			if (this.hitTime) {
+				return true;
+			}
+
+			this.hit(arbiter);
+
+			// ignore collision handlers?
+			return false;
+		},
+
+		hit: function(arbiter) {
 			var energy = (arbiter && arbiter.totalKE()) || 1000;
 			//console.log('HIT', this, 'KE', energy);
 			if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
 				this.state = 'hit';
+				var damage = 10;
 				damage = damage || 10;
 				this.hitPoints -= damage;
 				this.hitTime = 600;
@@ -142,9 +158,11 @@
 				this.body.w = energy/10000;
 				this.body.vx *= 2;
 				this.body.vy *= 2;
+				console.log('PLAYER HIT. Energy:', energy, 'damage:', damage, 'HP:', this.hitPoints, this);
+				return true;
 			}
-			console.log('PLAYER HIT. Energy:', energy, 'HP:', this.hitPoints, this);
-			return this;
+			console.log('PLAYER HIT PASS THROUGH. Energy:', energy);
+			return false;
 		},
 
 		getHeartRate: function(delta) {

@@ -25,6 +25,8 @@
 		this.grabDuration = 1000 * 10/60;
 		this.punchDuration = this.pushDuration + this.grabDuration/2;
 
+		this.type = 'EmptyHand';
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
@@ -43,6 +45,12 @@
 
 		postStep: function(delta) {
 			return this;
+		},
+
+		contact: function(entity, arbiter) {
+			//console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
+			// ignore collision handlers?
+			return false;
 		},
 
 		entityStep: function(time, world, entity) {
