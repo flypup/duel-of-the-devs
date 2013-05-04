@@ -104,8 +104,6 @@
 			var mapBounds = this.getSortBounds();
 			var entityBounds = entity.getSortBounds();
 
-			// -- CHECK IF ENTITY IS BEHIND --
-
 			// Entity is under Element
 			if (entityBounds.top < this.z) {//mapBounds.bottom? or z?
 				return false;
@@ -116,8 +114,6 @@
 				return false;
 			}
 
-			// -- CHECK IF ENTITY IS IN FRONT --
-			
 			// Entity is above Element
 			if (entity.z >= mapBounds.top) {
 				return false;
@@ -128,47 +124,44 @@
 				return false;
 			}
 
-			// -- ENTITY IS TO THE SIDE OF OVERLAPS --
-
+			// Entity is to the right or left of Element
 			if (entityBounds.right < mapBounds.left || entityBounds.left > mapBounds.right) {
 				// Entity is outside the left or right of Element
 				return false;
 			}
-			else {
-				// Entity BB overlaps with Element BB
 
-				switch (this.shape) {
-				case 'box':
-					// if rotated fall through to polygon check
-					if (!this.body || this.body.a === 0) {
-						return false;
-					}
-					/*falls through*/
-				case 'polygons':
-					// test all shape edges
-					var point, distance = Infinity;
-					for (var i = this.shapes.length; i-- > 0;) {
-						var shape = this.shapes[i];
-						var cpShape = shape.cpShape;
-						var info = cpShape.nearestPointQuery(entity.body.p);
-						if (info.d < distance) {
-							distance = info.d;
-							point = info.p;
-						}
-					}
-					if (distance > 0) {
-						// Entity is outside Element shape
-						return false;
-					}
-					break;
-
-				case 'oval':
-					// TODO: test distance from center
-					break;
-
-				default:
-					throw('Invalid map shape type: '+ this.shape);
+			// Entity BB overlaps with Element BB
+			switch (this.shape) {
+			case 'box':
+				// if rotated fall through to polygon check
+				if (!this.body || this.body.a === 0) {
+					return false;
 				}
+			/*falls through*/
+			case 'polygons':
+				// test all shape edges
+				var point, distance = Infinity;
+				for (var i = this.shapes.length; i-- > 0;) {
+					var shape = this.shapes[i];
+					var cpShape = shape.cpShape;
+					var info = cpShape.nearestPointQuery(entity.body.p);
+					if (info.d < distance) {
+						distance = info.d;
+						point = info.p;
+					}
+				}
+				if (distance > 0) {
+					// Entity is outside Element shape
+					return false;
+				}
+				break;
+
+			case 'oval':
+				// TODO: test distance from center
+				break;
+
+			default:
+				throw('Invalid map shape type: '+ this.shape);
 			}
 
 			return true;
