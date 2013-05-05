@@ -107,6 +107,7 @@
 			ec.Puff.ready();
 			ec.Box.ready();
 			ec.Circle.ready();
+			ec.Dot.ready();
 
 			core.init(time);
 		},

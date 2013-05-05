@@ -27,38 +27,6 @@
 	
 	// ENTITY-ENTITY
 
-	function pushCollision(arbiter) {
-		// var contact = arbiter.contacts && arbiter.contacts.length && arbiter.contacts[0];
-		// if (contact) {
-		if (ec.debug > 0) {
-			//console.log('push collision', arbiter);
-		}
-		var pushedBody   = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		var pushedEntity = pushedBody.userData.parent;
-		if (pushedEntity) {
-			pushedEntity.hit(arbiter, DAMAGE); // pushed
-			arbiter.ignore();
-			return false;
-		}
-		return (arbiter.contacts && arbiter.contacts.length);
-	}
-
-	function entitiesCollide(arbiter) {
-		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
-		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
-		if (entityA && entityB) {
-			if (entityA.hitTime && !entityB.hitTime) {
-				entityB.hit(arbiter, 0);
-			} else if (entityB.hitTime && !entityA.hitTime) {
-				if (arbiter.handler.a === Collisions.PLAYER) {
-					return;
-				}
-				entityA.hit(arbiter, 0);
-			}
-		}
-		return true;
-	}
-
 	function entityCollision(arbiter) {//, space) {
 		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
 		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
@@ -69,6 +37,19 @@
 		if (!(arbiter.contacts && arbiter.contacts.length)) {
 			throw('entityCollision: no contacts');
 		}
+
+		// See collision points in world
+		if (ec.debug > 1) {
+			var p = arbiter.contacts[0].p,
+				z = entityA.z + entityA.depth / 2;
+			setTimeout(function() {
+				// TODO: dot pool
+				var dot = new ec.Dot(entityA.groupId, 1000);
+				dot.setPos(p.x, -p.y, z);
+				ec.world.add(dot);
+			}, 0);
+		}
+
 		// if either returns true, contact is ignored
 		var ignoreA = entityA.contact(entityB, arbiter);
 		return entityB.contact(entityA, arbiter) || ignoreA;

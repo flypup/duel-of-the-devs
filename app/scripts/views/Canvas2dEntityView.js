@@ -115,7 +115,6 @@
 		} else {
 			if (ec.debug === 1) {ec.core.traceTime('draw entity');}
 			context.save();
-			// TODO: ninja star / projectile sprite
 			if (entity.radius) {
 				context.fillStyle = '#ff8000';
 				context.beginPath();
@@ -143,7 +142,7 @@
 			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
 		}
 
-		if (ec.debug > 1) {
+		if (ec.debug > 1 && !(entity instanceof ec.Dot)) {
 			//draw layer info
 			var fieldHeight = 48;
 			entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
