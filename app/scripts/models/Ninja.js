@@ -33,6 +33,7 @@
 		this.attack = new ec.EmptyHand(radius-4, 1);
 		this.type = 'Ninja';
 		this.depth = 118;
+		this.hasShadow = true;
 		
 		this.isShadowClone = false;
 		this.shadowClones = null;

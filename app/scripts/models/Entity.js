@@ -30,6 +30,7 @@
 			return {
 				type: 'Entity',
 				isEntity: true,
+				hasShadow: false,
 				//position
 				pos: {x: 0.0, y: 0.0, z: 0.0},
 				groundZ: 0.0,
@@ -47,7 +48,7 @@
 				sortBounds: {top:0, bottom: 0, front:0, back:0, left: 0, right: 0},
 				mapCollision: [],
 				maxCollisionTopZ: 0.0,
-				layerNum: 0,
+				layerNum: -1,
 				layerName: '',
 				// debug
 				label: null,
@@ -256,6 +257,10 @@
 		},
 
 		// Physics
+
+		isStatic: function() {
+			return this.body.isStatic();
+		},
 
 		getPos: function() {
 			this.pos.x =  this.body.p.x;

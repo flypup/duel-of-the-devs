@@ -36,6 +36,7 @@
 		this.attack = new ec.EmptyHand(radius-4, 1);
 		this.type = 'Player';
 		this.depth = 118;
+		this.hasShadow = true;
 		
 		ec.copy(this, defaults);
 		if (settings) {

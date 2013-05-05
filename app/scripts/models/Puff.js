@@ -18,6 +18,8 @@
 		this.time =
 		this.duration = 500;
 
+		this.type = 'Puff';
+
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}

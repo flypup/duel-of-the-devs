@@ -186,7 +186,7 @@
 
 		add: function(entity) {
 			if (this.entities.indexOf(entity) < 0) {
-				if (!entity.body.isStatic()) {
+				if (!entity.isStatic()) {
 					this.space.addBody(entity.body);
 				}
 				this.space.addShape(entity.shape);

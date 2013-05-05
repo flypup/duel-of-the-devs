@@ -10,7 +10,8 @@
 		
 		// TODO: add instances to graph for entities in world model
 		this.entityRenderer = new ec.Canvas2dEntityView();
-		
+		this.entitiesInLayers = [];
+	
 		this.camera = {
 			lookAt: function(x, y) {
 				this.x = -this.width/this.scaleX/2 + x;
@@ -60,13 +61,15 @@
 			var entities = this.world.entities.slice();
 			var layers = this.mapRenderer.getLayers();
 			var i, j, len;
-			var entitiesInLayers = [];
+			var entitiesInLayers = this.entitiesInLayers;
+			var layerEntities;
+
 			// entities that do not have any map collisions
 			for (i=layers.length; i-- > 0;) {
-				var inLayer = this.mapRenderer.getItemsInLayer(layers[i], entities, entitiesInLayers[i]);
+				layerEntities = this.mapRenderer.getItemsInLayer(layers[i], entities, entitiesInLayers[i]);
 				//sort Entities in each layer
-				inLayer.sort(sortEntities);
-				entitiesInLayers[i] = inLayer;
+				layerEntities.sort(sortEntities);
+				entitiesInLayers[i] = layerEntities;
 			}
 			// test
 			if (entities.length) {
@@ -78,21 +81,25 @@
 					errors[msg]++;
 				}
 				//entitiesInLayers[layers.length-1] = entitiesInLayers[layers.length-1].concat(entities);
+				entities.length = 0;
 			}
 
 			var viewport = this.updateViewport(this.camera);
 			for (i = 0, len = layers.length; i < len; i++) {
 				this.mapRenderer.drawLayer(layers[i], context, viewport, delta);
 
-				var layerEntities = entitiesInLayers[i];
+				layerEntities = entitiesInLayers[i];
 				for (j=0; j<layerEntities.length; j++) {
-					this.entityRenderer.drawShadow(context, layerEntities[j], viewport, delta);
+					if (layerEntities[j].hasShadow) {
+						this.entityRenderer.drawShadow(context, layerEntities[j], viewport, delta);
+					}
 				}
 				for (j=0; j<layerEntities.length; j++) {
 					this.entityRenderer.drawEntity(context, layerEntities[j], viewport, delta);
 				}
 			}
 
+			entitiesInLayers.length = 0;
 			context.restore();
 		},
 

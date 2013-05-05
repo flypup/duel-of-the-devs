@@ -25,7 +25,8 @@
 		this.climbHeight = 0;
 
 		this.type = 'Projectile';
-
+		this.hasShadow = true;
+		
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
