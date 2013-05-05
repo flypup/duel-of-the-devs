@@ -189,7 +189,9 @@
 				if (!entity.isStatic()) {
 					this.space.addBody(entity.body);
 				}
-				this.space.addShape(entity.shape);
+				if (entity.shape !== null) {
+					this.space.addShape(entity.shape);
+				}
 				this.entities.push(entity);
 				return entity;
 			}
@@ -218,10 +220,12 @@
 		remove: function(entity) {
 			var index = this.entities.indexOf(entity);
 			if (index > -1) {
-				if (!entity.body.isStatic()) {
+				if (!entity.isStatic()) {
 					this.space.removeBody(entity.body);
 				}
-				this.space.removeShape(entity.shape);
+				if (entity.shape !== null) {
+					this.space.removeShape(entity.shape);
+				}
 				this.entities.splice(index, 1);
 				entity.removed();
 				return entity;

@@ -109,7 +109,7 @@
 
 		postStep: function(delta) {
 			this.groundZ = this.z;
-			if (this.body.isStatic()) {
+			if (this.isStatic()) {
 				return this;
 			}
 
@@ -165,7 +165,7 @@
 
 		postStepScene: function(delta) {
 			this.groundZ = this.z;
-			if (this.body.isStatic()) {
+			if (this.isStatic()) {
 				return this;
 			}
 
@@ -281,7 +281,7 @@
 			// if (ec.debug > 0) {
 			//	console.log(this.type, 'pos', x, y, z, this.mapCollision);
 			// }
-			// if (body.isStatic()) {
+			// if (this.isStatic()) {
 			// 	//space.reindexShapesForBody(body);
 			// 	for(var i = 0; i < body.shapeList.length; i++){
 			// 		var shape = body.shapeList[i];

@@ -126,9 +126,11 @@
 	};
 
 	var sortEntities = function(a, b) {
-		if ( a.body.p.y > b.body.p.y ) {
+		var posA = a.getPos();
+		var posB = b.getPos();
+		if ( posA.y < posB.y ) {
 			return -1;
-		} else if ( b.body.p.y > a.body.p.y ) {
+		} else if ( posB.y < posA.y ) {
 			return 1;
 		}
 		return 0;

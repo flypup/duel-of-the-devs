@@ -20,14 +20,12 @@
 	Collisions.PROJECTILE = 12;
 	Collisions.MAP = 50;
 	Collisions.PROP = 100;
-
-	var DAMAGE = 10;
 	
 	// PRIVATE Collision Handlers
 	
 	// ENTITY-ENTITY
 
-	function entityCollision(arbiter) {//, space) {
+	function entityCollision(arbiter, space) {
 		var entityA = arbiter.swappedColl ? arbiter.body_b.userData.parent : arbiter.body_a.userData.parent;
 		var entityB = arbiter.swappedColl ? arbiter.body_a.userData.parent : arbiter.body_b.userData.parent;
 		// TESTS
@@ -38,16 +36,16 @@
 			throw('entityCollision: no contacts');
 		}
 
+		
 		// See collision points in world
 		if (ec.debug > 1) {
 			var p = arbiter.contacts[0].p,
-				z = entityA.z + entityA.depth / 2;
-			setTimeout(function() {
-				// TODO: dot pool
-				var dot = new ec.Dot(entityA.groupId, 1000);
-				dot.setPos(p.x, -p.y, z);
-				ec.world.add(dot);
-			}, 0);
+				z = entityA.z + entityA.depth / 2,
+				dot = ec.Dot.create(entityA.groupId, 1000);
+			dot.setPos(p.x, -p.y, z);
+			//space.addPostStepCallback(function() {
+			ec.world.add(dot);
+			//});
 		}
 
 		// if either returns true, contact is ignored
@@ -57,7 +55,7 @@
 
 	// ENTITY-MAP
 
-	function mapBegin(arbiter, space) {
+	function mapBegin(arbiter) {
 		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = entityBody.userData.parent;
@@ -71,7 +69,7 @@
 		return true;
 	}
 
-	function mapSeparate(arbiter, space) {
+	function mapSeparate(arbiter) {
 		var entityBody = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
 		var mapBody    = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
 		var entity     = entityBody.userData.parent;
@@ -92,6 +90,43 @@
 	}
 
 	// ENTITY OR MAP
+
+	function depthTest(arbiter) {
+		//this one happens on every step and must be very efficient
+		var bodyA = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
+		var bodyB = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
+		return depthCollision(bodyA.userData.parent, bodyB.userData.parent);
+	}
+
+	function depthCollision(a, b) {
+		//determine if entity is outside of collision z
+
+		var aBounds = a.getSortBounds();
+		//standing under
+		if ( aBounds.top < b.z ) {
+			return false;
+		}
+		var bBounds = b.getSortBounds();
+		//standing over - fall
+		if ( a.z > bBounds.top) {
+			return false;
+		}
+		//standing on
+		//if ( a.z === bBounds.top) {
+		if ( a.z - bBounds.top > -2) { //with tolerance
+			if (a.z < bBounds.top) {
+				console.warn('corrected entity z in depth collision test', a.type, b.name);
+				a.z = bBounds.top; //correction
+			}
+			return false;
+		}
+
+		if (ec.debug > 0) {
+			//console.log('depth Collision', a, b);
+		}
+		//collision
+		return true;
+	}
 
 	function debugDepthTest(arbiter, space) {
 		var bodyA = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
@@ -137,50 +172,10 @@
 		return true;
 	}
 
-	function depthTest(arbiter, space) {
-		//this one happens on every step and must be very efficient
-		var bodyA = arbiter.swappedColl ? arbiter.body_b : arbiter.body_a;
-		var bodyB = arbiter.swappedColl ? arbiter.body_a : arbiter.body_b;
-		return depthCollision(bodyA.userData.parent, bodyB.userData.parent);
-	}
-
-	function depthCollision(a, b) {
-		//determine if entity is outside of collision z
-
-		var aBounds = a.getSortBounds();
-		//standing under
-		if ( aBounds.top < b.z ) {
-			return false;
-		}
-		var bBounds = b.getSortBounds();
-		//standing over - fall
-		if ( a.z > bBounds.top) {
-			return false;
-		}
-		//standing on
-		//if ( a.z === bBounds.top) {
-		if ( a.z - bBounds.top > -2) { //with tolerance
-			if (a.z < bBounds.top) {
-				console.warn('corrected entity z in depth collision test', a.type, b.name);
-				a.z = bBounds.top; //correction
-			}
-			return false;
-		}
-
-		if (ec.debug > 0) {
-			//console.log('depth Collision', a, b);
-		}
-		//collision
-		return true;
-	}
-
-	function passThrough() {
-		return false;
-	}
-
 	Collisions.prototype = {
 		init: function(space) {
 			var _ = null;
+
 			// Player Attacks
 			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.MONSTER,	_,	depthTest,			entityCollision,	_);
 			space.addCollisionHandler(Collisions.PLAYER_HAND, Collisions.PROJECTILE,_,	depthTest,			entityCollision,	_);
@@ -207,9 +202,7 @@
 
 		term: function() {
 
-		},
-
-
+		}
 	};
 
 })(window);

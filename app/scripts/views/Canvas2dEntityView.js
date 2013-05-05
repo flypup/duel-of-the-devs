@@ -116,7 +116,7 @@
 			if (ec.debug === 1) {ec.core.traceTime('draw entity');}
 			context.save();
 			if (entity.radius) {
-				context.fillStyle = '#ff8000';
+				context.fillStyle = entity.fillStyle || '#ff8000';
 				context.beginPath();
 				context.arc(x, y, entity.radius, 0, 2*pi, false);
 				context.fill();
