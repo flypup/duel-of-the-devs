@@ -24,6 +24,10 @@
 	};
 
 	Dot.prototype = {
+		setBaseProperties: function() {
+			ec.extend(this, ec.extend({bodyPos: {x:0, y:0}}, this.getBaseProperties()));
+		},
+
 		init: function(duration, fillStyle) {
 			this.time =
 			this.duration = duration || 500;
@@ -42,9 +46,18 @@
 			}
 		},
 
+		postStep: function() {},
+		postStepScene: function() {},
+
 		// Physics Stub
 		isStatic: function() {
 			return true;
+		},
+
+		getBodyPos: function() {
+			this.bodyPos.x =  this.pos.x;
+			this.bodyPos.y = -this.pos.y;
+			return this.bodyPos;
 		},
 
 		getPos: function() {

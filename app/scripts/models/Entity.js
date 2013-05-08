@@ -262,6 +262,10 @@
 			return this.body.isStatic();
 		},
 
+		getBodyPos: function() {
+			return this.body.p;
+		},
+
 		getPos: function() {
 			this.pos.x =  this.body.p.x;
 			this.pos.y = -this.body.p.y;
