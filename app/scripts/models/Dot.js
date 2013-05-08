@@ -4,49 +4,39 @@
 
 	var RADIUS = 10;
 
-	var Dot = ec.Dot = function(groupId, duration, fillStyle) {
+	var Dot = ec.Dot = function(params) {
 		this.setBaseProperties();
+		this.type = 'Dot';
 
 		this.depth = RADIUS * 2;
 		this.radius = RADIUS;
-		
-		this.time =
-		this.duration = duration || 500;
 
-		this.fillStyle = fillStyle || 'rgba(255, 8, 0, 1.0)';
-
-		this.type = 'Dot';
+		this.init.apply(this, params);
 
 		if (ec.debug > 1) {
 			Object.seal(this);
 		}
 	};
 
-	Dot.pool = [];
-	Dot.create = function(groupId, duration) {
-		var dot = this.pool.pop();
-		if (!dot) {
-			dot = new ec.Dot(groupId, duration);
-		} else {
-			dot.groupId = groupId || ec.Entity.groupId++;
-			dot.time =
-			dot.duration = duration || 500;
-		}
-		return dot;
-	};
-
 	Dot.ready = function() {
 		ec.extend(Dot.prototype, ec.Entity.prototype);
+		ec.addPool(Dot);
 	};
 
 	Dot.prototype = {
+		init: function(duration, fillStyle) {
+			this.time =
+			this.duration = duration || 500;
+			this.fillStyle = fillStyle || 'rgba(255, 8, 0, 1.0)';
+		},
+
+		term: null,
+
 		step: function(delta) {
 			this.time -= delta;
 			if (this.time <= 0) {
 				ec.world.remove(this);
-				//this.time = 0;
-				//this.term();
-				Dot.pool.push(this);
+				this.term();
 			} else {
 				this.fillStyle = 'rgba(255, 8, 0, '+ (this.time / this.duration).toFixed(2) +')';
 			}

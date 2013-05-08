@@ -4,21 +4,14 @@
 
 	var RADIUS = 50;
 
-	var Puff = ec.Puff = function(groupId) {
+	var Puff = ec.Puff = function(params) {
 		this.setBaseProperties();
-		this.groupId = groupId || ec.Entity.groupId++;
-
-		this.assignCircleShape(RADIUS, 1);
-		
-		this.shape.setElasticity(0);
-		this.shape.setFriction(0);
-
-		this.shape.sensor = true;
-		
-		this.time =
-		this.duration = 500;
-
 		this.type = 'Puff';
+
+		this.depth = RADIUS * 2;
+		this.radius = RADIUS;
+		
+		this.init.apply(this, params);
 
 		if (ec.debug > 1) {
 			Object.seal(this);
@@ -26,15 +19,18 @@
 	};
 
 	Puff.ready = function() {
-		ec.extend(Puff.prototype, ec.Entity.prototype);
+		//extend with physics stub from Dot
+		ec.extend(Puff.prototype, ec.Dot.prototype);
+		ec.addPool(Puff);
 	};
 
 	Puff.prototype = {
-		track: function(entity) {
-			var pos = entity.getPos();
-			this.setPos(pos.x, pos.y+1, pos.z+1);
-			this.setVelocity(entity.body.vx, entity.body.vy, 0);
+		init: function(duration) {
+			this.time =
+			this.duration = duration || 500;
 		},
+
+		term: null,
 
 		step: function(delta) {
 			this.time -= delta;
@@ -49,6 +45,12 @@
 			if (this.time > 0) {
 				this.track(entity);
 			}
+		},
+
+		track: function(entity) {
+			var pos = entity.getPos();
+			this.setPos(pos.x, pos.y+1, pos.z+1);
+			//this.setVelocity(entity.body.vx, entity.body.vy, 0);
 		}
 	};
 

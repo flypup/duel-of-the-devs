@@ -109,7 +109,7 @@
 		},
 		
 		puffSmoke: function() {
-			var puff = new ec.Puff(this.groupId);
+			var puff = ec.Puff.create();
 			ec.world.add(puff);
 			this.fx = puff;
 			this.fx.track(this);

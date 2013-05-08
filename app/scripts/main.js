@@ -100,15 +100,15 @@
 			// initialize inheritance - these should listen for an app loaded event, or use 'requires'
 			ec.EnemyInput.ready();
 			ec.ShadowCloneInput.ready();
+			ec.Dot.ready();
+			ec.Box.ready();
+			ec.Circle.ready();
 			ec.Player.ready();
 			ec.Ninja.ready();
 			ec.EmptyHand.ready();
 			ec.Projectile.ready();
 			ec.Puff.ready();
-			ec.Box.ready();
-			ec.Circle.ready();
-			ec.Dot.ready();
-
+			
 			core.init(time);
 		},
 
@@ -793,6 +793,24 @@
 		} else {
 			delete obj['on' + event];
 		}
+	};
+
+	ec.addPool = function(fnClass) {
+		var pool = fnClass.pool = [];
+		var term = fnClass.prototype.term;
+		fnClass.create = function() {
+			var instance = this.pool.pop();
+			if (!instance) {
+				instance = new this(arguments);
+			} else {
+				instance.init.apply(instance, arguments);
+			}
+			return instance;
+		};
+		fnClass.prototype.term = function() {
+			if (term) {term.apply(this);}
+			pool.push(this);
+		};
 	};
 
 	//document ready

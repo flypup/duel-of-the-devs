@@ -41,7 +41,7 @@
 		if (ec.debug > 1) {
 			var p = arbiter.contacts[0].p,
 				z = entityA.z + entityA.depth / 2,
-				dot = ec.Dot.create(entityA.groupId, 1000);
+				dot = ec.Dot.create(1000);
 			dot.setPos(p.x, -p.y, z);
 			//space.addPostStepCallback(function() {
 			ec.world.add(dot);
