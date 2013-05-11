@@ -61,10 +61,12 @@
 			this.attack = null;
 		},
 
-		punch: function(delta) {
+		punch: function() {
 			if (this.passive()) {
 				return;
 			}
+			//console.log('punch');
+			this.state = 'punching';
 			var attack = this.attack;
 			if (attack.shape.group === 0) {
 				attack.shape.group = this.groupId;
@@ -148,7 +150,7 @@
 				this.hitTime = 600;
 				this.hitDuration = this.hitTime;
 				// apply impulse
-				this.body.w = energy/10000;
+				//this.body.w = energy/10000;
 				this.body.vx *= 2;
 				this.body.vy *= 2;
 				if (this.attack.time) {
@@ -179,32 +181,7 @@
 		},
 
 		step: function(delta) {
-			this.input.poll(this, delta);
-			var pushpull = this.pushpull;
-			pushpull.x = this.input.axes[2];
-			pushpull.y = this.input.axes[3];
-			if (this.input.buttons[0] > 0) {
-				//v.forangle(this.body.a);
-				pushpull.x =  Math.cos(this.body.a);
-				pushpull.y = -Math.sin(this.body.a);
-			}
-			if (!this.hitTime && abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
-				//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
-				// normalize the vector
-				pushpull.mult(1/v.len(pushpull));
-				//}
-
-				this.punch(delta);
-				this.state = 'punching';
-
-			} else {
-				pushpull.x = 0;
-				pushpull.y = 0;
-			}
-
-			this.attack.entityStep(delta, this);
-
-			if (this.hitTime > 0) {
+			if (this.state === 'hit') {
 				this.hitTime -= delta;
 				//hit animation
 				if (this.hitTime <= 0) {
@@ -219,12 +196,37 @@
 				return this;
 
 			} else if (this.state === 'dead') {
-				// this.body.vx = 0;
-				// this.body.vy = 0;
-				// this.body.w *= 0.5;
+				this.body.vx *= 0.5;
+				this.body.vy *= 0.5;
+				this.body.w *= 0.5;
 				// //this.updateFx();
 				return this;
 			}
+
+			this.input.poll(this, delta);
+			var pushpull = this.pushpull;
+			pushpull.x = this.input.axes[2];
+			pushpull.y = this.input.axes[3];
+			if (this.input.buttons[0] > 0) {
+				//v.forangle(this.body.a);
+				pushpull.x =  Math.cos(this.body.a);
+				pushpull.y = -Math.sin(this.body.a);
+			}
+			if (abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
+				//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
+				// normalize the vector
+				pushpull.mult(1/v.len(pushpull));
+				//}
+				if (this.state !== 'punching') {
+					this.punch();
+				}
+
+			} else {
+				pushpull.x = 0;
+				pushpull.y = 0;
+			}
+
+			this.attack.entityStep(delta, this);
 
 			this.resetForces();
 
