@@ -14,7 +14,7 @@
 		this.shape.setElasticity(1);
 		this.shape.setFriction(1);
 
-		this.shape.collision_type = ec.Collisions.PROJECTILE;
+		this.activate();
 
 		this.vx = 0;
 		this.vy = 0;
@@ -155,11 +155,16 @@
 			this.body.w = Math.random() * 4 -2;
 		},
 
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PROJECTILE;
+		},
+
 		deactivate: function(delta) {
 			this.setVelocity(0,0,0);
 			this.body.w = 0;
 			this.inactive = delta;
 			this.shape.sensor = true;
+			this.shape.collision_type = ec.Collisions.NULL;
 		},
 
 		postStepScene: function(delta) {

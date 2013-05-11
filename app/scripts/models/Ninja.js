@@ -209,6 +209,7 @@
 					if (this.hitPoints <= 0) {
 						this.state = 'dead';
 						if (this.isShadowClone) {
+							this.shape.collision_type = ec.Collisions.NULL;
 							ec.world.remove(this);
 							this.term();
 						}

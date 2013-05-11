@@ -14,6 +14,7 @@
 	
 	
 	//shape groups
+	Collisions.NULL = 0; // assign to shapes to stop callback handlers
 	Collisions.PLAYER = 1;
 	Collisions.PLAYER_HAND = 2;
 	Collisions.MONSTER = 10;
@@ -81,6 +82,7 @@
 			var mapShape = arbiter.swappedColl ? arbiter.a : arbiter.b;
 			var info = mapShape.nearestPointQuery(entity.body.p);
 			if (info.d < 0) {
+				// this usually happens when separate is called after removing a shape from the space
 				console.warn('mapSeparate while inside', entity.type, mapElement);
 				return;
 			}
