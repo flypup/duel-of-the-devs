@@ -5,9 +5,6 @@
 	var v = cp.v;
 	var abs = Math.abs;
 
-	var direction = v(0,0);
-	var pushpull = v(0,0);
-
 	var defaults = {
 		speed: 28,
 		hitPoints: 100
@@ -38,6 +35,9 @@
 		this.depth = 118;
 		this.hasShadow = true;
 		
+		this.direction = v(0,0);
+		this.pushpull = v(0,0);
+
 		ec.copy(this, defaults);
 		if (settings) {
 			ec.copy(this, settings);
@@ -61,32 +61,31 @@
 			this.attack = null;
 		},
 
-		punch: function(time, world, delta) {
+		punch: function(delta) {
 			if (this.passive()) {
 				return;
 			}
 			var attack = this.attack;
 			if (attack.shape.group === 0) {
 				attack.shape.group = this.groupId;
-				this.attack = attack;
-				//world.space.addConstraint(new cp.GrooveJoint(this.body, attack.body, v(40, 0), v(80 , 0), v(0,0)));
+				//ec.world.space.addConstraint(new cp.GrooveJoint(this.body, attack.body, v(40, 0), v(80 , 0), v(0,0)));
 			}
 			if (attack.phase > ec.EmptyHand.PASSIVE) {
 				//console.log('punch in progress', attack.time, 'now', time, 'dur', punchDuration);
 				return;
 			}
 			// restart attack
-			if (world.contains(attack)) {
-				world.remove(attack);
+			if (ec.world.contains(attack)) {
+				ec.world.remove(attack);
 			}
 			attack.time = 0;
-			attack.startTime = time;
 			attack.phase = ec.EmptyHand.PUSHING;
 			var pos = this.getPos();
 			attack.setPos(pos.x, pos.y, pos.z);
 
 			// face direction of punch
 			// TODO: tween angular motion
+			var pushpull = this.pushpull;
 			this.setAngle(pushpull, 0);
 			attack.setAngle(pushpull, 0);
 
@@ -96,28 +95,21 @@
 			this.body.vy *= movementFriction;
 			
 			// apply impulse to attack
-			
+
 			attack.resetForces();
-
 			attack.body.activate();
-			var force = v.mult(pushpull, this.speed*delta);
-			attack.body.vx =  force.x + direction.x * movementFriction;
-			attack.body.vy = -force.y - direction.y * movementFriction;
-
 			//attack.body.applyImpulse(attack.force, cp.vzero);
-
-			world.add(attack);
+			ec.world.add(attack);
 
 			//console.log('punching');
 		},
 
-		attackEnd: function(time, world) {
+		attackEnd: function() {
 			var attack = this.attack;
 			attack.time = 0;
-			attack.startTime = -1;
 			attack.phase = ec.EmptyHand.PASSIVE;
-			if (world.contains(attack)) {
-				world.remove(attack);
+			if (ec.world.contains(attack)) {
+				ec.world.remove(attack);
 			}
 			// TODO: short cool down
 			if (ec.playerInteractions === 2) {
@@ -127,7 +119,7 @@
 		},
 
 		passive: function() {
-			return pushpull.x === 0 && pushpull.y === 0;
+			return this.pushpull.x === 0 && this.pushpull.y === 0;
 		},
 
 		contact: function(entity, arbiter) {
@@ -159,6 +151,9 @@
 				this.body.w = energy/10000;
 				this.body.vx *= 2;
 				this.body.vy *= 2;
+				if (this.attack.time) {
+					this.attack.time += this.attack.punchDuration;
+				}
 				console.log('PLAYER HIT. Energy:', energy, 'damage:', damage, 'HP:', this.hitPoints, this);
 				return true;
 			}
@@ -184,6 +179,31 @@
 		},
 
 		step: function(delta) {
+			this.input.poll(this, delta);
+			var pushpull = this.pushpull;
+			pushpull.x = this.input.axes[2];
+			pushpull.y = this.input.axes[3];
+			if (this.input.buttons[0] > 0) {
+				//v.forangle(this.body.a);
+				pushpull.x =  Math.cos(this.body.a);
+				pushpull.y = -Math.sin(this.body.a);
+			}
+			if (!this.hitTime && abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
+				//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
+				// normalize the vector
+				pushpull.mult(1/v.len(pushpull));
+				//}
+
+				this.punch(delta);
+				this.state = 'punching';
+
+			} else {
+				pushpull.x = 0;
+				pushpull.y = 0;
+			}
+
+			this.attack.entityStep(delta, this);
+
 			if (this.hitTime > 0) {
 				this.hitTime -= delta;
 				//hit animation
@@ -206,11 +226,7 @@
 				return this;
 			}
 
-			this.input.poll(this, delta);
-
 			this.resetForces();
-
-			this.attack.entityStep(ec.world.time, ec.world, this);
 
 			if (ec.playerInteractions < 0) {
 				ec.playerInteractions++;
@@ -220,6 +236,7 @@
 			}
 
 			if (this.attack.phase === ec.EmptyHand.PASSIVE || this.attack.phase === ec.EmptyHand.PULLING) {
+				var direction = this.direction;
 				direction.x = this.input.axes[0];
 				direction.y = this.input.axes[1];
 				if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
@@ -272,26 +289,6 @@
 						ec.core.userReady();
 					}
 				}
-			}
-			pushpull.x = this.input.axes[2];
-			pushpull.y = this.input.axes[3];
-			if (this.input.buttons[0] > 0) {
-				//v.forangle(this.body.a);
-				pushpull.x = Math.cos(this.body.a);
-				pushpull.y = -Math.sin(this.body.a);
-			}
-			if (abs(pushpull.x) > 0.1 || abs(pushpull.y) > 0.1) {
-				//if (abs(pushpull.x) > 0.7 || abs(pushpull.y) > 0.7) {
-				// normalize the vector
-				pushpull.mult(1/v.len(pushpull));
-				//}
-
-				this.punch(ec.world.time, ec.world, delta);
-				this.state = 'punching';
-
-			} else {
-				pushpull.x = 0;
-				pushpull.y = 0;
 			}
 
 			return this;

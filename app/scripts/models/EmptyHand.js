@@ -18,12 +18,13 @@
 		this.depth = 64;
 
 		this.time = 0;
-		this.startTime = -1;
 		this.phase = EmptyHand.PASSIVE;
 
 		this.pushDuration = 1000 * 5/60;
 		this.grabDuration = 1000 * 10/60;
 		this.punchDuration = this.pushDuration + this.grabDuration/2;
+
+		this.force = cp.v(0, 0);
 
 		this.type = 'EmptyHand';
 
@@ -53,19 +54,25 @@
 			return false;
 		},
 
-		entityStep: function(time, world, entity) {
+		entityStep: function(delta, entity) {
 			if (this.phase) {
 				this.z = entity.z;
-				this.time = time - this.startTime;
+				this.time += delta;
 
 				if (this.phase === ec.EmptyHand.PUSHING) {
 					if (this.time < this.punchDuration) {
 						//punching
 						// TODO: check for early hit - GRAB/PUSH
 
+						this.force.x =  entity.pushpull.x * entity.speed * delta;
+						this.force.y = -entity.pushpull.y * entity.speed * delta;
+
+						this.body.vx = entity.body.vx + this.force.x;
+						this.body.vy = entity.body.vy + this.force.y;
+
 					} else if (entity.passive()) {
 						//done punching
-						entity.attackEnd(time, world);
+						entity.attackEnd();
 						//console.log('punch ended passively');
 
 					} else if (this.time > this.pushDuration) {
@@ -78,7 +85,7 @@
 					this.body.vy *= 0.9;
 					if (entity.passive()) {
 						//done punching
-						entity.attackEnd(time, world);
+						entity.attackEnd();
 						//console.log('grab ended passively');
 
 					} else if (this.time > this.pushDuration + this.grabDuration) {
@@ -86,7 +93,7 @@
 						var grabbedTarget = false;
 						if (!grabbedTarget) {
 							//done punching
-							entity.attackEnd(time, world);
+							entity.attackEnd();
 							//console.log('grab ended empty handed');
 						} else {
 
@@ -102,7 +109,7 @@
 
 					if (entity.passive()) {
 						//done punching
-						entity.attackEnd(time, world);
+						entity.attackEnd();
 						console.log('pull ended passively');
 					}
 
