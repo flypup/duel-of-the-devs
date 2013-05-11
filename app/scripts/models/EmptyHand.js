@@ -13,8 +13,6 @@
 		this.shape.setElasticity(0.5);
 		this.shape.setFriction(1);
 
-		this.shape.collision_type = ec.Collisions.PLAYER_HAND;
-
 		this.depth = 64;
 
 		this.time = 0;
@@ -115,6 +113,10 @@
 
 				}
 			}
+		},
+
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PLAYER_HAND;
 		}
 	};
 

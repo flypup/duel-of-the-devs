@@ -38,6 +38,9 @@
 
 		term: function() {
 			// TODO: -> call remove on all entities > bodies > shapes
+			for(var i = this.entities.length; i-- > 0;) {
+				this.entities[i].deactivate();
+			}
 			this.entities.length = 0;
 			this.elements.length = 0;
 			var space = this.space;
@@ -188,6 +191,7 @@
 				if (!entity.isStatic()) {
 					this.space.addBody(entity.body);
 				}
+				entity.activate();
 				if (entity.shape !== null) {
 					this.space.addShape(entity.shape);
 				}
@@ -222,6 +226,7 @@
 				if (!entity.isStatic()) {
 					this.space.removeBody(entity.body);
 				}
+				entity.deactivate();
 				if (entity.shape !== null) {
 					this.space.removeShape(entity.shape);
 				}

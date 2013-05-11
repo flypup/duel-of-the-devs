@@ -122,13 +122,18 @@
 			
 			// get floor. target z = floor z
 			// no floor? target z = 0
-			var targetZ = this.getTargetZ(this.climbHeight);
+			var climbHeight = this.climbHeight;
+			if (this.state !== 'walking') {
+				climbHeight = 0;//*= 0.2;
+			}
+			var targetZ = this.getTargetZ(climbHeight);
 			
 			distance = targetZ - this.z;
 			if (distance > 0) {
 				// TODO: update state and modify velX,velY when climbing or falling
 				// climbing
-				if (distance <= this.climbHeight) {
+				if (distance <= climbHeight) {
+					//this.state = 'climbing';
 					this.groundZ = this.z; // TODO: get next lowest floor
 					//this.z = targetZ; // TODO: climb animation
 					//this.velZ = 5;
@@ -140,6 +145,7 @@
 				}
 			} else if (distance < 0) {
 				// falling
+				//this.state = 'falling';
 				this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
 				this.z = Math.max(targetZ, this.z + this.velZ);
 				this.groundZ = targetZ;
@@ -257,6 +263,15 @@
 		},
 
 		// Physics
+
+		activate: function() {
+			console.warn('Entity subclass must implement it\'s own activate method.');
+			this.shape.collision_type = ec.Collisions.NULL;
+		},
+
+		deactivate: function() {
+			this.shape.collision_type = ec.Collisions.NULL;
+		},
 
 		isStatic: function() {
 			return this.body.isStatic();

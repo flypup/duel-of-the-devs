@@ -50,6 +50,9 @@
 		postStepScene: function() {},
 
 		// Physics Stub
+		activate: function() {},
+		deactivate: function() {},
+
 		isStatic: function() {
 			return true;
 		},

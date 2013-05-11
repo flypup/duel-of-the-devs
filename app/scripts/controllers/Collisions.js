@@ -79,6 +79,7 @@
 			//console.log('mapSeparate', entity.type, mapElement);
 		
 			// don't separate if we're inside the object
+			// TODO: has map element been removed?
 			var mapShape = arbiter.swappedColl ? arbiter.a : arbiter.b;
 			var info = mapShape.nearestPointQuery(entity.body.p);
 			if (info.d < 0) {

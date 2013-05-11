@@ -27,9 +27,14 @@
 		}
 	};
 
-	var proto = Box.prototype;
 	Box.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(Box.prototype, ec.Entity.prototype);
+	};
+
+	Box.prototype = {
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PROP;
+		}
 	};
 	
 })(window);

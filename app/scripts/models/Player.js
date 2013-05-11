@@ -23,8 +23,6 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.shape.collision_type = ec.Collisions.PLAYER;
-
 		// TODO: better states!
 		this.shape.group = this.groupId;
 		this.state = 'standing';
@@ -125,7 +123,7 @@
 		},
 
 		contact: function(entity, arbiter) {
-			console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
+			//console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type);
 			//(arbiter.state === 'first coll')
 			
 			// ignore if already hit
@@ -177,6 +175,8 @@
 			} else if (this.state === 'dead') {
 				rate = 0;
 			}
+			//this.state = 'climbing';
+			//this.state = 'falling';
 			return rate;
 		},
 
@@ -294,6 +294,10 @@
 			}
 
 			return this;
+		},
+
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PLAYER;
 		}
 	};
 	

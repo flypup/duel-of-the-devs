@@ -78,7 +78,7 @@
 				//console.log('projectile hit floor');
 				this.z = this.groundZ;
 				this.resetForces();
-				this.deactivate(delta);
+				this.stop(delta);
 				return;
 			}
 			this.z = z;
@@ -114,7 +114,7 @@
 				return true;
 			}
 
-			console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type, this.body.t, this.shape.sensor);
+			//console.log('CONTACT', arbiter.state, arbiter.contacts.length, this.type, entity.type, this.body.t, this.shape.sensor);
 			this.hit(arbiter);
 
 			return false;
@@ -132,7 +132,7 @@
 			
 			if (this.distanceSq < 3000*3000 || Math.random() > 0.8) {
 				//stick in wall
-				this.deactivate(delta);
+				this.stop(delta);
 			} else {
 				this.startFall(delta);
 			}
@@ -155,16 +155,16 @@
 			this.body.w = Math.random() * 4 -2;
 		},
 
-		activate: function() {
-			this.shape.collision_type = ec.Collisions.PROJECTILE;
-		},
-
-		deactivate: function(delta) {
+		stop: function(delta) {
 			this.setVelocity(0,0,0);
 			this.body.w = 0;
 			this.inactive = delta;
 			this.shape.sensor = true;
-			this.shape.collision_type = ec.Collisions.NULL;
+			this.deactivate();
+		},
+
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PROJECTILE;
 		},
 
 		postStepScene: function(delta) {

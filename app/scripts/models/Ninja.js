@@ -24,8 +24,6 @@
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0);
 
-		this.shape.collision_type = ec.Collisions.MONSTER;
-
 		// TODO: better states!
 		this.shape.group = this.groupId;
 		this.state = 'standing';
@@ -209,7 +207,6 @@
 					if (this.hitPoints <= 0) {
 						this.state = 'dead';
 						if (this.isShadowClone) {
-							this.shape.collision_type = ec.Collisions.NULL;
 							ec.world.remove(this);
 							this.term();
 						}
@@ -296,6 +293,10 @@
 
 			this.updateFx();
 			return this;
+		},
+
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.MONSTER;
 		}
 	};
 

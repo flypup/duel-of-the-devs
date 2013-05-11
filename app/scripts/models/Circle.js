@@ -19,8 +19,6 @@
 		
 		this.shape.setElasticity(0);
 		this.shape.setFriction(0.6);
-		
-		this.shape.collision_type = ec.Collisions.PROP;
 
 		this.type = 'Circle';
 
@@ -29,10 +27,14 @@
 		}
 	};
 
-	var proto = Circle.prototype;
 	Circle.ready = function() {
-		ec.extend(proto, ec.Entity.prototype);
+		ec.extend(Circle.prototype, ec.Entity.prototype);
 	};
 
+	Circle.prototype = {
+		activate: function() {
+			this.shape.collision_type = ec.Collisions.PROP;
+		}
+	};
 	
 })(window);
