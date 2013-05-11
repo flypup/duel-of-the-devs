@@ -23,7 +23,7 @@
 					punch_3: 42,
 					punch_4: 46,
 					punch_5: 50,
-					fall: 55
+					fall: 54
 				}
 				//animations: {'standing': [first, last, next, frequency]}
 				//animations: {'standing': {next: '', frequency: 1, frames: NumberOrArray}
