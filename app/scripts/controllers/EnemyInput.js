@@ -466,7 +466,9 @@
 		circleTarget: {
 			name: 'circle target',
 			tasks: [
-				idle(1)
+				idle(1),
+				targetNearestEnemy,
+				throwStars()
 				// TODO: tell clones run around target with me
 			]
 		},
