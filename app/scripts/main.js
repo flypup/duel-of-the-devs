@@ -492,6 +492,8 @@
 					remainder -= TIME_STEP;
 					world.step(TIME_STEP);
 				}
+				// delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10)) * 0.5;
+				// world.step(delta);
 
 				if (boss.state === 'dead') {
 					boss.decomposed += delta;

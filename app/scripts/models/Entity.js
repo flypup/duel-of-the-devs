@@ -360,6 +360,7 @@
 			var body = this.getBody(mass, moment);
 			this.setBody(body);
 			this.shape = new cp.CircleShape(body, radius, v(0, 0));
+			//this.shape.setLayers(ec.Collisions.GRABABLE_MASK);
 			return this;
 		},
 

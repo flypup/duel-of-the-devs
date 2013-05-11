@@ -76,13 +76,14 @@
 		var mapElement = mapBody.userData.parent;
 		if (ec.debug > 0) {
 			//console.log('mapSeparate', entity.type, mapElement);
-		}
-
-		// don't separate if we're inside the object
-		var mapShape = arbiter.swappedColl ? arbiter.a : arbiter.b;
-		var info = mapShape.nearestPointQuery(entity.body.p);
-		if (info.d < 0) {
-			return;
+		
+			// don't separate if we're inside the object
+			var mapShape = arbiter.swappedColl ? arbiter.a : arbiter.b;
+			var info = mapShape.nearestPointQuery(entity.body.p);
+			if (info.d < 0) {
+				console.warn('mapSeparate while inside', entity.type, mapElement);
+				return;
+			}
 		}
 
 		// Remove Map Element from Entity's Checklist

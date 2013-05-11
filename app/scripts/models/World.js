@@ -179,7 +179,6 @@
 			var shape = new cp.BoxShape(body, w, h);
 			shape.setElasticity(0);
 			shape.setFriction(1);
-			shape.setLayers(ec.Collisions.NOT_GRABABLE_MASK);
 			this.space.addShape(shape);
 			return shape;
 		},
