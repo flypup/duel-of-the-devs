@@ -2,7 +2,7 @@
 
 	// ec is our global namespace
 	var ec = window.ec = {};
-	ec.version = '0.1.304';
+	ec.version = '0.2.0';
 	ec.debug = 0;
 
 	// data
@@ -72,6 +72,7 @@
 				ec.core.clearLocal();
 			}
 			if (version !== ec.version) {
+				ec.core.setLocal('debug', 0);
 				ec.core.setLocal('version', ec.version);
 			}
 			ec.debug = ec.core.getLocal('debug', 0, parseInt, [10]);
