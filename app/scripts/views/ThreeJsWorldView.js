@@ -283,6 +283,9 @@
 			this.renderer.domElement.style.display = 'block';
 			window.document.body.appendChild( this.renderer.domElement );
 			this.resize(fullsize ? 1 : 2.5);
+			if (fullsize) {
+				// low z-index for mobile
+			}
 		},
 
 		hide: function() {
