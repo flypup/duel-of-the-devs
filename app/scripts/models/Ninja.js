@@ -118,7 +118,7 @@
 				var pos = this.getPos();
 				var angle = this.body.a;
 				var velocity = 800;
-				var angleVelocity = 20;
+				var angleVelocity = 30;
 
 				var throwingStar = new ec.Projectile()
 								.setPos(pos.x, pos.y, pos.z + 64)

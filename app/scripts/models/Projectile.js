@@ -84,11 +84,10 @@
 			this.z = z;
 
 			//map collision or flying?
-			if (this.maxDistanceSq && this.mapCollision.length > 0) {
+			if (this.mapCollision.length > 0) {
 				if (this.maxCollisionTopZ > this.groundZ) {
 					this.hitObstacle(delta);
 				}
-
 			}
 		
 			this.distanceSq += this.vx * this.vx + this.vy * this.vy;
@@ -109,8 +108,9 @@
 				return true;
 			}
 
-			if (entity.type === 'Box' || entity.type === 'Circle') {//Collisions.PROP)
-				this.hitObstacle(0);
+			var impenetrable = (entity.type === 'Circle'); // material === 'iron'
+			if (entity.type === 'Box' || impenetrable) {//Collisions.PROP)
+				this.hitObstacle(16, impenetrable);
 				return true;
 			}
 
@@ -125,12 +125,12 @@
 			this.startFall(force);
 		},
 
-		hitObstacle: function(delta) {
-			//console.log('projectile hit wall');
+		hitObstacle: function(delta, impenetrable) {
+			//console.log('projectile hit obstacle. w:', this.body.w, 'delta:', delta);
 			//stick or bounce down to floor?
 
 			
-			if (this.distanceSq < 3000*3000 || Math.random() > 0.8) {
+			if (!impenetrable && (this.distanceSq < 3000*3000 || Math.abs(this.body.w) < 10.0)) {
 				//stick in wall
 				this.stop(delta);
 			} else {
