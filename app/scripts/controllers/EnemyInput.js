@@ -81,8 +81,13 @@
 				return;
 			}
 			// from me to target
-			// TODO: temp vector: tempVectorSubtract(a, b)
-			var direction = v.sub(this.targetPos, entity.getPos());
+			var pos = entity.getPos();
+			var direction = v.sub(this.targetPos, pos);
+			// See direction in world
+			// if (ec.debug > 1) {
+			// 	var targetPos = v.lerpconst(pos, direction, distance);
+			// 	ec.world.add( ec.Dot.create(500, 'rgba(200, 0, 200, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+			// }
 			if (lengthSq(direction) < distance * distance) {
 				//reached target
 				//console.log('moved to target');
@@ -111,7 +116,14 @@
 				this.completeTask();
 				return;
 			}
-			var direction = v.sub(entity.getPos(), this.targetPos);
+			var pos = entity.getPos();
+			var direction = v.sub(pos, this.targetPos);
+
+			var targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
+			// See direction in world
+			if (ec.debug > 1) {
+				ec.world.add( ec.Dot.create(5000, 'rgba(0, 0, 0, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+			}
 			if (lengthSq(direction) > distance * distance) {
 				//evaded target
 				//console.log('evaded target');
@@ -136,16 +148,37 @@
 				return;
 			}
 			// from me to target
-			var direction = v.sub(this.targetPos, entity.getPos());
+			var pos = entity.getPos();
+			var direction = v.sub(this.targetPos, pos);
+			var targetPos;
+
 			if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
 				// far from target
+				
+				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
+
+				// See direction in world
+				if (ec.debug > 1) {
+					ec.world.add( ec.Dot.create(5000, 'rgba(255, 255, 255, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+				}
+				
 				vnormalize(direction, true);
 				this.setAxes1(direction.x, direction.y);
 				return;
+
 			} else if (lengthSq(direction) < distance * distance) {
 				// too close to target
+				direction.neg();
+
+				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
+
+				// See direction in world
+				if (ec.debug > 1) {
+					ec.world.add( ec.Dot.create(5000, 'rgba(0, 0, 0, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+				}
+
 				vnormalize(direction, true);
-				this.setAxes1(-direction.x, -direction.y);
+				this.setAxes1(direction.x, direction.y);
 				return;
 			}
 			// within range of target
@@ -513,6 +546,7 @@
 	};
 
 	var goals = [
+		//goalTree.faceOff,
 		goalTree.formLine,
 		goalTree.waitForClones,
 		goalTree.throwStars,
@@ -522,8 +556,7 @@
 		goalTree.formCircle,
 		goalTree.rush
 		//goalTree.attack // TODO: hand-to-hand combat
-		//goalTree.rush
-		//goalTree.attack // TODO: hand-to-hand combat
+		//goalTree.avoid
 	];
 
 /** MATH UTILS ***********************************/
