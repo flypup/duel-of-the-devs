@@ -19,20 +19,24 @@
 
 	var proto = EnemyInput.prototype;
 	EnemyInput.ready = function() {
-		ec.extend(proto, ec.GoalBasedInput.prototype);
+		ec.extend(EnemyInput.prototype, ec.GoalBasedInput.prototype);
 	};
 
 	//cycle through private 'goals' array
-	proto.selectGoal = function() {
-		var goal, index;
-		index = this.goalIndex + 1;
-		if (index >= goals.length) {
-			index = 0;
+	EnemyInput.prototype = {
+		selectGoal: function() {
+			var goal, index;
+			index = this.goalIndex + 1;
+			if (index >= goals.length) {
+				index = 0;
+			}
+			goal = goals[index];
+			this.goalIndex = index;
+			return goal;
 		}
-		goal = goals[index];
-		this.goalIndex = index;
-		return goal;
 	};
+
+	
 
 /** TASKS ***********************************/
 
@@ -56,7 +60,9 @@
 	function scramble() {
 		return function scrambleTask(entity) {
 			//console.log('scramble');
-			this.targetPos = v(Math.random() * 1000, Math.random() * 1000 + 1000);
+
+			this.setTargetPos( ec.world.getRandomMapPosition() );
+
 			entity.speed = 22;
 			this.completeTask();
 		};
@@ -301,7 +307,7 @@
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
 			if (unitInput.targetPos === null) {
-				unitInput.targetPos = formationPos;
+				unitInput.setTargetPos(formationPos);
 			}
 			unitInput.targetAngle = angle;
 
@@ -332,7 +338,7 @@
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
 			if (unitInput.targetPos === null) {
-				unitInput.targetPos = formationPos;
+				unitInput.setTargetPos(formationPos);
 			}
 			unitInput.targetAngle = angle;
 			if (entity.isShadowClone) {

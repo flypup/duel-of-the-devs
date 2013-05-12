@@ -531,9 +531,9 @@
 						break;
 
 					case 'container': // TODO: create bounds for containers?
-					case 'parallax': // TODO: parallax sorting and depth
-						bounds.front = -1; 
-						bounds.back = -1;
+					case 'parallax':  // TODO: parallax sorting and depth
+						bounds.front = -1;
+						bounds.back  = -1;
 						bounds.left  = -1;
 						bounds.right = -1;
 						return bounds; // no tests

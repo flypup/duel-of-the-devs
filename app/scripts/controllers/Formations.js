@@ -74,7 +74,7 @@
 		};
 	};
 
-	// UNIT FORMATION PATH FINDING
+	// UNIT FORMATION ASSIGNMENT
 
 	proto.updateUnitsHungarian = function(entities, positions, length) {
 		length = length || positions.length;

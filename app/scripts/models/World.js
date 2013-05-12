@@ -66,6 +66,15 @@
 			this.map = null;
 		},
 
+		getRandomMapPosition: function() {
+			if (this.map && this.map.points) {
+				var index = Math.floor(Math.random()*this.map.points.length);
+				return this.map.points[index];
+			}
+			console.error('getRandomMapPosition: no map points.', this.map);
+			return v(Math.random() * 1000, Math.random() * 1000 + 1000);
+		},
+
 		setMap: function(data) {
 			//clear space
 			this.term();
@@ -74,10 +83,12 @@
 			// TODO: remember / remove walls - AKA ViewPort Bounds
 			this.addWalls(0, 0, data.width, data.height);
 
-			// add mapElements, extract entities and bounds
+			// add mapElements, extract entities and bounds, add points for AI
 			var layers = data.layers;
 			var entities = data.entities = data.entities || [];
 			var bounds = data.bounds = data.bounds || [];
+			var points = data.points = data.points || [];
+
 			var i, j;
 			// add mapElements
 			for (i=0; i<layers.length; i++) {
@@ -106,6 +117,13 @@
 							mapElement.layerNum = i;
 							mapElement.visible = !!mapElement.image || !!mapElement.children;
 							this.addMapElement(mapElement);
+
+							switch (mapElement.mapType) {
+							case 'wall':
+							case 'floor':
+							case 'steps':
+								points.push(v(mapElement.x, mapElement.y));
+							}
 
 							// ew! updating the data we're parsing
 							elements[j] = mapElement;
