@@ -188,6 +188,7 @@
 					this.hitTime = 0;
 					if (this.hitPoints <= 0) {
 						this.state = 'dead';
+						this.attackEnd();
 					} else {
 						this.state = 'standing'; //getting up
 					}
