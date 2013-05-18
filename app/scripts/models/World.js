@@ -3,6 +3,7 @@
 	var ec = window.ec;
 	var cp = window.cp;
 	var v = cp.v;
+	var queryBB = cp.bb();
 
 	function assert(value, message) {
 		if (!value) {
@@ -73,6 +74,24 @@
 			}
 			console.error('getRandomMapPosition: no map points.', this.map);
 			return v(Math.random() * 1000, Math.random() * 1000 + 1000);
+		},
+
+		queryStatic: function(point, maxDistance) {
+			var out = [];
+			var helper = function(shape){
+				if(!shape.sensor && shape.body && shape.body.userData){
+					var obj = shape.body.userData.parent;
+					out.push(obj);
+				}
+			};
+			queryBB.l =  point.x - maxDistance;
+			queryBB.b = -point.y - maxDistance;
+			queryBB.r =  point.x + maxDistance;
+			queryBB.t = -point.y + maxDistance;
+			this.space.staticShapes.query(queryBB, helper);
+			//this.space.staticShapes.segmentQuery(start, end, 1, helper);
+			//console.log('queryStatic', queryBB, out.length, out);
+			return out;
 		},
 
 		setMap: function(data) {

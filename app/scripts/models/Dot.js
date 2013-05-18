@@ -25,7 +25,10 @@
 
 	Dot.prototype = {
 		setBaseProperties: function() {
-			ec.extend(this, ec.extend({bodyPos: {x:0, y:0}}, this.getBaseProperties()));
+			ec.extend(this, ec.extend({
+				bodyPos: {x:0, y:0},
+				bodyRot: {a:0, x:0, y:0}
+			}, this.getBaseProperties()));
 		},
 
 		init: function(duration, fillStyle) {
@@ -78,6 +81,19 @@
 			this.pos.x =  x;
 			this.pos.y =  y;
 			this.pos.z =  z;
+			return this;
+		},
+
+		setAngle: function(v) {
+			if (v && (v.x || v.y)) {
+				this.bodyRot.a = Math.atan2(-v.y, v.x);
+				this.bodyRot.x = v.x;
+				this.bodyRot.y = -v.y;
+			} else if (!isNaN(v)) {
+				this.bodyRot.a = v;
+				this.bodyRot.x = Math.cos(v);
+				this.bodyRot.y = -Math.sin(v);
+			}
 			return this;
 		},
 

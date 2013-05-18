@@ -61,9 +61,7 @@
 			//console.log('scramble');
 
 			this.setTargetPos( ec.world.getRandomMapPosition() );
-			// TODO: validate
-			//space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
-
+			
 			entity.speed = 22;
 			this.completeTask();
 		};
@@ -140,6 +138,22 @@
 		};
 	}
 
+	function findObstacles(targetPos, entity) {
+		var obstacles = ec.world.queryStatic(targetPos, entity.radius);
+		if (obstacles.length) {
+			for (var i=obstacles.length; i--;) {
+				var obj = obstacles[i];
+				// if top of obstacle is climable, next
+				if (!obj.isEntity && obj.z + obj.depth <= entity.z + entity.climbHeight) {
+					obstacles.splice(i, 1);
+				}
+			}
+		} else {
+			obstacles.push('out of bounds');
+		}
+		return obstacles;
+	}
+
 	function moveToDistance(distance, speed) {
 		distance = distance || AVOID_DISTANCE;
 		speed = speed || 6;
@@ -152,40 +166,53 @@
 			// from me to target
 			var pos = entity.getPos();
 			var direction = v.sub(this.targetPos, pos);
-			var targetPos;
+			var targetPos, obstacles;
 
 			if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
 				// far from target
 				
-				// TODO: validate ideal position / line query for obstacles
-				//this.revalidate = false;
 				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
-
-				// See direction in world
-				if (ec.debug > 1) {
-					ec.world.add( ec.Dot.create(5000, 'rgba(255, 255, 255, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+				// validate target postion
+				obstacles = findObstacles(targetPos, entity);
+				if (obstacles.length === 0) {
+					// See direction in world
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(5000, 'rgba(255, 255, 255, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
+					}
+					
+					vnormalize(direction, true);
+					this.setAxes1(direction.x, direction.y);
+					return;
+				} else {
+					//console.log('obstacles closing in', obstacles);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(7500, 'rgba(255, 200, 200, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
+					}
 				}
-				
-				vnormalize(direction, true);
-				this.setAxes1(direction.x, direction.y);
-				return;
 
 			} else if (lengthSq(direction) < distance * distance) {
 				// too close to target
 				direction.neg();
 
-				// TODO: validate ideal position / line query for obstacles
-				//this.revalidate = false;
 				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
+				// validate target postion
+				obstacles = findObstacles(targetPos, entity);
+				if (obstacles.length === 0) {
+					// See direction in world
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(5000, 'rgba(0, 0, 0, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
+					}
 
-				// See direction in world
-				if (ec.debug > 1) {
-					ec.world.add( ec.Dot.create(5000, 'rgba(0, 0, 0, 1.0)').setPos(targetPos.x, targetPos.y, pos.z) );
+					vnormalize(direction, true);
+					this.setAxes1(direction.x, direction.y);
+					return;
+				} else {
+					//console.log('obstacles evading', obstacles);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(7500, 'rgba(155, 100, 100, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
+					}
 				}
 
-				vnormalize(direction, true);
-				this.setAxes1(direction.x, direction.y);
-				return;
 			}
 			// within range of target
 			this.completeTask();
@@ -290,7 +317,29 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var formation = this.formations.lineupPositions(entity.getPos(), targetPos, length, spacing, minDistance);
+			var leaderPos = entity.getPos();
+			var formation = this.formations.lineupPositions(leaderPos, targetPos, length, spacing, minDistance);
+
+			//validate formation positions
+			var positions = formation.positions;
+			var obstacles;
+			var targetX = targetPos ? targetPos.x : 0;
+			var targetY = targetPos ? targetPos.y : 0;
+			for (var i=positions.length; i--;) {
+				var pos = positions[i];
+				var formationPos = v(pos.x + targetX, pos.y + targetY);
+				// validate formation postion
+				obstacles = findObstacles(formationPos, entity);
+				if (obstacles.length) {
+					// TODO: better fallback positions for formations
+					//positions.splice(i, 1);
+					positions[i] = ec.world.getRandomMapPosition();//leaderPos;//
+					//console.log('clonesFormLineTask', obstacles, positions.length, pos);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(4000, 'rgba(255, 200, 100, 1.0)').setPos(formationPos.x, formationPos.y, entity.z) );
+					}
+				}	
+			}
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
 			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
@@ -309,7 +358,29 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var formation = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
+			var leaderPos = entity.getPos();
+			var formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
+
+			//validate formation positions
+			var positions = formation.positions;
+			var obstacles;
+			var targetX = targetPos ? targetPos.x : 0;
+			var targetY = targetPos ? targetPos.y : 0;
+			for (var i=positions.length; i--;) {
+				var pos = positions[i];
+				var formationPos = v(pos.x + targetX, pos.y + targetY);
+				// validate formation postion
+				obstacles = findObstacles(formationPos, entity);
+				if (obstacles.length) {
+					// TODO: better fallback positions for formations
+					//positions.splice(i, 1);
+					positions[i] = ec.world.getRandomMapPosition();//leaderPos;//
+					//console.log('clonesFormCircleWithLeaderTask', obstacles, positions.length, pos);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(4000, 'rgba(255, 200, 100, 1.0)').setPos(formationPos.x, formationPos.y, entity.z) );
+					}
+				}	
+			}
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
 			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
@@ -327,7 +398,29 @@
 			var length = Math.min(maxLength, shadowClones.length);
 
 			var targetPos = this.updateTargetPos();
-			var formation = this.formations.circlePositions(entity.getPos(), targetPos, length, radius);
+			var leaderPos = entity.getPos();
+			var formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
+
+			//validate formation positions
+			var positions = formation.positions;
+			var obstacles;
+			var targetX = targetPos ? targetPos.x : 0;
+			var targetY = targetPos ? targetPos.y : 0;
+			for (var i=positions.length; i--;) {
+				var pos = positions[i];
+				var formationPos = v(pos.x + targetX, pos.y + targetY);
+				// validate formation postion
+				obstacles = findObstacles(formationPos, entity);
+				if (obstacles.length) {
+					// TODO: better fallback positions for formations
+					//positions.splice(i, 1);
+					positions[i] = ec.world.getRandomMapPosition();//leaderPos;//
+					//console.log('clonesFormCircleTask', obstacles, positions.length, pos);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(4000, 'rgba(255, 200, 100, 1.0)').setPos(formationPos.x, formationPos.y, entity.z) );
+					}
+				}
+			}
 
 			var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
 			assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
@@ -343,6 +436,7 @@
 		var targetY = targetPos ? targetPos.y : 0;
 		var positions = formation.positions;
 		var angles = formation.angles;
+		var obstacles;
 		for (var i=0; i<length; i++) {
 			var pos       = positions[solution[i][0]];
 			var angle     = angles[solution[i][0]];
@@ -353,8 +447,18 @@
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
 			if (unitInput.targetPos === null) {
-				// TODO: validate
-				unitInput.setTargetPos(formationPos);
+				// validate formation postion
+				obstacles = findObstacles(formationPos, entity);
+				if (obstacles.length === 0) {
+					unitInput.setTargetPos(formationPos);
+				} else {
+					//console.log('formation obstacles', obstacles, formationPos);
+					if (ec.debug > 1) {
+						ec.world.add( ec.Dot.create(4000, 'rgba(255, 100, 200, 1.0)').setPos(formationPos.x, formationPos.y, entity.z) );
+					}
+					unitInput.completeTask();
+					continue;
+				}
 			}
 			unitInput.targetAngle = angle;
 
