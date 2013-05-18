@@ -122,6 +122,8 @@
 							case 'wall':
 							case 'floor':
 							case 'steps':
+								// TODO: mapElement.getShapePoints()
+								//mapElement.spawnPoints
 								points.push(v(mapElement.x, mapElement.y));
 							}
 
