@@ -52,6 +52,8 @@
 		}
 		return true;
 	};
+	var max = Math.max;
+	var min = Math.min;
 
 	var core = ec.core = {
 
@@ -413,7 +415,7 @@
 
 			var delta = (time - deltaTime);
 			deltaTime = time;
-			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+			delta = min(max(TIME_STEP, delta), TIME_STEP*10);
 
 			if (ec.debug !== 4) {
 				view.draw(delta);
@@ -446,7 +448,7 @@
 			deltaTime = time;
 
 			if (!paused) {
-				delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+				delta = min(max(TIME_STEP, delta), TIME_STEP*10);
 
 				scene.step(delta);
 
@@ -485,18 +487,18 @@
 				if (ec.debug === 1) {ec.core.traceTime('animate');}
 			}
 
-			var delta = (time - deltaTime);
+			var delta = (time - deltaTime);// * 0.1;
 			deltaTime = time;
 
 			if (!paused) {
-				delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10));
+				delta = min(max(TIME_STEP, delta), TIME_STEP*10);
 
 				remainder += delta;
 				while(remainder >= TIME_STEP) {
 					remainder -= TIME_STEP;
 					world.step(TIME_STEP);
 				}
-				// delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10)) * 0.5;
+				// delta = min(max(TIME_STEP, delta), TIME_STEP*10) * 0.5;
 				// world.step(delta);
 
 				if (boss.state === 'dead') {
@@ -544,7 +546,7 @@
 
 			var delta = (time - deltaTime);
 			deltaTime = time;
-			delta = Math.max(TIME_STEP, Math.min(delta, TIME_STEP*10)) * 0.2;
+			delta = min(max(TIME_STEP, delta), TIME_STEP*10) * 0.2;
 			world.step(delta);
 
 			worldView.lookAt(boss.body.p.x, -boss.body.p.y -boss.z - 64);
