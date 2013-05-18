@@ -16,8 +16,7 @@
 			Object.seal(this);
 		}
 	};
-
-	var proto = EnemyInput.prototype;
+	
 	EnemyInput.ready = function() {
 		ec.extend(EnemyInput.prototype, ec.GoalBasedInput.prototype);
 	};
@@ -62,6 +61,8 @@
 			//console.log('scramble');
 
 			this.setTargetPos( ec.world.getRandomMapPosition() );
+			// TODO: validate
+			//space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
 
 			entity.speed = 22;
 			this.completeTask();
@@ -119,6 +120,7 @@
 			var pos = entity.getPos();
 			var direction = v.sub(pos, this.targetPos);
 
+			// TODO: validate ideal position / line query for obstacles
 			var targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
 			// See direction in world
 			if (ec.debug > 1) {
@@ -155,6 +157,8 @@
 			if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
 				// far from target
 				
+				// TODO: validate ideal position / line query for obstacles
+				//this.revalidate = false;
 				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
 
 				// See direction in world
@@ -170,6 +174,8 @@
 				// too close to target
 				direction.neg();
 
+				// TODO: validate ideal position / line query for obstacles
+				//this.revalidate = false;
 				targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
 
 				// See direction in world
@@ -201,13 +207,20 @@
 		};
 	}
 
-	function faceOffTarget(distance, speed) {
+	function faceOffTarget(distance, speed, frequency) {
 		distance = distance || GOAL_DISTANCE;
 		speed = speed || 22;
 		var move = moveToDistance(distance);
-		return function faceOffTargetTask(entity) {
+		return function faceOffTargetTask(entity, delta) {
 			entity.speed = speed;
-			this.updateTargetPos();
+			if (frequency) {
+				if (this.frequencyPos >= frequency) {
+					this.frequencyPos -= frequency;
+					this.updateTargetPos();
+				} else {
+					this.frequencyPos += delta;
+				}
+			}
 			move.apply(this, arguments);
 		};
 	}
@@ -225,7 +238,7 @@
 
 	function shuv() {
 		var move = moveTo(0, 29);
-		return function shuvTask(entity) {
+		return function shuvTask() {
 			//console.log('shuv');
 			targetNearestEnemy.apply(this, arguments);
 			move.apply(this, arguments);
@@ -340,6 +353,7 @@
 			formationPos.x = pos.x + targetX;
 			formationPos.y = pos.y + targetY;
 			if (unitInput.targetPos === null) {
+				// TODO: validate
 				unitInput.setTargetPos(formationPos);
 			}
 			unitInput.targetAngle = angle;
@@ -443,13 +457,14 @@
 	var GOAL_DISTANCE = 64;
 	var AVOID_DISTANCE = 512;
 	var HIGH_SPEED = 43;
+	var UPDATE_FREQUENCY = 1000/10;
 
 	var goalTree = {
 		faceOff: {
 			name: 'face off',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(200, HIGH_SPEED),
+				faceOffTarget(200, HIGH_SPEED, UPDATE_FREQUENCY),
 				idle(250)
 			]
 		},
@@ -457,7 +472,7 @@
 			name: 'formation line',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(350, HIGH_SPEED),
+				faceOffTarget(350, HIGH_SPEED, UPDATE_FREQUENCY),
 				idle(33),
 				kageNoBunshin(8),
 				makeClones(8),
@@ -494,7 +509,7 @@
 			name: 'formation circle',
 			tasks: [
 				targetNearestEnemy,
-				faceOffTarget(360),
+				faceOffTarget(360, null, UPDATE_FREQUENCY),
 				kageNoBunshin(8),
 				//makeClones(8),
 				clonesFormCircle(200),

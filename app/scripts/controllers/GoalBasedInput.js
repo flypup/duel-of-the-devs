@@ -25,7 +25,8 @@
 				goalIndex: -1,
 				targetPos: null,
 				targetAngle: null,
-				targetEntity: null
+				targetEntity: null,
+				frequencyPos: 0
 			};
 		},
 
@@ -112,6 +113,7 @@
 			if (this.goal && this.goal.task) {
 				this.goal.task.complete = true;
 			}
+			this.frequencyPos = 0;
 		},
 
 		updateTargetPos: function() {
