@@ -113,6 +113,103 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "ground",
+      "elements": [
+        {
+          "name": "ground",
+          "x": 1280,
+          "y": 2816,
+          "visible": false,
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 1,
+          "mHeight": 2048,
+          "mWidth": 2560,
+          "mZ": -1,
+          "notes": "ground",
+          "shape": "box",
+          "type": "Box"
+        },
+        {
+          "mapType": "container",
+          "children": [
+            {
+              "x": 1520,
+              "y": 3068,
+              "width": 932,
+              "height": 708,
+              "rectangle": true,
+              "fillColor": "#c0c0b6"
+            },
+            {
+              "x": 1520,
+              "y": 1792,
+              "width": 932,
+              "height": 900,
+              "rectangle": true,
+              "fillColor": "#c0c0b6"
+            },
+            {
+              "x": 108,
+              "y": 3068,
+              "width": 932,
+              "height": 708,
+              "rectangle": true,
+              "fillColor": "#c0c0b6"
+            },
+            {
+              "x": 108,
+              "y": 1792,
+              "width": 932,
+              "height": 900,
+              "rectangle": true,
+              "fillColor": "#c0c0b6"
+            },
+            {
+              "x": 1040,
+              "y": 1920,
+              "width": 480,
+              "height": 772,
+              "rectangle": true,
+              "fillColor": "#ada9a8"
+            },
+            {
+              "x": 1536,
+              "y": 2692,
+              "width": 1024,
+              "height": 376,
+              "rectangle": true,
+              "fillColor": "#ada9a8"
+            },
+            {
+              "x": 1024,
+              "y": 2692,
+              "width": 512,
+              "height": 376,
+              "rectangle": true,
+              "fillColor": "#ada9a8"
+            },
+            {
+              "x": 0,
+              "y": 2692,
+              "width": 1024,
+              "height": 376,
+              "rectangle": true,
+              "fillColor": "#ada9a8"
+            },
+            {
+              "x": 1040,
+              "y": 3068,
+              "width": 480,
+              "height": 708,
+              "rectangle": true,
+              "fillColor": "#ada9a8"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "boundsNorthWest",
       "group": "top bounds",
       "elements": [
@@ -302,6 +399,74 @@ ec && ec.loadMap({
           "shape": "box",
           "type": "Box",
           "image": "elements/templefront.png"
+        }
+      ]
+    },
+    {
+      "name": "roof",
+      "group": "temple",
+      "elements": [
+        {
+          "name": "roof",
+          "x": 1280,
+          "y": 1188,
+          "width": 1024,
+          "height": 496,
+          "regX": 512,
+          "regY": 364,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 1280,
+            "ty": 1188
+          },
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 32,
+          "mHeight": 250,
+          "mWidth": 1024,
+          "mZ": 400,
+          "shape": "polygons",
+          "type": "Box",
+          "image": "elements/roof.png",
+          "shapes": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 1024,
+              "height": 464,
+              "polygons": [
+                [
+                  [
+                    898.35,
+                    0
+                  ],
+                  [
+                    989.7,
+                    236.7
+                  ],
+                  [
+                    1024,
+                    464
+                  ],
+                  [
+                    0,
+                    464
+                  ],
+                  [
+                    34,
+                    236.7
+                  ],
+                  [
+                    126.2,
+                    0
+                  ]
+                ]
+              ]
+            }
+          ]
         }
       ]
     },
@@ -512,105 +677,8 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "courtyard",
-      "group": "courtyard",
-      "elements": [
-        {
-          "name": "instance0",
-          "x": 1280,
-          "y": 2816,
-          "visible": false,
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 0,
-          "mHeight": 2048,
-          "mWidth": 2560,
-          "mZ": 0,
-          "shape": "box",
-          "type": "Box"
-        },
-        {
-          "mapType": "container",
-          "children": [
-            {
-              "x": 1520,
-              "y": 3068,
-              "width": 932,
-              "height": 708,
-              "rectangle": true,
-              "fillColor": "#c0c0b6"
-            },
-            {
-              "x": 1520,
-              "y": 1792,
-              "width": 932,
-              "height": 900,
-              "rectangle": true,
-              "fillColor": "#c0c0b6"
-            },
-            {
-              "x": 108,
-              "y": 3068,
-              "width": 932,
-              "height": 708,
-              "rectangle": true,
-              "fillColor": "#c0c0b6"
-            },
-            {
-              "x": 108,
-              "y": 1792,
-              "width": 932,
-              "height": 900,
-              "rectangle": true,
-              "fillColor": "#c0c0b6"
-            },
-            {
-              "x": 1040,
-              "y": 1920,
-              "width": 480,
-              "height": 772,
-              "rectangle": true,
-              "fillColor": "#ada9a8"
-            },
-            {
-              "x": 1536,
-              "y": 2692,
-              "width": 1024,
-              "height": 376,
-              "rectangle": true,
-              "fillColor": "#ada9a8"
-            },
-            {
-              "x": 1024,
-              "y": 2692,
-              "width": 512,
-              "height": 376,
-              "rectangle": true,
-              "fillColor": "#ada9a8"
-            },
-            {
-              "x": 0,
-              "y": 2692,
-              "width": 1024,
-              "height": 376,
-              "rectangle": true,
-              "fillColor": "#ada9a8"
-            },
-            {
-              "x": 1040,
-              "y": 3068,
-              "width": 480,
-              "height": 708,
-              "rectangle": true,
-              "fillColor": "#ada9a8"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "steps",
-      "group": "courtyard",
+      "group": "ledge",
       "elements": [
         {
           "name": "stairs",
@@ -649,7 +717,7 @@ ec && ec.loadMap({
           "y": 3188,
           "mapType": "entity",
           "mass": 0,
-          "mDepth": 48,
+          "mDepth": 80,
           "mHeight": 192,
           "mWidth": 192,
           "mZ": 0,
@@ -662,7 +730,7 @@ ec && ec.loadMap({
           "y": 3188,
           "mapType": "entity",
           "mass": 0,
-          "mDepth": 48,
+          "mDepth": 80,
           "mHeight": 192,
           "mWidth": 192,
           "mZ": 0,
@@ -750,40 +818,7 @@ ec && ec.loadMap({
       ]
     },
     {
-      "name": "wall bounds south sides",
-      "elements": [
-        {
-          "name": "wallwestsouth",
-          "x": 54,
-          "y": 3840,
-          "visible": false,
-          "mapType": "wall",
-          "mass": 0,
-          "mDepth": 288,
-          "mHeight": 772,
-          "mWidth": 108,
-          "mZ": 0,
-          "shape": "box",
-          "type": "Box"
-        },
-        {
-          "name": "walleastsouth",
-          "x": 2506,
-          "y": 3840,
-          "visible": false,
-          "mapType": "wall",
-          "mass": 0,
-          "mDepth": 288,
-          "mHeight": 772,
-          "mWidth": 108,
-          "mZ": 0,
-          "shape": "box",
-          "type": "Box"
-        }
-      ]
-    },
-    {
-      "name": "wall bounds north sides",
+      "name": "wall bounds sides",
       "elements": [
         {
           "name": "wallwestnorth",
@@ -892,12 +927,39 @@ ec && ec.loadMap({
               "fillColor": "#330000"
             }
           ]
+        },
+        {
+          "name": "wallwestsouth",
+          "x": 54,
+          "y": 3840,
+          "visible": false,
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 288,
+          "mHeight": 772,
+          "mWidth": 108,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box"
+        },
+        {
+          "name": "walleastsouth",
+          "x": 2506,
+          "y": 3840,
+          "visible": false,
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 288,
+          "mHeight": 772,
+          "mWidth": 108,
+          "mZ": 0,
+          "shape": "box",
+          "type": "Box"
         }
       ]
     },
     {
-      "name": "roof bounds east",
-      "group": "roofs",
+      "name": "roof sides north",
       "elements": [
         {
           "name": "roofsideeastnorth",
@@ -919,178 +981,6 @@ ec && ec.loadMap({
           "mass": 0,
           "mDepth": 64,
           "mHeight": 1020,
-          "mWidth": 128,
-          "mZ": 288,
-          "shape": "box",
-          "type": "Box",
-          "children": [
-            {
-              "x": 0,
-              "y": -0.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 126.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 253.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 379.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 507.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 634.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 761.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 888.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            }
-          ]
-        },
-        {
-          "name": "roofsideeastsouth",
-          "x": 2496,
-          "y": 3388,
-          "width": 128,
-          "height": 1145,
-          "regX": 64,
-          "regY": 572.5,
-          "matrix": {
-            "a": -1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 2496,
-            "ty": 3388
-          },
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 64,
-          "mHeight": 1016,
-          "mWidth": 128,
-          "mZ": 288,
-          "shape": "box",
-          "type": "Box",
-          "children": [
-            {
-              "x": 0,
-              "y": -0.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 126.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 253.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 379.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 507.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 634.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 761.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            },
-            {
-              "x": 0,
-              "y": 888.5,
-              "width": 128,
-              "height": 256,
-              "image": "elements/roofsidepanel.png"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "roof bounds west",
-      "group": "roofs",
-      "elements": [
-        {
-          "name": "roofsidewestsouth",
-          "x": 64,
-          "y": 3388,
-          "width": 128,
-          "height": 1145,
-          "regX": 64,
-          "regY": 572.5,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 64,
-            "ty": 3388
-          },
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 64,
-          "mHeight": 1016,
           "mWidth": 128,
           "mZ": 288,
           "shape": "box",
@@ -1240,8 +1130,178 @@ ec && ec.loadMap({
       ]
     },
     {
+      "name": "roof sides south",
+      "elements": [
+        {
+          "name": "roofsideeastsouth",
+          "x": 2496,
+          "y": 3388,
+          "width": 128,
+          "height": 1145,
+          "regX": 64,
+          "regY": 572.5,
+          "matrix": {
+            "a": -1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 2496,
+            "ty": 3388
+          },
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 64,
+          "mHeight": 1016,
+          "mWidth": 128,
+          "mZ": 288,
+          "shape": "box",
+          "type": "Box",
+          "children": [
+            {
+              "x": 0,
+              "y": -0.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 126.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 253.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 379.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 507.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 634.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 761.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 888.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            }
+          ]
+        },
+        {
+          "name": "roofsidewestsouth",
+          "x": 64,
+          "y": 3388,
+          "width": 128,
+          "height": 1145,
+          "regX": 64,
+          "regY": 572.5,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 64,
+            "ty": 3388
+          },
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 64,
+          "mHeight": 1016,
+          "mWidth": 128,
+          "mZ": 288,
+          "shape": "box",
+          "type": "Box",
+          "children": [
+            {
+              "x": 0,
+              "y": -0.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 126.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 253.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 379.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 507.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 634.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 761.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            },
+            {
+              "x": 0,
+              "y": 888.5,
+              "width": 128,
+              "height": 256,
+              "image": "elements/roofsidepanel.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "roof bounds south",
-      "group": "roofs",
       "elements": [
         {
           "mapType": "container",
@@ -1272,74 +1332,6 @@ ec && ec.loadMap({
                 ]
               ],
               "fillImage": "elements/fills/rooftiles_64.png"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "roof",
-      "group": "roofs",
-      "elements": [
-        {
-          "name": "roof",
-          "x": 1280,
-          "y": 1188,
-          "width": 1024,
-          "height": 496,
-          "regX": 512,
-          "regY": 364,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 1280,
-            "ty": 1188
-          },
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 32,
-          "mHeight": 250,
-          "mWidth": 1024,
-          "mZ": 400,
-          "shape": "polygons",
-          "type": "Box",
-          "image": "elements/roof.png",
-          "shapes": [
-            {
-              "x": 0,
-              "y": 0,
-              "width": 1024,
-              "height": 464,
-              "polygons": [
-                [
-                  [
-                    898.35,
-                    0
-                  ],
-                  [
-                    989.7,
-                    236.7
-                  ],
-                  [
-                    1024,
-                    464
-                  ],
-                  [
-                    0,
-                    464
-                  ],
-                  [
-                    34,
-                    236.7
-                  ],
-                  [
-                    126.2,
-                    0
-                  ]
-                ]
-              ]
             }
           ]
         }

@@ -1,4 +1,4 @@
-﻿ec && ec.loadMap({
+ec && ec.loadMap({
   "name": "testmap",
   "path": "data/testmap",
   "width": 1280,
@@ -23,8 +23,98 @@
       ]
     },
     {
-      "name": "floor behind window side",
+      "name": "floors back",
       "elements": [
+        {
+          "name": "floorOutsideBackRight",
+          "x": 929.5,
+          "y": 491.5,
+          "width": 707,
+          "height": 565,
+          "regX": 353.5,
+          "regY": 282.5,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 929.5,
+            "ty": 491.5
+          },
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 0,
+          "mHeight": 565,
+          "mWidth": 707,
+          "mZ": 0,
+          "shape": "polygons",
+          "type": "Box",
+          "children": [
+            {
+              "x": -0.5,
+              "y": -0.5,
+              "width": 707,
+              "height": 565,
+              "polygons": [
+                [
+                  [
+                    707,
+                    565
+                  ],
+                  [
+                    481.25,
+                    565
+                  ],
+                  [
+                    0,
+                    373.3
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    704.35,
+                    26.35
+                  ]
+                ]
+              ],
+              "fillColor": "#cccc99"
+            }
+          ],
+          "shapes": [
+            {
+              "x": -0.5,
+              "y": -0.5,
+              "width": 707,
+              "height": 565,
+              "polygons": [
+                [
+                  [
+                    707,
+                    565
+                  ],
+                  [
+                    481.25,
+                    565
+                  ],
+                  [
+                    0,
+                    373.3
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    704.35,
+                    26.35
+                  ]
+                ]
+              ]
+            }
+          ]
+        },
         {
           "name": "floorOutsideBackLeft",
           "x": 288,
@@ -118,276 +208,7 @@
       ]
     },
     {
-      "name": "floor behind door side",
-      "elements": [
-        {
-          "name": "floorOutsideBackRight",
-          "x": 929.5,
-          "y": 491.5,
-          "width": 707,
-          "height": 565,
-          "regX": 353.5,
-          "regY": 282.5,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 929.5,
-            "ty": 491.5
-          },
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 0,
-          "mHeight": 565,
-          "mWidth": 707,
-          "mZ": 0,
-          "shape": "polygons",
-          "type": "Box",
-          "children": [
-            {
-              "x": -0.5,
-              "y": -0.5,
-              "width": 707,
-              "height": 565,
-              "polygons": [
-                [
-                  [
-                    707,
-                    565
-                  ],
-                  [
-                    481.25,
-                    565
-                  ],
-                  [
-                    0,
-                    373.3
-                  ],
-                  [
-                    0,
-                    0
-                  ],
-                  [
-                    704.35,
-                    26.35
-                  ]
-                ]
-              ],
-              "fillColor": "#cccc99"
-            }
-          ],
-          "shapes": [
-            {
-              "x": -0.5,
-              "y": -0.5,
-              "width": 707,
-              "height": 565,
-              "polygons": [
-                [
-                  [
-                    707,
-                    565
-                  ],
-                  [
-                    481.25,
-                    565
-                  ],
-                  [
-                    0,
-                    373.3
-                  ],
-                  [
-                    0,
-                    0
-                  ],
-                  [
-                    704.35,
-                    26.35
-                  ]
-                ]
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "wall behind window",
-      "elements": [
-        {
-          "name": "wallBehindWindow",
-          "x": 337,
-          "y": 680,
-          "width": 480,
-          "height": 510,
-          "regX": 240,
-          "regY": 415,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 337,
-            "ty": 680
-          },
-          "mapType": "wall",
-          "mass": 0,
-          "mDepth": 320,
-          "mHeight": 510,
-          "mWidth": 480,
-          "mZ": 0,
-          "shape": "polygons",
-          "type": "Box",
-          "children": [
-            {
-              "x": 0,
-              "y": 0,
-              "width": 480,
-              "height": 510,
-              "polygons": [
-                [
-                  [
-                    480,
-                    0
-                  ],
-                  [
-                    480,
-                    319.2
-                  ],
-                  [
-                    0,
-                    510
-                  ],
-                  [
-                    0,
-                    190.75
-                  ]
-                ]
-              ],
-              "fillColor": "#804382"
-            }
-          ],
-          "shapes": [
-            {
-              "x": 0,
-              "y": 319.2,
-              "width": 480,
-              "height": 190.8,
-              "polygons": [
-                [
-                  [
-                    480,
-                    0
-                  ],
-                  [
-                    480,
-                    17
-                  ],
-                  [
-                    43.45,
-                    190.8
-                  ],
-                  [
-                    0,
-                    190.8
-                  ]
-                ]
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "wall behind door",
-      "elements": [
-        {
-          "name": "wallBehindDoor",
-          "x": 816,
-          "y": 680,
-          "width": 480,
-          "height": 510,
-          "regX": 240,
-          "regY": 415,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 816,
-            "ty": 680
-          },
-          "mapType": "wall",
-          "mass": 0,
-          "mDepth": 320,
-          "mHeight": 510,
-          "mWidth": 480,
-          "mZ": 0,
-          "shape": "polygons",
-          "type": "Box",
-          "children": [
-            {
-              "x": 0,
-              "y": 0,
-              "width": 480,
-              "height": 510,
-              "polygons": [
-                [
-                  [
-                    0,
-                    318.35
-                  ],
-                  [
-                    0,
-                    0
-                  ],
-                  [
-                    480,
-                    191.7
-                  ],
-                  [
-                    480,
-                    510
-                  ]
-                ]
-              ],
-              "fillColor": "#663366"
-            }
-          ],
-          "shapes": [
-            {
-              "x": 0,
-              "y": 318.35,
-              "width": 480,
-              "height": 191.65,
-              "polygons": [
-                [
-                  [
-                    0,
-                    16.95
-                  ],
-                  [
-                    0,
-                    0
-                  ],
-                  [
-                    480,
-                    191.65
-                  ],
-                  [
-                    437,
-                    191.65
-                  ]
-                ]
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "inside floor",
+      "name": "floor inside",
       "elements": [
         {
           "name": "floorInsde",
@@ -474,56 +295,214 @@
       ]
     },
     {
-      "name": "wall window",
+      "name": "floors front",
       "elements": [
         {
-          "name": "wallWindow",
-          "x": 336,
-          "y": 872,
-          "width": 480,
-          "height": 510,
-          "regX": 240,
-          "regY": 416,
+          "name": "floorOutsideWindow",
+          "x": 284.2,
+          "y": 1029.75,
+          "width": 584.35,
+          "height": 508.2,
+          "regX": 292.15,
+          "regY": 254.1,
           "matrix": {
             "a": 1,
             "b": 0,
             "c": 0,
             "d": 1,
-            "tx": 336,
-            "ty": 872
+            "tx": 284.2,
+            "ty": 1029.75
           },
-          "mapType": "wall",
+          "mapType": "floor",
           "mass": 0,
-          "mDepth": 320,
-          "mHeight": 510,
-          "mWidth": 480,
+          "mDepth": 0,
+          "mHeight": 508.2,
+          "mWidth": 584.35,
           "mZ": 0,
           "shape": "polygons",
           "type": "Box",
-          "image": "map/wallWindow.png",
-          "shapes": [
+          "children": [
             {
-              "x": 0,
-              "y": 314.05,
-              "width": 480,
-              "height": 197.95,
+              "x": -0.14999999999997726,
+              "y": -0.09999999999999432,
+              "width": 584.35,
+              "height": 508.2,
               "polygons": [
                 [
                   [
                     0,
-                    4.3
-                  ],
-                  [
-                    21.25,
                     0
                   ],
                   [
-                    480,
-                    176.75
+                    103.65,
+                    0
                   ],
                   [
-                    480,
-                    197.95
+                    9.95,
+                    508.2
+                  ],
+                  [
+                    0,
+                    508.2
+                  ]
+                ],
+                [
+                  [
+                    9.95,
+                    508.2
+                  ],
+                  [
+                    103.65,
+                    0
+                  ],
+                  [
+                    584.35,
+                    191.75
+                  ],
+                  [
+                    584.35,
+                    508.2
+                  ]
+                ]
+              ],
+              "fillColor": "#cccc99"
+            }
+          ],
+          "shapes": [
+            {
+              "x": -0.14999999999997726,
+              "y": -0.09999999999999432,
+              "width": 584.35,
+              "height": 508.2,
+              "polygons": [
+                [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    103.65,
+                    0
+                  ],
+                  [
+                    584.35,
+                    191.75
+                  ],
+                  [
+                    584.35,
+                    508.2
+                  ],
+                  [
+                    0,
+                    508.2
+                  ]
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "name": "floorOutsideDoor",
+          "x": 929.5,
+          "y": 1029.85,
+          "width": 706.25,
+          "height": 507.95,
+          "regX": 353.1,
+          "regY": 253.95,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 929.5,
+            "ty": 1029.85
+          },
+          "mapType": "floor",
+          "mass": 0,
+          "mDepth": 0,
+          "mHeight": 507.95,
+          "mWidth": 706.25,
+          "mZ": 0,
+          "shape": "polygons",
+          "type": "Box",
+          "children": [
+            {
+              "x": -0.10000000000002274,
+              "y": -0.9499999999999886,
+              "width": 706.25,
+              "height": 507.95,
+              "polygons": [
+                [
+                  [
+                    480.7,
+                    0
+                  ],
+                  [
+                    706.25,
+                    0
+                  ],
+                  [
+                    706.25,
+                    507.95
+                  ],
+                  [
+                    0,
+                    507.95
+                  ],
+                  [
+                    0,
+                    191.5
+                  ]
+                ],
+                [
+                  [
+                    706.25,
+                    507.95
+                  ],
+                  [
+                    706.25,
+                    0
+                  ],
+                  [
+                    706.25,
+                    261.6
+                  ],
+                  [
+                    706.25,
+                    503.95
+                  ]
+                ]
+              ],
+              "fillColor": "#cccc99"
+            }
+          ],
+          "shapes": [
+            {
+              "x": -0.10000000000002274,
+              "y": -0.9499999999999886,
+              "width": 706.25,
+              "height": 507.95,
+              "polygons": [
+                [
+                  [
+                    480.7,
+                    0
+                  ],
+                  [
+                    706.25,
+                    0
+                  ],
+                  [
+                    706.25,
+                    507.95
+                  ],
+                  [
+                    0,
+                    507.95
+                  ],
+                  [
+                    0,
+                    191.5
                   ]
                 ]
               ]
@@ -533,7 +512,176 @@
       ]
     },
     {
-      "name": "wall door",
+      "name": "walls back",
+      "elements": [
+        {
+          "name": "wallBehindWindow",
+          "x": 337,
+          "y": 680,
+          "width": 480,
+          "height": 510,
+          "regX": 240,
+          "regY": 415,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 337,
+            "ty": 680
+          },
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 320,
+          "mHeight": 0,
+          "mWidth": 480,
+          "mZ": 0,
+          "shape": "polygons",
+          "type": "Box",
+          "children": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 480,
+              "height": 510,
+              "polygons": [
+                [
+                  [
+                    480,
+                    0
+                  ],
+                  [
+                    480,
+                    319.2
+                  ],
+                  [
+                    0,
+                    510
+                  ],
+                  [
+                    0,
+                    190.75
+                  ]
+                ]
+              ],
+              "fillColor": "#804382"
+            }
+          ],
+          "shapes": [
+            {
+              "x": 0,
+              "y": 319.2,
+              "width": 480,
+              "height": 190.8,
+              "polygons": [
+                [
+                  [
+                    480,
+                    0
+                  ],
+                  [
+                    480,
+                    17
+                  ],
+                  [
+                    43.45,
+                    190.8
+                  ],
+                  [
+                    0,
+                    190.8
+                  ]
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wallBehindDoor",
+          "x": 816,
+          "y": 680,
+          "width": 480,
+          "height": 510,
+          "regX": 240,
+          "regY": 415,
+          "matrix": {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "tx": 816,
+            "ty": 680
+          },
+          "mapType": "wall",
+          "mass": 0,
+          "mDepth": 320,
+          "mHeight": 0,
+          "mWidth": 480,
+          "mZ": 0,
+          "shape": "polygons",
+          "type": "Box",
+          "children": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 480,
+              "height": 510,
+              "polygons": [
+                [
+                  [
+                    0,
+                    318.35
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    480,
+                    191.7
+                  ],
+                  [
+                    480,
+                    510
+                  ]
+                ]
+              ],
+              "fillColor": "#663366"
+            }
+          ],
+          "shapes": [
+            {
+              "x": 0,
+              "y": 318.35,
+              "width": 480,
+              "height": 191.65,
+              "polygons": [
+                [
+                  [
+                    0,
+                    16.95
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    480,
+                    191.65
+                  ],
+                  [
+                    437,
+                    191.65
+                  ]
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "walls front",
       "elements": [
         {
           "name": "wallDoor",
@@ -554,7 +702,7 @@
           "mapType": "wall",
           "mass": 0,
           "mDepth": 320,
-          "mHeight": 509,
+          "mHeight": 0,
           "mWidth": 480,
           "mZ": 0,
           "shape": "polygons",
@@ -705,223 +853,55 @@
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "floor outside door",
-      "elements": [
+        },
         {
-          "name": "floorOutsideDoor",
-          "x": 929.5,
-          "y": 1029.85,
-          "width": 706.25,
-          "height": 507.95,
-          "regX": 353.1,
-          "regY": 253.95,
+          "name": "wallWindow",
+          "x": 336,
+          "y": 872,
+          "width": 480,
+          "height": 510,
+          "regX": 240,
+          "regY": 416,
           "matrix": {
             "a": 1,
             "b": 0,
             "c": 0,
             "d": 1,
-            "tx": 929.5,
-            "ty": 1029.85
+            "tx": 336,
+            "ty": 872
           },
-          "mapType": "floor",
+          "mapType": "wall",
           "mass": 0,
-          "mDepth": 0,
-          "mHeight": 507.95,
-          "mWidth": 706.25,
+          "mDepth": 320,
+          "mHeight": 0,
+          "mWidth": 480,
           "mZ": 0,
           "shape": "polygons",
           "type": "Box",
-          "children": [
-            {
-              "x": -0.10000000000002274,
-              "y": -0.9499999999999886,
-              "width": 706.25,
-              "height": 507.95,
-              "polygons": [
-                [
-                  [
-                    480.7,
-                    0
-                  ],
-                  [
-                    706.25,
-                    0
-                  ],
-                  [
-                    706.25,
-                    507.95
-                  ],
-                  [
-                    0,
-                    507.95
-                  ],
-                  [
-                    0,
-                    191.5
-                  ]
-                ],
-                [
-                  [
-                    706.25,
-                    507.95
-                  ],
-                  [
-                    706.25,
-                    0
-                  ],
-                  [
-                    706.25,
-                    261.6
-                  ],
-                  [
-                    706.25,
-                    503.95
-                  ]
-                ]
-              ],
-              "fillColor": "#cccc99"
-            }
-          ],
+          "image": "map/wallWindow.png",
           "shapes": [
             {
-              "x": -0.10000000000002274,
-              "y": -0.9499999999999886,
-              "width": 706.25,
-              "height": 507.95,
-              "polygons": [
-                [
-                  [
-                    480.7,
-                    0
-                  ],
-                  [
-                    706.25,
-                    0
-                  ],
-                  [
-                    706.25,
-                    507.95
-                  ],
-                  [
-                    0,
-                    507.95
-                  ],
-                  [
-                    0,
-                    191.5
-                  ]
-                ]
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "floor outside window",
-      "elements": [
-        {
-          "name": "floorOutsideWindow",
-          "x": 284.2,
-          "y": 1029.75,
-          "width": 584.35,
-          "height": 508.2,
-          "regX": 292.15,
-          "regY": 254.1,
-          "matrix": {
-            "a": 1,
-            "b": 0,
-            "c": 0,
-            "d": 1,
-            "tx": 284.2,
-            "ty": 1029.75
-          },
-          "mapType": "floor",
-          "mass": 0,
-          "mDepth": 0,
-          "mHeight": 508.2,
-          "mWidth": 584.35,
-          "mZ": 0,
-          "shape": "polygons",
-          "type": "Box",
-          "children": [
-            {
-              "x": -0.14999999999997726,
-              "y": -0.09999999999999432,
-              "width": 584.35,
-              "height": 508.2,
+              "x": 0,
+              "y": 314.05,
+              "width": 480,
+              "height": 197.95,
               "polygons": [
                 [
                   [
                     0,
+                    4.3
+                  ],
+                  [
+                    21.25,
                     0
                   ],
                   [
-                    103.65,
-                    0
+                    480,
+                    176.75
                   ],
                   [
-                    9.95,
-                    508.2
-                  ],
-                  [
-                    0,
-                    508.2
-                  ]
-                ],
-                [
-                  [
-                    9.95,
-                    508.2
-                  ],
-                  [
-                    103.65,
-                    0
-                  ],
-                  [
-                    584.35,
-                    191.75
-                  ],
-                  [
-                    584.35,
-                    508.2
-                  ]
-                ]
-              ],
-              "fillColor": "#cccc99"
-            }
-          ],
-          "shapes": [
-            {
-              "x": -0.14999999999997726,
-              "y": -0.09999999999999432,
-              "width": 584.35,
-              "height": 508.2,
-              "polygons": [
-                [
-                  [
-                    0,
-                    0
-                  ],
-                  [
-                    103.65,
-                    0
-                  ],
-                  [
-                    584.35,
-                    191.75
-                  ],
-                  [
-                    584.35,
-                    508.2
-                  ],
-                  [
-                    0,
-                    508.2
+                    480,
+                    197.95
                   ]
                 ]
               ]
@@ -951,15 +931,29 @@
           },
           "mapType": "wall",
           "mass": 0,
-          "mDepth": 0,
-          "mHeight": 67.35,
-          "mWidth": 101.6,
+          "mDepth": 67,
+          "mHeight": 0,
+          "mWidth": 101,
           "mZ": 0,
           "shape": "box",
           "type": "Box",
           "image": "map/grass.png"
         }
       ]
+    }
+  ],
+  "entities": [],
+  "bounds": [],
+  "spawnPoints": [
+    {
+      x: 577,
+      y: 667,
+      z: 0
+    },
+    {
+      x: 691,
+      y: 1043,
+      z: 0
     }
   ]
 });
