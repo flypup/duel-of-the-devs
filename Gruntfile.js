@@ -103,9 +103,9 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 files: {
-                    '<%= yeoman.dist %>/scripts/main.js': [
-                        '<%= yeoman.app %>/scripts/{,*/}*.js'
-                    ],
+                    // '<%= yeoman.dist %>/scripts/main.js': [
+                    //     '<%= yeoman.app %>/scripts/{,*/}*.js'
+                    // ],
                     // TODO: combine all data
                     '<%= yeoman.dist %>/data/scenes/enter_the_ninja.js': [
                         '<%= yeoman.app %>/data/scenes/enter_the_ninja.js'
@@ -185,24 +185,31 @@ module.exports = function (grunt) {
                         'audio/*.{m4a,ogg}',
                         'data/**/*'
                     ]
+                },
+                {
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= yeoman.dist %>',
+                    dest: 'gh-pages',
+                    src: [
+                        '**/*'
+                    ]
                 }]
             }
         },
-        bower: {
-            all: {
-                rjsConfig: '<%= yeoman.app %>/scripts/main.js'
-            }
-        },
+        // bower: {
+        //     all: {
+        //         rjsConfig: '<%= yeoman.app %>/scripts/main.js'
+        //     }
+        // },
         compress: {
             dist: {
-            //     options: {
-            //         archive: 'comcast_wifi_templates_'+ (new Date()).toISOString().replace(/T/, '_').replace(/\..+|[-:]/g, '') +'.zip'
-            //     },
-            //     files: [
-            //         {src: 'index.html', dest: 'comcast_wifi_templates/'},
-            //         {src: '<%= app.templates %>/*.html', dest: 'comcast_wifi_templates/'},
-            //         {src: 'public/**', dest: 'comcast_wifi_templates/'}
-            //     ]
+                options: {
+                    archive: 'gh-pages/game.zip'
+                },
+                files: [
+                    {expand: true, cwd: '<%= yeoman.dist %>/', src: ['**'], dest: 'game/'}
+                ]
             }
         }
     });
