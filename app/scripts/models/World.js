@@ -39,7 +39,7 @@
 
 		term: function() {
 			// TODO: -> call remove on all entities > bodies > shapes
-			for(var i = this.entities.length; i-- > 0;) {
+			for(var i = this.entities.length; i--;) {
 				this.entities[i].deactivate();
 			}
 			this.entities.length = 0;
@@ -124,9 +124,11 @@
 					this.addMapElement(layer.bounds);
 				}
 				
-				for (j=elements.length; j-- > 0;) {
+				for (j=elements.length; j--;) {
 					if (elements[j].mapType === 'entity') {
 						entities.push(elements.splice(j, 1)[0]);
+					} else if (elements[j].mapType === 'spawn') {
+						points.push(elements.splice(j, 1)[0]);
 					} else if (elements[j].depth < 0) {
 						//negative depth implies impassable bounds
 						bounds.push(elements.splice(j, 1)[0]);
@@ -137,12 +139,12 @@
 							mapElement.visible = !!mapElement.image || !!mapElement.children;
 							this.addMapElement(mapElement);
 
+							// Auto-generated target/spawn points
 							switch (mapElement.mapType) {
 							case 'wall':
 							case 'floor':
 							case 'steps':
 								// TODO: mapElement.getShapePoints()
-								//mapElement.spawnPoints
 								points.push(v(mapElement.x, mapElement.y));
 							}
 
@@ -156,17 +158,26 @@
 			}
 			// add entities
 			var entityData;
-			for (i=entities.length; i-- > 0;) {
+			for (i=entities.length; i--;) {
 				entityData = entities[i];
 				console.log('Map Entity', entityData);
 				this.add(this.initMapEntity(entityData));
 			}
-			//add bounds
+			// add bounds
 			var boundsElement;
-			for (i=bounds.length; i-- > 0;) {
+			for (i=bounds.length; i--;) {
 				boundsElement = bounds[i];
 				console.log('Map Bounds', boundsElement);
 				this.addMapElement(this.initMapElement(boundsElement));
+			}
+			// add spawn points
+			for (i=points.length; i--;) {
+				if (!!points[i].entityClass) {
+					entityData = points[i];
+					console.log('Map SpawnPoint', entityData);
+					this.add(this.initSpawnPoint(entityData));
+				}
+
 			}
 			this.map = data;
 		},
@@ -195,6 +206,23 @@
 				entityData.height
 			).setPos(x, y, z);
 			entity.depth = entityData.depth;
+			return entity;
+		},
+
+		initSpawnPoint: function(spawnPointData) {
+			var x = spawnPointData.x;
+			var y = spawnPointData.y;
+			var z = spawnPointData.z;
+			var EntityClass = ec[spawnPointData.entityClass];
+			var InputClass = ec[spawnPointData.inputClass];
+			console.log('map spawn point', spawnPointData.entityClass, x, y, z);
+			// TODO: Initialize Spawn Object/Service
+			// "entityClass": "Player",
+			// "inputClass": "GoalBasedInput",
+			// "frequency": 0,
+			// "poolSize": 0,
+			var input = new InputClass();
+			var entity = new EntityClass().setPos(x, y, z).setInput(input);
 			return entity;
 		},
 
@@ -282,7 +310,7 @@
 		},
 
 		entityForBody: function(body) {
-			for(var i = this.entities.length; i-- > 0;) {
+			for(var i = this.entities.length; i--;) {
 				if (this.entities[i].body === body) {
 					return this.entities[i];
 				}
@@ -292,7 +320,7 @@
 		},
 
 		elementForBody: function(body) {
-			for(var i = this.elements.length; i-- > 0;) {
+			for(var i = this.elements.length; i--;) {
 				if (this.elements[i].body === body) {
 					return this.elements[i];
 				}
@@ -309,13 +337,13 @@
 
 		step: function(delta) {
 			var i;
-			for(i = this.entities.length; i-- > 0;) {
+			for(i = this.entities.length; i--;) {
 				this.entities[i].step(delta);
 			}
 			if (ec.debug === 1) {ec.core.traceTime('space.step');}
 			this.space.step(delta / 1000);
 			if (ec.debug === 1) {ec.core.traceTimeEnd('space.step');}
-			for(i = this.entities.length; i-- > 0;) {
+			for(i = this.entities.length; i--;) {
 				this.entities[i].postStep(delta);
 			}
 			this.time += delta;
@@ -323,14 +351,14 @@
 
 		stepScene: function(delta) {
 			var i;
-			// for(i = this.entities.length; i-- > 0;) {
+			// for(i = this.entities.length; i--;) {
 			//	this.entities[i].step(delta);
 			// }
 			if (ec.debug === 1) {ec.core.traceTime('space.step');}
 			this.space.step(delta / 1000);
 			if (ec.debug === 1) {ec.core.traceTimeEnd('space.step');}
 			// TODO: if scenes hint map element collisions, this can work
-			for(i = this.entities.length; i-- > 0;) {
+			for(i = this.entities.length; i--;) {
 				this.entities[i].postStepScene(delta);
 			}
 			this.time += delta;

@@ -1336,6 +1336,23 @@ ec && ec.loadMap({
           ]
         }
       ]
+    },
+    {
+      "name": "spawnpoints",
+      "group": "spawnpoints",
+      "elements": [
+        {
+          "name": "guard",
+          "mapType": "spawn",
+          "x": 53,
+          "y": 2729,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0
+        }
+      ]
     }
   ]
 });

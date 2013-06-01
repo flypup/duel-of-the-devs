@@ -21,6 +21,7 @@
 		getBaseProperties: function() {
 			return {
 				axes: [0, 0, 0, 0],
+				buttons: [0, 0, 0, 0], //this is silly
 				goal: null,
 				goalIndex: -1,
 				targetPos: null,
