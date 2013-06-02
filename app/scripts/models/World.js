@@ -94,19 +94,19 @@
 			return out;
 		},
 
-		setMap: function(data) {
+		setMap: function(map) {
 			//clear space
 			this.term();
 			this.init();
 
 			// TODO: remember / remove walls - AKA ViewPort Bounds
-			this.addWalls(0, 0, data.width, data.height);
+			this.addWalls(0, 0, map.width, map.height);
 
 			// add mapElements, extract entities and bounds, add points for AI
-			var layers = data.layers;
-			var entities = data.entities = data.entities || [];
-			var bounds = data.bounds = data.bounds || [];
-			var points = data.points = data.points || [];
+			var layers = map.layers;
+			var entities = map.entities = map.entities || [];
+			var bounds = map.bounds = map.bounds || [];
+			var points = map.points = map.points || [];
 
 			var i, j;
 			// add mapElements
@@ -174,12 +174,12 @@
 			for (i=points.length; i--;) {
 				if (!!points[i].entityClass) {
 					entityData = points[i];
-					console.log('Map SpawnPoint', entityData);
+					console.log('Map SpawnEntity', entityData);
 					this.add(this.initSpawnPoint(entityData));
 				}
 
 			}
-			this.map = data;
+			this.map = map;
 		},
 
 		initMapEntity: function(entityData) {
