@@ -125,7 +125,7 @@ ec && ec.loadMap({
           "mDepth": 1,
           "mHeight": 2048,
           "mWidth": 2560,
-          "mZ": -1,
+          "mZ": 0,
           "notes": "ground",
           "shape": "box",
           "type": "Box"
