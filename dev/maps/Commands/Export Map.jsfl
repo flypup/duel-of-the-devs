@@ -14,15 +14,15 @@ if (typeof JSON !== 'object') {
     'use strict';
 
     function f(n) {
-                return n < 10 ? '0' + n : n;
+        return n < 10 ? '0' + n : n;
     }
 
     if (typeof Date.prototype.toJSON !== 'function') {
 
         Date.prototype.toJSON = function (key) {
 
-            return isFinite(this.valueOf())
-                ? this.getUTCFullYear()     + '-' +
+            return isFinite(this.valueOf()) ?
+                    this.getUTCFullYear()     + '-' +
                     f(this.getUTCMonth() + 1) + '-' +
                     f(this.getUTCDate())      + 'T' +
                     f(this.getUTCHours())     + ':' +
@@ -58,8 +58,8 @@ if (typeof JSON !== 'object') {
         escapable.lastIndex = 0;
         return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
             var c = meta[a];
-            return typeof c === 'string'
-                ? c
+            return typeof c === 'string' ?
+                    c
                 : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
         }) + '"' : '"' + string + '"';
     }
@@ -222,7 +222,7 @@ var exported = [];
 
 var data = {};
 data.name = mapName;
-data.path = "data/"+ mapName;
+data.path = 'data/'+ mapName;
 data.width  = document.width;
 data.height = document.height;
 data.layers = [];
@@ -236,13 +236,13 @@ fl.trace('Exporting Layers for '+timeline.name+'...');
 for (var i = layers.length; i-- > 0;) {
 	var layer = layers[i];
 	
-	if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
+	if (layer.layerType === 'normal') { //'folder', 'guide', 'guided', 'mask', 'masked'
 		var group = layer.parentLayer && layer.parentLayer.name;
 
 		var lData = {};
 		var elements = [];
 		var layerContainer = {
-			mapType: "container",//"parallax"
+			mapType: 'container',//'parallax'
 			children: []
 		};
 
@@ -263,15 +263,15 @@ for (var i = layers.length; i-- > 0;) {
 			var element = layerFrameElements[j];
 			var eData = getElementData(element);
 
-			if (element.elementType === "instance") {
+			if (element.elementType === 'instance') {
 				elements.push(eData);
 
-			} else if (element.elementType === "shape" || element.elementType === "bitmap") {
+			} else if (element.elementType === 'shape' || element.elementType === 'bitmap') {
 				layerContainer.children.push(eData);
 			}
 		}
-		if (layerContainer.children.length) elements.push(layerContainer);
-		if (elements.length) lData.elements = elements;
+		if (layerContainer.children.length) {elements.push(layerContainer);}
+		if (elements.length) {lData.elements = elements;}
 
 
 		fl.trace(layerIndex+'\t\t"'
@@ -301,7 +301,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 	var libItem;
 	// fl.trace('Element: '+ j +' "'+ el.name +'" '+ el.elementType +' '+ el.depth);
 
-	if (el.elementType === "shape") {
+	if (el.elementType === 'shape') {
 		eData.x = el.left + regX;
 		eData.y = el.top + regY;
 		eData.width  = el.width;
@@ -349,12 +349,12 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 			}
 		}
 
-	} else if (el.elementType === "instance") {
+	} else if (el.elementType === 'instance') {
 
-		if (el.instanceType === "symbol") {
+		if (el.instanceType === 'symbol') {
 			libItem = el.libraryItem;
 			if (!exportImage) {
-				eData.name = el.name || libItem.name.split('/').pop() || ("instance" + el.depth);
+				eData.name = el.name || libItem.name.split('/').pop() || ('instance' + el.depth);
 			}
 			eData.x = el.x + regX;
 			eData.y = el.y + regY;
@@ -378,23 +378,23 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				eData.y -= regY;
 			}
 
-			//"undefined", "component", "movie clip", "graphic", "button", "folder", "font", "sound", "bitmap", "compiled clip", "screen", "video"
+			//'undefined', 'component', 'movie clip', 'graphic', 'button', 'folder', 'font', 'sound', 'bitmap', 'compiled clip', 'screen', 'video'
 			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
-			if (["component", "movie clip", "graphic"].indexOf(libItem.itemType) > -1) {
+			if (['component', 'movie clip', 'graphic'].indexOf(libItem.itemType) > -1) {
 				//SymbolItem
 
-				//"component"
+				//'component'
 				extend(eData, parseParameters(el.parameters));
-				if (eData.mWidth !== undefined) eData.mWidth = eData.mWidth || eData.width;
+				if (eData.mWidth !== undefined) {eData.mWidth = eData.mWidth || eData.width;}
 				if (eData.mHeight !== undefined) {
-					if (eData.mapType !== "wall") {
+					if (eData.mapType !== 'wall') {
 						eData.mHeight = eData.mHeight || eData.height;
 					}
 				}
-				if (!eData.notes) eData.notes = undefined;
+				if (!eData.notes) {eData.notes = undefined;}
 
-				if (eData.mapType !== "entity") {
-					var exportPng = exportImage || el.bitmapRenderMode === "export" || el.bitmapRenderMode === "cache";
+				if (eData.mapType !== 'entity') {
+					var exportPng = exportImage || el.bitmapRenderMode === 'export' || el.bitmapRenderMode === 'cache';
 					var children;
 					if (exportPng) {
 						//eData.cacheAsBitmap = true;
@@ -408,9 +408,9 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 						}
 					} else {
 						children = getSymbolChildren(libItem, regX, regY);
-						if (children && children.length) eData.children = children;
+						if (children && children.length) {eData.children = children;}
 					}
-					if (eData.shape === "polygons") {
+					if (eData.shape === 'polygons') {
 						var shapes = getSymbolShapesLayer(libItem, regX, regY);
 						if (shapes && shapes.length) {
 							eData.shapes = shapes;
@@ -428,7 +428,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				if (el.colorAlphaPercent !== 100) {
 					eData.alpha = Math.max(el.colorAlphaPercent, 0);
 				}
-				if (el.blendMode !== "normal") {
+				if (el.blendMode !== 'normal') {
 					eData.blendMode = el.blendMode;
 				}
 
@@ -436,16 +436,16 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				throw('// ERROR: Library Item type not supported  "'+ libItem.itemType +'"');
 			}
 
-		} else if (el.instanceType === "bitmap") {
+		} else if (el.instanceType === 'bitmap') {
 			libItem = el.libraryItem;
-			eData.name = el.name || libItem.name.split('/').pop() || ("instance" + el.depth);
+			eData.name = el.name || libItem.name.split('/').pop() || ('instance' + el.depth);
 			eData.x = el.x + regX;
 			eData.y = el.y + regY;
 			eData.width  = el.width;
 			eData.height = el.height;
 
 			// fl.trace('Instance: '+' "'+ libItem.name +'" '+ libItem.itemType);
-			if (libItem.itemType === "bitmap") {
+			if (libItem.itemType === 'bitmap') {
 				if (exported.indexOf(exportDir +'/'+ libItem.name +'.png') < 0) {
 					fl.trace('\t\texporting bitmap "'+libItem.name+'" to file: '+libItem.name);
 					libItem.exportToFile(exportDir +'/'+ libItem.name +'.png');
@@ -479,7 +479,7 @@ function getSymbolChildren(symbol, regX, regY) {
 	for (var i = layers.length; i-- > 0;) {
 		var layer = layers[i];
 		// fl.trace('--> Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
-		if (layer.layerType === "normal") { //"folder", "guide", "guided", "mask", "masked"
+		if (layer.layerType === 'normal') { //"folder", "guide", "guided", "mask", "masked"
 			layerFrameElements = layer.frames[0].elements;
 			for (var j=0;  j<layerFrameElements.length;  j++) {
 				var element = layerFrameElements[j];
@@ -501,7 +501,7 @@ function getSymbolShapesLayer(symbol, regX, regY) {
 	for (var i = layers.length; i-- > 0;) {
 		var layer = layers[i];
 		// fl.trace('--> Layer: '+ i +' "'+layer.name +'" '+ layer.layerType +' '+ (group || ''));
-		if ((layer.layerType === "normal" || layer.layerType === "guide") && /^shapes$/.test(layer.name)) {
+		if ((layer.layerType === 'normal' || layer.layerType === 'guide') && /^shapes$/.test(layer.name)) {
 			layerFrameElements = layer.frames[0].elements;
 			for (var j=0;  j<layerFrameElements.length;  j++) {
 				var element = layerFrameElements[j];
@@ -523,9 +523,9 @@ function parseParameters(componentInstanceParameters) {
 		for (var i=0;  i<componentInstanceParameters.length;  i++) {
 			var parameter = componentInstanceParameters[i];
 			var value = parameter.value;
-			if (parameter.valueType === "Number") {
+			if (parameter.valueType === 'Number') {
 				value = parseFloat(value);
-			} else if (parameter.valueType === "List") {
+			} else if (parameter.valueType === 'List') {
 				value = value[parameter.listIndex].value;
 			}
 			parameters[parameter.name] = value;
@@ -853,7 +853,7 @@ function Polygon(_x, _y) {
   }
   
 	this.nVertices = _x.length;
-//    println("length "+nVertices);
+//    println('length '+nVertices);
 	this.x = []
 	this.y = []
 	for (var i=0; i<this.nVertices; ++i){
@@ -909,32 +909,32 @@ function Polygon(_x, _y) {
 		var firstT = -1;
 		var secondP = -1; 
 		var secondT = -1;
-	//    println("nVertices: "+this.nVertices);
+	//    println('nVertices: '+this.nVertices);
 		for (var i=0; i < this.nVertices; i++){
 			if (t.x[0] == this.x[i] && t.y[0] == this.y[i]){
-	//        println("found p0");
+	//        println('found p0');
 				if (firstP == -1){
 					firstP = i; firstT = 0;
 				} else{
 					secondP = i; secondT = 0;
 				}
 			} else if (t.x[1] == this.x[i] && t.y[1] == this.y[i]){
-	//        println("found p1");
+	//        println('found p1');
 				if (firstP == -1){
 					firstP = i; firstT = 1;
 				} else{
 					secondP = i; secondT = 1;
 				}
 			} else if (t.x[2] == this.x[i] && t.y[2] == this.y[i]){
-	//        println("found p2");
+	//        println('found p2');
 				if (firstP == -1){
 					firstP = i; firstT = 2;
 				} else{
 					secondP = i; secondT = 2;
 				}
 			} else {
-	//        println(t.x[0]+" "+t.y[0]+" "+t.x[1]+" "+t.y[1]+" "+t.x[2]+" "+t.y[2]);
-	//        println(x[0]+" "+y[0]+" "+x[1]+" "+y[1]);
+	//        println(t.x[0]+' '+t.y[0]+' '+t.x[1]+' '+t.y[1]+' '+t.x[2]+' '+t.y[2]);
+	//        println(x[0]+' '+y[0]+' '+x[1]+' '+y[1]);
 			}
 		}
 		//Fix ordering if first should be last vertex of poly
