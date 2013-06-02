@@ -385,6 +385,12 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 
 				//'component'
 				extend(eData, parseParameters(el.parameters));
+
+                // Handle SpawnPoint Components
+                if (!!eData.inputClass && !!eData.entityClass && eData.frequency !== undefined) {
+                    eData.mapType = 'spawn';
+                }
+
 				if (eData.mWidth !== undefined) {eData.mWidth = eData.mWidth || eData.width;}
 				if (eData.mHeight !== undefined) {
 					if (eData.mapType !== 'wall') {
@@ -393,7 +399,7 @@ function getElementData(el, exportImage, regX, regY, noFills) {
 				}
 				if (!eData.notes) {eData.notes = undefined;}
 
-				if (eData.mapType !== 'entity') {
+				if (eData.mapType !== 'entity' && eData.mapType !== 'spawn') {
 					var exportPng = exportImage || el.bitmapRenderMode === 'export' || el.bitmapRenderMode === 'cache';
 					var children;
 					if (exportPng) {

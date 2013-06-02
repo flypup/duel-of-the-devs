@@ -1343,14 +1343,14 @@ ec && ec.loadMap({
       "elements": [
         {
           "name": "guard",
-          "mapType": "spawn",
-          "x": 53,
-          "y": 2729,
+          "x": 54,
+          "y": 2751,
           "entityClass": "Player",
           "frequency": 0,
           "inputClass": "GoalBasedInput",
           "poolSize": 0,
-          "z": 0
+          "z": 0,
+          "mapType": "spawn"
         }
       ]
     }
