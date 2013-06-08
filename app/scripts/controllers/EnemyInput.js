@@ -188,6 +188,7 @@
 					if (ec.debug > 1) {
 						ec.world.add( ec.Dot.create(7500, 'rgba(255, 200, 200, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
 					}
+					// TODO: select next best location based on formation (arc around target / obstacle)
 				}
 
 			} else if (lengthSq(direction) < distance * distance) {
@@ -212,6 +213,7 @@
 						ec.world.add( ec.Dot.create(7500, 'rgba(155, 100, 100, 1.0)').setPos(targetPos.x, targetPos.y, pos.z).setAngle(direction) );
 					}
 				}
+				// TODO: select next best location based on formation (arc around target / obstacle)
 
 			}
 			// within range of target

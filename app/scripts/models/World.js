@@ -175,10 +175,20 @@
 				if (!!points[i].entityClass) {
 					entityData = points[i];
 					console.log('Map SpawnEntity', entityData);
+					//this.initSpawnPoint(entityData);
 					this.add(this.initSpawnPoint(entityData));
 				}
 
 			}
+			// also ew!
+			// TODO: Map Class - Instance takes map data as param
+			// map.step = function(delta) {
+			// 	var steppers = this.steppers||[];
+			// 	for (var n=steppers.length; n--;) {
+			// 		steppers[n].step(delta);
+			// 	}
+			// };
+
 			this.map = map;
 		},
 
@@ -337,6 +347,7 @@
 
 		step: function(delta) {
 			var i;
+			//this.map.step(delta);
 			for(i = this.entities.length; i--;) {
 				this.entities[i].step(delta);
 			}
@@ -351,6 +362,7 @@
 
 		stepScene: function(delta) {
 			var i;
+			//this.map.step(delta);
 			// for(i = this.entities.length; i--;) {
 			//	this.entities[i].step(delta);
 			// }
