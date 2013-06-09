@@ -21,6 +21,7 @@
 	Puff.ready = function() {
 		//extend with physics stub from Dot
 		ec.extend(Puff.prototype, ec.Dot.prototype);
+		ec.copy(Puff.prototype, ec.PhysicsStub);
 		ec.addPool(Puff);
 	};
 

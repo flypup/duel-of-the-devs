@@ -745,6 +745,9 @@
 	// utils
 
 	ec.extend = function( target, source ) {
+		if (ec.debug && source === undefined) {
+			throw 'extend "source" param undefined.';
+		}
 		for ( var prop in source ) {
 			if ( source.hasOwnProperty( prop ) ) {
 				if ( !target.hasOwnProperty( prop ) ) {
@@ -759,6 +762,9 @@
 	};
 
 	ec.copy = function( target, source ) {
+		if (ec.debug && source === undefined) {
+			throw 'copy "source" param undefined.';
+		}
 		target = target || {};
 		for ( var prop in source ) {
 			target[ prop ] = source[ prop ];
