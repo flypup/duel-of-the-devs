@@ -58,29 +58,35 @@
 		draw: function(context, viewport) {
 			var layers = this.layers;
 			for (var i=layers.length; i-- > 0;) {
-				this.drawLayer(layers[i], context, viewport);
+				drawLayer(layers[i], context, viewport);
 			}
 		},
 
-		drawLayer: function(layer, context, viewport, delta) {
-			if (!layer.visible) {
-				return false;
-			}
-			var elements = layer.elements;
-			for (var i=0, len=elements.length; i<len; i++) {
-				//elements[i].alpha = layer.alpha || 1;
-				this.drawElement(elements[i], context, viewport, delta);
-			}
-			return true;
-		},
+		drawLayer: drawLayer
+	};
 
-		drawElement: function(element, context, viewport, delta) {
-			if (!element.visible) {
-				return false;
-			}
-			if (element.width === 0 || this.intersects(element, viewport)) {
+	function drawLayer(layer, context, viewport, delta) {
+		if (!layer.visible) {
+			return false;
+		}
+		var elements = layer.elements;
+		for (var i=0, len=elements.length; i<len; i++) {
+			//elements[i].alpha = layer.alpha || 1;
+			drawElement(elements[i], context, viewport, delta);
+		}
+		return true;
+	};
+
+	function drawElement(element, context, viewport, delta) {
+		if (!element.visible) {
+			return false;
+		}
+		if (element.imageData || element.children) {
+			if (element.width === 0 || intersects(element, viewport)) {
 				context.save();
-				context.globalAlpha = element.alpha;
+				if (element.alpha !== undefined) {
+					context.globalAlpha = element.alpha;
+				}
 				var matrix = element.matrix;
 				if (matrix) {
 					context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX*matrix.a, matrix.ty - element.regY*matrix.d);
@@ -92,23 +98,27 @@
 					var children = element.children;
 					for (var i=0; i<children.length; i++) {
 						var child = children[i];
-						if (element.width || this.intersects(child, viewport)) {
+						if (element.width || intersects(child, viewport)) {
 							if (child.image && child.imageData) {
-								this.drawImage(child, context);
+								drawImage(child, context);
 							} else {
-								this.drawShape(child, context);
+								drawShape(child, context);
 							}
 						}
 					}
 				}
 				if (element.imageData) {
-					this.drawImageInplace(element, context);
+					drawImageInplace(element, context);
 				}
 				context.restore();
 			}
-			if (ec.debug > 1) {
-				//draw sort bounds
-				var bounds = element.getSortBounds();
+		}
+		if (ec.debug > 1) {
+			//draw sort bounds
+			var bounds = element.getSortBounds();
+			// check viewport intersection
+			if (element.x-element.width/2 <= viewport.r && viewport.l <= element.x+element.width/2 &&
+				bounds.back <= viewport.b && viewport.t <= (bounds.back + (bounds.front-bounds.back))) {
 				var debugColor = (element.mapType === 'floor') ? '#f00' : '#f0f';
 
 				element.label = element.label || new ec.TextField(context, 0, 0, 512, null, debugColor);
@@ -124,86 +134,86 @@
 				//context.rect(element.x-element.width/2, element.y-bounds.top, element.width, element.y);
 				context.stroke();
 			}
-			return true;
-		},
+		}
+		return true;
+	};
 
-		drawShape: function(shape, context) {
-			if (ec.debug === 1) {ec.core.traceTime('drawShape '+ shape.fillImage);}
-			if (shape.fillImage) {
-				var drawable = ec.getCached(shape.imageData, shape.fillImage);
-				context.fillStyle = context.createPattern(drawable, 'repeat') ;
-			} else {
-				context.fillStyle = shape.fillColor || '#00f';
+	function drawShape(shape, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawShape '+ shape.fillImage);}
+		if (shape.fillImage) {
+			var drawable = ec.getCached(shape.imageData, shape.fillImage);
+			context.fillStyle = context.createPattern(drawable, 'repeat') ;
+		} else {
+			context.fillStyle = shape.fillColor || '#00f';
+		}
+
+		if (shape.polygons) {
+			context.save();
+			context.translate(shape.x, shape.y);
+			for (var i=0; i<shape.polygons.length; i++) {
+				drawPolygon(shape.polygons[i], context);
 			}
+			context.restore();
 
-			if (shape.polygons) {
-				context.save();
-				context.translate(shape.x, shape.y);
-				for (var i=0; i<shape.polygons.length; i++) {
-					this.drawPolygon(shape.polygons[i], context);
-				}
-				context.restore();
-
-			} else if (shape.oval) {
-				// TODO: oval and center x, y
-				context.beginPath();
-				context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);
-				context.fill();
-
-			} else if (shape.rectangle) {
-				// TODO: clip to context bounds
-				context.fillRect(shape.x, shape.y, shape.width, shape.height);
-			} else {
-				if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
-				throw('what kind of shape is this? '+ shape);
-			}
-
-			if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
-			return true;
-		},
-
-		drawPolygon: function(polygon, context) {
-			// TODO: clip to context bounds
+		} else if (shape.oval) {
+			// TODO: oval and center x, y
 			context.beginPath();
-			var i = 0;
-			context.moveTo(polygon[i][0], polygon[i][1]);
-			for (i=1; i<polygon.length; i++) {
-				context.lineTo(polygon[i][0], polygon[i][1]);
-			}
+			context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);
 			context.fill();
-			return true;
-		},
 
-		drawImage: function(element, context) {
-			if (ec.debug === 1) {ec.core.traceTime('drawImage map child '+element.image);}
-			var drawable = ec.getCached(element.imageData, element.image);
-			context.drawImage(drawable, element.x, element.y, element.width, element.height);
-			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map child '+element.image);}
-			return true;
-		},
+		} else if (shape.rectangle) {
+			// TODO: clip to context bounds
+			context.fillRect(shape.x, shape.y, shape.width, shape.height);
+		} else {
+			if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
+			throw('what kind of shape is this? '+ shape);
+		}
 
-		drawImageInplace: function(element, context) {
-			if (ec.debug === 1) {ec.core.traceTime('drawImage map '+element.image);}
-			var drawable = ec.getCached(element.imageData, element.image);
-			context.drawImage(drawable, 0, 0);
-			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map '+element.image);}
-		},
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
+		return true;
+	};
 
-		intersects: function(element, viewport) {
-			//return true;
-			return (element.drawX <= viewport.r && viewport.l <= (element.drawX + element.width) &&
-					element.drawY <= viewport.b && viewport.t <= (element.drawY + element.height));
-		},
+	function drawPolygon(polygon, context) {
+		// TODO: clip to context bounds
+		context.beginPath();
+		var i = 0;
+		context.moveTo(polygon[i][0], polygon[i][1]);
+		for (i=1; i<polygon.length; i++) {
+			context.lineTo(polygon[i][0], polygon[i][1]);
+		}
+		context.fill();
+		return true;
+	};
 
-		containsViewPort: function(element, viewport) {
-			return (element.drawX <= viewport.l && viewport.r >= (element.drawX + element.width) &&
-					element.drawY <= viewport.t && viewport.b >= (element.drawY + element.height));
-		},
+	function drawImage(element, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawImage map child '+element.image);}
+		var drawable = ec.getCached(element.imageData, element.image);
+		context.drawImage(drawable, element.x, element.y, element.width, element.height);
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map child '+element.image);}
+		return true;
+	};
 
-		insideViewPort: function(element, viewport) {
-			return (viewport.l <= element.drawX && (element.drawX + element.width) >= viewport.r &&
-					viewport.t <= element.drawY && (element.drawY + element.height) >= viewport.b);
-		},
+	function drawImageInplace(element, context) {
+		if (ec.debug === 1) {ec.core.traceTime('drawImage map '+element.image);}
+		var drawable = ec.getCached(element.imageData, element.image);
+		context.drawImage(drawable, 0, 0);
+		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map '+element.image);}
+	};
+
+	function intersects(element, viewport) {
+		//return true;
+		return (element.drawX <= viewport.r && viewport.l <= (element.drawX + element.width) &&
+				element.drawY <= viewport.b && viewport.t <= (element.drawY + element.height));
+	};
+
+	function containsViewPort(element, viewport) {
+		return (element.drawX <= viewport.l && viewport.r >= (element.drawX + element.width) &&
+				element.drawY <= viewport.t && viewport.b >= (element.drawY + element.height));
+	};
+
+	function insideViewPort(element, viewport) {
+		return (viewport.l <= element.drawX && (element.drawX + element.width) >= viewport.r &&
+				viewport.t <= element.drawY && (element.drawY + element.height) >= viewport.b);
 	};
 
 })(window);

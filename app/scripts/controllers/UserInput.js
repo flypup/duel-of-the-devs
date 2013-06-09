@@ -71,9 +71,11 @@
 		}
 
 		if (ec.core.paused()) {
-			context.fillStyle = '#000000';
+			// dim screen
+		    context.fillStyle = '#000000';
 			context.globalAlpha = 0.33;
 			context.fillRect(0, 0, this.width, this.height);
+			// TODO: Play Icon Sprite
 			context.fillStyle = '#ffffff';
 			context.globalAlpha = 0.8;
 			context.beginPath();
@@ -83,6 +85,7 @@
 			context.fill();
 
         } else if (ec.touch) {
+        	// TODO: Pause Icon Sprite
 			context.fillStyle = '#ffffff';
 			context.globalAlpha = 0.8;
 			context.fillRect(this.width-43, 15, 10, 40);
@@ -201,9 +204,7 @@
 		}
 	};
 
-	proto.mapCollision = function(entity, mapElement) {
-		
-	};
+	proto.mapCollision = function(entity, mapElement) {};
 	
 	// Touch / Mouse
 
@@ -293,25 +294,25 @@
 		ec.keyPressed[keyCode] = true;
 
 		switch(keyCode) {
-			case KEY.RIGHT:
-			case KEY.D:
-			case KEY.LEFT:
-			case KEY.A:
-			case KEY.UP:
-			case KEY.W:
-			case KEY.DOWN:
-			case KEY.S:
-				self.updateAxes1FromKeys();
-				break;
+		case KEY.RIGHT:
+		case KEY.D:
+		case KEY.LEFT:
+		case KEY.A:
+		case KEY.UP:
+		case KEY.W:
+		case KEY.DOWN:
+		case KEY.S:
+			self.updateAxes1FromKeys();
+			break;
 
-			case KEY.SPACE:
-			case KEY.ENTER:
-				self.setButton(BUTTON.SELECT, 1);
-				break;
+		case KEY.SPACE:
+		case KEY.ENTER:
+			self.setButton(BUTTON.SELECT, 1);
+			break;
 
-			case KEY.BACKSLASH:
-				self.setButton(BUTTON.CANCEL, 1);
-				break;
+		case KEY.BACKSLASH:
+			self.setButton(BUTTON.CANCEL, 1);
+			break;
 		}
 	};
 
@@ -321,49 +322,49 @@
 		ec.keyPressed[keyCode] = false;
 
 		switch(keyCode) {
-			case KEY.RIGHT:
-			case KEY.D:
-			case KEY.LEFT:
-			case KEY.A:
-			case KEY.UP:
-			case KEY.W:
-			case KEY.DOWN:
-			case KEY.S:
-				self.updateAxes1FromKeys();
-				break;
+		case KEY.RIGHT:
+		case KEY.D:
+		case KEY.LEFT:
+		case KEY.A:
+		case KEY.UP:
+		case KEY.W:
+		case KEY.DOWN:
+		case KEY.S:
+			self.updateAxes1FromKeys();
+			break;
 
-			case KEY.SPACE:
-			case KEY.ENTER:
-				self.setButton(BUTTON.SELECT, 0);
-				break;
+		case KEY.SPACE:
+		case KEY.ENTER:
+			self.setButton(BUTTON.SELECT, 0);
+			break;
 
-			case KEY.BACKSLASH:
-				self.setButton(BUTTON.CANCEL, 0);
-				break;
+		case KEY.BACKSLASH:
+			self.setButton(BUTTON.CANCEL, 0);
+			break;
 
-			case KEY.P:
-				if (ec.core.paused()) {
-					ec.core.resume();
-				} else {
-					ec.core.pause();
-				}
-				break;
+		case KEY.P:
+			if (ec.core.paused()) {
+				ec.core.resume();
+			} else {
+				ec.core.pause();
+			}
+			break;
 
-			case KEY.O:
-				ec.core.cycleDebug();
-				break;
+		case KEY.O:
+			ec.core.cycleDebug();
+			break;
 
-			case KEY.M:
-				ec.core.cycleMap();
-				break;
+		case KEY.M:
+			ec.core.cycleMap();
+			break;
 
-			case KEY.F:
-			case KEY.SLASH:
-				ec.core.fullscreen();
-				break;
+		case KEY.F:
+		case KEY.SLASH:
+			ec.core.fullscreen();
+			break;
 
-			default:
-				console.log(String.fromCharCode(keyCode), keyCode);
+		default:
+			console.log(String.fromCharCode(keyCode), keyCode);
 		}
 	};
 
@@ -411,7 +412,7 @@
 		}
 	};
 
-		var KEY = {
+	var KEY = {
 		'LEFT' : 37,
 		'UP' : 38,
 		'RIGHT' : 39,

@@ -11,154 +11,165 @@
 		}
 	};
 
-	var proto = Canvas2dEntityView.prototype;
+	Canvas2dEntityView.prototype = {
+		draw: function(context, entity, viewport, delta) {
+			this.drawShadow(context, entity, viewport);
+			this.drawEntity(context, entity, viewport, delta);
+		},
+		
+		drawShadow: function(context, entity, viewport) {
+			var o;
+			if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
+				o = ec.SpriteSheets.shadow.getFrame(0);
+			} else if (entity instanceof ec.Projectile) {
+				o = ec.SpriteSheets.shadowSmall.getFrame(0);
+			} else {
+				return;
+			}
 
-	proto.draw = function(context, entity, viewport, delta) {
-		this.drawShadow(context, entity, viewport);
-		this.drawEntity(context, entity, viewport, delta);
-	};
-	
-	proto.drawShadow = function(context, entity, viewport) {
-		var o;
-		if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
-			o = ec.SpriteSheets.shadow.getFrame(0);
-		} else if (entity instanceof ec.Projectile) {
-			o = ec.SpriteSheets.shadowSmall.getFrame(0);
-		} else {
-			return;
-		}
+			if (o) {
+				var pos = entity.getPos();
+				var x = pos.x;
+				var y = pos.y - entity.groundZ;
+				var rect = o.rect;
+				if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
+					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
+					var drawable = ec.getCached(o.image);
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
+				}
+			}
+		},
 
-		if (o) {
+		drawEntity: function(context, entity, viewport, delta) {
 			var pos = entity.getPos();
 			var x = pos.x;
-			var y = pos.y - entity.groundZ;
-			var rect = o.rect;
-			if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
-				if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
-				var drawable = ec.getCached(o.image);
-				context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
-			}
-		}
-	};
+			var y = pos.y - pos.z;
+			var o;
+			var rect;
+			var drawable;
+			var frame;
 
-	proto.drawEntity = function(context, entity, viewport, delta) {
-		var pos = entity.getPos();
-		var x = pos.x;
-		var y = pos.y - pos.z;
-		var o;
-		var rect;
-		var drawable;
-		var frame;
-
-		if (entity instanceof ec.Ninja) {
-			o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
-			// SOUND //
-			if (entity.state === 'hit') {
-				if (entity.hitTime === entity.hitDuration) {
-					ec.sound.playSound(ec.sound.sounds.hits, '*');
+			if (entity instanceof ec.Ninja) {
+				o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
+				// SOUND //
+				if (entity.state === 'hit') {
+					if (entity.hitTime === entity.hitDuration) {
+						ec.sound.playSound(ec.sound.sounds.hits, '*');
+					}
 				}
-			}
 
-		} else if (entity instanceof ec.Puff) {
-			var ninjaSheet = ec.SpriteSheets.ninja;
-			var animation = ninjaSheet.getAnimation('puff');
-			if (animation) {
-				frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
-				o = ninjaSheet.getFrame(frame);
-			}
-
-		} else if (entity instanceof ec.Projectile) {
-			var spriteSheet = ec.SpriteSheets.throwingStar;
-			var frames = spriteSheet.getNumFrames();
-			frame = floor(entity.body.a * frames / pi) % frames;
-			o = spriteSheet.getFrame(frame);
-
-			// SOUND //
-			if (entity.lifetime === 0) {
-				ec.sound.playSound(ec.sound.sounds.stars, '*');
-			}
-			entity.lifetime += delta;
-			
-		} else if (entity instanceof ec.Player) {
-			o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
-			// SOUND //
-			if (entity.state === 'walking') {
-				if (entity.walkCount >= entity.nextStep) {
-					entity.nextStep += 2;
-					ec.sound.playSound(ec.sound.sounds.steps, '*');
+			} else if (entity instanceof ec.Puff) {
+				var ninjaSheet = ec.SpriteSheets.ninja;
+				var animation = ninjaSheet.getAnimation('puff');
+				if (animation) {
+					frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
+					o = ninjaSheet.getFrame(frame);
 				}
-			} else if (entity.state === 'standing') {
-				if (entity.nextStep !== 0) {
-					entity.nextStep = 0;
-					ec.sound.playSound(ec.sound.sounds.steps, '*');
+
+			} else if (entity instanceof ec.Projectile) {
+				var spriteSheet = ec.SpriteSheets.throwingStar;
+				var frames = spriteSheet.getNumFrames();
+				frame = floor(entity.body.a * frames / pi) % frames;
+				o = spriteSheet.getFrame(frame);
+
+				// SOUND //
+				if (entity.lifetime === 0) {
+					ec.sound.playSound(ec.sound.sounds.stars, '*');
 				}
-			} else if (entity.state === 'punching') {
-				if (entity.attack.time === 0) {
-					// entity.attack.pushDuration;
-					ec.sound.playSound(ec.sound.sounds.strikes, '*');
-					entity.nextStep = 1;
+				entity.lifetime += delta;
+				
+			} else if (entity instanceof ec.Player) {
+				o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
+				// SOUND //
+				if (entity.state === 'walking') {
+					if (entity.walkCount >= entity.nextStep) {
+						entity.nextStep += 2;
+						ec.sound.playSound(ec.sound.sounds.steps, '*');
+					}
+				} else if (entity.state === 'standing') {
+					if (entity.nextStep !== 0) {
+						entity.nextStep = 0;
+						ec.sound.playSound(ec.sound.sounds.steps, '*');
+					}
+				} else if (entity.state === 'punching') {
+					if (entity.attack.time === 0) {
+						// entity.attack.pushDuration;
+						ec.sound.playSound(ec.sound.sounds.strikes, '*');
+						entity.nextStep = 1;
+					}
 				}
-			}
 
-		} else if (entity instanceof ec.Box) {
-			o = ec.SpriteSheets.lion.getFrame(0);
+			} else if (entity instanceof ec.Box) {
+				o = ec.SpriteSheets.lion.getFrame(0);
 
-		} else if (entity instanceof ec.Circle) {
-			o = ec.SpriteSheets.cauldron.getFrame(0);
+			} else if (entity instanceof ec.Circle) {
+				o = ec.SpriteSheets.cauldron.getFrame(0);
 
-		} else if (entity instanceof ec.EmptyHand) {
-			// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
-			// context.beginPath();
-			// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
-			// context.fill();
-		} else {
-			if (ec.debug === 1) {ec.core.traceTime('draw entity');}
-			context.save();
-			if (entity.radius) {
-				context.fillStyle = entity.fillStyle || '#ff8000';
-				context.beginPath();
-				context.arc(x, y, entity.radius, 0, 2*pi, false);
-				context.fill();
-			} else if (entity.width && entity.height) {
-				context.fillStyle = '#0008ff';
-				context.beginPath();
-				context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
+			} else if (entity instanceof ec.EmptyHand) {
+				// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
+				// context.beginPath();
+				// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
+				// context.fill();
 			} else {
-				context.fillStyle = '#000088';
-				context.beginPath();
-				context.fillRect(x-32, y-32, 64, 64);
-			}
-			context.restore();
-			if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
-			//throw('elements did not get placed in a layer '+entity);
-		}
+				if (ec.debug === 1) {ec.core.traceTime('draw entity');}
+				if (entity.radius) {
+					if (intersectsArc(entity, viewport, x, y)) {
+						//context.save();
+						context.fillStyle = entity.fillStyle || '#ff8000';
+						context.beginPath();
+						context.arc(x, y, entity.radius, 0, 2*pi, false);
+						context.fill();
+						//context.restore();
+					}
+				} else if (entity.width && entity.height) {
 
-		if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-			drawable = ec.getCached(o.image);
-			rect = o.rect;
-			if (ec.debug === 1) {ec.core.traceTime('drawImage '+o.image.src);}
-			context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
-			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
-		}
+					//context.save();
+					context.fillStyle = '#0008ff';
+					context.beginPath();
+					context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
+					//context.restore();
 
-		if (ec.debug > 1 && !(entity instanceof ec.Dot)) {
-			//draw layer info
-			var fieldHeight = 48;
-			entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
-			entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
-			var info = ''+ entity.layerNum +': '+ entity.layerName +', '+ entity.sortReason;
-			if (entity.mapCollision.length) {
-				info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+				} else {
+
+					//context.save();
+					context.fillStyle = '#000088';
+					context.beginPath();
+					context.fillRect(x-32, y-32, 64, 64);
+					//context.restore();
+
+				}
+				if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
+				//throw('elements did not get placed in a layer '+entity);
 			}
-			info += '\rz: '+ pos.z.toFixed(1) + ' x: '+ pos.x.toFixed(1) + ' y: '+ pos.y.toFixed(1);
-			if (entity.input) {
-				var goal = entity.input.goal;
-				if (goal) {
-					info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
+
+			if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
+				drawable = ec.getCached(o.image);
+				rect = o.rect;
+				if (ec.debug === 1) {ec.core.traceTime('drawImage '+o.image.src);}
+				context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
+
+				if (ec.debug > 1 && !(entity instanceof ec.Dot)) {
+					//draw layer info
+					var fieldHeight = 48;
+					entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
+					entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
+					var info = ''+ entity.layerNum +': '+ entity.layerName +', '+ entity.sortReason;
+					if (entity.mapCollision.length) {
+						info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+					}
+					info += '\rz: '+ pos.z.toFixed(1) + ' x: '+ pos.x.toFixed(1) + ' y: '+ pos.y.toFixed(1);
+					if (entity.input) {
+						var goal = entity.input.goal;
+						if (goal) {
+							info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
+						}
+					}
+					entity.label.setText(info);
 				}
 			}
-			entity.label.setText(info);
+
 		}
 	};
 
@@ -235,8 +246,14 @@
 	}
 
 	function intersects(rect, viewport, x, y) {
-		return (x <= viewport.r && viewport.l <= (x + rect.width) &&
-				y <= viewport.b && viewport.t <= (y + rect.height));
+		return (x <= viewport.r && viewport.l <= x + rect.width &&
+				y <= viewport.b && viewport.t <= y + rect.height);
+	}
+
+	function intersectsArc(arc, viewport, x, y) {
+		var radius = arc.radius;
+		return (x - radius <= viewport.r && viewport.l <= x + radius &&
+				y - radius <= viewport.b && viewport.t <= y + radius);
 	}
 
 })(window);
