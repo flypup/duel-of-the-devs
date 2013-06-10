@@ -1,8 +1,10 @@
 (function(window) {
 
 	var ec = window.ec;
+	var spriteSheets = ec.SpriteSheets;
 	var pi = Math.PI;
 	var floor = Math.floor;
+	var dotFrames = {};
 
 	var Canvas2dEntityView = ec.Canvas2dEntityView = function() {
 		// TODO: create one class-type & instance per entity instance or type with spritesheet(s)
@@ -13,20 +15,19 @@
 
 	Canvas2dEntityView.prototype = {
 		draw: function(context, entity, viewport, delta) {
-			this.drawShadow(context, entity, viewport);
+			if (entity.hasShadow) {
+				this.drawShadow(context, entity, viewport);
+			}
 			this.drawEntity(context, entity, viewport, delta);
 		},
 		
 		drawShadow: function(context, entity, viewport) {
 			var o;
-			if (entity instanceof ec.Ninja || entity instanceof ec.Player) {
-				o = ec.SpriteSheets.shadow.getFrame(0);
-			} else if (entity instanceof ec.Projectile) {
-				o = ec.SpriteSheets.shadowSmall.getFrame(0);
+			if (entity.radius < 20) {
+				o = spriteSheets.shadowSmall.getFrame(0);
 			} else {
-				return;
+				o = spriteSheets.shadow.getFrame(0);
 			}
-
 			if (o) {
 				var pos = entity.getPos();
 				var x = pos.x;
@@ -41,17 +42,8 @@
 			}
 		},
 
-		drawEntity: function(context, entity, viewport, delta) {
-			var pos = entity.getPos();
-			var x = pos.x;
-			var y = pos.y - pos.z;
-			var o;
-			var rect;
-			var drawable;
-			var frame;
-
-			if (entity instanceof ec.Ninja) {
-				o = spriteSheetFrame(entity, ec.SpriteSheets.ninja, delta);
+		spriteFrameCalls: {
+			Ninja: function(entity, delta) {
 				// SOUND //
 				if (entity.state === 'hit') {
 					if (entity.hitTime === entity.hitDuration) {
@@ -59,28 +51,31 @@
 					}
 				}
 
-			} else if (entity instanceof ec.Puff) {
-				var ninjaSheet = ec.SpriteSheets.ninja;
-				var animation = ninjaSheet.getAnimation('puff');
+				return spriteSheetFrame(entity, spriteSheets.ninja, delta);
+			},
+
+			Puff: function(entity) {
+				var animation = spriteSheets.ninja.getAnimation('puff');
 				if (animation) {
-					frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
-					o = ninjaSheet.getFrame(frame);
+					var frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
+					return spriteSheets.ninja.getFrame(frame);
 				}
+				return null;
+			},
 
-			} else if (entity instanceof ec.Projectile) {
-				var spriteSheet = ec.SpriteSheets.throwingStar;
-				var frames = spriteSheet.getNumFrames();
-				frame = floor(entity.body.a * frames / pi) % frames;
-				o = spriteSheet.getFrame(frame);
-
+			Projectile: function(entity, delta) {
 				// SOUND //
 				if (entity.lifetime === 0) {
 					ec.sound.playSound(ec.sound.sounds.stars, '*');
 				}
 				entity.lifetime += delta;
-				
-			} else if (entity instanceof ec.Player) {
-				o = spriteSheetFrame(entity, ec.SpriteSheets.monk, delta);
+
+				var frames = spriteSheets.throwingStar.getNumFrames();
+				var frame = floor(entity.body.a * frames / pi) % frames;
+				return spriteSheets.throwingStar.getFrame(frame);
+			},
+
+			Player: function(entity, delta) {
 				// SOUND //
 				if (entity.state === 'walking') {
 					if (entity.walkCount >= entity.nextStep) {
@@ -100,54 +95,87 @@
 					}
 				}
 
-			} else if (entity instanceof ec.Box) {
-				o = ec.SpriteSheets.lion.getFrame(0);
+				return spriteSheetFrame(entity, spriteSheets.monk, delta);
 
-			} else if (entity instanceof ec.Circle) {
-				o = ec.SpriteSheets.cauldron.getFrame(0);
+			},
 
-			} else if (entity instanceof ec.EmptyHand) {
+			Box: function(entity) {
+				return spriteSheets.lion.getFrame(0);
+			},
+
+			Circle: function(entity) {
+				return spriteSheets.cauldron.getFrame(0);
+			},
+
+			EmptyHand: function(entity) {
 				// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
 				// context.beginPath();
 				// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
 				// context.fill();
-			} else {
-				if (ec.debug === 1) {ec.core.traceTime('draw entity');}
-				if (entity.radius) {
-					if (intersectsArc(entity, viewport, x, y)) {
-						//context.save();
-						context.fillStyle = entity.fillStyle || '#ff8000';
+				return null;
+			},
+
+			Dot: function(entity) {
+				// dot sprite
+				var color = entity.fillStyle || '#ff8000';
+				var frame = dotFrames['dot'+color];
+				if (!frame) {
+					var radius = entity.radius;
+					var size = radius*2;
+					var canvas = ec.appendCacheDraw('dot'+color, size, size, function(context) {
+						context.fillStyle = color;
 						context.beginPath();
-						context.arc(x, y, entity.radius, 0, 2*pi, false);
+						context.arc(radius, radius, radius, 0, 2*pi, false);
 						context.fill();
-						//context.restore();
-					}
-				} else if (entity.width && entity.height) {
-
-					//context.save();
-					context.fillStyle = '#0008ff';
-					context.beginPath();
-					context.fillRect(x-entity.width/2, y-entity.height/2, entity.width, entity.height);
-					//context.restore();
-
-				} else {
-
-					//context.save();
-					context.fillStyle = '#000088';
-					context.beginPath();
-					context.fillRect(x-32, y-32, 64, 64);
-					//context.restore();
-
+					});
+					canvas.src = 'dot'+color;
+					frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, size, size), regX: radius, regY: radius};
+					dotFrames['dot'+color] = frame;
 				}
-				if (ec.debug === 1) {ec.core.traceTimeEnd('draw entity');}
-				//throw('elements did not get placed in a layer '+entity);
+				frame.alpha = entity.alpha;
+				return frame;
+			},
+
+			Entity: function(entity) {
+				// 	//throw('entity renderer not defined '+entity);
+				// pixel sprite
+				var frame = dotFrames[entity.type];
+				if (!frame) {
+					var width  = entity.width  || 64;
+					var height = entity.height || 64;
+					var canvas = ec.appendCacheDraw(entity.type, width, height, function(context) {
+						context.fillStyle = '#0008ff';
+						context.beginPath();
+						context.fillRect(0, 0, width, height);
+					});
+					canvas.src = entity.type;
+					frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, width, height), regX: width/2, regY: height/2};
+					dotFrames[entity.type] = frame;
+				}
+				return frame;
 			}
 
+		},
+
+		drawEntity: function(context, entity, viewport, delta) {
+			//var o = this.spriteFrameCalls.Entity(entity, delta);
+			var o = this.spriteFrameCalls[entity.type](entity, delta);
+			var pos = entity.getPos();
+			var x = pos.x;
+			var y = pos.y - pos.z;
+
 			if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
-				drawable = ec.getCached(o.image);
-				rect = o.rect;
+				var drawable = ec.getCached(o.image);
+				var rect = o.rect;
 				if (ec.debug === 1) {ec.core.traceTime('drawImage '+o.image.src);}
-				context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				if (o.alpha !== null) {
+					context.save();
+					context.globalAlpha = o.alpha;
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+					context.restore();
+				} else {
+					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
+				}
 				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
 
 				if (ec.debug > 1 && !(entity instanceof ec.Dot)) {

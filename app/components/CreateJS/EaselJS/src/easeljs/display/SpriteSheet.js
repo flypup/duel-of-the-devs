@@ -237,7 +237,7 @@ var p = SpriteSheet.prototype;
 			a = data.frames;
 			for (i=0,l=a.length;i<l;i++) {
 				var arr = a[i];
-				this._frames.push({image:this._images[arr[4]?arr[4]:0], rect:new createjs.Rectangle(arr[0],arr[1],arr[2],arr[3]), regX:arr[5]||0, regY:arr[6]||0 });
+				this._frames.push({image:this._images[arr[4]?arr[4]:0], rect:new createjs.Rectangle(arr[0],arr[1],arr[2],arr[3]), regX:arr[5]||0, regY:arr[6]||0, alpha: null });
 			}
 		} else {
 			o = data.frames;
@@ -394,7 +394,7 @@ var p = SpriteSheet.prototype;
 			var rows = (img.height+1)/fh|0;
 			var ttl = this._numFrames>0 ? Math.min(this._numFrames-ttlFrames,cols*rows) : cols*rows;
 			for (var j=0;j<ttl;j++) {
-				this._frames.push({image:img, rect:new createjs.Rectangle(j%cols*fw,(j/cols|0)*fh,fw,fh), regX:this._regX, regY:this._regY });
+				this._frames.push({image:img, rect:new createjs.Rectangle(j%cols*fw,(j/cols|0)*fh,fw,fh), regX:this._regX, regY:this._regY, alpha: null });
 			}
 			ttlFrames += ttl;
 		}

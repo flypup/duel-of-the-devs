@@ -75,7 +75,7 @@
 			drawElement(elements[i], context, viewport, delta);
 		}
 		return true;
-	};
+	}
 
 	function drawElement(element, context, viewport, delta) {
 		if (!element.visible) {
@@ -84,7 +84,7 @@
 		if (element.imageData || element.children) {
 			if (element.width === 0 || intersects(element, viewport)) {
 				context.save();
-				if (element.alpha !== undefined) {
+				if (element.alpha !== null) {
 					context.globalAlpha = element.alpha;
 				}
 				var matrix = element.matrix;
@@ -136,7 +136,7 @@
 			}
 		}
 		return true;
-	};
+	}
 
 	function drawShape(shape, context) {
 		if (ec.debug === 1) {ec.core.traceTime('drawShape '+ shape.fillImage);}
@@ -171,7 +171,7 @@
 
 		if (ec.debug === 1) {ec.core.traceTimeEnd('drawShape '+shape.fillImage);}
 		return true;
-	};
+	}
 
 	function drawPolygon(polygon, context) {
 		// TODO: clip to context bounds
@@ -183,7 +183,7 @@
 		}
 		context.fill();
 		return true;
-	};
+	}
 
 	function drawImage(element, context) {
 		if (ec.debug === 1) {ec.core.traceTime('drawImage map child '+element.image);}
@@ -191,29 +191,29 @@
 		context.drawImage(drawable, element.x, element.y, element.width, element.height);
 		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map child '+element.image);}
 		return true;
-	};
+	}
 
 	function drawImageInplace(element, context) {
 		if (ec.debug === 1) {ec.core.traceTime('drawImage map '+element.image);}
 		var drawable = ec.getCached(element.imageData, element.image);
 		context.drawImage(drawable, 0, 0);
 		if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage map '+element.image);}
-	};
+	}
 
 	function intersects(element, viewport) {
 		//return true;
 		return (element.drawX <= viewport.r && viewport.l <= (element.drawX + element.width) &&
 				element.drawY <= viewport.b && viewport.t <= (element.drawY + element.height));
-	};
+	}
 
 	function containsViewPort(element, viewport) {
 		return (element.drawX <= viewport.l && viewport.r >= (element.drawX + element.width) &&
 				element.drawY <= viewport.t && viewport.b >= (element.drawY + element.height));
-	};
+	}
 
 	function insideViewPort(element, viewport) {
 		return (viewport.l <= element.drawX && (element.drawX + element.width) >= viewport.r &&
 				viewport.t <= element.drawY && (element.drawY + element.height) >= viewport.b);
-	};
+	}
 
 })(window);

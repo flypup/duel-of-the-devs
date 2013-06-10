@@ -2,15 +2,14 @@
 
 	var ec = window.ec;
 
-	var RADIUS = 32;
-
 	var Circle = ec.Circle = function(mass, radius, height) {
 		this.setBaseProperties();
 		
-		if (height) {
+		if (height && radius) {
+			//width was pased in
 			radius = radius/2;
 		}
-		radius = radius || RADIUS;
+		radius = radius || 32;
 		if (mass === undefined) {
 			mass = 1;
 		}

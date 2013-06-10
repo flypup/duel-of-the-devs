@@ -21,6 +21,7 @@
 			shape: null,
 			type: null,
 			image: null,
+			alpha: null,
 			layerNum: 0,
 			visible: true,
 			body: null,

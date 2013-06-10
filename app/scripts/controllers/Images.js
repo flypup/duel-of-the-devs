@@ -68,4 +68,20 @@
 		return canvas;
 	};
 
+	ec.appendCacheDraw = function(id, width, height, fn) {
+		if (ec.debug === 1) {ec.core.traceTime('appendCacheDraw '+id);}
+
+		var canvas = window.document.createElement('canvas');
+		var context = canvas.getContext('2d');
+		canvas.width  = width;
+		canvas.height = height;
+		fn(context);
+
+		_cache[id] = canvas;
+
+		if (ec.debug === 1) {ec.core.traceTimeEnd('appendCacheDraw '+id);}
+
+		return canvas;
+	};
+
 })(window);
