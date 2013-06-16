@@ -328,15 +328,20 @@ fl.trace('Scene exported to '+exportDir);//+'\r'+ output);
 function getLayerKeyframes(layer) {
 	var keyframes = [];
 	var frames = layer.frames;
+	var frame;
 	for (var i=0; i<frames.length; i++) {
-		if (frames[i].startFrame === i) {
+		frame = frame;
+		//fl.trace(i +' '+ frame.startFrame);
+		if (frame.startFrame === i) {
 			//frame.elements, frame.elements.length, frame.elements[0].name, frame.elements[0].instanceType
-			keyframes.push(frames[i]);
+			//Get all Keyframes including empty ones
+			keyframes.push(frame);
 		}
 	}
-	//ignore empty layer frames
-	if (keyframes.length === 1) {
-		if (!keyframes.elements || keyframes.elements.length === 0) {
+	//ignore layers that only have empty keyframes
+	if (keyframes.length === 1) { //TODO: verify at least one entity between all keyframes
+		frame = keyframes[0];
+		if (!frame.elements || frame.elements.length === 0) {
 			return [];
 		}
 	}
