@@ -2,7 +2,7 @@
 
 	// ec is our global namespace
 	var ec = window.ec = {};
-	ec.version = '0.2.2';
+	ec.version = '0.2.9';
 	ec.debug = 0;
 
 	// data

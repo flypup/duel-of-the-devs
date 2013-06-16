@@ -36,139 +36,202 @@
 				if (intersects(rect, viewport, x-o.regX, y-o.regY)) {
 					if (ec.debug === 1) {ec.core.traceTime('drawImage shadow '+o.image.src);}
 					var drawable = ec.getCached(o.image);
+					// TODO: draw shadow accoring to entity frame
 					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 					if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage shadow '+o.image.src);}
 				}
 			}
 		},
 
-		spriteFrameCalls: {
-			Ninja: function(entity, delta) {
-				// SOUND //
-				if (entity.state === 'hit') {
-					if (entity.hitTime === entity.hitDuration) {
-						ec.sound.playSound(ec.sound.sounds.hits, '*');
-					}
+		drawNinja: function(context, entity, viewport) {
+			// SOUND //
+			if (entity.state === 'hit') {
+				if (entity.hitTime === entity.hitDuration) {
+					ec.sound.playSound(ec.sound.sounds.hits, '*');
 				}
-
-				return spriteSheetFrame(entity, spriteSheets.ninja, delta);
-			},
-
-			Puff: function(entity) {
-				var animation = spriteSheets.ninja.getAnimation('puff');
-				if (animation) {
-					var frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
-					return spriteSheets.ninja.getFrame(frame);
-				}
-				return null;
-			},
-
-			Projectile: function(entity, delta) {
-				// SOUND //
-				if (entity.lifetime === 0) {
-					ec.sound.playSound(ec.sound.sounds.stars, '*');
-				}
-				entity.lifetime += delta;
-
-				var frames = spriteSheets.throwingStar.getNumFrames();
-				var frame = floor(entity.body.a * frames / pi) % frames;
-				return spriteSheets.throwingStar.getFrame(frame);
-			},
-
-			Player: function(entity, delta) {
-				// SOUND //
-				if (entity.state === 'walking') {
-					if (entity.walkCount >= entity.nextStep) {
-						entity.nextStep += 2;
-						ec.sound.playSound(ec.sound.sounds.steps, '*');
-					}
-				} else if (entity.state === 'standing') {
-					if (entity.nextStep !== 0) {
-						entity.nextStep = 0;
-						ec.sound.playSound(ec.sound.sounds.steps, '*');
-					}
-				} else if (entity.state === 'punching') {
-					if (entity.attack.time === 0) {
-						// entity.attack.pushDuration;
-						ec.sound.playSound(ec.sound.sounds.strikes, '*');
-						entity.nextStep = 1;
-					}
-				}
-
-				return spriteSheetFrame(entity, spriteSheets.monk, delta);
-
-			},
-
-			Box: function(entity) {
-				return spriteSheets.lion.getFrame(0);
-			},
-
-			Circle: function(entity) {
-				return spriteSheets.cauldron.getFrame(0);
-			},
-
-			EmptyHand: function(entity) {
-				// context.fillStyle = (entity.phase === ec.EmptyHand.PUSHING) ? '#ffff00' : '#ff8800' ;
-				// context.beginPath();
-				// context.arc(x, y-40, entity.radius, 0, 2*pi, false);
-				// context.fill();
-				return null;
-			},
-
-			Dot: function(entity) {
-				// dot sprite
-				var color = entity.fillStyle || '#ff8000';
-				var frame = dotFrames['dot'+color];
-				if (!frame) {
-					var radius = entity.radius;
-					var size = radius*2;
-					var canvas = ec.appendCacheDraw('dot'+color, size, size, function(context) {
-						context.fillStyle = color;
-						context.beginPath();
-						context.arc(radius, radius, radius, 0, 2*pi, false);
-						context.fill();
-					});
-					canvas.src = 'dot'+color;
-					frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, size, size), regX: radius, regY: radius};
-					dotFrames['dot'+color] = frame;
-				}
-				frame.alpha = entity.alpha;
-				return frame;
-			},
-
-			Entity: function(entity) {
-				// 	//throw('entity renderer not defined '+entity);
-				// pixel sprite
-				var frame = dotFrames[entity.type];
-				if (!frame) {
-					var width  = entity.width  || 64;
-					var height = entity.height || 64;
-					var canvas = ec.appendCacheDraw(entity.type, width, height, function(context) {
-						context.fillStyle = '#0008ff';
-						context.beginPath();
-						context.fillRect(0, 0, width, height);
-					});
-					canvas.src = entity.type;
-					frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, width, height), regX: width/2, regY: height/2};
-					dotFrames[entity.type] = frame;
-				}
-				return frame;
 			}
 
+			var frame = entityFrame(entity, spriteSheets.ninja.body);
+			var pos = entity.getPos();
+
+			this.drawBodyAndHead(context, viewport, spriteSheets.ninja, frame, pos);
+			if (ec.debug > 1) {
+				this.drawEntityDebug(context, entity);
+			}
+		},
+
+		drawPuff: function(context, entity, viewport) {
+			var animation = spriteSheets.ninja.body.getAnimation('puff');
+			if (animation) {
+				var frame = animation.frames[0] + floor(4.9 * (entity.duration-entity.time) / entity.duration);
+				var o = spriteSheets.ninja.body.getFrame(frame);
+				var pos = entity.getPos();
+				this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
+			}
+			return null;
+		},
+
+		drawProjectile: function(context, entity, viewport, delta) {
+			// SOUND //
+			if (entity.lifetime === 0) {
+				ec.sound.playSound(ec.sound.sounds.stars, '*');
+			}
+			entity.lifetime += delta;
+
+			var frames = spriteSheets.throwingStar.getNumFrames();
+			var frame = floor(entity.body.a * frames / pi) % frames;
+			var o = spriteSheets.throwingStar.getFrame(frame);
+			var pos = entity.getPos();
+			this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
+		},
+
+		drawPlayer: function(context, entity, viewport) {
+			// SOUND //
+			if (entity.state === 'walking') {
+				if (entity.walkCount >= entity.nextStep) {
+					entity.nextStep += 2;
+					ec.sound.playSound(ec.sound.sounds.steps, '*');
+				}
+			} else if (entity.state === 'standing') {
+				if (entity.nextStep !== 0) {
+					entity.nextStep = 0;
+					ec.sound.playSound(ec.sound.sounds.steps, '*');
+				}
+			} else if (entity.state === 'punching') {
+				if (entity.attack.time === 0) {
+					// entity.attack.pushDuration;
+					ec.sound.playSound(ec.sound.sounds.strikes, '*');
+					entity.nextStep = 1;
+				}
+			}
+
+			var frame = entityFrame(entity, spriteSheets.monk.body);
+			var pos = entity.getPos();
+
+			this.drawBodyAndHead(context, viewport, spriteSheets.monk, frame, pos);
+			if (ec.debug > 1) {
+				this.drawEntityDebug(context, entity);
+			}
+		},
+
+		drawBodyAndHead: function(context, viewport, spriteSheet, frame, pos) {
+			var headFrame, headData, headIndex = 0;
+			if (frame < spriteSheet.framesHead.length) {
+				var headData = spriteSheet.framesHead[frame];
+				if (headData) {
+					headFrame = spriteSheet.head.getFrame(headData[3]|0);
+					headIndex = headData[2];
+				}
+			}
+
+			if (headIndex < 0) {
+				this.drawSprite(context, headFrame, headData[0] + pos.x, headData[1] + pos.y - pos.z, viewport);
+			}
+
+			var o = spriteSheetFrame(spriteSheet.body, frame);
+			this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
+
+			if (headIndex > 0) {
+				this.drawSprite(context, headFrame, headData[0] + pos.x, headData[1] + pos.y - pos.z, viewport);
+			}
+		},
+
+		drawLion: function(context, entity, viewport) {
+			var o = spriteSheets.lion.getFrame(0);
+			var pos = entity.getPos();
+			this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
+		},
+
+		drawCauldron: function(context, entity, viewport) {
+			var o = spriteSheets.cauldron.getFrame(0);
+			var pos = entity.getPos();
+			this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
+		},
+
+		drawDot: function(context, entity, viewport) {
+			// dot sprite
+			var color = entity.fillStyle || '#ff8000';
+			var frame = dotFrames['dot'+color];
+			if (!frame) {
+				var radius = entity.radius;
+				var size = radius*2;
+				var canvas = ec.appendCacheDraw('dot'+color, size, size, function(context) {
+					context.fillStyle = color;
+					context.beginPath();
+					context.arc(radius, radius, radius, 0, 2*pi, false);
+					context.fill();
+				});
+				canvas.src = 'dot'+color;
+				frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, size, size), regX: radius, regY: radius};
+				dotFrames['dot'+color] = frame;
+			}
+			frame.alpha = entity.alpha;
+			var pos = entity.getPos();
+			this.drawSprite(context, frame, pos.x, pos.y - pos.z, viewport, entity.alpha);
+		},
+
+		drawGenericEntity: function(context, entity, viewport, delta) {
+			// 	//throw('entity renderer not defined '+entity);
+			// pixel sprite
+			var frame = dotFrames[entity.type];
+			if (!frame) {
+				var width  = entity.width  || 64;
+				var height = entity.height || 64;
+				var canvas = ec.appendCacheDraw(entity.type, width, height, function(context) {
+					context.fillStyle = '#0008ff';
+					context.beginPath();
+					context.fillRect(0, 0, width, height);
+				});
+				canvas.src = entity.type;
+				frame = {image: canvas, rect: new window.createjs.Rectangle(0, 0, width, height), regX: width/2, regY: height/2};
+				dotFrames[entity.type] = frame;
+			}
+			var pos = entity.getPos();
+			this.drawSprite(context, frame, pos.x, pos.y - pos.z, viewport);
 		},
 
 		drawEntity: function(context, entity, viewport, delta) {
-			//var o = this.spriteFrameCalls.Entity(entity, delta);
-			var o = this.spriteFrameCalls[entity.type](entity, delta);
-			var pos = entity.getPos();
-			var x = pos.x;
-			var y = pos.y - pos.z;
+			switch (entity.type) {
+			case 'Ninja':
+				this.drawNinja(context, entity, viewport, delta);
+				break;
+			case 'Player':
+				this.drawPlayer(context, entity, viewport, delta);
+				break;
+			case 'Projectile':
+				this.drawProjectile(context, entity, viewport, delta);
+				break;
+			case 'Puff':
+				this.drawPuff(context, entity, viewport, delta);
+				break;
+			case 'Box':
+				this.drawLion(context, entity, viewport, delta);
+				break;
+			case 'Circle':
+				this.drawCauldron(context, entity, viewport, delta);
+				break;
+			case 'Dot':
+				this.drawDot(context, entity, viewport);
+				break;
+			case 'Entity':
+				this.drawGenericEntity(context, entity, viewport);
+				break;
+			// case 'EmptyHand':
+			// 	break;
+			// default:
+			// 	throw 'Unexpected entity type.'
+			}
+		},
 
+		drawSprite: function(context, o, x, y, viewport) {
 			if (o && intersects(o.rect, viewport, x-o.regX, y-o.regY)) {
 				var drawable = ec.getCached(o.image);
 				var rect = o.rect;
 				if (ec.debug === 1) {ec.core.traceTime('drawImage '+o.image.src);}
 				if (o.alpha !== null) {
+					if (o.alpha === 0) {
+						return false;
+					}
 					context.save();
 					context.globalAlpha = o.alpha;
 					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
@@ -177,31 +240,35 @@
 					context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x-o.regX, y-o.regY, rect.width, rect.height);
 				}
 				if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage '+o.image.src);}
+				return true;
+			}
+			return false;
+		},
 
-				if (ec.debug > 1 && !(entity instanceof ec.Dot)) {
-					//draw layer info
-					var fieldHeight = 48;
-					entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
-					entity.label.setPos(x-16, y-((o&&o.regY+fieldHeight)||0));
-					var info = ''+ entity.layerNum +': '+ entity.layerName +', '+ entity.sortReason;
-					if (entity.mapCollision.length) {
-						info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
-					}
-					info += '\rz: '+ pos.z.toFixed(1) + ' x: '+ pos.x.toFixed(1) + ' y: '+ pos.y.toFixed(1);
-					if (entity.input) {
-						var goal = entity.input.goal;
-						if (goal) {
-							info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
-						}
-					}
-					entity.label.setText(info);
+		drawEntityDebug: function(context, entity, o) {
+			var pos = entity.getPos();
+			var x = pos.x;
+			var y = pos.y - pos.z;
+			//draw layer info
+			var fieldHeight = 48;
+			entity.label = entity.label || ec.Entity.getLabel(context, fieldHeight);
+			entity.label.setPos(x -16, y -(entity.depth|0) - 20);
+			var info = ''+ entity.layerNum +': '+ entity.layerName +', '+ entity.sortReason;
+			if (entity.mapCollision.length) {
+				info += '\r' + ec.objectToProps(entity.mapCollision, 'name').join(',');
+			}
+			info += '\rz: '+ pos.z.toFixed(1) + ' x: '+ x.toFixed(1) + ' y: '+ pos.y.toFixed(1);
+			if (entity.input) {
+				var goal = entity.input.goal;
+				if (goal) {
+					info += '\r' + goal.name +' '+ (goal.taskIndex+1) +'/'+ goal.tasks.length +' '+ (goal.taskTime/1000).toFixed(1);
 				}
 			}
-
+			entity.label.setText(info);
 		}
 	};
 
-	function spriteSheetFrame(entity, spriteSheet, delta) {
+	function entityFrame(entity, spriteSheet) {
 		//var numFrames = spriteSheet.getNumFrames();
 		var x = entity.body.rot.x*2|0;
 		var y = entity.body.rot.y*5|0;//1.43|0;
@@ -263,6 +330,10 @@
 			}
 		}
 
+		return frame;
+	}
+
+	function spriteSheetFrame(spriteSheet, frame) {
 		var frameData = spriteSheet.getFrame(frame);
 		if (frameData === null) {
 			if (spriteSheet.complete) {
