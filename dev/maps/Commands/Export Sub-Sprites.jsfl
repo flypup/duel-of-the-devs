@@ -260,6 +260,7 @@ function exportSubSpriteData(timeline, name, scaleX, scaleY) {
 						frameData[0] = Math.round(element.x * scaleX * subPixelRounding) / subPixelRounding;
 						frameData[1] = Math.round(element.y * scaleY * subPixelRounding) / subPixelRounding;
 						frameData[2] = layerIndex - exportLayerIndex;
+						frameData[3] = element.firstFrame | 0;
 
 					} else {
 						// multiple elements in frame
