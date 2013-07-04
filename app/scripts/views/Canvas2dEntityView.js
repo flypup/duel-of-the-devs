@@ -108,7 +108,12 @@
 			var frame = entityFrame(entity, spriteSheets.monk.body);
 			var pos = entity.getPos();
 
-			this.drawBodyAndHead(context, viewport, spriteSheets.monk, frame, pos);
+			if (entity === ec.player) {
+				this.drawBodyAndHead(context, viewport, spriteSheets.monk, frame, pos);
+			} else {
+				this.drawBodyAndHead(context, viewport, spriteSheets.monk2, frame, pos);
+			}
+
 			if (ec.debug > 1) {
 				this.drawEntityDebug(context, entity);
 			}
