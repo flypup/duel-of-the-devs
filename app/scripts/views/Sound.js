@@ -186,7 +186,7 @@
 					}
 					return source;
 				},
-				createGainNode: function() {
+				createGain: function() {
 					return {
 						gain: {
 							value: 1
@@ -198,8 +198,10 @@
 			};
 			// end Web Audio API Polyfill
 		}
-
-		this.gainNode = context.createGainNode();
+		if (context.createGainNode) {
+			context.createGain = context.createGainNode;
+		}
+		this.gainNode = context.createGain();
 		this.gainNode.gain.value = this.volume;
 		this.gainNode.connect(context.destination);
 		this.context = context;
@@ -298,7 +300,7 @@
 
 				var gainNode = this.gainNode;
 				if (resource.volume !== undefined) {
-					gainNode = this.context.createGainNode();
+					gainNode = this.context.createGain();
 					gainNode.gain.value = resource.volume;
 					gainNode.connect(this.context.destination);
 				}
