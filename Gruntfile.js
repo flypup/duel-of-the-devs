@@ -1,23 +1,39 @@
 'use strict';
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
-var mountFolder = function (connect, dir) {
-    return connect.static(require('path').resolve(dir));
-};
+/* jshint node: true */
+
+// # Globbing
+// for performance reasons we're only matching one level down:
+// 'test/spec/{,*/}*.js'
+// use this if you want to recursively match all subfolders:
+// 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
-    // load all grunt tasks
-    require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-    // configurable paths
-    var yeomanConfig = {
-        app: 'app',
-        dist: 'dist'
-    };
+    // Load grunt tasks automatically
+    require('load-grunt-tasks')(grunt);
 
+    // Time how long tasks take. Can help when optimizing build times
+    require('time-grunt')(grunt);
+
+    // Define the configuration for all the tasks
     grunt.initConfig({
-        yeoman: yeomanConfig,
+
+        // Project settings
+        yeoman: {
+            // Configurable paths
+            app: 'app',
+            dist: 'dist'
+        },
+
+        // Watches files for changes and runs tasks based on the changed files
         watch: {
+            gruntfile: {
+                files: ['Gruntfile.js']
+            },
             livereload: {
+                options: {
+                    livereload: '<%= connect.options.livereload %>'
+                },
                 files: [
                     '<%= yeoman.app %>/*.html',
                     '<%= yeoman.app %>/styles/{,*/}*.css',
@@ -26,57 +42,66 @@ module.exports = function (grunt) {
                     '<%= yeoman.app %>/components/{,*/}*.js',
                     '<%= yeoman.app %>/img/{,*/}*.{png,jpg,jpeg,webp}',
                     '<%= yeoman.app %>/audio/{,*/}*.{m4a,ogg}'
-                ],
-                tasks: ['livereload']
+                ]
             }
         },
+
+        // The actual grunt server settings
         connect: {
             options: {
                 port: 9000,
-                // change 'localhost' to '0.0.0.0' to access the server from outside
+                livereload: 35729,
+                // Change this to 'localhost' to restrict access the server from outside
                 hostname: '0.0.0.0'
             },
             livereload: {
                 options: {
-                    middleware: function (connect) {
-                        return [
-                            lrSnippet,
-                            mountFolder(connect, 'app')
-                        ];
-                    }
+                    open: true,
+                    base: [
+                        '.tmp',
+                        '<%= yeoman.app %>'
+                    ]
                 }
             },
             test: {
                 options: {
-                    middleware: function (connect) {
-                        return [
-                            mountFolder(connect, 'test')
-                        ];
-                    }
+                    port: 9001,
+                    base: [
+                        '.tmp',
+                        'test',
+                        '<%= yeoman.app %>'
+                    ]
                 }
             },
             dist: {
                 options: {
-                    middleware: function (connect) {
-                        return [
-                            mountFolder(connect, 'dist')
-                        ];
-                    }
+                    open: true,
+                    base: '<%= yeoman.dist %>',
+                    livereload: false
                 }
             }
         },
-        open: {
-            server: {
-                path: 'http://localhost:<%= connect.options.port %>'
-            }
-        },
+
+        // Empties folders to start fresh
         clean: {
-            dist: ['<%= yeoman.dist %>/*'],
+            dist: {
+                files: [{
+                    dot: true,
+                    src: [
+                        '.tmp',
+                        '<%= yeoman.dist %>/*',
+                        '!<%= yeoman.dist %>/.git*'
+                    ]
+                }]
+            },
             server: []
         },
+
+        // Make sure code styles are up to par and there are no obvious mistakes
         jshint: {
             options: {
-                jshintrc: '.jshintrc'
+                jshintrc: '.jshintrc',
+                reporter: require('jshint-stylish')
             },
             all: [
                 'Gruntfile.js',
@@ -85,93 +110,79 @@ module.exports = function (grunt) {
                 'test/spec/{,*/}*.js'
             ]
         },
+
+        // Mocha testing framework configuration options
         mocha: {
             all: {
                 options: {
                     run: true,
-                    urls: ['http://localhost:<%= connect.options.port %>/index.html']
+                    urls: ['http://<%= connect.test.options.hostname %>:<%= connect.test.options.port %>/index.html']
                 }
             }
         },
 
-        // not used since Uglify task does concat,
-        // but still available if needed
-        /*concat: {
-            dist: {}
-        },*/
-        
-        uglify: {
-            dist: {
-                files: {
-                    // '<%= yeoman.dist %>/scripts/main.js': [
-                    //     '<%= yeoman.app %>/scripts/{,*/}*.js'
-                    // ],
-                    // TODO: combine all data
-                    '<%= yeoman.dist %>/data/scenes/enter_the_ninja.js': [
-                        '<%= yeoman.app %>/data/scenes/enter_the_ninja.js'
-                    ],
-                    '<%= yeoman.dist %>/data/courtyard/data.js': [
-                        '<%= yeoman.app %>/data/courtyard/data.js'
-                    ],
-                    '<%= yeoman.dist %>/data/testmap/data.js': [
-                        '<%= yeoman.app %>/data/testmap/data.js'
-                    ],
-                }
-            }
-        },
+        // Reads HTML for usemin blocks to enable smart builds that automatically
+        // concat, minify and revision files. Creates configurations in memory so
+        // additional tasks can operate on them
         useminPrepare: {
-            html: '<%= yeoman.app %>/index.html',
             options: {
                 dest: '<%= yeoman.dist %>'
-            }
+            },
+            html: '<%= yeoman.app %>/index.html'
         },
+
+        // Performs rewrites based on rev and the useminPrepare configuration
         usemin: {
-            html: ['<%= yeoman.dist %>/{,*/}*.html'],
-            css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
             options: {
-                dirs: ['<%= yeoman.dist %>']
-            }
+                assetsDirs: ['<%= yeoman.dist %>']
+            },
+            html: ['<%= yeoman.dist %>/{,*/}*.html'],
+            css: ['<%= yeoman.dist %>/styles/{,*/}*.css']
         },
+
+        // The following *-min tasks produce minified files in the dist folder
         imagemin: {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: '<%= yeoman.app %>/img',
-                    src: '{,*/}*.{png,jpg,jpeg}',
-                    dest: '<%= yeoman.dist %>/img'
+                    cwd: '<%= yeoman.app %>/images',
+                    src: '{,*/}*.{gif,jpeg,jpg,png}',
+                    dest: '<%= yeoman.dist %>/images'
                 }]
             }
         },
-        cssmin: {
+        svgmin: {
             dist: {
-                files: {
-                    '<%= yeoman.dist %>/styles/main.css': [
-                        '<%= yeoman.app %>/styles/{,*/}*.css'
-                    ]
-                }
+                files: [{
+                    expand: true,
+                    cwd: '<%= yeoman.app %>/images',
+                    src: '{,*/}*.svg',
+                    dest: '<%= yeoman.dist %>/images'
+                }]
             }
         },
         htmlmin: {
             dist: {
                 options: {
-                    /*removeCommentsFromCDATA: true,
-                    // https://github.com/yeoman/grunt-usemin/issues/44
-                    //collapseWhitespace: true,
                     collapseBooleanAttributes: true,
+                    collapseWhitespace: true,
                     removeAttributeQuotes: true,
-                    removeRedundantAttributes: true,
-                    useShortDoctype: true,
+                    removeCommentsFromCDATA: true,
                     removeEmptyAttributes: true,
-                    removeOptionalTags: true*/
+                    removeOptionalTags: true,
+                    removeRedundantAttributes: true,
+                    useShortDoctype: true
                 },
                 files: [{
                     expand: true,
-                    cwd: '<%= yeoman.app %>',
-                    src: '*.html',
+                    cwd: '<%= yeoman.dist %>',
+                    src: '{,*/}*.html',
                     dest: '<%= yeoman.dist %>'
                 }]
             }
         },
+
+        // Copies remaining files to places other tasks can use
         copy: {
             dist: {
                 files: [{
@@ -197,11 +208,8 @@ module.exports = function (grunt) {
                 }]
             }
         },
-        // bower: {
-        //     all: {
-        //         rjsConfig: '<%= yeoman.app %>/scripts/main.js'
-        //     }
-        // },
+
+        // Create game.zip for cocoon-js
         compress: {
             dist: {
                 options: {
@@ -214,43 +222,52 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.renameTask('regarde', 'watch');
 
-    grunt.registerTask('server', function (target) {
+    grunt.registerTask('serve', function (target) {
         if (target === 'dist') {
-            return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
+            return grunt.task.run(['build', 'connect:dist:keepalive']);
         }
 
         grunt.task.run([
             'clean:server',
-            'livereload-start',
             'connect:livereload',
-            'open',
             'watch'
         ]);
     });
 
-    grunt.registerTask('test', [
-        'clean:server',
-        'connect:test',
-        'mocha'
-    ]);
+    grunt.registerTask('server', function () {
+        grunt.task.run(['serve']);
+    });
+
+    grunt.registerTask('test', function(target) {
+        if (target !== 'watch') {
+            grunt.task.run([
+                'clean:server'
+            ]);
+        }
+
+        grunt.task.run([
+            'connect:test',
+            'mocha'
+        ]);
+    });
 
     grunt.registerTask('build', [
         'clean:dist',
         'useminPrepare',
-        'imagemin',
-        'htmlmin',
+        // 'imagemin',
+        // 'htmlmin',
         'concat',
         'cssmin',
         'uglify',
-        'copy',
+        'copy:dist',
         'usemin',
+        'htmlmin',
         'compress'
     ]);
 
     grunt.registerTask('default', [
-        //'jshint',
+        //'newer:jshint',
         'test',
         'build'
     ]);
