@@ -8,6 +8,11 @@
 		var canvas = this.canvas = window.document.createElement( 'canvas' );
 		canvas.style.position = 'absolute';
 
+		if (/Firefox\//.test(navigator.userAgent)) {
+			var mozOpaque = document.createAttribute('moz-opaque');
+			canvas.setAttributeNode(mozOpaque);
+		}
+
 		this.context = canvas.getContext('2d');
 
 		this.resize(ec.width, ec.height, ec.pixelRatio);
