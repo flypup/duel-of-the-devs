@@ -1,4 +1,4 @@
-(function(window) {
+(function(window, document, navigator, ec) {
 
 	function prefixed(str, obj) {
 		return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
@@ -35,8 +35,6 @@
 		};
 	}
 
-	var document = window.document;
-	var navigator = window.navigator;
 	var body = document.body;
 
 	if (!body.requestFullscreen) {
@@ -53,4 +51,4 @@
 		navigator.getGamepads = prefixed('GetGamepads', navigator);
 	}
 
-})(window);
+})(window, window.document, window.navigator, window.ec = window.ec || {});

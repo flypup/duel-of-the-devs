@@ -1,7 +1,5 @@
-(function(window) {
+(function(window, ec) {
 
-	// ec is our global namespace
-	var ec = window.ec = {};
 	ec.version = '0.2.9';
 	ec.debug = 0;
 
@@ -849,9 +847,7 @@
 	ec.bind(window, 'load', docReadyHandler, false);
 
 	// tests
-	(function() {
-		var document = window.document;
-		var navigator = window.navigator;
+	(function(document, navigator) {
 		ec.touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
 		ec.msTouch = navigator.msPointerEnabled;
 		ec.mobile = (/iPhone|iPad|iPod|Android/).test(navigator.userAgent);
@@ -860,13 +856,12 @@
 		ec.android = (/Android/).test(navigator.userAgent);
 		ec.standalone = !!navigator.standalone;
 		ec.webgl = !!window.WebGLRenderingContext;
-		ec.fullscreen = !!document.cancelFullScreen;
 		ec.webaudio   = !!window.AudioContext;
 		ec.gamepads   = !!navigator.getGamepads;
-	})();
+	})(window.document, window.navigator);
 
 	ec.core.begin();
 
 	//ec.core.trackCustom(2, 'version', ec.version, 3);
 
-})(window);
+})(window, window.ec = window.ec || {});
