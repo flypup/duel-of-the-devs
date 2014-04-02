@@ -197,9 +197,11 @@
 				}
 			};
 			// end Web Audio API Polyfill
-		}
-		if (context.createGainNode) {
-			context.createGain = context.createGainNode;
+		} else {
+			var createGainNode = context.createGainNode;
+			if (createGainNode) {
+				context.createGain = createGainNode;
+			}
 		}
 		this.gainNode = context.createGain();
 		this.gainNode.gain.value = this.volume;
