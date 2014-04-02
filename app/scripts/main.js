@@ -54,6 +54,7 @@
 	var min = Math.min;
 
 	var requestAnimationFrame = window.requestAnimationFrame;
+	var cancelAnimationFrame = window.cancelAnimationFrame;
 
 	if (/Chrome\/3[23]\./.test(navigator.userAgent)) {
 		var lastTime = 0;
@@ -63,6 +64,7 @@
 			lastTime = currTime + timeToCall;
 			return id;
 		};
+		cancelAnimationFrame = window.clearTimeout;
 	}
 
 	var core = ec.core = {
