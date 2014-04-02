@@ -9,6 +9,8 @@
 	var player;
 	var boss;
 	
+	ec.mapList = ('hallway,training-hall,testmap3S,noodleshop3S,testmap,testmap2,courtyard').split(',');
+	
 	// entities
 	var world;
 	var scene;
@@ -38,6 +40,7 @@
 	var overlay = null;
 	var WATCH_DEAD_BOSS_DURATION = 2000;
 	var loadingViewNode;
+	var loadingScriptNodes = [];
 
 	var hasProperties = function(obj, props) {
 		if (!obj) {
@@ -98,22 +101,45 @@
 		load: function(time) {
 			var document = window.document;
 			var appCache = ec.appCache || {};
-			if ((!appCache.complete && !appCache.timedout) || ec.ready !== true ||
-				!hasProperties(maps, ('testmap3S,noodleshop3S,testmap,testmap2,courtyard').split(','))
-			) {
+			var msg = '...';
+			var mapsLoaded = hasProperties(maps, ec.mapList);
+			if ((!appCache.complete && !appCache.timedout) || ec.ready !== true || !mapsLoaded) {
+				cancelAnimationFrame(rafId);
 				rafId = requestAnimationFrame( core.load );
 				// TODO: Loading screen drawn to canvas
 				if (!loadingViewNode) {
 					loadingViewNode = document.createElement('p');
+					loadingViewNode.appendChild(document.createTextNode(msg));
 					document.body.appendChild(loadingViewNode);
 				}
-				loadingViewNode.innerHTML = appCache.loaded ? 'Downloading Updates '+appCache.loaded+'/'+appCache.total : 'Loading...';
+				if (loadingScriptNodes.length === 0) {
+					for (var i=0, len=ec.mapList.length; i<len; i++) {
+						var script = document.createElement('script');
+						script.type = 'text/javascript';
+						script.async = true;
+						script.src = 'data/'+ ec.mapList[i] +'/data.js';
+						loadingScriptNodes.push(script);
+						document.body.appendChild(script);
+					}
+				}
+				if (appCache.loaded) {
+					msg = 'Downloading Updates '+appCache.loaded+'/'+appCache.total;
+				} else {
+					if (!mapsLoaded) {
+						msg = ' Maps' + msg;
+					}
+					msg = 'Loading' + msg;
+				}
+				loadingViewNode.firstChild.nodeValue = msg;
 				console.log('loading');
 				return;
 			}
+			// clear loading vars
 			if (loadingViewNode) {
 				document.body.removeChild(loadingViewNode);
+				loadingViewNode = null;
 			}
+			loadingScriptNodes.length = 0;
 
 			// initialize inheritance - these should listen for an app loaded event, or use 'requires'
 			ec.EnemyInput.ready();
@@ -199,9 +225,9 @@
 			//-------- TITLE SCREEN SETUP --------//
 			sound.stop();
 
-			//paused = true;
+			// paused = true; // DEV: ???
 			overlay = ec.getImage('img/ui/startscreen.png');
-			ec.getImage('img/ui/gameover.png');
+			ec.getImage('img/ui/gameover.png'); //preload gameover screen
 			hudView.alpha = 0;
 
 			ec.bind(ec.core.getViewDom(), ec.touch ? 'touchend' : 'mouseup', ec.core.start, false);
@@ -210,12 +236,12 @@
 
 			var sceneData = scenes.enter_the_ninja;
 			scene = new ec.Scene(sceneData);
-			//scene = null;
+			// scene = null; // DEV: Skip scene
 
 			//-------- MAP INIT --------//
 
 			var map = maps[scene.mapName];
-			//var map = maps.noodleshop3S;
+			//var map = maps['training-hall']; // DEV: Map development
 			
 			ec.core.setupMap(map, scene);
 
@@ -227,6 +253,7 @@
 			//-------- TRACKING --------//
 			ec.core.trackEvent('core', 'inited', ec.version, undefined, true);
 
+			// DEV: Skip opening scene
 			// ec.core.resume();
 			// ec.core.start({type: ec.touch ? 'touchend' : 'mouseup'});
 			// ec.core.skipScene({type: ec.touch ? 'touchend' : 'mouseup'});
@@ -309,20 +336,19 @@
 			}
 		},
 
+		// DEBUG ONLY
 		cycleMap: function() {
-			var map;
-
-			if (world.map === maps.courtyard) {
-				map = maps.noodleshop3S;
-			} else if (world.map === maps.noodleshop3S) {
-				map = maps.testmap3S;
-			} else if (world.map === maps.testmap3S) {
-				map = maps.testmap2;
-			} else if (world.map === maps.testmap2) {
-				map = maps.testmap;
-			} else if (world.map === maps.testmap) {
-				map = maps.courtyard;
+			var map = world.map;
+			var name = map.name;
+			var index = ec.mapList.indexOf(name);
+			if (index === -1) {
+				throw('Map not found in list "'+ name +'".');
 			}
+			if (++index === ec.mapList.length) {
+				index = 0;
+			}
+			name = ec.mapList[index];
+			map = maps[name];
 			ec.core.setupMap(map, null);
 		},
 

@@ -99,9 +99,6 @@
 			this.term();
 			this.init();
 
-			// TODO: remember / remove walls - AKA ViewPort Bounds
-			this.addWalls(0, 0, map.width, map.height);
-
 			// add mapElements, extract entities and bounds, add points for AI
 			var layers = map.layers;
 			var entities = map.entities = map.entities || [];
@@ -170,6 +167,11 @@
 				console.log('Map Bounds', boundsElement);
 				this.addMapElement(this.initMapElement(boundsElement));
 			}
+			if (bounds.length === 0) {
+				// TODO: remember / remove walls - AKA ViewPort Bounds
+				this.addWalls(0, 0, map.width, map.height);
+			}
+			
 			// add spawn points
 			for (i=points.length; i--;) {
 				if (!!points[i].entityClass) {
