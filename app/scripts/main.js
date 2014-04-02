@@ -55,6 +55,18 @@
 	var max = Math.max;
 	var min = Math.min;
 
+	var requestAnimationFrame = window.requestAnimationFrame;
+
+	if (/Chrome\/3[23]\./.test(navigator.userAgent)) {
+		var lastTime = 0;
+		requestAnimationFrame = function(callback) {
+			var currTime = 1*new Date(), timeToCall = Math.max( 0, 16.7 - ( currTime - lastTime ) );
+			var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
+			lastTime = currTime + timeToCall;
+			return id;
+		};
+	}
+
 	var core = ec.core = {
 
 		begin: function() {
