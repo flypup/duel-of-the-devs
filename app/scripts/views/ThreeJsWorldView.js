@@ -7,6 +7,9 @@
 	};
 
 	var ThreeJsWorldView = ec.ThreeJsWorldView = function() {
+		if (!THREE) {
+			return;
+		}
 		//var halfwidth = Math.floor(320 * ec.width / ec.height);
 		this.datGUIs = [];
 		this.lookV3 = v3(0, 0, 0);
