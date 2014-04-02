@@ -155,7 +155,7 @@
 			}
 			context.restore();
 
-		} else if (shape.oval) {
+		} else if (shape.circle) {
 			// TODO: oval and center x, y
 			context.beginPath();
 			context.arc(shape.x, shape.y, shape.width/2, 0, 2*Math.PI, false);

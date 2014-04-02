@@ -159,7 +159,7 @@
 				}
 				break;
 
-			case 'oval':
+			case 'circle':
 				// TODO: test distance from center
 				break;
 
@@ -265,7 +265,7 @@
 					}
 					break;
 
-				case 'oval':
+				case 'circle':
 					// Entity is in front of Element
 					if ((entityBounds.front + entityBounds.back)/2 > (mapBounds.front + mapBounds.back)/2) {
 						if (ec.debug > 0) {
@@ -314,9 +314,9 @@
 							}
 						}
 					}
-				} else if (this.shape === 'oval') {
+				} else if (this.shape === 'circle') {
 					shape = shapes[0];
-					pos = v(x + shape.x, y + shape.y);
+					pos = v(x + (shape.x|0), y + (shape.y|0));
 					radius = (shape.width + shape.height)/4;
 					this.addCircle(pos, radius, shape);
 				} else { // TEST BOX?
@@ -348,7 +348,7 @@
 							}
 						}
 					}
-				} else if (this.shape === 'oval') {
+				} else if (this.shape === 'circle') {
 					shape = shapes[0];
 					pos = v(x + shape.x, y + shape.y + this.depth);
 					radius = (shape.width + shape.height)/4;

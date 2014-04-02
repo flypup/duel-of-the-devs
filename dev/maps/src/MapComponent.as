@@ -4,15 +4,15 @@ package {
 
 		/**
 		 * Type of Map Element
-		 * wall  (Box)
-		 * floor (Plane / Box)
+		 * floor (Plane / Box - z on top, deoth goes down)
+		 * wall  (Box - z on bottom, deoth goes up)
 		 * steps (sloped Box / series of Boxes?)
 		 * entity (Game Entity instance)
 		 * parallax (2d Poster / Tile?)
 		 */
 
-		[Inspectable(defaultValue="wall",enumeration="wall,floor,steps,entity,parallax")]
-		public var mapType:String = "wall";
+		[Inspectable(defaultValue="floor",enumeration="floor,wall,entity,parallax,steps")]
+		public var mapType:String = "floor";
 
 
 		/**
@@ -27,8 +27,8 @@ package {
 		 * Entity Type (Player, Ninja, Monk, Cauldron, LionStatue...)
 		 */
 
-		[Inspectable(defaultValue="Box",enumeration="Player,Ninja,Box,Circle")]
-		public var type:String = "Box";
+		[Inspectable(defaultValue="Custom",enumeration="Player,Ninja,Box,Circle,Custom")]
+		public var type:String = "Custom";
 
 
 		/**
