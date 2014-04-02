@@ -8,7 +8,8 @@
 			height: 0,
 			creditsTime: -1,
 			skipAfter: 3500,
-			overlay: ec.getImage('img/ui/credits.png')
+			overlay: ec.getImage('img/ui/credits.png'),
+			camera: {}
 		});
 
 		if (ec.debug > 1) {

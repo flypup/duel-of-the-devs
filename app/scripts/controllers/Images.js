@@ -8,6 +8,7 @@
 
 	ec.clearImages = function() {
 		_images = {};
+		_loaded = {};
 	};
 
 	ec.clearCache = function() {
@@ -36,6 +37,10 @@
 			return cached;
 		}
 
+		if (image.nodeName === 'CANVAS') {
+			return ec.appendCache(id, image);
+		}
+		
 		image = ec.getImage(image.src);
 
 		//image loading
