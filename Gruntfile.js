@@ -201,7 +201,7 @@ module.exports = function (grunt) {
                     expand: true,
                     dot: true,
                     cwd: '<%= yeoman.dist %>',
-                    dest: 'gh-pages',
+                    dest: '../game-off-2012-pages',
                     src: [
                         '**/*'
                     ]
@@ -213,7 +213,7 @@ module.exports = function (grunt) {
         compress: {
             dist: {
                 options: {
-                    archive: 'gh-pages/game.zip'
+                    archive: '../game-off-2012-pages/game.zip'
                 },
                 files: [
                     {expand: true, cwd: '<%= yeoman.dist %>/', src: ['**'], dest: 'game/'}
@@ -258,7 +258,6 @@ module.exports = function (grunt) {
         // 'imagemin',
         // 'htmlmin',
         'concat',
-        'cssmin',
         'uglify',
         'copy:dist',
         'usemin',
