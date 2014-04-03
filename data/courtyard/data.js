@@ -125,7 +125,7 @@ ec && ec.loadMap({
           "mDepth": 1,
           "mHeight": 2048,
           "mWidth": 2560,
-          "mZ": -1,
+          "mZ": 0,
           "notes": "ground",
           "shape": "box",
           "type": "Box"
@@ -1334,6 +1334,310 @@ ec && ec.loadMap({
               "fillImage": "elements/fills/rooftiles_64.png"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "guards west gate",
+      "group": "spawnpoints",
+      "elements": [
+        {
+          "name": "guard",
+          "x": 90,
+          "y": 2751,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 90,
+          "y": 2826.15,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 92.3,
+          "y": 2892.25,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 97.7,
+          "y": 2994.2,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        }
+      ]
+    },
+    {
+      "name": "guards east gate",
+      "group": "spawnpoints",
+      "elements": [
+        {
+          "name": "guard",
+          "x": 2434,
+          "y": 2731,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 2434,
+          "y": 2811,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 2436,
+          "y": 2888,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 2441,
+          "y": 2990,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        }
+      ]
+    },
+    {
+      "name": "18 bronze men",
+      "group": "spawnpoints",
+      "elements": [
+        {
+          "name": "guard",
+          "x": 971.75,
+          "y": 3451.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 967.75,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 967.75,
+          "y": 3662.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1091.8,
+          "y": 3447.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1095.8,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1095.8,
+          "y": 3658.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1223.8,
+          "y": 3451.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1227.8,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1223.8,
+          "y": 3658.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1351.85,
+          "y": 3451.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1347.85,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1351.85,
+          "y": 3658.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1471.85,
+          "y": 3451.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1471.85,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1471.85,
+          "y": 3658.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1593.9,
+          "y": 3451.85,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1593.9,
+          "y": 3556.95,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
+        },
+        {
+          "name": "guard",
+          "x": 1593.9,
+          "y": 3658.05,
+          "entityClass": "Player",
+          "frequency": 0,
+          "inputClass": "GoalBasedInput",
+          "poolSize": 0,
+          "z": 0,
+          "mapType": "spawn"
         }
       ]
     }

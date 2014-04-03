@@ -233,7 +233,7 @@ ec && ec.loadMap({
           "depth": 98,
           "regX": 58,
           "regY": 25.5,
-          "shape": "oval",
+          "shape": "circle",
           "shapes": [
             {
               "x": 0,
@@ -465,7 +465,7 @@ ec && ec.loadMap({
           "depth": 279,
           "regX": 58,
           "regY": 25.5,
-          "shape": "oval",
+          "shape": "circle",
           "shapes": [
             {
               "x": 0,
