@@ -122,7 +122,7 @@
 						clearTimeout(this.timeoutId);
 					}
 				},
-				noteGrainOn: function(i, pos, duration){
+				start: function(i, pos, duration){
 					i = 0;
 					var audio = this.audio;
 					audio.id = Date.now() + '';
@@ -148,7 +148,11 @@
 						}
 						if (duration > 0) {
 							self.timeoutId = setTimeout(function() {
-								self.noteOff(0);
+								if (self.stop) {
+									self.stop(0);
+								} else {
+									self.noteOff(0);
+								}
 							}, duration * 1000 - 16.7);
 						}
 						audio.removeEventListener('canplay', playthrough, false);
@@ -156,10 +160,7 @@
 					audio.addEventListener('canplay', playthrough, false);
 					audio.load();
 				},
-				noteOn: function(i){
-					this.noteGrainOn(i, 0, 0);
-				},
-				noteOff: function(i) {
+				stop: function(i) {
 					i = 0;
 					this.audio.pause();
 					this.disconnect();
@@ -315,10 +316,17 @@
 					var sprite = resource.sprites[spriteName];
 					var pos = sprite[0];
 					var duration = sprite[1];
-					//source.start(0, pos, buffer.duration);
-					source.noteGrainOn(0, pos, duration);
+					if (source.start) {
+						source.start(0, pos, duration);
+					} else {
+						source.noteGrainOn(0, pos, duration);
+					}
 				} else {
-					source.noteOn(0);
+					if (source.start) {
+						source.start(0);
+					} else {
+						source.noteOn(0);
+					}
 				}
 
 			} else {
@@ -329,7 +337,11 @@
 		pauseSound: function(resource) {
 			var source = this.sources[resource.name];
 			if (source && source.playbackState === source.PLAYING_STATE) {
-				source.noteOff(0);
+				if (source.stop) {
+					source.stop(0);
+				} else {
+					source.noteOff(0);
+				}
 			}
 		},
 
@@ -345,7 +357,11 @@
 					resumedSource.buffer = source.buffer;
 					resumedSource.loop = source.loop;
 					resumedSource.connect(this.gainNode);
-					resumedSource.noteOn(0);
+					if (resumedSource.start) {
+						resumedSource.start(0);
+					} else {
+						resumedSource.noteOn(0);
+					}
 				}
 			}
 		},
