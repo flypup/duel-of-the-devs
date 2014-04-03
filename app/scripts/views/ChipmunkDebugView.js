@@ -7,7 +7,7 @@
 	var v = cp.v;
 
 	var GRABABLE_MASK_BIT = 1<<31;
-	var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
+	// var NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
 
 	var PI2 = 2*Math.PI;
 
@@ -67,11 +67,11 @@
 		// HACK HACK HACK - its awful having this here, and its going to break when we
 		// have multiple demos open at the same time.
 		this.canvas.onmousemove = function(e) {
-			self.mouse = canvas2point(e.offsetX, e.offsetY);
+			self.mouse = canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY));
 			if (self.mouseDown && !self.mouseJoint) {
-				var mv = pv(e.offsetX - self.mouseDown.x, e.offsetY - self.mouseDown.y).mult(1/self.scale);
-				self.mouseDown.x = e.offsetX;
-				self.mouseDown.y = e.offsetY;
+				var mv = pv((e.offsetX || e.layerX) - self.mouseDown.x, (e.offsetY || e.layerY) - self.mouseDown.y).mult(1/self.scale);
+				self.mouseDown.x = (e.offsetX || e.layerX);
+				self.mouseDown.y = (e.offsetY || e.layerY);
 				self.orthoPos.add(mv);
 			}
 		};
@@ -81,7 +81,7 @@
 			radius = 10;
 			mass = 3;
 			body = space.addBody(new cp.Body(mass, cp.momentForCircle(mass, 0, radius, v(0, 0))));
-			body.setPos(canvas2point(e.offsetX, e.offsetY));
+			body.setPos(canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY)));
 			circle = space.addShape(new cp.CircleShape(body, radius, v(0, 0)));
 			circle.setElasticity(0.5);
 			return circle.setFriction(1);
@@ -93,8 +93,8 @@
 			var rightclick = e.which === 3; // or e.button === 2;
 
 			if(!rightclick && !self.mouseJoint) {
-				var point = canvas2point(e.offsetX, e.offsetY);
-				self.mouseDown = v(e.offsetX, e.offsetY);
+				var point = canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY));
+				self.mouseDown = v((e.offsetX || e.layerX), (e.offsetY || e.layerY));
 
 				var shape = space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
 				if(shape){
@@ -292,7 +292,8 @@
 	};
 
 	var drawLine = function drawLine(ctx, point2canvas, a, b) {
-		a = point2canvas(a); b = point2canvas(b);
+		a = point2canvas(a);
+		b = point2canvas(b);
 
 		ctx.beginPath();
 		ctx.moveTo(a.x, a.y);
@@ -319,7 +320,8 @@
 	];
 
 	var drawSpring = function drawSpring(ctx, scale, point2canvas, a, b) {
-		a = point2canvas(a); b = point2canvas(b);
+		a = point2canvas(a);
+		b = point2canvas(b);
 		
 		ctx.beginPath();
 		ctx.moveTo(a.x, a.y);
@@ -426,7 +428,7 @@
 	};
 
 	var randColor = function() {
-	  return Math.floor(Math.random() * 256);
+		return Math.floor(Math.random() * 256);
 	};
 
 	var styles = [];
@@ -437,18 +439,18 @@
 	//styles = ['rgba(255,0,0,0.5)', 'rgba(0,255,0,0.5)', 'rgba(0,0,255,0.5)'];
 
 	cp.Shape.prototype.style = function() {
-	  var body;
-	  if (this.sensor) {
-	    return 'rgba(255,255,255,0.1)';
-	  } else {
-	    body = this.body;
-	    if (body.isSleeping()) {
-	      return 'rgba(50,50,50,0.5)';
-	    } else if (body.nodeIdleTime > this.space.sleepTimeThreshold) {
-	      return 'rgba(170,170,170,0.5)';
-	    } else {
-	      return styles[this.hashid % styles.length];
-	    }
-	  }
+		var body;
+		if (this.sensor) {
+			return 'rgba(255,255,255,0.1)';
+		} else {
+			body = this.body;
+			if (body.isSleeping()) {
+				return 'rgba(50,50,50,0.5)';
+			} else if (body.nodeIdleTime > this.space.sleepTimeThreshold) {
+				return 'rgba(170,170,170,0.5)';
+			} else {
+				return styles[this.hashid % styles.length];
+			}
+		}
 	};
 })(window);

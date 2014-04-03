@@ -60,7 +60,7 @@
 		return null;
 	};
 	
-	proto.draw = function(context, delta) {
+	proto.draw = function(context) {
 		// TODO: Canvas2dOverlayView ------------
 		context.save();
 		
@@ -72,7 +72,7 @@
 
 		if (ec.core.paused()) {
 			// dim screen
-		    context.fillStyle = '#000000';
+			context.fillStyle = '#000000';
 			context.globalAlpha = 0.33;
 			context.fillRect(0, 0, this.width, this.height);
 			// TODO: Play Icon Sprite
@@ -84,16 +84,16 @@
 			context.lineTo(this.width -50, 55);
 			context.fill();
 
-        } else if (ec.touch) {
-        	// TODO: Pause Icon Sprite
+		} else if (ec.touch) {
+			// TODO: Pause Icon Sprite
 			context.fillStyle = '#ffffff';
 			context.globalAlpha = 0.8;
 			context.fillRect(this.width-43, 15, 10, 40);
 			context.fillRect(this.width-25, 15, 10, 40);
-        }
-        
-        overlay = ec.core.getOverlay();
-        if (overlay) {
+		}
+		
+		overlay = ec.core.getOverlay();
+		if (overlay) {
 			var scale = Math.min(this.height / overlay.height, this.width / overlay.width);
 			var x = this.width  - overlay.width * scale;
 			var y = this.height - overlay.height * scale;
@@ -101,8 +101,8 @@
 			if (ec.debug === 1) {ec.core.traceTime('drawImage overlay '+overlay.src);}
 			context.drawImage(overlay, x/2, y/2, overlay.width * scale, overlay.height * scale);
 			if (ec.debug === 1) {ec.core.traceTimeEnd('drawImage overlay '+overlay.src);}
-        }
-        context.restore();
+		}
+		context.restore();
 	};
 
 	proto.resize = function(width, height, ratio) {
@@ -169,7 +169,7 @@
 	};
 
 	// game loop
-	proto.poll = function(entity, delta) {
+	proto.poll = function() {
 		this.pollGamepads();
 	};
 
@@ -204,7 +204,7 @@
 		}
 	};
 
-	proto.mapCollision = function(entity, mapElement) {};
+	proto.mapCollision = function() {};
 	
 	// Touch / Mouse
 
@@ -261,8 +261,8 @@
 		//console.log(e.type, e);
 		var halfWidth  = e.target.width /2;
 		var halfHeight = e.target.height/2;
-		var x = e.offsetX - halfWidth;
-		var y = e.offsetY - halfHeight;
+		var x = (e.offsetX || e.layerX) - halfWidth;
+		var y = (e.offsetY || e.layerY) - halfHeight;
 		var camera = ec.core.getCamera();
 		//camera to player offset
 		y -= 64 * camera.scaleY;
@@ -272,7 +272,7 @@
 		self.setAxes2(x, y);
 	};
 
-	proto.mouseRightStickEnd = function(e) {
+	proto.mouseRightStickEnd = function() {
 		ec.unbind(ec.core.getViewDom(), 'mousemove', self.mouseRightStick, false);
 		self.setAxes2(0, 0);
 	};
