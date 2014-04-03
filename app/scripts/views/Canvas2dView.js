@@ -9,8 +9,7 @@
 		canvas.style.position = 'absolute';
 
 		if (/Firefox\//.test(navigator.userAgent)) {
-			var mozOpaque = document.createAttribute('moz-opaque');
-			canvas.setAttributeNode(mozOpaque);
+			canvas.setAttribute('moz-opaque', true);
 		}
 
 		this.context = canvas.getContext('2d');
