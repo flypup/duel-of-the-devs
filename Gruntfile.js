@@ -93,8 +93,7 @@ module.exports = function (grunt) {
                         '!<%= yeoman.dist %>/.git*'
                     ]
                 }]
-            },
-            server: []
+            }
         },
 
         // Make sure code styles are up to par and there are no obvious mistakes
@@ -229,28 +228,15 @@ module.exports = function (grunt) {
         }
 
         grunt.task.run([
-            'clean:server',
             'connect:livereload',
             'watch'
         ]);
     });
 
-    grunt.registerTask('server', function () {
-        grunt.task.run(['serve']);
-    });
-
-    grunt.registerTask('test', function(target) {
-        if (target !== 'watch') {
-            grunt.task.run([
-                'clean:server'
-            ]);
-        }
-
-        grunt.task.run([
-            'connect:test',
-            'mocha'
-        ]);
-    });
+    grunt.registerTask('test', [
+        'connect:test',
+        'mocha'
+    ]);
 
     grunt.registerTask('build', [
         'clean:dist',
