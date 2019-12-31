@@ -1,5 +1,5 @@
-import global from '../global.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
+import global from '../global';
+import { traceTime, traceTimeEnd } from '../logging';
 
 let images_ = {};
 let loaded_ = {};
@@ -33,7 +33,7 @@ export default class Images {
         id = id || image.src;
 
         //cached element
-        var cached = cache_[id];
+        const cached = cache_[id];
         if (cached) {
             return cached;
         }

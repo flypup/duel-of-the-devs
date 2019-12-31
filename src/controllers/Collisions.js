@@ -1,18 +1,13 @@
-import global from '../global.js';
-import Dot from '../models/Dot.js';
-
-//shape layers
-export const GRABABLE_MASK_BIT = 1 << 31;
-export const NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;
-
-//shape groups
-export const NULL = 0; // assign to shapes to stop callback handlers
-export const PLAYER = 1;
-export const PLAYER_HAND = 2;
-export const MONSTER = 10;
-export const PROJECTILE = 12;
-export const MAP = 50;
-export const PROP = 100;
+import global from '../global';
+import Dot from '../models/Dot';
+import {
+    MAP,
+    MONSTER,
+    PLAYER,
+    PLAYER_HAND,
+    PROJECTILE,
+    PROP
+} from '../constants/physics';
 
 // PRIVATE Collision Handlers
 

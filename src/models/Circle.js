@@ -1,6 +1,6 @@
-import global from '../global.js';
-import Entity from './Entity.js';
-import { PROP } from '../controllers/Collisions.js';
+import global from '../global';
+import Entity from './Entity';
+import { PROP } from '../constants/physics';
 
 export default class Circle extends Entity {
 

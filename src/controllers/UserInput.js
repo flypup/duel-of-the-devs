@@ -1,6 +1,6 @@
-import global from '../global.js';
-import { gamepads, touch } from '../env.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
+import global from '../global';
+import { gamepads, touch } from '../env';
+import { traceTime, traceTimeEnd } from '../logging';
 
 const KEY = {
     LEFT: 37,
@@ -95,7 +95,7 @@ export default class UserInput {
     }
 
     addButtonOverlay(overlay) {
-        var index = this.overlays.indexOf(overlay);
+        const index = this.overlays.indexOf(overlay);
         if (index < 0) {
             this.overlays.push(overlay);
             return overlay;
@@ -105,7 +105,7 @@ export default class UserInput {
     }
 
     removeButtonOverlay(overlay) {
-        var index = this.overlays.indexOf(overlay);
+        const index = this.overlays.indexOf(overlay);
         if (index > -1) {
             this.overlays.splice(index, 1);
             global.unbind(overlay, 'touchstart', overlay.touchStart, false);
@@ -120,8 +120,8 @@ export default class UserInput {
         // TODO: Canvas2dOverlayView ------------
         context.save();
 
-        var overlay;
-        for (var i = 0, len = this.overlays.length; i < len; i++) {
+        let overlay;
+        for (let i = 0, len = this.overlays.length; i < len; i++) {
             overlay = this.overlays[i];
             overlay.draw(context, this.width, this.height);
         }
@@ -150,9 +150,9 @@ export default class UserInput {
 
         overlay = global.core.getOverlay();
         if (overlay) {
-            var scale = Math.min(this.height / overlay.height, this.width / overlay.width);
-            var x = this.width - overlay.width * scale;
-            var y = this.height - overlay.height * scale;
+            const scale = Math.min(this.height / overlay.height, this.width / overlay.width);
+            const x = this.width - overlay.width * scale;
+            const y = this.height - overlay.height * scale;
             context.globalAlpha = 1;
             if (global.debug === 1) {
                 traceTime('drawImage overlay ' + overlay.src);
@@ -172,10 +172,10 @@ export default class UserInput {
     }
 
     testOverlays(type, data, id) {
-        var width = this.width / this.pixelRatio;
-        var height = this.height / this.pixelRatio;
-        for (var i = 0, len = this.overlays.length; i < len; i++) {
-            var overlay = this.overlays[i];
+        const width = this.width / this.pixelRatio;
+        const height = this.height / this.pixelRatio;
+        for (let i = 0, len = this.overlays.length; i < len; i++) {
+            const overlay = this.overlays[i];
             if (type === 'touchend') {
                 if (overlay === this.leftStickOverlay || overlay === this.rightStickOverlay) {
                     if (overlay['on' + type] !== undefined) {
@@ -244,7 +244,7 @@ export default class UserInput {
         }
 
         // gamepad
-        var gamepad = this.pollGamePad()[this.index];
+        const gamepad = this.pollGamePad()[this.index];
         if (gamepad && this.gamepadTime !== gamepad.timestamp) {
             this.gamepadTime = gamepad.timestamp || 1;
             //pause button
@@ -274,16 +274,16 @@ export default class UserInput {
         if (global.core.paused()) {
             return;
         }
-        for (var i = 0, len = e.changedTouches.length; i < len; i++) {
+        for (let i = 0, len = e.changedTouches.length; i < len; i++) {
             self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
         }
     }
 
     touchmove(e) {
         //console.log(e.type, e.changedTouches[0].identifier, e.changedTouches);
-        for (var i = 0, len = self.overlays.length; i < len; i++) {
-            var overlay = self.overlays[i];
-            for (var j = 0, jlen = e.changedTouches.length; j < jlen; j++) {
+        for (let i = 0, len = self.overlays.length; i < len; i++) {
+            const overlay = self.overlays[i];
+            for (let j = 0, jlen = e.changedTouches.length; j < jlen; j++) {
                 if (overlay.hasTouch(e.changedTouches[j].identifier)) {
                     overlay.updateTouch(e.changedTouches[j].identifier, e.changedTouches[j].clientX, e.changedTouches[j].clientY);
                     break;
@@ -301,7 +301,7 @@ export default class UserInput {
             global.core.resume();
             return;
         }
-        for (var i = 0, len = e.changedTouches.length; i < len; i++) {
+        for (let i = 0, len = e.changedTouches.length; i < len; i++) {
             self.testOverlays(e.type, e.changedTouches[i], e.changedTouches[i].identifier);
         }
     }
@@ -320,14 +320,14 @@ export default class UserInput {
 
     mouseRightStick(e) {
         //console.log(e.type, e);
-        var halfWidth = e.target.width / 2;
-        var halfHeight = e.target.height / 2;
-        var x = (e.offsetX || e.layerX) - halfWidth;
-        var y = (e.offsetY || e.layerY) - halfHeight;
-        var camera = global.core.getCamera();
+        const halfWidth = e.target.width / 2;
+        const halfHeight = e.target.height / 2;
+        let x = (e.offsetX || e.layerX) - halfWidth;
+        let y = (e.offsetY || e.layerY) - halfHeight;
+        const camera = global.core.getCamera();
         //camera to player offset
         y -= 64 * camera.scaleY;
-        var length = Math.sqrt(x * x + y * y);
+        const length = Math.sqrt(x * x + y * y);
         x /= length;
         y /= length;
         self.setAxes2(x, y);
@@ -378,7 +378,7 @@ export default class UserInput {
     }
 
     keyup(e) {
-        var keyCode = e.keyCode || e.which;
+        const keyCode = e.keyCode || e.which;
 
         keyPressed[keyCode] = false;
 
@@ -440,8 +440,8 @@ export default class UserInput {
     }
 
     updateAxes1FromKeys() {
-        var x = ((keyPressed[KEY.LEFT] || keyPressed[KEY.A]) ? -1 : 0) + ((keyPressed[KEY.RIGHT] || keyPressed[KEY.D]) ? 1 : 0);
-        var y = ((keyPressed[KEY.UP] || keyPressed[KEY.W]) ? -1 : 0) + ((keyPressed[KEY.DOWN] || keyPressed[KEY.S]) ? 1 : 0);
+        const x = ((keyPressed[KEY.LEFT] || keyPressed[KEY.A]) ? -1 : 0) + ((keyPressed[KEY.RIGHT] || keyPressed[KEY.D]) ? 1 : 0);
+        const y = ((keyPressed[KEY.UP] || keyPressed[KEY.W]) ? -1 : 0) + ((keyPressed[KEY.DOWN] || keyPressed[KEY.S]) ? 1 : 0);
         this.keyboardAxes1 = x || y;
         this.setAxes1(x, y);
     }
@@ -459,7 +459,7 @@ export default class UserInput {
     onGamepadConnect(e) {
         console.log('onGamepadConnect', e);
         if (e.gamepad.index === 0) {
-            var gamepad = e.gamepad;
+            const gamepad = e.gamepad;
             this.pollGamePad();
             {
                 return gamepad;

@@ -8,3 +8,4 @@ dev/report
 .tmp
 *.iml
 .idea
+app/index.js

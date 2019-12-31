@@ -1,7 +1,7 @@
-import global from '../global.js';
+import global from '../global';
 
 function testAudio() {
-    var audioTest = new Audio();
+    const audioTest = new Audio();
     return {
         m4a: !!(audioTest.canPlayType('audio/mp4') || audioTest.canPlayType('audio/x-m4a;') || audioTest.canPlayType('audio/aac;')).replace(/^no$/, ''),
         ogg: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, '')
@@ -12,9 +12,9 @@ function testAudio() {
 }
 
 function randomProperty(obj) {
-    var result;
-    var count = 0;
-    for (var prop in obj) {
+    let result;
+    let count = 0;
+    for (const prop in obj) {
         if (Math.random() < 1 / ++count) {
             result = prop;
         }
@@ -107,7 +107,7 @@ export default class Sound {
         this.buffers = {};
         this.sources = {};
 
-        var context;
+        let context;
         if (global.webaudio) {
             try {
                 if (window.AudioContext) {
@@ -146,14 +146,14 @@ export default class Sound {
                 },
                 start(i, pos, duration) {
                     i = 0;
-                    var audio = this.audio;
+                    const audio = this.audio;
                     audio.id = Date.now() + '';
                     audio.src = this.buffer.url;
                     audio.preload = 'auto';
                     audio.volume = this.gain.value * global.sound.volume;
                     audio.loop = this.loop;
                     this.playbackState = 1;
-                    var self = this;
+                    const self = this;
                     var ended = function () {
                         audio.removeEventListener('ended', ended, false);
                         audio.removeEventListener('paused', ended, false);
@@ -192,10 +192,10 @@ export default class Sound {
                 pool: [],
                 destination: null,
                 createBufferSource() {
-                    var source;
+                    let source;
                     if (this.pool.length > 8) {
-                        for (var i = this.pool.length; i-- > 0;) {
-                            var pooledSource = this.pool[i];
+                        for (let i = this.pool.length; i-- > 0;) {
+                            const pooledSource = this.pool[i];
                             if (pooledSource.playbackState === 3) {
                                 source = pooledSource;
                                 break;
@@ -222,7 +222,7 @@ export default class Sound {
             };
             // end Web Audio API Polyfill
         } else {
-            var createGainNode = context.createGainNode;
+            const createGainNode = context.createGainNode;
             if (createGainNode) {
                 context.createGain = createGainNode;
             }
@@ -255,20 +255,20 @@ export default class Sound {
     // global commands
     pause() {
         this.paused = true;
-        for (var prop in this.sources) {
+        for (const prop in this.sources) {
             this.pauseSound(this.sounds[prop]);
         }
     }
 
     resume() {
         this.paused = false;
-        for (var prop in this.sources) {
+        for (const prop in this.sources) {
             this.resumeSound(this.sounds[prop]);
         }
     }
 
     stop() {
-        for (var prop in this.sources) {
+        for (const prop in this.sources) {
             this.stopSound(this.sounds[prop]);
         }
     }
@@ -285,9 +285,9 @@ export default class Sound {
         if (this.paused || this.volume < 0) {
             return;
         }
-        var buffer = this.buffers[resource.name];
+        const buffer = this.buffers[resource.name];
         if (buffer) {
-            var source = this.sources[resource.name];
+            let source = this.sources[resource.name];
             if (source) {
                 // instance of sound may be playing, but we're going to play a new one
                 // TODO:  resource.maxInstances = 5
@@ -300,7 +300,7 @@ export default class Sound {
 
             source.loop = resource.loop;
 
-            var gainNode = this.gainNode;
+            let gainNode = this.gainNode;
             if (resource.volume !== undefined) {
                 gainNode = this.context.createGain();
                 gainNode.gain.value = resource.volume;
@@ -312,9 +312,9 @@ export default class Sound {
                 if (spriteName === '*') {
                     spriteName = randomProperty(resource.sprites);
                 }
-                var sprite = resource.sprites[spriteName];
-                var pos = sprite[0];
-                var duration = sprite[1];
+                const sprite = resource.sprites[spriteName];
+                const pos = sprite[0];
+                const duration = sprite[1];
                 if (source.start) {
                     source.start(0, pos, duration);
                 } else {
@@ -334,7 +334,7 @@ export default class Sound {
     }
 
     pauseSound(resource) {
-        var source = this.sources[resource.name];
+        const source = this.sources[resource.name];
         if (source && source.playbackState === source.PLAYING_STATE) {
             if (source.stop) {
                 source.stop(0);
@@ -349,10 +349,10 @@ export default class Sound {
         if (resource.sprites) {
             return;
         }
-        var source = this.sources[resource.name];
+        const source = this.sources[resource.name];
         if (source) {
             if (source.playbackState !== source.PLAYING_STATE) {
-                var resumedSource = this.sources[resource.name] = this.context.createBufferSource();
+                const resumedSource = this.sources[resource.name] = this.context.createBufferSource();
                 resumedSource.buffer = source.buffer;
                 resumedSource.loop = source.loop;
                 resumedSource.connect(this.gainNode);
@@ -366,7 +366,7 @@ export default class Sound {
     }
 
     stopSound(resource) {
-        var source = this.sources[resource.name];
+        let source = this.sources[resource.name];
         if (source) {
             this.pauseSound(resource);
             delete this.sources[resource.name];
@@ -378,9 +378,9 @@ export default class Sound {
     loadSound(resource, autoPlay) {
         if (!resource.state) {
 
-            var url = null;
-            for (var i = 0; i < resource.urls.length; i++) {
-                var ext = resource.urls[i].toLowerCase().match(/.+\.([^?]+)(\?|$)/)[1];
+            let url = null;
+            for (let i = 0; i < resource.urls.length; i++) {
+                const ext = resource.urls[i].toLowerCase().match(/.+\.([^?]+)(\?|$)/)[1];
                 if (this.codecs[ext]) {
                     url = resource.urls[i];
                     break;
@@ -389,7 +389,7 @@ export default class Sound {
 
             resource.state = 1;
 
-            var soundLoaded = (buffer) => {
+            const soundLoaded = (buffer) => {
                 this.buffers[resource.name] = buffer;
                 resource.state = 3;
                 if (autoPlay) {
@@ -399,13 +399,13 @@ export default class Sound {
 
             if (global.webaudio === false) {
                 // TODO: use polyfill
-                var fakeBuffer = {url: url};
+                const fakeBuffer = {url: url};
                 soundLoaded(fakeBuffer);
                 return;
             }
 
-            var context = this.context;
-            var request = new XMLHttpRequest();
+            const context = this.context;
+            const request = new XMLHttpRequest();
             request.open('GET', url, true);
             request.responseType = 'arraybuffer';
 

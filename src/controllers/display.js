@@ -1,5 +1,5 @@
-import global from '../global.js';
-import { mobile, ipad, standalone } from '../env.js';
+import global from '../global';
+import { mobile, ipad, standalone } from '../env';
 
 const document = window.document;
 

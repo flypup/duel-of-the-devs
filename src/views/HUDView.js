@@ -1,6 +1,6 @@
-import global from '../global.js';
-import SpriteSheets from './SpriteSheets.js';
-import Images from '../controllers/Images.js';
+import global from '../global';
+import SpriteSheets from './SpriteSheets';
+import Images from '../controllers/Images';
 
 function easeInElastic(x, t, b, c, d) {
     let s = 1.70158;
@@ -41,17 +41,17 @@ export default class HUDView {
 
         this.lifetime += delta;
 
-        var bgHeart = SpriteSheets.heart.getFrame(1);
-        var tpHeart = SpriteSheets.heart.getFrame(0);
+        const bgHeart = SpriteSheets.heart.getFrame(1);
+        const tpHeart = SpriteSheets.heart.getFrame(0);
         if (bgHeart) {
-            var x = 25 + bgHeart.regX;
-            var y = 20 + bgHeart.regY;
-            var rect = bgHeart.rect;
+            const x = 25 + bgHeart.regX;
+            const y = 20 + bgHeart.regY;
+            let rect = bgHeart.rect;
 
             context.save();
 
-            var beatMilliseconds = 1000 / this.rate;
-            var scale = (this.scale + easeInElastic(0, this.lifetime % beatMilliseconds, 1.0, 0.2, beatMilliseconds)) / 2;
+            const beatMilliseconds = 1000 / this.rate;
+            const scale = (this.scale + easeInElastic(0, this.lifetime % beatMilliseconds, 1.0, 0.2, beatMilliseconds)) / 2;
 
             context.setTransform(scale, 0, 0, scale, x, y);
             this.scale = scale;

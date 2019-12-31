@@ -27,6 +27,8 @@ module.exports = {
             "error",
             "unix"
         ],
+        "no-var": "error",
+        "prefer-const": "error",
         "quotes": [
             "error",
             "single"

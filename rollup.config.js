@@ -1,6 +1,8 @@
 
 export default {
-    entry: 'src/main.js',
-    dest: 'app/index.js',
-    format: 'iife'
-}
+    input: 'src/main.js',
+    output: {
+        file: 'app/index.js',
+        format: 'iife'
+    }
+};

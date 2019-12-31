@@ -1,6 +1,7 @@
-import polyfills from './polyfills.js';
-import global from './global.js';
-import Core from './core.js';
+import polyfills from './polyfills';
+import global from './global';
+import Core from './core';
+import { scene } from './scenes/ninja-infiltration';
 
 polyfills();
 
@@ -18,6 +19,8 @@ polyfills();
 
     global.bind(window.document, 'DOMContentLoaded', docReadyHandler, false);
     global.bind(window, 'load', docReadyHandler, false);
+
+    global.loadScene(scene);
 
     core.begin();
     //core.trackCustom(2, 'version', global.version, 3);

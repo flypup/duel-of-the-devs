@@ -1,4 +1,4 @@
-import global from '../global.js';
+import global from '../global';
 
 const direction = { x: 0, y: 0 };
 
@@ -58,7 +58,7 @@ export default class Animation {
 
         tween.complete = false;
         if (fromFrame.tween) {
-            var toFrame = keyframes[kindex + 1];
+            const toFrame = keyframes[kindex + 1];
             tween.to = toFrame;
 
             if (fromFrame.ease === 'inout') {
@@ -83,16 +83,16 @@ export default class Animation {
             return;
         }
 
-        var tween = this.tween;
-        var from = tween.from;
+        const tween = this.tween;
+        const from = tween.from;
 
-        var x = from.x;
-        var y = from.y;
-        var z = from.z;
+        let x = from.x;
+        let y = from.y;
+        let z = from.z;
 
         if (from.tween) {
-            var to = tween.to;
-            var tweenTime = time - tween.startTime;
+            const to = tween.to;
+            const tweenTime = time - tween.startTime;
             x = tween.fn(tweenTime, x, to.x - x, tween.duration);
             y = tween.fn(tweenTime, y, to.y - y, tween.duration);
             if (tweenTime < 0 || tweenTime > tween.duration) {
@@ -109,7 +109,7 @@ export default class Animation {
                     }
                     y += z;
                 }
-                var pos = this.actor.getPos();
+                const pos = this.actor.getPos();
                 this.actor.setPos(x, y, z);
                 // if (global.debug > 0) {
                 //	console.log(this.actor.type, 'pos', x, y, z, this.actor.mapCollision);
@@ -122,7 +122,7 @@ export default class Animation {
                 // TODO: entity actions (or spritesheet frames?)
                 this.actor.state = 'walking';
                 if (direction.x || direction.y) {
-                    var velocity = Math.sqrt(direction.x * direction.x + direction.y * direction.y) / 40000;
+                    const velocity = Math.sqrt(direction.x * direction.x + direction.y * direction.y) / 40000;
                     this.actor.walkCount += Math.max(0.15, velocity);
                 }
             }

@@ -1,7 +1,7 @@
-import global from '../global.js';
-import GoalBasedInput from './GoalBasedInput.js';
-import Formations from './Formations.js';
-import Dot from '../models/Dot.js';
+import global from '../global';
+import GoalBasedInput from './GoalBasedInput';
+import Formations from './Formations';
+import Dot from '../models/Dot';
 
 const cp = window.cp;
 const v = cp.v;
@@ -30,7 +30,7 @@ export default class EnemyInput extends GoalBasedInput {
         /** TASKS ***********************************/
 
         // TARGETING ----------------------
-        var targetNearestEnemy = function () {
+        const targetNearestEnemy = function () {
             // TODO: raycast or query line-of-sight to make this more difficult
             // TODO: search task
 
@@ -40,7 +40,7 @@ export default class EnemyInput extends GoalBasedInput {
             this.completeTask();
         };
 
-        var targetNearestEnemyPos = function () {
+        const targetNearestEnemyPos = function () {
             this.targetEntity = global.player;
             this.updateTargetPos();
             this.completeTask();
@@ -68,8 +68,8 @@ export default class EnemyInput extends GoalBasedInput {
                     return;
                 }
                 // from me to target
-                var pos = entity.getPos();
-                var direction = v.sub(this.targetPos, pos);
+                const pos = entity.getPos();
+                const direction = v.sub(this.targetPos, pos);
                 // See direction in world
                 // if (global.debug > 1) {
                 // 	var targetPos = v.lerpconst(pos, direction, distance);
@@ -79,7 +79,7 @@ export default class EnemyInput extends GoalBasedInput {
                     //reached target
                     //console.log('moved to target');
                     this.completeTask();
-                    var angle = this.targetAngle;
+                    const angle = this.targetAngle;
                     if (angle) {
                         entity.body.a = angle;
                     } else {
@@ -101,11 +101,11 @@ export default class EnemyInput extends GoalBasedInput {
                     this.completeTask();
                     return;
                 }
-                var pos = entity.getPos();
-                var direction = v.sub(pos, this.targetPos);
+                const pos = entity.getPos();
+                const direction = v.sub(pos, this.targetPos);
 
                 // TODO: validate ideal position / line query for obstacles
-                var targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
+                const targetPos = v.add(this.targetPos, v.clamp(direction, -distance));
                 // See direction in world
                 if (global.debug > 1) {
                     global.world.add(Dot.create(5000, 'rgba(0, 0, 0, 1.0)').setPos(targetPos.x, targetPos.y, pos.z));
@@ -125,10 +125,10 @@ export default class EnemyInput extends GoalBasedInput {
         }
 
         function findObstacles(targetPos, entity) {
-            var obstacles = global.world.queryStatic(targetPos, entity.radius);
+            const obstacles = global.world.queryStatic(targetPos, entity.radius);
             if (obstacles.length) {
-                for (var i = obstacles.length; i--;) {
-                    var obj = obstacles[i];
+                for (let i = obstacles.length; i--;) {
+                    const obj = obstacles[i];
                     // if top of obstacle is climable, next
                     if (!obj.isEntity && obj.z + obj.depth <= entity.z + entity.climbHeight) {
                         obstacles.splice(i, 1);
@@ -148,9 +148,9 @@ export default class EnemyInput extends GoalBasedInput {
                     return;
                 }
                 // from me to target
-                var pos = entity.getPos();
-                var direction = v.sub(this.targetPos, pos);
-                var targetPos, obstacles;
+                const pos = entity.getPos();
+                const direction = v.sub(this.targetPos, pos);
+                let targetPos, obstacles;
 
                 if (lengthSq(direction) > distance * distance + GOAL_DISTANCE * GOAL_DISTANCE) {
                     // far from target
@@ -219,7 +219,7 @@ export default class EnemyInput extends GoalBasedInput {
         // }
 
         function faceOffTarget(distance = GOAL_DISTANCE, speed = 22, frequency) {
-            var move = moveToDistance(distance);
+            const move = moveToDistance(distance);
             return function faceOffTargetTask(entity, delta) {
                 entity.speed = speed;
                 if (frequency) {
@@ -244,7 +244,7 @@ export default class EnemyInput extends GoalBasedInput {
         // }
 
         function shuv() {
-            var move = moveTo(0, 29);
+            const move = moveTo(0, 29);
             return function shuvTask() {
                 //console.log('shuv');
                 targetNearestEnemy.apply(this, arguments);
@@ -255,7 +255,7 @@ export default class EnemyInput extends GoalBasedInput {
         function kageNoBunshin(maxNumberOfClones, numberOfClonesToMake) {
             maxNumberOfClones = maxNumberOfClones || 7;
             numberOfClonesToMake = numberOfClonesToMake || maxNumberOfClones;
-            var makeClonesJutsu = makeClones(maxNumberOfClones, numberOfClonesToMake);
+            const makeClonesJutsu = makeClones(maxNumberOfClones, numberOfClonesToMake);
             return function kageNoBunshinTask(entity) {
                 if (entity.getClones().length >= maxNumberOfClones) {
                     this.completeTask();
@@ -293,21 +293,21 @@ export default class EnemyInput extends GoalBasedInput {
             minDistance = minDistance || 128;
             maxLength = maxLength || 100;
             return function clonesFormLineTask(entity) {
-                var shadowClones = entity.getClones();
-                var length = Math.min(maxLength, shadowClones.length);
+                const shadowClones = entity.getClones();
+                const length = Math.min(maxLength, shadowClones.length);
 
-                var targetPos = this.updateTargetPos();
-                var leaderPos = entity.getPos();
-                var formation = this.formations.lineupPositions(leaderPos, targetPos, length, spacing, minDistance);
+                const targetPos = this.updateTargetPos();
+                const leaderPos = entity.getPos();
+                const formation = this.formations.lineupPositions(leaderPos, targetPos, length, spacing, minDistance);
 
                 //validate formation positions
-                var positions = formation.positions;
-                var obstacles;
-                var targetX = targetPos ? targetPos.x : 0;
-                var targetY = targetPos ? targetPos.y : 0;
-                for (var i = positions.length; i--;) {
-                    var pos = positions[i];
-                    var formationPos = v(pos.x + targetX, pos.y + targetY);
+                const positions = formation.positions;
+                let obstacles;
+                const targetX = targetPos ? targetPos.x : 0;
+                const targetY = targetPos ? targetPos.y : 0;
+                for (let i = positions.length; i--;) {
+                    const pos = positions[i];
+                    const formationPos = v(pos.x + targetX, pos.y + targetY);
                     // validate formation postion
                     obstacles = findObstacles(formationPos, entity);
                     if (obstacles.length) {
@@ -321,7 +321,7 @@ export default class EnemyInput extends GoalBasedInput {
                     }
                 }
 
-                var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+                const solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
                 assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
                 //assignPositions(shadowClones, formation, length, targetPos);
 
@@ -333,22 +333,22 @@ export default class EnemyInput extends GoalBasedInput {
             radius = radius || 256;
             maxLength = maxLength || 100;
             return function clonesFormCircleWithLeaderTask(entity) {
-                var shadowClones = entity.getClones().slice(0);
+                const shadowClones = entity.getClones().slice(0);
                 shadowClones.unshift(entity);
-                var length = Math.min(maxLength, shadowClones.length);
+                const length = Math.min(maxLength, shadowClones.length);
 
-                var targetPos = this.updateTargetPos();
-                var leaderPos = entity.getPos();
-                var formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
+                const targetPos = this.updateTargetPos();
+                const leaderPos = entity.getPos();
+                const formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
 
                 //validate formation positions
-                var positions = formation.positions;
-                var obstacles;
-                var targetX = targetPos ? targetPos.x : 0;
-                var targetY = targetPos ? targetPos.y : 0;
-                for (var i = positions.length; i--;) {
-                    var pos = positions[i];
-                    var formationPos = v(pos.x + targetX, pos.y + targetY);
+                const positions = formation.positions;
+                let obstacles;
+                const targetX = targetPos ? targetPos.x : 0;
+                const targetY = targetPos ? targetPos.y : 0;
+                for (let i = positions.length; i--;) {
+                    const pos = positions[i];
+                    const formationPos = v(pos.x + targetX, pos.y + targetY);
                     // validate formation postion
                     obstacles = findObstacles(formationPos, entity);
                     if (obstacles.length) {
@@ -362,7 +362,7 @@ export default class EnemyInput extends GoalBasedInput {
                     }
                 }
 
-                var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+                const solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
                 assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
                 //assignPositions(shadowClones, formation, length, targetPos);
 
@@ -374,21 +374,21 @@ export default class EnemyInput extends GoalBasedInput {
             radius = radius || 256;
             maxLength = maxLength || 100;
             return function clonesFormCircleTask(entity) {
-                var shadowClones = entity.getClones();
-                var length = Math.min(maxLength, shadowClones.length);
+                const shadowClones = entity.getClones();
+                const length = Math.min(maxLength, shadowClones.length);
 
-                var targetPos = this.updateTargetPos();
-                var leaderPos = entity.getPos();
-                var formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
+                const targetPos = this.updateTargetPos();
+                const leaderPos = entity.getPos();
+                const formation = this.formations.circlePositions(leaderPos, targetPos, length, radius);
 
                 //validate formation positions
-                var positions = formation.positions;
-                var obstacles;
-                var targetX = targetPos ? targetPos.x : 0;
-                var targetY = targetPos ? targetPos.y : 0;
-                for (var i = positions.length; i--;) {
-                    var pos = positions[i];
-                    var formationPos = v(pos.x + targetX, pos.y + targetY);
+                const positions = formation.positions;
+                let obstacles;
+                const targetX = targetPos ? targetPos.x : 0;
+                const targetY = targetPos ? targetPos.y : 0;
+                for (let i = positions.length; i--;) {
+                    const pos = positions[i];
+                    const formationPos = v(pos.x + targetX, pos.y + targetY);
                     // validate formation postion
                     obstacles = findObstacles(formationPos, entity);
                     if (obstacles.length) {
@@ -402,7 +402,7 @@ export default class EnemyInput extends GoalBasedInput {
                     }
                 }
 
-                var solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
+                const solution = this.formations.updateUnitsHungarian(shadowClones, formation.positions, length);
                 assignPositionsUsingSolution(shadowClones, formation, solution, length, targetPos);
                 //assignPositions(shadowClones, formation, length, targetPos);
 
@@ -412,17 +412,17 @@ export default class EnemyInput extends GoalBasedInput {
 
         function assignPositionsUsingSolution(units, formation, solution, length, targetPos) {
             length = length || solution.length;
-            var targetX = targetPos ? targetPos.x : 0;
-            var targetY = targetPos ? targetPos.y : 0;
-            var positions = formation.positions;
-            var angles = formation.angles;
-            var obstacles;
-            for (var i = 0; i < length; i++) {
-                var pos = positions[solution[i][0]];
-                var angle = angles[solution[i][0]];
-                var entity = units[solution[i][1]];
-                var unitInput = entity.input;
-                var formationPos = unitInput.targetPos || v(0, 0);
+            const targetX = targetPos ? targetPos.x : 0;
+            const targetY = targetPos ? targetPos.y : 0;
+            const positions = formation.positions;
+            const angles = formation.angles;
+            let obstacles;
+            for (let i = 0; i < length; i++) {
+                const pos = positions[solution[i][0]];
+                const angle = angles[solution[i][0]];
+                const entity = units[solution[i][1]];
+                const unitInput = entity.input;
+                const formationPos = unitInput.targetPos || v(0, 0);
 
                 formationPos.x = pos.x + targetX;
                 formationPos.y = pos.y + targetY;
@@ -490,9 +490,9 @@ export default class EnemyInput extends GoalBasedInput {
             timeoutAfter = timeoutAfter || 1000;
             return function waitForClonesToFinishTask(entity) {
                 if (this.goal.taskTime < timeoutAfter) {
-                    var shadowClones = entity.getClones();
-                    for (var i = 0; i < shadowClones.length; i++) {
-                        var input = shadowClones[i].input;
+                    const shadowClones = entity.getClones();
+                    for (let i = 0; i < shadowClones.length; i++) {
+                        const input = shadowClones[i].input;
                         if (input.goal && !input.goal.met) {
                             return;
                         }
@@ -508,9 +508,9 @@ export default class EnemyInput extends GoalBasedInput {
                 //entity.throwStar(); // setButton()
 
                 //clones throw stars
-                var shadowClones = entity.getClones();
-                for (var i = 0; i < shadowClones.length; i++) {
-                    var input = shadowClones[i].input;
+                const shadowClones = entity.getClones();
+                for (let i = 0; i < shadowClones.length; i++) {
+                    const input = shadowClones[i].input;
                     if (input.goal && input.goal.met && input.goal.mapCollisions === 0) {
                         shadowClones[i].throwStar();
                     }
@@ -540,10 +540,10 @@ export default class EnemyInput extends GoalBasedInput {
 
         var GOAL_DISTANCE = 64;
         var AVOID_DISTANCE = 512;
-        var HIGH_SPEED = 43;
-        var UPDATE_FREQUENCY = 1000 / 10;
+        const HIGH_SPEED = 43;
+        const UPDATE_FREQUENCY = 1000 / 10;
 
-        var goalTree = {
+        const goalTree = {
             faceOff: {
                 name: 'face off',
                 tasks: [
@@ -672,7 +672,7 @@ export default class EnemyInput extends GoalBasedInput {
             if (!update) {
                 vect = global.copy({}, vect);
             }
-            var length = Math.sqrt(lengthSq(vect));
+            const length = Math.sqrt(lengthSq(vect));
             vect.x = vect.x / length;
             vect.y = vect.y / length;
             return vect;

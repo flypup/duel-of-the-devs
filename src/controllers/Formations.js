@@ -1,5 +1,5 @@
-import global from '../global.js';
-import { hungarianAlgortithm } from './Hungarian.js';
+import global from '../global';
+import { hungarianAlgortithm } from './Hungarian';
 
 const cp = window.cp;
 const v = cp.v;
@@ -17,8 +17,8 @@ export default class Formations {
     // FORMATIONS
 
     lineupPositions(headPos, targetPos, length, spacing = 96, minDistance = 128) {
-        var vector = v.sub(headPos, targetPos);
-        var distance = v.len(vector);
+        let vector = v.sub(headPos, targetPos);
+        const distance = v.len(vector);
         if (distance === 0) {
             vector.x = 0;
             vector.y = minDistance;
@@ -26,15 +26,15 @@ export default class Formations {
             vector = v.normalize(vector).mult(minDistance);
         }
 
-        var pos = v.mult(vector, 0.5);
-        var perp = v.normalize(v.perp(vector)).mult(spacing);
+        const pos = v.mult(vector, 0.5);
+        const perp = v.normalize(v.perp(vector)).mult(spacing);
         pos.sub(v.mult(perp, (length - 1) / 2));
 
-        var angle = Math.atan2(-vector.y, vector.x) + Math.PI;
+        const angle = Math.atan2(-vector.y, vector.x) + Math.PI;
 
-        var positions = this.getFormationVectors(length);
-        var angles = [];
-        for (var i = 0; i < length; i++) {
+        const positions = this.getFormationVectors(length);
+        const angles = [];
+        for (let i = 0; i < length; i++) {
             positions[i].x = pos.x;
             positions[i].y = pos.y;
             angles[i] = angle;
@@ -49,17 +49,17 @@ export default class Formations {
 
     circlePositions(headPos, targetPos, length, radius) {
         //radius = Math.max(v.len(v.sub(headPos, targetPos)), radius);
-        var pi = Math.PI;
-        var pi2 = 2 * pi;
+        const pi = Math.PI;
+        const pi2 = 2 * pi;
         //var circumference = pi2 * radius;
         //this.radialMove += 20 / circumference;
 
-        var positions = this.getFormationVectors(length);
-        var angles = [];
-        for (var i = 0; i < length; i++) {
-            var radian = pi2 * i / length;
+        const positions = this.getFormationVectors(length);
+        const angles = [];
+        for (let i = 0; i < length; i++) {
+            const radian = pi2 * i / length;
             //radian += this.radialMove;
-            var pos = v.forangle(radian).mult(radius);
+            const pos = v.forangle(radian).mult(radius);
             positions[i].x = pos.x;
             positions[i].y = pos.y;
             angles[i] = Math.atan2(-pos.y, pos.x) + pi;

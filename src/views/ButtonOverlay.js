@@ -1,4 +1,4 @@
-import global from '../global.js';
+import global from '../global';
 
 const defaults = {
     type: 'circle',
@@ -62,8 +62,8 @@ export default class ButtonOverlay {
         this.containerWidth = width;
         this.containerHeight = height;
         if (this.type === 'circle') {
-            var vx = x * ButtonOverlay.viewWidth / width - this.x;
-            var vy = y * ButtonOverlay.viewHeight / height - this.y;
+            const vx = x * ButtonOverlay.viewWidth / width - this.x;
+            const vy = y * ButtonOverlay.viewHeight / height - this.y;
             if (vx * vx + vy * vy <= this.radiusSq) {
                 return true;
             }
@@ -84,7 +84,7 @@ export default class ButtonOverlay {
     }
 
     removeTouch(id) {
-        var index = this.touches.indexOf(id);
+        const index = this.touches.indexOf(id);
         if (index > -1) {
             this.touches.splice(index, 1);
             this.vx =
@@ -97,10 +97,10 @@ export default class ButtonOverlay {
     }
 
     updateTouch(id, x, y) {
-        var vx = x * ButtonOverlay.viewWidth / this.containerWidth - this.x;
-        var vy = y * ButtonOverlay.viewHeight / this.containerHeight - this.y;
+        let vx = x * ButtonOverlay.viewWidth / this.containerWidth - this.x;
+        let vy = y * ButtonOverlay.viewHeight / this.containerHeight - this.y;
         //normalize and cap at 100 ?//
-        var length = Math.sqrt(vx * vx + vy * vy);
+        const length = Math.sqrt(vx * vx + vy * vy);
         if (Math.abs(vx) > Math.abs(vx * 100 / length)) {
             vx = vx * 100 / length;
         }

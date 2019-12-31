@@ -1,5 +1,5 @@
-import global from '../global.js';
-import Dot from '../models/Dot.js';
+import global from '../global';
+import Dot from '../models/Dot';
 
 export default class GoalBasedInput {
 
@@ -28,7 +28,7 @@ export default class GoalBasedInput {
         if (this.state === 'dead') {
             return;
         }
-        var goal = this.goal;
+        let goal = this.goal;
         if (!goal || goal.met) {
             goal = this.selectGoal();
             if (goal === null) {
@@ -36,7 +36,7 @@ export default class GoalBasedInput {
             }
             this.setGoal(goal);
         }
-        var task = goal.task;
+        let task = goal.task;
         if (!task || task.complete) {
             task = this.selectTask(goal, entity);
         }
@@ -81,7 +81,7 @@ export default class GoalBasedInput {
     }
 
     selectTask(goal/*, entity*/) {
-        var task, index;
+        let task, index;
         index = goal.taskIndex + 1;
         if (index >= goal.tasks.length) {
             goal.met = true;
@@ -107,13 +107,13 @@ export default class GoalBasedInput {
     }
 
     updateTargetPos() {
-        var targetPos = this.targetPos || cp.v(0, 0);
+        const targetPos = this.targetPos || cp.v(0, 0);
         if (!this.targetEntity) {
             console.error('update target: targetEntity not set');
             this.completeTask();
             return targetPos;
         }
-        var pos = this.targetEntity.getPos();
+        const pos = this.targetEntity.getPos();
         targetPos.x = pos.x;
         targetPos.y = pos.y;
         this.setTargetPos(targetPos, this.targetEntity.z, 'rgba(0, 200, 0, 1.0)');
@@ -124,7 +124,7 @@ export default class GoalBasedInput {
         this.targetPos = pos;
         // See target points in world
         if (global.debug > 1) {
-            var dot = Dot.create(5000, debugColor || 'rgba(0, 0, 255, 1.0)');
+            const dot = Dot.create(5000, debugColor || 'rgba(0, 0, 255, 1.0)');
             z = pos.z || z || 0;
             dot.setPos(pos.x, pos.y, z);
             global.world.add(dot);

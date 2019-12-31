@@ -1,6 +1,6 @@
-import global from '../global.js';
-import Entity from './Entity.js';
-import { PROJECTILE } from '../controllers/Collisions.js';
+import global from '../global';
+import Entity from './Entity';
+import { PROJECTILE } from '../constants/physics';
 
 export default class Projectile extends Entity {
 
@@ -35,7 +35,7 @@ export default class Projectile extends Entity {
     }
 
     setVelocity(vx, vy, vz) {
-        var body = this.body;
+        const body = this.body;
         body.vx = vx;
         body.vy = vy;
         this.vx = vx;
@@ -68,7 +68,7 @@ export default class Projectile extends Entity {
         }
 
         //linear z motion
-        var z = this.z + this.velZ * delta / 100;
+        const z = this.z + this.velZ * delta / 100;
         if (z < this.groundZ) {
             // floor collision
             //console.log('projectile hit floor');
@@ -91,9 +91,9 @@ export default class Projectile extends Entity {
             this.body.vx = this.vx;
             this.body.vy = this.vy;
         } else {
-            var gravity = -10;
-            var damping = 50 / (Math.abs(this.body.w) + 50);
-            var friction = damping;
+            const gravity = -10;
+            const damping = 50 / (Math.abs(this.body.w) + 50);
+            const friction = damping;
             this.velZ = this.velZ * damping + (gravity + friction * this.body.m_inv) * delta / 100;
         }
     }
@@ -104,7 +104,7 @@ export default class Projectile extends Entity {
             return true;
         }
 
-        var impenetrable = (entity.type === 'Circle'); // material === 'iron'
+        const impenetrable = (entity.type === 'Circle'); // material === 'iron'
         if (entity.type === 'Box' || impenetrable) {//Collisions.PROP)
             this.hitObstacle(16, impenetrable);
             return true;
@@ -117,7 +117,7 @@ export default class Projectile extends Entity {
     }
 
     hit(/*arbiter*/) {
-        var force = 10;
+        const force = 10;
         this.startFall(force);
     }
 

@@ -1,5 +1,5 @@
-import global from '../global.js';
-import { android, mobile, touch } from '../env.js';
+import global from '../global';
+import { android, mobile, touch } from '../env';
 
 const document = window.document;
 

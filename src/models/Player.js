@@ -1,7 +1,7 @@
-import global from '../global.js';
-import Entity from './Entity.js';
-import EmptyHand, { PASSIVE, PUSHING, PULLING } from './EmptyHand.js';
-import { PLAYER } from '../controllers/Collisions.js';
+import global from '../global';
+import Entity from './Entity';
+import EmptyHand, { PASSIVE, PUSHING, PULLING } from './EmptyHand';
+import { PLAYER } from '../constants/physics';
 
 const cp = window.cp;
 const v = cp.v;
@@ -196,7 +196,7 @@ export default class Player extends Entity {
         }
 
         this.input.poll(this, delta);
-        var pushpull = this.pushpull;
+        const pushpull = this.pushpull;
         pushpull.x = this.input.axes[2];
         pushpull.y = this.input.axes[3];
         if (this.input.buttons[0] > 0) {
@@ -230,7 +230,7 @@ export default class Player extends Entity {
         }
 
         if (this.attack.phase === PASSIVE || this.attack.phase === PULLING) {
-            var direction = this.direction;
+            const direction = this.direction;
             direction.x = this.input.axes[0];
             direction.y = this.input.axes[1];
             if (abs(direction.x) > 0.1 || abs(direction.y) > 0.1) {
@@ -256,7 +256,7 @@ export default class Player extends Entity {
                 // this.body.applyImpulse(direction, cp.vzero);
 
                 if (delta) {
-                    var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
+                    const velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
                     this.walkCount += Math.max(0.15, velocity);
                 }
 

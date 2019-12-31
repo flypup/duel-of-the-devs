@@ -1,13 +1,13 @@
 export default function () {
 
-    let document = window.document;
-    let navigator = window.navigator;
+    const document = window.document;
+    const navigator = window.navigator;
 
     function prefixed(str, obj) {
         return obj[str] || obj['webkit' + str] || obj['moz' + str] || obj['o' + str] || obj['ms' + str];
     }
 
-    var date = Date;
+    const date = Date;
     if (!date.now) {
         date.now = function () {
             return +(new date());
@@ -15,10 +15,10 @@ export default function () {
     }
 
     if (!window.requestAnimationFrame) {
-        var lastTime = 0;
+        let lastTime = 0;
         window.requestAnimationFrame = prefixed('RequestAnimationFrame', window) || function (callback) {
-            var currTime = date.now(), timeToCall = Math.max(0, 16 - ( currTime - lastTime ));
-            var id = window.setTimeout(function () {
+            const currTime = date.now(), timeToCall = Math.max(0, 16 - ( currTime - lastTime ));
+            const id = window.setTimeout(function () {
                 callback(currTime + timeToCall);
             }, timeToCall);
             lastTime = currTime + timeToCall;
@@ -40,7 +40,7 @@ export default function () {
                 return this._data[id] = String(val);
             },
             getItem: function (id) {
-                return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+                return Object.prototype.hasOwnProperty.call(this._data, id) ? this._data[id] : undefined;
             },
             removeItem: function (id) {
                 return delete this._data[id];
@@ -51,7 +51,7 @@ export default function () {
         };
     }
 
-    var body = document.body;
+    const body = document.body;
 
     if (!body.requestFullscreen) {
         body.requestFullscreen = body.requestFullscreen || prefixed('RequestFullScreen', body) || prefixed('RequestFullscreen', body);

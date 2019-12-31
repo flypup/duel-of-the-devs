@@ -1,6 +1,6 @@
-import global from '../global.js';
-import Images from '../controllers/Images.js';
-import { MAP, NOT_GRABABLE_MASK } from '../controllers/Collisions.js';
+import global from '../global';
+import Images from '../controllers/Images';
+import { MAP, NOT_GRABABLE_MASK } from '../constants/physics';
 
 const v = window.cp.v;
 
@@ -79,8 +79,8 @@ export default class MapElement {
         this.drawY -= this.z;
 
         if (this.children) {
-            for (var i = this.children.length; i-- > 0;) {
-                var child = this.children[i];
+            for (let i = this.children.length; i-- > 0;) {
+                const child = this.children[i];
                 child.drawX = child.x;
                 child.drawY = child.y;
             }
@@ -98,7 +98,7 @@ export default class MapElement {
             }
         }
         if (this.children) {
-            for (var i = this.children.length; i-- > 0;) {
+            for (let i = this.children.length; i-- > 0;) {
                 this.loadImages.apply(this.children[i], [path]);
             }
         }
@@ -112,8 +112,8 @@ export default class MapElement {
             return false;
         }
 
-        var mapBounds = this.getSortBounds();
-        var entityBounds = entity.getSortBounds();
+        const mapBounds = this.getSortBounds();
+        const entityBounds = entity.getSortBounds();
 
         // Entity is under Element
         if (entityBounds.top < this.z) {//mapBounds.bottom? or z?
@@ -154,10 +154,10 @@ export default class MapElement {
             // var point;
             var distance = Infinity,
                 bodyPos = entity.getBodyPos();
-            for (var i = this.shapes.length; i-- > 0;) {
-                var shape = this.shapes[i];
-                var cpShape = shape.cpShape;
-                var info = cpShape.nearestPointQuery(bodyPos);
+            for (let i = this.shapes.length; i-- > 0;) {
+                const shape = this.shapes[i];
+                const cpShape = shape.cpShape;
+                const info = cpShape.nearestPointQuery(bodyPos);
                 if (info.d < distance) {
                     distance = info.d;
                     // point = info.p;
@@ -188,8 +188,8 @@ export default class MapElement {
             return false;
         }
 
-        var mapBounds = this.getSortBounds();
-        var entityBounds = entity.getSortBounds();
+        const mapBounds = this.getSortBounds();
+        const entityBounds = entity.getSortBounds();
 
         // -- CHECK IF ENTITY IS BEHIND --
 
@@ -250,10 +250,10 @@ export default class MapElement {
                 var point,
                     distance = Infinity,
                     bodyPos = entity.getBodyPos();
-                for (var i = this.shapes.length; i-- > 0;) {
-                    var shape = this.shapes[i];
-                    var cpShape = shape.cpShape;
-                    var info = cpShape.nearestPointQuery(bodyPos);
+                for (let i = this.shapes.length; i-- > 0;) {
+                    const shape = this.shapes[i];
+                    const cpShape = shape.cpShape;
+                    const info = cpShape.nearestPointQuery(bodyPos);
                     if (info.d < distance) {
                         distance = info.d;
                         point = info.p;
@@ -295,10 +295,10 @@ export default class MapElement {
 
     // TODO: subclass mapType(s)
     assignShapes() {
-        var x = this.x;
-        var y = this.y;
+        const x = this.x;
+        const y = this.y;
         //var z = this.z;
-        var shapes = this.shapes,
+        let shapes = this.shapes,
             shape, verts, o, p, i, pos, radius;
 
         if (this.mapType === 'wall' || this.mapType === 'bounds') {
@@ -387,11 +387,11 @@ export default class MapElement {
         if (!assertSoft(w > 0 && h > 0, this + ' addBox width and height must be positive and non-zero')) {
             return;
         }
-        var body = new cp.Body(Infinity, Infinity);
+        const body = new cp.Body(Infinity, Infinity);
         body.nodeIdleTime = Infinity;
         v1.y = -v1.y;
         body.p = v1;
-        var shape = new cp.BoxShape(body, w, h);
+        const shape = new cp.BoxShape(body, w, h);
         shape.setElasticity(0);
         shape.setFriction(1);
         shape.setLayers(NOT_GRABABLE_MASK);
@@ -403,11 +403,11 @@ export default class MapElement {
         if (!assertSoft(r > 0, this + ' addCircle radius must be positive and non-zero')) {
             return;
         }
-        var body = new cp.Body(Infinity, Infinity);
+        const body = new cp.Body(Infinity, Infinity);
         body.nodeIdleTime = Infinity;
         v1.y = -v1.y;
         body.p = v1;
-        var shape = new cp.CircleShape(body, r, v(0, 0));
+        const shape = new cp.CircleShape(body, r, v(0, 0));
         shape.setElasticity(0);
         shape.setFriction(1);
         shape.setLayers(NOT_GRABABLE_MASK);
@@ -421,7 +421,7 @@ export default class MapElement {
         body.nodeIdleTime = Infinity;
         v1.y = -v1.y;
         body.p = v1;
-        var shape = new cp.PolyShape(body, verts, offset);
+        const shape = new cp.PolyShape(body, verts, offset);
         shape.setElasticity(0);
         shape.setFriction(1);
         shape.setLayers(NOT_GRABABLE_MASK);
@@ -435,7 +435,7 @@ export default class MapElement {
     }
 
     addLineSegment(v1, v2, mapShape) {
-        var shape = new cp.SegmentShape(this.space.staticBody, v1, v2, 0);
+        const shape = new cp.SegmentShape(this.space.staticBody, v1, v2, 0);
         shape.setElasticity(0);
         shape.setFriction(1);
         shape.setLayers(NOT_GRABABLE_MASK);
@@ -466,7 +466,7 @@ export default class MapElement {
 
     getTop(x, y) {
         if (this.mapType === 'steps') {
-            var top = this.z + this.depth * (this.y - y) / this.shapes[0].height;
+            const top = this.z + this.depth * (this.y - y) / this.shapes[0].height;
             return Math.min(this.z + this.depth, Math.max(0, top));
         }
         return this.z + this.depth;
@@ -482,9 +482,9 @@ export default class MapElement {
 
     // TODO: subclass mapType(s)
     getSortBounds() {
-        var bounds = this.sortBounds;
+        const bounds = this.sortBounds;
         if (!bounds.inited) {
-            var shapes = this.shapes;
+            const shapes = this.shapes;
             bounds.inited = true;
             bounds.bottom = this.z;
             bounds.top = this.z + this.depth;
@@ -503,18 +503,18 @@ export default class MapElement {
                 bounds.left = Infinity;
                 bounds.right = -Infinity;
 
-                var offsetX, offsetY;
-                for (var i = this.shapes.length; i-- > 0;) {
-                    var shape = this.shapes[i];
+                let offsetX, offsetY;
+                for (let i = this.shapes.length; i-- > 0;) {
+                    const shape = this.shapes[i];
                     offsetX = this.x - (this.regX - shape.x);
                     offsetY = this.y - (this.regY - shape.y);
                     if (this.mapType === 'floor') {
                         offsetY += this.depth;
                     }
-                    for (var p in shape.polygons) {
-                        var polys = shape.polygons[p];
-                        for (var j = polys.length; j-- > 0;) {
-                            var vert = polys[j];
+                    for (const p in shape.polygons) {
+                        const polys = shape.polygons[p];
+                        for (let j = polys.length; j-- > 0;) {
+                            const vert = polys[j];
                             bounds.front = Math.max(bounds.front, offsetY + vert[1]);
                             bounds.back = Math.min(bounds.back, offsetY + vert[1]);
                             bounds.left = Math.min(bounds.left, offsetX + vert[0]);
@@ -564,7 +564,7 @@ export default class MapElement {
 
             //test bounds:
             if (global.debug > 0) {
-                var dimension = bounds.right - bounds.left;
+                let dimension = bounds.right - bounds.left;
                 if (!assertSoft(dimension > 0, this + ' bounds width ' + dimension)) {
                     throw('bounds width should be greater than 0');
                 }

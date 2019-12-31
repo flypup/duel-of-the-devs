@@ -1,6 +1,6 @@
-import global from '../global.js';
-import Canvas2dMapView from './Canvas2dMapView.js';
-import Canvas2dEntityView from './Canvas2dEntityView.js';
+import global from '../global';
+import Canvas2dMapView from './Canvas2dMapView';
+import Canvas2dEntityView from './Canvas2dEntityView';
 
 const errors = {};
 
@@ -47,7 +47,7 @@ export default class Canvas2dWorldView {
     }
 
     updateViewport(camera) {
-        var viewport = this.viewport;
+        const viewport = this.viewport;
         viewport.l = camera.x;
         viewport.t = camera.y;
         viewport.r = viewport.l + camera.width / camera.scaleX;
@@ -70,11 +70,11 @@ export default class Canvas2dWorldView {
         context.setTransform(this.camera.scaleX, 0, 0, this.camera.scaleY, -this.camera.x * this.camera.scaleX, -this.camera.y * this.camera.scaleY);
 
         // loop through layers and create a 2d array of entitiesInLayers
-        var entities = this.world.entities.slice();
-        var layers = this.mapRenderer.getLayers();
-        var i, j, len;
-        var entitiesInLayers = this.entitiesInLayers;
-        var layerEntities;
+        const entities = this.world.entities.slice();
+        const layers = this.mapRenderer.getLayers();
+        let i, j, len;
+        const entitiesInLayers = this.entitiesInLayers;
+        let layerEntities;
 
         // entities that do not have any map collisions
         for (i = layers.length; i-- > 0;) {
@@ -85,7 +85,7 @@ export default class Canvas2dWorldView {
         }
         // test
         if (entities.length) {
-            var msg = entities.length + ' elements did not get placed in a layer';
+            const msg = entities.length + ' elements did not get placed in a layer';
             if (!errors[msg]) {
                 console.error(msg);
                 errors[msg] = 1;
@@ -96,7 +96,7 @@ export default class Canvas2dWorldView {
             entities.length = 0;
         }
 
-        var viewport = this.updateViewport(this.camera);
+        const viewport = this.updateViewport(this.camera);
         for (i = 0, len = layers.length; i < len; i++) {
             this.mapRenderer.drawLayer(layers[i], context, viewport, delta);
 
@@ -128,7 +128,7 @@ export default class Canvas2dWorldView {
 
     zoom(amount) {
         // TODO: use device screen height for native pixel scale
-        var verticalPixels = (global.height <= 640) ? 640 : 720;
+        const verticalPixels = (global.height <= 640) ? 640 : 720;
         this.camera.zoom = amount;
         amount = amount * global.height / verticalPixels;
         this.camera.scaleX = this.camera.pixelRatio * amount;

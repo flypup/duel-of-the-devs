@@ -1,6 +1,4 @@
-import global from '../../../src/global.js';
-
-global.loadScene({
+export const scene = {
     name: 'enter_the_ninja',
     map: 'courtyard',
     fps: 24,
@@ -542,4 +540,4 @@ global.loadScene({
             ]
         }
     ]
-});
+};

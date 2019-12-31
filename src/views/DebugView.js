@@ -1,4 +1,4 @@
-import global, { TIME_STEP } from '../global.js';
+import global, { TIME_STEP } from '../global';
 
 const Stats = window.Stats;
 
@@ -37,10 +37,10 @@ export default class DebugView {
     }
 
     addGui(settings) {
-        var gui = new dat.GUI();
-        var folder = gui;
-        for (var i = 0; i < settings.length; i++) {
-            var object = settings[i];
+        const gui = new dat.GUI();
+        let folder = gui;
+        for (let i = 0; i < settings.length; i++) {
+            const object = settings[i];
             if (object.remember) {
                 gui.remember(object.target);
             }
@@ -48,10 +48,10 @@ export default class DebugView {
                 folder = gui.addFolder(object.name);
                 folder.open();
             }
-            for (var j = 0; j < object.props.length; j++) {
-                var prop = object.props[j];
-                var name = prop;
-                var params = null;
+            for (let j = 0; j < object.props.length; j++) {
+                const prop = object.props[j];
+                let name = prop;
+                let params = null;
                 var controller;
                 if (prop.name) {
                     params = prop.params;

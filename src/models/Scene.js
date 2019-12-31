@@ -1,5 +1,5 @@
-import global from '../global.js';
-import Animation from './Animation.js';
+import global from '../global';
+import Animation from './Animation';
 
 export default class Scene {
 
@@ -38,8 +38,8 @@ export default class Scene {
     }
 
     step(delta) {
-        var i;
-        var animation;
+        let i;
+        let animation;
         delta /= 1000;
         this.time += delta;
         if (this.time > this.duration) {

@@ -1,5 +1,5 @@
-import global from '../global.js';
-import Dot from './Dot.js';
+import global from '../global';
+import Dot from './Dot';
 
 const RADIUS = 50;
 
@@ -41,7 +41,7 @@ export default class Puff extends Dot {
     }
 
     track(entity) {
-        var pos = entity.getPos();
+        const pos = entity.getPos();
         this.setPos(pos.x, pos.y + 1, pos.z + 1);
         //this.setVelocity(entity.body.vx, entity.body.vy, 0);
     }

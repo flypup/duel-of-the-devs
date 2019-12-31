@@ -1,9 +1,9 @@
-import global from '../global.js';
-import Entity from './Entity.js';
-import EmptyHand, { PASSIVE, PULLING } from './EmptyHand.js';
-import Projectile from './Projectile.js';
-import Puff from './Puff.js';
-import { MONSTER } from '../controllers/Collisions';
+import global from '../global';
+import Entity from './Entity';
+import EmptyHand, { PASSIVE, PULLING } from './EmptyHand';
+import Projectile from './Projectile';
+import Puff from './Puff';
+import { MONSTER } from '../constants/physics';
 import ShadowCloneInput from '../controllers/ShadowCloneInput';
 
 const cp = window.cp;
@@ -19,8 +19,8 @@ export default class Ninja extends Entity {
         super();
         this.groupId = Entity.groupId++;
 
-        var radius = 32;
-        var mass = 5;
+        const radius = 32;
+        const mass = 5;
         this.assignCircleShape(radius, mass);
 
         this.shape.setElasticity(0);
@@ -76,8 +76,8 @@ export default class Ninja extends Entity {
             return;
         }
         // use ShadowClone class and prototype or something cool to inherit stuff
-        var pos = this.getPos();
-        var shadowClone = new Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ShadowCloneInput());
+        const pos = this.getPos();
+        const shadowClone = new Ninja().setPos(pos.x, pos.y, pos.z).setInput(new ShadowCloneInput());
         shadowClone.isShadowClone = true;
         shadowClone.master = this;
         if (!this.shadowClones) {
@@ -91,11 +91,11 @@ export default class Ninja extends Entity {
 
     getClones() {
         // get number of shadow clones, clear 'dead' clone refs
-        var shadowClones = this.shadowClones;
+        let shadowClones = this.shadowClones;
         if (!shadowClones) {
             shadowClones = this.shadowClones = [];
         }
-        for (var i = shadowClones.length; i-- > 0;) {
+        for (let i = shadowClones.length; i-- > 0;) {
             // TODO: check if they've been removed
             if (shadowClones[i].state === 'dead') {
                 shadowClones.splice(i, 1);
@@ -113,12 +113,12 @@ export default class Ninja extends Entity {
 
     throwStar() {
         if (this.state !== 'hit' && this.state !== 'dead') {
-            var pos = this.getPos();
-            var angle = this.body.a;
-            var velocity = 800;
-            var angleVelocity = 30;
+            const pos = this.getPos();
+            const angle = this.body.a;
+            const velocity = 800;
+            const angleVelocity = 30;
 
-            var throwingStar = new Projectile()
+            const throwingStar = new Projectile()
                 .setPos(pos.x, pos.y, pos.z + 64)
                 .setAngle(angle, angleVelocity)
                 .setVelocity(Math.cos(angle) * velocity, Math.sin(angle) * velocity, 0);
@@ -152,7 +152,7 @@ export default class Ninja extends Entity {
     }
 
     hit(arbiter) {
-        var energy = (arbiter && arbiter.totalKE()) || 1000;
+        const energy = (arbiter && arbiter.totalKE()) || 1000;
         //console.log('HIT', this, 'KE', energy);
         if (energy > 0 && this.state !== 'hit' && this.state !== 'dead') {
             //ignore this collisions
@@ -160,7 +160,7 @@ export default class Ninja extends Entity {
                 arbiter.ignore();
             }
 
-            var damage = 10; // TODO: relative damage
+            const damage = 10; // TODO: relative damage
 
             this.state = 'hit';
             if (this.isShadowClone) {
@@ -257,7 +257,7 @@ export default class Ninja extends Entity {
                 // this.body.applyImpulse(direction, cp.vzero);
 
                 if (delta) {
-                    var velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
+                    const velocity = Math.sqrt(this.body.vx * this.body.vx + this.body.vy * this.body.vy) * delta / 36000;
                     this.walkCount += Math.max(0.15, velocity);
                 }
 

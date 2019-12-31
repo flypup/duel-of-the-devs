@@ -1,13 +1,13 @@
-import global from '../global.js';
-import { resizeDisplay } from '../controllers/display.js';
-import Box from '../models/Box.js';
-import Circle from '../models/Circle.js';
-import EmptyHand from '../models/EmptyHand.js';
-import Ninja from '../models/Ninja.js';
-import Player from '../models/Player.js';
-import Projectile from '../models/Projectile.js';
-import Puff from '../models/Puff.js';
-import MapElement from '../models/MapElement.js';
+import global from '../global';
+import { resizeDisplay } from '../controllers/display';
+import Box from '../models/Box';
+import Circle from '../models/Circle';
+import EmptyHand from '../models/EmptyHand';
+import Ninja from '../models/Ninja';
+import Player from '../models/Player';
+import Projectile from '../models/Projectile';
+import Puff from '../models/Puff';
+import MapElement from '../models/MapElement';
 
 function v3(x, y, z) {
     return new THREE.Vector3(x, y, z);
@@ -22,7 +22,7 @@ export default class ThreeJsWorldView {
         //var halfwidth = Math.floor(320 * global.width / global.height);
         this.datGUIs = [];
         this.lookV3 = v3(0, 0, 0);
-        var camera =
+        const camera =
         this.camera = new THREE.PerspectiveCamera(35, global.width / global.height, 1, 10000);
         //this.camera = new THREE.OrthographicCamera( -halfwidth, halfwidth, 320, -320, -1000, 5000 );
         //this.camera = new THREE.CombinedCamera( halfwidth*2, halfwidth*2, 75, 1, 10000, -1000, 5000 );
@@ -30,10 +30,10 @@ export default class ThreeJsWorldView {
         camera.up = v3(0, 1, 0);
         camera.lookAt(this.lookV3);
 
-        var scene =
+        const scene =
         this.scene = new THREE.Scene();
 
-        var light = new THREE.DirectionalLight(0xffffff);
+        const light = new THREE.DirectionalLight(0xffffff);
         light.position.set(0, 1, 1);
         light.position.normalize();
         scene.add(light);
@@ -50,7 +50,7 @@ export default class ThreeJsWorldView {
         // texture.wrapT = THREE.RepeatWrapping;
         // texture.repeat.x = 10;
         // texture.repeat.y = 10;
-        var floor = new THREE.Mesh(new THREE.PlaneGeometry(2560, 4096, 40, 64), new THREE.MeshBasicMaterial({
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(2560, 4096, 40, 64), new THREE.MeshBasicMaterial({
             color: 0x666666,
             // map: texture,
             wireframe: true
@@ -83,7 +83,7 @@ export default class ThreeJsWorldView {
         // 	scene.add( particle );
         // }
 
-        var renderer;
+        let renderer;
         try {
             renderer = this.renderer = global.webgl ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
             global.webgl = renderer instanceof THREE.WebGLRenderer;
@@ -104,12 +104,12 @@ export default class ThreeJsWorldView {
         renderer.domElement.style.top = '0px';
         this.resize();
 
-        var materials = {};
-        var shapes = this.shapes = [];
+        const materials = {};
+        const shapes = this.shapes = [];
         this.updateShapeView = (function (scene) {
-            var getMaterial = function (name, color, wireframeOnly) {
+            const getMaterial = function (name, color, wireframeOnly) {
                 if (!materials[name]) {
-                    var multi = [new THREE.MeshBasicMaterial({color: color, wireframe: true, transparent: true})];
+                    const multi = [new THREE.MeshBasicMaterial({color: color, wireframe: true, transparent: true})];
                     if (!wireframeOnly) {
                         multi.unshift(new THREE.MeshLambertMaterial({color: color}));
                     }
@@ -118,7 +118,7 @@ export default class ThreeJsWorldView {
                 }
                 return materials[name];
             };
-            var getEntityMaterial = function (entity) {
+            const getEntityMaterial = function (entity) {
                 if (entity) {
                     if (entity instanceof Player) {
                         return getMaterial('player', 0xff8800);
@@ -159,20 +159,20 @@ export default class ThreeJsWorldView {
                 return getMaterial('other', 0xff0000);
             };
 
-            var getShapeObject3d = function (shape, depth, material) {
-                var geometry;
-                var xRotation = 0;
+            const getShapeObject3d = function (shape, depth, material) {
+                let geometry;
+                let xRotation = 0;
 
                 if (shape instanceof cp.PolyShape) {
-                    var vects = [], vert;
-                    for (var i = 0, len = shape.getNumVerts(); i < len; i++) {
+                    let vects = [], vert;
+                    for (let i = 0, len = shape.getNumVerts(); i < len; i++) {
                         vert = shape.getVert(i);
                         vects.push(new THREE.Vector2(vert.x, -vert.y));
                     }
                     vert = shape.getVert(0);
                     vects.push(new THREE.Vector2(vert.x, -vert.y));
 
-                    var tshape = new THREE.Shape(vects);
+                    const tshape = new THREE.Shape(vects);
                     geometry = tshape.extrude({amount: depth, bevelEnabled: false, steps: 1});
                     xRotation = Math.PI / 2;
 
@@ -185,18 +185,18 @@ export default class ThreeJsWorldView {
                     return;
                 }
 
-                var mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, material);//new THREE.Mesh( geometry, material );
+                const mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, material);//new THREE.Mesh( geometry, material );
                 mesh.rotation.x = xRotation;
                 return mesh;
             };
 
             return function (shape) {
-                var body = shape.body;
-                var entity = body.userData && body.userData.parent;
-                var depth = entity ? entity.depth : 1;
-                var mesh = shape.mesh;
+                const body = shape.body;
+                const entity = body.userData && body.userData.parent;
+                const depth = entity ? entity.depth : 1;
+                let mesh = shape.mesh;
                 if (!mesh) {
-                    var material = getEntityMaterial(entity);
+                    const material = getEntityMaterial(entity);
                     shape.mesh = mesh = getShapeObject3d(shape, depth, material);
                     //console.log('new mesh', entity);
                 }
@@ -206,10 +206,10 @@ export default class ThreeJsWorldView {
                 }
 
                 if (mesh && mesh !== -1) {
-                    var zOffset = ((mesh.geometry || mesh.children[0].geometry) instanceof THREE.ExtrudeGeometry) ? depth : depth / 2;
+                    const zOffset = ((mesh.geometry || mesh.children[0].geometry) instanceof THREE.ExtrudeGeometry) ? depth : depth / 2;
                     if (entity && entity.isEntity) {
                         // TODO: is it in the world?
-                        var pos = entity.getPos();
+                        const pos = entity.getPos();
                         mesh.position.set(pos.x, pos.z + zOffset, pos.y);
                         mesh.rotation.y = body.a;
                     } else if (entity instanceof MapElement) {
@@ -247,8 +247,8 @@ export default class ThreeJsWorldView {
             //redraw = false;
         }
         // remove shapes no longer in the world
-        for (var i = this.shapes.length; i-- > 0;) {
-            var shape = this.shapes[i];
+        for (let i = this.shapes.length; i-- > 0;) {
+            const shape = this.shapes[i];
             if (shape.mesh && !world.space.containsShape(shape)) {
                 //remove mesh and shape
                 this.scene.remove(shape.mesh);
@@ -307,16 +307,16 @@ export default class ThreeJsWorldView {
 
     debugGui(debugView) {
         this.removeDebugGuis();
-        var view = this;
-        var updateMatrix = function () {
+        const view = this;
+        const updateMatrix = function () {
             view.camera.updateProjectionMatrix();
             view.renderer.render(view.scene, view.camera);
         };
-        var lookAtCenter = function () {//e) {//e.object, e.property
+        const lookAtCenter = function () {//e) {//e.object, e.property
             view.camera.lookAt(view.lookV3);
             updateMatrix();
         };
-        var cameraProps = [];
+        const cameraProps = [];
         if (view.camera instanceof THREE.PerspectiveCamera || view.camera instanceof THREE.CombinedCamera) {
             cameraProps.push({name: 'fov', listen: true, onChange: updateMatrix});
             cameraProps.push({name: 'aspect', listen: true, onChange: updateMatrix});
@@ -366,7 +366,7 @@ export default class ThreeJsWorldView {
 
     removeDebugGuis() {
         while (this.datGUIs.length) {
-            var datGui = this.datGUIs.pop();
+            const datGui = this.datGUIs.pop();
             datGui.destroy();
         }
     }

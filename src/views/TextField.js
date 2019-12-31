@@ -1,5 +1,5 @@
-import global from '../global.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
+import global from '../global';
+import { traceTime, traceTimeEnd } from '../logging';
 
 export default class TextField {
 
@@ -84,9 +84,9 @@ export default class TextField {
             traceTime('fillText TextField ' + this.text.length);
         }
         if (this.multiline) {
-            var lines = this.text.split(/[\r\n]/);
-            var y = this.lineHeight;
-            for (var i = 0; i < lines.length; i++) {
+            const lines = this.text.split(/[\r\n]/);
+            let y = this.lineHeight;
+            for (let i = 0; i < lines.length; i++) {
                 this.context.fillText(lines[i], 0, y, this.width);
                 y += this.lineHeight;
             }

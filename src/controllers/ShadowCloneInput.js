@@ -1,5 +1,5 @@
-import global from '../global.js';
-import GoalBasedInput from './GoalBasedInput.js';
+import global from '../global';
+import GoalBasedInput from './GoalBasedInput';
 
 export default class ShadowCloneInput extends GoalBasedInput {
 

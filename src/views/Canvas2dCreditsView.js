@@ -1,5 +1,5 @@
-import global from '../global.js';
-import Images from '../controllers/Images.js';
+import global from '../global';
+import Images from '../controllers/Images';
 
 // TODO: Extend 2d Overlay/Layer View
 
@@ -33,15 +33,15 @@ export default class Canvas2dCreditsView {
         context.globalAlpha = Math.min(1, context.globalAlpha + 0.1);
 
         this.creditsTime += delta;
-        var scrollPx = Math.floor(this.creditsTime * 24 / 1000) * 4;
+        const scrollPx = Math.floor(this.creditsTime * 24 / 1000) * 4;
 
-        var overlay = this.overlay;
+        const overlay = this.overlay;
         if (overlay.height) {
-            var scale = this.height / overlay.height;
+            const scale = this.height / overlay.height;
 
-            var x = this.width - overlay.width * scale;
+            const x = this.width - overlay.width * scale;
             //var y = this.height - overlay.height * scale;
-            var y = Math.max(-258 * scale, this.height - scrollPx);
+            const y = Math.max(-258 * scale, this.height - scrollPx);
 
             context.drawImage(overlay, x / 2, y, overlay.width * scale, overlay.height * scale);
         }

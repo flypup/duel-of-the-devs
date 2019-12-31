@@ -1,6 +1,5 @@
-import global from '../global.js';
-import TextField from './TextField.js';
-import Canvas2dView from './Canvas2dView';
+import global from '../global';
+import TextField from './TextField';
 
 const document = window.document;
 
@@ -34,7 +33,7 @@ export default class ChipmunkDebugView {
     constructor(space) {
         this.setSpace(space);
 
-        var canvas = this.canvas = document.createElement('canvas');
+        const canvas = this.canvas = document.createElement('canvas');
         canvas.style.position = 'absolute';
         this.ctx = canvas.getContext('2d');
         this.resize();
@@ -49,17 +48,17 @@ export default class ChipmunkDebugView {
         this.mouseJoint = null;
         this.mouse = v(0, 0);
 
-        var maxWidth = this.width - 10;
-        var getY = verticalSpacer(5, 15);
-        var infoFields = this.infoFields = [];
-        var fieldCount = 7;
-        for (var i = fieldCount; i--;) {
+        const maxWidth = this.width - 10;
+        const getY = verticalSpacer(5, 15);
+        const infoFields = this.infoFields = [];
+        const fieldCount = 7;
+        for (let i = fieldCount; i--;) {
             infoFields.push(new TextField(this.ctx, 5, getY(), maxWidth));
         }
         infoFields[fieldCount - 1].setPos(5, this.height - 50);
 
-        var self = this;
-        var canvas2point = this.canvas2point = function (x, y) {
+        const self = this;
+        const canvas2point = this.canvas2point = function (x, y) {
             return v(x / self.scale - self.orthoPos.x, self.orthoPos.y - y / self.scale);
         };
 
@@ -72,7 +71,7 @@ export default class ChipmunkDebugView {
         this.canvas.onmousemove = function (e) {
             self.mouse = canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY));
             if (self.mouseDown && !self.mouseJoint) {
-                var mv = pv((e.offsetX || e.layerX) - self.mouseDown.x, (e.offsetY || e.layerY) - self.mouseDown.y).mult(1 / self.scale);
+                const mv = pv((e.offsetX || e.layerX) - self.mouseDown.x, (e.offsetY || e.layerY) - self.mouseDown.y).mult(1 / self.scale);
                 self.mouseDown.x = (e.offsetX || e.layerX);
                 self.mouseDown.y = (e.offsetY || e.layerY);
                 self.orthoPos.add(mv);
@@ -90,20 +89,20 @@ export default class ChipmunkDebugView {
          return circle.setFriction(1);
          };*/
 
-        var mouseBody = this.mouseBody = new cp.Body(Infinity, Infinity);
+        const mouseBody = this.mouseBody = new cp.Body(Infinity, Infinity);
 
         this.canvas.onmousedown = function (e) {
-            var rightclick = e.which === 3; // or e.button === 2;
+            const rightclick = e.which === 3; // or e.button === 2;
 
             if (!rightclick && !self.mouseJoint) {
-                var point = canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY));
+                const point = canvas2point((e.offsetX || e.layerX), (e.offsetY || e.layerY));
                 self.mouseDown = v((e.offsetX || e.layerX), (e.offsetY || e.layerY));
 
-                var shape = space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
+                const shape = space.pointQueryFirst(point, GRABABLE_MASK_BIT, cp.NO_GROUP);
                 if (shape) {
-                    var body = shape.body;
+                    const body = shape.body;
                     if (!body.isStatic()) {
-                        var mouseJoint = self.mouseJoint = new cp.PivotJoint(mouseBody, body, v(0, 0), body.world2Local(point));
+                        const mouseJoint = self.mouseJoint = new cp.PivotJoint(mouseBody, body, v(0, 0), body.world2Local(point));
 
                         mouseJoint.maxForce = 50000;
                         mouseJoint.errorBias = Math.pow(1 - 0.15, 60);
@@ -114,7 +113,7 @@ export default class ChipmunkDebugView {
         };
 
         this.canvas.onmouseup = function (e) {
-            var rightclick = e.which === 3; // or e.button === 2;
+            const rightclick = e.which === 3; // or e.button === 2;
 
             if (!rightclick) {
                 if (self.mouseJoint) {
@@ -126,9 +125,9 @@ export default class ChipmunkDebugView {
         };
 
         this.canvas.onmousewheel = function (e) {
-            var value = e.detail ? e.detail * -1 : (e.wheelDeltaY ? e.wheelDeltaY : e.wheelDelta) / 40;
+            const value = e.detail ? e.detail * -1 : (e.wheelDeltaY ? e.wheelDeltaY : e.wheelDelta) / 40;
             self.scale = Math.min(Math.max(0.005, self.scale + value / (-999 * self.scale + 1000)), 1);
-            var sizeDiff = v.sub(self.orthoSize, pv(self.width, self.height).mult(1 / self.scale));
+            const sizeDiff = v.sub(self.orthoSize, pv(self.width, self.height).mult(1 / self.scale));
             self.orthoSize.sub(sizeDiff);
             self.orthoPos.sub(sizeDiff.mult(0.5));
         };
@@ -156,12 +155,12 @@ export default class ChipmunkDebugView {
 
     resize(scale) {
         scale = scale || 0.36;//0.93;//
-        var ratio = this.ratio = global.pixelRatio || 1;
+        const ratio = this.ratio = global.pixelRatio || 1;
         this.width = Math.max(160 / ratio, Math.round(global.width * scale));
         this.height = Math.max(90 / ratio, Math.round(global.height * scale));
         this.scale = this.width * scale / global.width;
         this.orthoSize = v(this.width, this.height).mult(1 / this.scale);
-        var canvas = this.canvas;
+        const canvas = this.canvas;
         canvas.width = this.width * ratio;
         canvas.height = this.height * ratio;
         canvas.style.width = this.width + 'px';
@@ -173,7 +172,7 @@ export default class ChipmunkDebugView {
 
     step(mainView) {
         // Move mouse body toward the mouse
-        var newPoint = v.lerp(this.mouseBody.p, this.mouse, 0.25);
+        const newPoint = v.lerp(this.mouseBody.p, this.mouse, 0.25);
         this.mouseBody.v = v.mult(v.sub(newPoint, this.mouseBody.p), 60);
         this.mouseBody.p = newPoint;
 
@@ -188,9 +187,9 @@ export default class ChipmunkDebugView {
     }
 
     draw(mainView) {
-        var ctx = this.ctx;
+        const ctx = this.ctx;
 
-        var self = this;
+        const self = this;
 
         ctx.clearRect(0, 0, this.width, this.height);
 
@@ -213,11 +212,11 @@ export default class ChipmunkDebugView {
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
 
-        var arbiters = this.space.arbiters;
-        for (var i = 0; i < arbiters.length; i++) {
-            var contacts = arbiters[i].contacts;
-            for (var j = 0; j < contacts.length; j++) {
-                var p = this.point2canvas(contacts[j].p);
+        const arbiters = this.space.arbiters;
+        for (let i = 0; i < arbiters.length; i++) {
+            const contacts = arbiters[i].contacts;
+            for (let j = 0; j < contacts.length; j++) {
+                const p = this.point2canvas(contacts[j].p);
 
                 ctx.beginPath();
                 ctx.moveTo(p.x - 2, p.y - 2);
@@ -233,7 +232,7 @@ export default class ChipmunkDebugView {
 
         if (this.mouseJoint) {
             ctx.beginPath();
-            var c = this.point2canvas(this.mouseBody.p);
+            const c = this.point2canvas(this.mouseBody.p);
             ctx.arc(c.x, c.y, this.scale * 5, 0, PI2, false);
             ctx.fill();
             ctx.stroke();
@@ -250,9 +249,9 @@ export default class ChipmunkDebugView {
     }
 
     drawInfo(mainView) {
-        var space = this.space;
-        var infoFields = this.infoFields;
-        var index = 0;
+        const space = this.space;
+        const infoFields = this.infoFields;
+        let index = 0;
         this.ctx.textAlign = 'start';
         this.ctx.textBaseline = 'alphabetic';
         this.ctx.fillStyle = 'black';
@@ -260,15 +259,15 @@ export default class ChipmunkDebugView {
         infoFields[index++].setText(document.body.clientWidth + ',' + document.body.clientHeight + ' x ' + global.pixelRatio);
         //infoFields[index++].setText('Step: ' + space.stamp);
 
-        var worldView = mainView.children[0];
+        const worldView = mainView.children[0];
         infoFields[index++].setText(mainView.canvas.width + ',' + mainView.canvas.height + ' x ' + worldView.camera.zoom + ' : ' + worldView.camera.width + ',' + worldView.camera.height + ' : ' + worldView.camera.scaleX + ',' + worldView.camera.scaleY);
 
-        var arbiters = space.arbiters.length;
+        const arbiters = space.arbiters.length;
         this.maxArbiters = this.maxArbiters ? Math.max(this.maxArbiters, arbiters) : arbiters;
         infoFields[index++].setText('Arbiters: ' + arbiters + ' (Max: ' + this.maxArbiters + ')');
 
-        var contacts = 0;
-        for (var i = 0; i < arbiters; i++) {
+        let contacts = 0;
+        for (let i = 0; i < arbiters; i++) {
             contacts += space.arbiters[i].contacts.length;
         }
         this.maxContacts = this.maxContacts ? Math.max(this.maxContacts, contacts) : contacts;
@@ -332,13 +331,13 @@ function drawSpring(ctx, scale, point2canvas, a, b) {
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
 
-    var delta = v.sub(b, a);
-    var len = v.len(delta);
-    var rot = v.mult(delta, 1 / len);
+    const delta = v.sub(b, a);
+    const len = v.len(delta);
+    const rot = v.mult(delta, 1 / len);
 
-    for (var i = 1; i < springPoints.length; i++) {
+    for (let i = 1; i < springPoints.length; i++) {
 
-        var p = v.add(a, v.rotate(pv(springPoints[i].x * len, springPoints[i].y * scale), rot));
+        const p = v.add(a, v.rotate(pv(springPoints[i].x * len, springPoints[i].y * scale), rot));
 
         //var p = v.add(a, v.rotate(springPoints[i], delta));
 
@@ -354,13 +353,13 @@ function drawSpring(ctx, scale, point2canvas, a, b) {
 cp.PolyShape.prototype.draw = function (ctx, scale, point2canvas) {
     ctx.beginPath();
 
-    var verts = this.tVerts;
-    var len = verts.length;
-    var lastPoint = point2canvas(pv(verts[len - 2], verts[len - 1]));
+    const verts = this.tVerts;
+    const len = verts.length;
+    const lastPoint = point2canvas(pv(verts[len - 2], verts[len - 1]));
     ctx.moveTo(lastPoint.x, lastPoint.y);
 
-    for (var i = 0; i < len; i += 2) {
-        var p = point2canvas(pv(verts[i], verts[i + 1]));
+    for (let i = 0; i < len; i += 2) {
+        const p = point2canvas(pv(verts[i], verts[i + 1]));
         ctx.lineTo(p.x, p.y);
     }
     ctx.fill();
@@ -368,7 +367,7 @@ cp.PolyShape.prototype.draw = function (ctx, scale, point2canvas) {
 };
 
 cp.SegmentShape.prototype.draw = function (ctx, scale, point2canvas) {
-    var oldLineWidth = ctx.lineWidth;
+    const oldLineWidth = ctx.lineWidth;
     ctx.lineWidth = Math.max(1, this.r * scale * 2);
     drawLine(ctx, point2canvas, this.ta, this.tb);
     ctx.lineWidth = oldLineWidth;
@@ -385,8 +384,8 @@ cp.CircleShape.prototype.draw = function (ctx, scale, point2canvas) {
 // Draw methods for constraints
 
 cp.PinJoint.prototype.draw = function (ctx, scale, point2canvas) {
-    var a = this.a.local2World(this.anchr1);
-    var b = this.b.local2World(this.anchr2);
+    const a = this.a.local2World(this.anchr1);
+    const b = this.b.local2World(this.anchr2);
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'grey';
@@ -394,9 +393,9 @@ cp.PinJoint.prototype.draw = function (ctx, scale, point2canvas) {
 };
 
 cp.SlideJoint.prototype.draw = function (ctx, scale, point2canvas) {
-    var a = this.a.local2World(this.anchr1);
-    var b = this.b.local2World(this.anchr2);
-    var midpoint = v.add(a, v.clamp(v.sub(b, a), this.min));
+    const a = this.a.local2World(this.anchr1);
+    const b = this.b.local2World(this.anchr2);
+    const midpoint = v.add(a, v.clamp(v.sub(b, a), this.min));
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'grey';
@@ -406,8 +405,8 @@ cp.SlideJoint.prototype.draw = function (ctx, scale, point2canvas) {
 };
 
 cp.PivotJoint.prototype.draw = function (ctx, scale, point2canvas) {
-    var a = this.a.local2World(this.anchr1);
-    var b = this.b.local2World(this.anchr2);
+    const a = this.a.local2World(this.anchr1);
+    const b = this.b.local2World(this.anchr2);
     ctx.strokeStyle = 'grey';
     ctx.fillStyle = 'grey';
     drawCircle(ctx, scale, point2canvas, a, 2);
@@ -415,9 +414,9 @@ cp.PivotJoint.prototype.draw = function (ctx, scale, point2canvas) {
 };
 
 cp.GrooveJoint.prototype.draw = function (ctx, scale, point2canvas) {
-    var a = this.a.local2World(this.grv_a);
-    var b = this.a.local2World(this.grv_b);
-    var c = this.b.local2World(this.anchr2);
+    const a = this.a.local2World(this.grv_a);
+    const b = this.a.local2World(this.grv_b);
+    const c = this.b.local2World(this.anchr2);
 
     ctx.strokeStyle = 'grey';
     drawLine(ctx, point2canvas, a, b);
@@ -425,8 +424,8 @@ cp.GrooveJoint.prototype.draw = function (ctx, scale, point2canvas) {
 };
 
 cp.DampedSpring.prototype.draw = function (ctx, scale, point2canvas) {
-    var a = this.a.local2World(this.anchr1);
-    var b = this.b.local2World(this.anchr2);
+    const a = this.a.local2World(this.anchr1);
+    const b = this.b.local2World(this.anchr2);
 
     ctx.strokeStyle = 'grey';
     drawSpring(ctx, scale, point2canvas, a, b);
@@ -437,14 +436,14 @@ function randColor() {
 }
 
 const styles = [];
-for (var i = 0; i < 100; i++) {
+for (let i = 0; i < 100; i++) {
     styles.push('rgb(' + randColor() + ', ' + randColor() + ', ' + randColor() + ')');
 }
 
 //styles = ['rgba(255,0,0,0.5)', 'rgba(0,255,0,0.5)', 'rgba(0,0,255,0.5)'];
 
 cp.Shape.prototype.style = function () {
-    var body;
+    let body;
     if (this.sensor) {
         return 'rgba(255,255,255,0.1)';
     } else {

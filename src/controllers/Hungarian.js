@@ -31,10 +31,10 @@ export function hungarianAlgortithm(formation, squad) {
     matrix = subtractRowMins(matrix);
     // Step 2
     findZeros(matrix);
-    var done = false;
+    let done = false;
     while (!done) {
         // Step 3
-        var covCols = coverColumns(matrix);
+        const covCols = coverColumns(matrix);
         if (covCols > solutions - 1) {
             done = true;
         }
@@ -43,7 +43,7 @@ export function hungarianAlgortithm(formation, squad) {
             done = coverZeros(matrix);
             while (done) {
                 // Step 6
-                var smallest = findSmallestUncoveredVal(matrix);
+                const smallest = findSmallestUncoveredVal(matrix);
                 matrix = uncoverSmallest(smallest, matrix);
                 done = coverZeros(matrix);
             }
@@ -70,8 +70,8 @@ function init(formation, squad) {
 }
 
 function initMatrix(sizeX, sizeY) {
-    var matrix = new Array(sizeX);
-    for (var i = 0; i < sizeX; i++) {
+    const matrix = new Array(sizeX);
+    for (let i = 0; i < sizeX; i++) {
         matrix[i] = new Array(sizeY);
         initArray(matrix[i], 0);
     }
@@ -93,15 +93,15 @@ function loadMatrix(squad, formation, matrix, reverse) {
 }
 
 function loadYourMatrix(squad, formation, matrix) {
-    for (var i = 0; i < matrix.length; i++) {
-        var pos = formation[i];
-        for (var j = 0; j < matrix[i].length; j++) {
+    for (let i = 0; i < matrix.length; i++) {
+        const pos = formation[i];
+        for (let j = 0; j < matrix[i].length; j++) {
             // TODO: we should just pass two lists of vects
-            var entity = squad[j];
+            const entity = squad[j];
             if (entity) {
-                var unitPos = squad[j].getPos();
-                var x = unitPos.x - pos.x;
-                var y = unitPos.y - pos.y;
+                const unitPos = squad[j].getPos();
+                const x = unitPos.x - pos.x;
+                const y = unitPos.y - pos.y;
                 matrix[i][j] = x * x + y * y;
             } else {
                 matrix[i][j] = 0;
@@ -114,9 +114,9 @@ function loadYourMatrix(squad, formation, matrix) {
 }
 
 function findMaxValue(matrix) {
-    var max = 0.0;
-    for (var i = 0; i < matrix.length; i++) {
-        for (var j = 0; j < matrix[i].length; j++) {
+    let max = 0.0;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
             if (matrix[i][j] > max) {
                 max = matrix[i][j];
             }

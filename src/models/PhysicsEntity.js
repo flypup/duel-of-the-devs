@@ -1,4 +1,4 @@
-import Entity from './Entity.js';
+import Entity from './Entity';
 
 export default class PhysicsEntity extends Entity {
 

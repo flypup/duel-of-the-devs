@@ -1,9 +1,9 @@
-import global from '../global.js';
-import { NULL } from '../controllers/Collisions.js';
-import TextField from '../views/TextField.js';
+import global from '../global';
+import TextField from '../views/TextField';
 
 const cp = window.cp;
 const v = cp.v;
+const NULL = 0; // Collisions.js shape group
 
 function assertSoft(value, message) {
     if (!value) {
@@ -126,19 +126,19 @@ export default class Entity {
         }
 
         // TODO: some things regarding entity z movement need to be worked out
-        var distance;
-        var gravity = -10;
-        var damping = 1;
-        var friction = 0;
-        var thisEntitylimbSpeed = 5;
+        let distance;
+        const gravity = -10;
+        const damping = 1;
+        const friction = 0;
+        const thisEntitylimbSpeed = 5;
 
         // get floor. target z = floor z
         // no floor? target z = 0
-        var climbHeight = this.climbHeight;
+        let climbHeight = this.climbHeight;
         if (this.state !== 'walking') {
             climbHeight = 0;//*= 0.2;
         }
-        var targetZ = this.getTargetZ(climbHeight);
+        const targetZ = this.getTargetZ(climbHeight);
 
         distance = targetZ - this.z;
         if (distance > 0) {
@@ -187,12 +187,12 @@ export default class Entity {
             return this;
         }
 
-        var distance;
-        var thisEntityCanClimb = 32;
+        let distance;
+        const thisEntityCanClimb = 32;
 
         // get floor. target z = floor z
         // no floor? target z = 0
-        var targetZ = this.getTargetZ(thisEntityCanClimb);
+        const targetZ = this.getTargetZ(thisEntityCanClimb);
 
         distance = targetZ - this.z;
         if (distance >= thisEntityCanClimb) {
@@ -210,11 +210,11 @@ export default class Entity {
 
     getTargetZ(climbHeight) {
         climbHeight = climbHeight || this.climbHeight;
-        var targetZ = 0;
+        let targetZ = 0;
         this.maxCollisionTopZ = 0;
-        for (var i = 0, len = this.mapCollision.length; i < len; i++) {
-            var element = this.mapCollision[i];
-            var top = element.getTop(this.body.p.x, -this.body.p.y);
+        for (let i = 0, len = this.mapCollision.length; i < len; i++) {
+            const element = this.mapCollision[i];
+            const top = element.getTop(this.body.p.x, -this.body.p.y);
             if (top > targetZ && (top - this.z) <= climbHeight) {
                 targetZ = top;
             }
@@ -230,7 +230,7 @@ export default class Entity {
     }
 
     removeMapCollision(mapElement) {
-        var index = this.mapCollision.indexOf(mapElement);
+        const index = this.mapCollision.indexOf(mapElement);
         if (index > -1) {
             this.mapCollision.splice(index, 1);
         }
@@ -243,8 +243,8 @@ export default class Entity {
     }
 
     getSortBounds() {
-        var bounds = this.sortBounds;
-        var radius = this.radius;
+        const bounds = this.sortBounds;
+        const radius = this.radius;
         bounds.bottom = this.z;
         bounds.top = this.z + this.depth;
         bounds.front = radius / 2 - this.body.p.y;
@@ -254,7 +254,7 @@ export default class Entity {
 
         //test bounds:
         if (global.debug > 0) {
-            var dimension = bounds.right - bounds.left;
+            let dimension = bounds.right - bounds.left;
             if (!assertSoft(dimension > 0, this + ' bounds width ' + dimension)) {
                 throw('bounds width should be greater than 0');
             }
@@ -301,7 +301,7 @@ export default class Entity {
     }
 
     setPos(x, y, z) {
-        var body = this.body;
+        const body = this.body;
         if (z !== undefined) {
             this.z = body.z = z;
         }
@@ -326,7 +326,7 @@ export default class Entity {
     }
 
     setAngle(v, w) {
-        var body = this.body;
+        const body = this.body;
         if (w !== undefined) {
             body.w = w;
         }
@@ -344,7 +344,7 @@ export default class Entity {
     }
 
     setVelocity(vx, vy, vz) {
-        var body = this.body;
+        const body = this.body;
         body.vx = vx;
         body.vy = vy;
         if (vz !== undefined) {
@@ -354,7 +354,7 @@ export default class Entity {
     }
 
     resetForces() {
-        var body = this.body;
+        const body = this.body;
         //body.resetForces();
         body.f.x = 0;
         body.f.y = 0;
@@ -363,7 +363,7 @@ export default class Entity {
 
     getBody(mass, moment) {
         // to create a static body specify a mass of zero
-        var body = this.body;
+        let body = this.body;
         if (!body) {
             if (mass === 0) {
                 // same as world create static body

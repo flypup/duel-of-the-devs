@@ -1,7 +1,7 @@
-import global from '../global.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
-import TextField from './TextField.js';
-import Images from '../controllers/Images.js';
+import global from '../global';
+import { traceTime, traceTimeEnd } from '../logging';
+import TextField from './TextField';
+import Images from '../controllers/Images';
 
 export default class Canvas2dMapView {
 
@@ -25,7 +25,7 @@ export default class Canvas2dMapView {
         if (layer.visible !== false) {
             layer.visible = true;
         }
-        for (var i = layer.elements.length; i-- > 0;) {
+        for (let i = layer.elements.length; i-- > 0;) {
             layer.elements[i].loadImages(path);
         }
     }
@@ -36,14 +36,14 @@ export default class Canvas2dMapView {
 
     getItemsInLayer(layer, entities, inLayer) {
         inLayer = inLayer || [];
-        var elements = layer.elements;
+        const elements = layer.elements;
         //var bounds = layer.bounds;
-        for (var i = entities.length; i-- > 0;) {
-            var entity = entities[i];
+        for (let i = entities.length; i-- > 0;) {
+            const entity = entities[i];
             if (!entity.isStatic()) {
                 entity.layerNum = -1;
             }
-            for (var j = elements.length; j-- > 0;) {
+            for (let j = elements.length; j-- > 0;) {
                 if (entity.layerNum === layer.layerNum || elements[j].isBehindEntity(entity)) {
                     entity.layerNum = layer.layerNum;
                     entity.layerName = layer.name;
@@ -57,8 +57,8 @@ export default class Canvas2dMapView {
     }
 
     draw(context, viewport) {
-        var layers = this.layers;
-        for (var i = layers.length; i-- > 0;) {
+        const layers = this.layers;
+        for (let i = layers.length; i-- > 0;) {
             this.drawLayer(layers[i], context, viewport);
         }
     }
@@ -67,8 +67,8 @@ export default class Canvas2dMapView {
         if (!layer.visible) {
             return false;
         }
-        var elements = layer.elements;
-        for (var i = 0, len = elements.length; i < len; i++) {
+        const elements = layer.elements;
+        for (let i = 0, len = elements.length; i < len; i++) {
             //elements[i].alpha = layer.alpha || 1;
             drawElement(elements[i], context, viewport, delta);
         }
@@ -86,7 +86,7 @@ function drawElement(element, context, viewport /*, delta */) {
             if (element.alpha !== null) {
                 context.globalAlpha = element.alpha;
             }
-            var matrix = element.matrix;
+            const matrix = element.matrix;
             if (matrix) {
                 context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx - element.regX * matrix.a, matrix.ty - element.regY * matrix.d);
             } else {
@@ -94,9 +94,9 @@ function drawElement(element, context, viewport /*, delta */) {
             }
 
             if (element.children) {
-                var children = element.children;
-                for (var i = 0; i < children.length; i++) {
-                    var child = children[i];
+                const children = element.children;
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
                     if (element.width || intersects(child, viewport)) {
                         if (child.image && child.imageData) {
                             drawImage(child, context);
@@ -114,11 +114,11 @@ function drawElement(element, context, viewport /*, delta */) {
     }
     if (global.debug > 1) {
         //draw sort bounds
-        var bounds = element.getSortBounds();
+        const bounds = element.getSortBounds();
         // check viewport intersection
         if (element.x - element.width / 2 <= viewport.r && viewport.l <= element.x + element.width / 2 &&
         bounds.back <= viewport.b && viewport.t <= (bounds.back + (bounds.front - bounds.back))) {
-            var debugColor = (element.mapType === 'floor') ? '#f00' : '#f0f';
+            const debugColor = (element.mapType === 'floor') ? '#f00' : '#f0f';
 
             element.label = element.label || new TextField(context, 0, 0, 512, null, debugColor);
             element.label.setPos(16 + element.x - element.width / 2, bounds.back + 2);
@@ -142,7 +142,7 @@ function drawShape(shape, context) {
         traceTime('drawShape ' + shape.fillImage);
     }
     if (shape.fillImage) {
-        var drawable = Images.getCached(shape.imageData, shape.fillImage);
+        const drawable = Images.getCached(shape.imageData, shape.fillImage);
         context.fillStyle = context.createPattern(drawable, 'repeat');
     } else {
         context.fillStyle = shape.fillColor || '#00f';
@@ -151,7 +151,7 @@ function drawShape(shape, context) {
     if (shape.polygons) {
         context.save();
         context.translate(shape.x, shape.y);
-        for (var i = 0; i < shape.polygons.length; i++) {
+        for (let i = 0; i < shape.polygons.length; i++) {
             drawPolygon(shape.polygons[i], context);
         }
         context.restore();
@@ -181,7 +181,7 @@ function drawShape(shape, context) {
 function drawPolygon(polygon, context) {
     // TODO: clip to context bounds
     context.beginPath();
-    var i = 0;
+    let i = 0;
     context.moveTo(polygon[i][0], polygon[i][1]);
     for (i = 1; i < polygon.length; i++) {
         context.lineTo(polygon[i][0], polygon[i][1]);
@@ -194,7 +194,7 @@ function drawImage(element, context) {
     if (global.debug === 1) {
         traceTime('drawImage map child ' + element.image);
     }
-    var drawable = Images.getCached(element.imageData, element.image);
+    const drawable = Images.getCached(element.imageData, element.image);
     context.drawImage(drawable, element.x, element.y, element.width, element.height);
     if (global.debug === 1) {
         traceTimeEnd('drawImage map child ' + element.image);
@@ -206,7 +206,7 @@ function drawImageInplace(element, context) {
     if (global.debug === 1) {
         traceTime('drawImage map ' + element.image);
     }
-    var drawable = Images.getCached(element.imageData, element.image);
+    const drawable = Images.getCached(element.imageData, element.image);
     context.drawImage(drawable, 0, 0);
     if (global.debug === 1) {
         traceTimeEnd('drawImage map ' + element.image);

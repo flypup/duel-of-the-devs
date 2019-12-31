@@ -1,6 +1,6 @@
-import global from '../global.js';
-import Entity from './Entity.js';
-import { PLAYER_HAND } from '../controllers/Collisions';
+import global from '../global';
+import Entity from './Entity';
+import { PLAYER_HAND } from '../constants/physics';
 
 const cp = window.cp;
 
@@ -82,7 +82,7 @@ export default class EmptyHand extends Entity {
 
                 } else if (this.time > this.pushDuration + this.grabDuration) {
                     // TODO: did we grab anyone?
-                    var grabbedTarget = false;
+                    const grabbedTarget = false;
                     if (!grabbedTarget) {
                         //done punching
                         entity.attackEnd();

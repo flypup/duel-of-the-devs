@@ -1,8 +1,8 @@
-import global from '../global.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
-import SpriteSheets from './SpriteSheets.js';
-import Images from '../controllers/Images.js';
-import Entity from '../models/Entity.js';
+import global from '../global';
+import { traceTime, traceTimeEnd } from '../logging';
+import SpriteSheets from './SpriteSheets';
+import Images from '../controllers/Images';
+import Entity from '../models/Entity';
 
 const pi = Math.PI;
 const floor = Math.floor;
@@ -25,22 +25,22 @@ export default class Canvas2dEntityView {
     }
 
     drawShadow(context, entity, viewport) {
-        var o;
+        let o;
         if (entity.radius < 20) {
             o = SpriteSheets.shadowSmall.getFrame(0);
         } else {
             o = SpriteSheets.shadow.getFrame(0);
         }
         if (o) {
-            var pos = entity.getPos();
-            var x = pos.x;
-            var y = pos.y - entity.groundZ;
-            var rect = o.rect;
+            const pos = entity.getPos();
+            const x = pos.x;
+            const y = pos.y - entity.groundZ;
+            const rect = o.rect;
             if (intersects(rect, viewport, x - o.regX, y - o.regY)) {
                 if (global.debug === 1) {
                     traceTime('drawImage shadow ' + o.image.src);
                 }
-                var drawable = Images.getCached(o.image);
+                const drawable = Images.getCached(o.image);
                 // TODO: draw shadow accoring to entity frame
                 context.drawImage(drawable, rect.x, rect.y, rect.width, rect.height, x - o.regX, y - o.regY, rect.width, rect.height);
                 if (global.debug === 1) {
@@ -58,8 +58,8 @@ export default class Canvas2dEntityView {
             }
         }
 
-        var frame = entityFrame(entity, SpriteSheets.ninja.body);
-        var pos = entity.getPos();
+        const frame = entityFrame(entity, SpriteSheets.ninja.body);
+        const pos = entity.getPos();
 
         this.drawBodyAndHead(context, viewport, SpriteSheets.ninja, frame, pos);
         if (global.debug > 1) {
@@ -68,11 +68,11 @@ export default class Canvas2dEntityView {
     }
 
     drawPuff(context, entity, viewport) {
-        var animation = SpriteSheets.ninja.body.getAnimation('puff');
+        const animation = SpriteSheets.ninja.body.getAnimation('puff');
         if (animation) {
-            var frame = animation.frames[0] + floor(4.9 * (entity.duration - entity.time) / entity.duration);
-            var o = SpriteSheets.ninja.body.getFrame(frame);
-            var pos = entity.getPos();
+            const frame = animation.frames[0] + floor(4.9 * (entity.duration - entity.time) / entity.duration);
+            const o = SpriteSheets.ninja.body.getFrame(frame);
+            const pos = entity.getPos();
             this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
         }
         return null;
@@ -85,10 +85,10 @@ export default class Canvas2dEntityView {
         }
         entity.lifetime += delta;
 
-        var frames = SpriteSheets.throwingStar.getNumFrames();
-        var frame = floor(entity.body.a * frames / pi) % frames;
-        var o = SpriteSheets.throwingStar.getFrame(frame);
-        var pos = entity.getPos();
+        const frames = SpriteSheets.throwingStar.getNumFrames();
+        const frame = floor(entity.body.a * frames / pi) % frames;
+        const o = SpriteSheets.throwingStar.getFrame(frame);
+        const pos = entity.getPos();
         this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
     }
 
@@ -112,8 +112,8 @@ export default class Canvas2dEntityView {
             }
         }
 
-        var frame = entityFrame(entity, SpriteSheets.monk.body);
-        var pos = entity.getPos();
+        const frame = entityFrame(entity, SpriteSheets.monk.body);
+        const pos = entity.getPos();
 
         if (entity === global.player) {
             this.drawBodyAndHead(context, viewport, SpriteSheets.monk, frame, pos);
@@ -127,7 +127,7 @@ export default class Canvas2dEntityView {
     }
 
     drawBodyAndHead(context, viewport, spriteSheet, frame, pos) {
-        var headFrame, headData, headIndex = 0;
+        let headFrame, headData, headIndex = 0;
         if (frame < spriteSheet.framesHead.length) {
             headData = spriteSheet.framesHead[frame];
             if (headData) {
@@ -140,7 +140,7 @@ export default class Canvas2dEntityView {
             this.drawSprite(context, headFrame, headData[0] + pos.x, headData[1] + pos.y - pos.z, viewport);
         }
 
-        var o = spriteSheetFrame(spriteSheet.body, frame);
+        const o = spriteSheetFrame(spriteSheet.body, frame);
         this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
 
         if (headIndex > 0) {
@@ -149,25 +149,25 @@ export default class Canvas2dEntityView {
     }
 
     drawLion(context, entity, viewport) {
-        var o = SpriteSheets.lion.getFrame(0);
-        var pos = entity.getPos();
+        const o = SpriteSheets.lion.getFrame(0);
+        const pos = entity.getPos();
         this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
     }
 
     drawCauldron(context, entity, viewport) {
-        var o = SpriteSheets.cauldron.getFrame(0);
-        var pos = entity.getPos();
+        const o = SpriteSheets.cauldron.getFrame(0);
+        const pos = entity.getPos();
         this.drawSprite(context, o, pos.x, pos.y - pos.z, viewport);
     }
 
     drawDot(context, entity, viewport) {
         // dot sprite
-        var color = entity.fillStyle || '#ff8000';
-        var frame = dotFrames['dot' + color];
+        const color = entity.fillStyle || '#ff8000';
+        let frame = dotFrames['dot' + color];
         if (!frame) {
-            var radius = entity.radius;
-            var size = radius * 2;
-            var canvas = Images.appendCacheDraw('dot' + color, size, size, function (context) {
+            const radius = entity.radius;
+            const size = radius * 2;
+            const canvas = Images.appendCacheDraw('dot' + color, size, size, function (context) {
                 context.fillStyle = color;
                 context.beginPath();
                 context.arc(radius, radius, radius, 0, 2 * pi, false);
@@ -190,11 +190,11 @@ export default class Canvas2dEntityView {
     drawGenericEntity(context, entity, viewport/*, delta*/) {
         // 	//throw('entity renderer not defined '+entity);
         // pixel sprite
-        var frame = dotFrames[entity.type];
+        let frame = dotFrames[entity.type];
         if (!frame) {
-            var width = entity.width || 64;
-            var height = entity.height || 64;
-            var canvas = Images.appendCacheDraw(entity.type, width, height, function (context) {
+            const width = entity.width || 64;
+            const height = entity.height || 64;
+            const canvas = Images.appendCacheDraw(entity.type, width, height, function (context) {
                 context.fillStyle = '#0008ff';
                 context.beginPath();
                 context.fillRect(0, 0, width, height);
@@ -208,7 +208,7 @@ export default class Canvas2dEntityView {
             };
             dotFrames[entity.type] = frame;
         }
-        var pos = entity.getPos();
+        const pos = entity.getPos();
         this.drawSprite(context, frame, pos.x, pos.y - pos.z, viewport);
     }
 
@@ -247,8 +247,8 @@ export default class Canvas2dEntityView {
 
     drawSprite(context, o, x, y, viewport) {
         if (o && intersects(o.rect, viewport, x - o.regX, y - o.regY)) {
-            var drawable = Images.getCached(o.image);
-            var rect = o.rect;
+            const drawable = Images.getCached(o.image);
+            const rect = o.rect;
             if (global.debug === 1) {
                 traceTime('drawImage ' + o.image.src);
             }
@@ -297,9 +297,9 @@ export default class Canvas2dEntityView {
 
 function entityFrame(entity, spriteSheet) {
     //var numFrames = spriteSheet.getNumFrames();
-    var x = entity.body.rot.x * 2 | 0;
-    var y = entity.body.rot.y * 5 | 0;//1.43|0;
-    var frame;
+    const x = entity.body.rot.x * 2 | 0;
+    const y = entity.body.rot.y * 5 | 0;//1.43|0;
+    let frame;
     // 0 = down, 1-5 clockwise
     if (x) {
         if (y > 0) {
@@ -311,9 +311,9 @@ function entityFrame(entity, spriteSheet) {
         frame = (y > 0) ? 3 : 0;
     }
 
-    var animation;
-    var animationFrame;
-    var progress;
+    let animation;
+    let animationFrame;
+    let progress;
 
     if (entity.state === 'walking') {
         animation = spriteSheet.getAnimation('walk_' + frame);
@@ -361,7 +361,7 @@ function entityFrame(entity, spriteSheet) {
 }
 
 function spriteSheetFrame(spriteSheet, frame) {
-    var frameData = spriteSheet.getFrame(frame);
+    const frameData = spriteSheet.getFrame(frame);
     if (frameData === null) {
         if (spriteSheet.complete) {
             console.error('SpriteSheet null frame. Complete:', spriteSheet.complete, frame, '/', spriteSheet.getNumFrames(), spriteSheet.getAnimations());

@@ -1,6 +1,6 @@
-import global from '../global.js';
-import { traceTime, traceTimeEnd } from '../logging.js';
-import MapElement from './MapElement.js';
+import global from '../global';
+import { traceTime, traceTimeEnd } from '../logging';
+import MapElement from './MapElement';
 
 const cp = window.cp;
 const v = cp.v;
@@ -27,7 +27,7 @@ export default class World {
     }
 
     init() {
-        var space =
+        const space =
         this.space = new cp.Space();
         space.gravity = v(0, 0);
         space.iterations = 10;
@@ -40,12 +40,12 @@ export default class World {
 
     term() {
         // TODO: -> call remove on all entities > bodies > shapes
-        for (var i = this.entities.length; i--;) {
+        for (let i = this.entities.length; i--;) {
             this.entities[i].deactivate();
         }
         this.entities.length = 0;
         this.elements.length = 0;
-        var space = this.space;
+        const space = this.space;
         if (space) {
             space.locked = 0;
             space.staticShapes.each(function (shape) {
@@ -54,7 +54,7 @@ export default class World {
             space.activeShapes.each(function (shape) {
                 space.removeShape(shape);
             });
-            var hash;
+            let hash;
             for (hash in space.collisionHandlers) {
                 delete space.collisionHandlers[hash];
             }
@@ -74,7 +74,7 @@ export default class World {
 
     getRandomMapPosition() {
         if (this.map && this.map.points) {
-            var index = Math.floor(Math.random() * this.map.points.length);
+            const index = Math.floor(Math.random() * this.map.points.length);
             return this.map.points[index];
         }
         console.error('getRandomMapPosition: no map points.', this.map);
@@ -82,10 +82,10 @@ export default class World {
     }
 
     queryStatic(point, maxDistance) {
-        var out = [];
-        var helper = function (shape) {
+        const out = [];
+        const helper = function (shape) {
             if (!shape.sensor && shape.body && shape.body.userData) {
-                var obj = shape.body.userData.parent;
+                const obj = shape.body.userData.parent;
                 out.push(obj);
             }
         };
@@ -105,20 +105,20 @@ export default class World {
         this.init();
 
         // add mapElements, extract entities and bounds, add points for AI
-        var layers = map.layers;
-        var entities = map.entities = map.entities || [];
-        var bounds = map.bounds = map.bounds || [];
-        var points = map.points = map.points || [];
+        const layers = map.layers;
+        const entities = map.entities = map.entities || [];
+        const bounds = map.bounds = map.bounds || [];
+        const points = map.points = map.points || [];
 
-        var i, j;
+        let i, j;
         // add mapElements
         for (i = 0; i < layers.length; i++) {
-            var layer = layers[i];
+            const layer = layers[i];
             layer.layerNum = i;
 
-            var elements = layer.elements || [];
+            const elements = layer.elements || [];
             //var shapes = layer.shapes || [];
-            var layerBounds = layer.bounds;
+            const layerBounds = layer.bounds;
             if (layerBounds) {
                 // ew! updating the data we're parsing
                 layerBounds.mapType = 'bounds';
@@ -135,7 +135,7 @@ export default class World {
                     //negative depth implies impassable bounds
                     bounds.push(elements.splice(j, 1)[0]);
                 } else {
-                    var mapElement = this.initMapElement(elements[j]);
+                    const mapElement = this.initMapElement(elements[j]);
                     if (mapElement) {
                         mapElement.layerNum = i;
                         mapElement.visible = !!mapElement.image || !!mapElement.children;
@@ -159,14 +159,14 @@ export default class World {
             //layer.shapes = shapes;
         }
         // add entities
-        var entityData;
+        let entityData;
         for (i = entities.length; i--;) {
             entityData = entities[i];
             console.log('Map Entity', entityData);
             this.add(this.initMapEntity(entityData));
         }
         // add bounds
-        var boundsElement;
+        let boundsElement;
         for (i = bounds.length; i--;) {
             boundsElement = bounds[i];
             console.log('Map Bounds', boundsElement);
@@ -259,11 +259,11 @@ export default class World {
 
     addBox(v1, w, h) {
         assert(w > 0 && h > 0, 'addBox width and height must be positive and non-zero');
-        var body = new cp.Body(Infinity, Infinity);
+        const body = new cp.Body(Infinity, Infinity);
         body.nodeIdleTime = Infinity;
         v1.y = -v1.y;
         body.p = v1;
-        var shape = new cp.BoxShape(body, w, h);
+        const shape = new cp.BoxShape(body, w, h);
         shape.setElasticity(0);
         shape.setFriction(1);
         this.space.addShape(shape);
@@ -288,13 +288,13 @@ export default class World {
 
     addMapElement(mapElement) {
         //negative depth implies impassable bounds
-        var isLayerBounds = mapElement.mapType === 'bounds';
+        const isLayerBounds = mapElement.mapType === 'bounds';
         if (mapElement.depth >= 0 && !isLayerBounds) {
             this.elements.push(mapElement);
         }
-        for (var i in mapElement.shapes) {
-            var shapeData = mapElement.shapes[i];
-            var shape = shapeData.cpShape;
+        for (const i in mapElement.shapes) {
+            const shapeData = mapElement.shapes[i];
+            const shape = shapeData.cpShape;
             if (shape) {
                 if (isLayerBounds) {
                     shape.sensor = true;
@@ -305,7 +305,7 @@ export default class World {
     }
 
     remove(entity) {
-        var index = this.entities.indexOf(entity);
+        const index = this.entities.indexOf(entity);
         if (index > -1) {
             if (!entity.isStatic()) {
                 this.space.removeBody(entity.body);
@@ -327,7 +327,7 @@ export default class World {
     }
 
     entityForBody(body) {
-        for (var i = this.entities.length; i--;) {
+        for (let i = this.entities.length; i--;) {
             if (this.entities[i].body === body) {
                 return this.entities[i];
             }
@@ -337,7 +337,7 @@ export default class World {
     }
 
     elementForBody(body) {
-        for (var i = this.elements.length; i--;) {
+        for (let i = this.elements.length; i--;) {
             if (this.elements[i].body === body) {
                 return this.elements[i];
             }
@@ -347,13 +347,13 @@ export default class World {
     }
 
     createStaticBody() {
-        var body = new cp.Body(Infinity, Infinity);
+        const body = new cp.Body(Infinity, Infinity);
         body.nodeIdleTime = Infinity;
         return body;
     }
 
     step(delta) {
-        var i;
+        let i;
         //this.map.step(delta);
         for (i = this.entities.length; i--;) {
             this.entities[i].step(delta);
@@ -372,7 +372,7 @@ export default class World {
     }
 
     stepScene(delta) {
-        var i;
+        let i;
         //this.map.step(delta);
         // for(i = this.entities.length; i--;) {
         //	this.entities[i].step(delta);

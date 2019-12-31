@@ -1,5 +1,5 @@
-import global from '../global.js';
-import PhysicsEntity from './PhysicsEntity.js';
+import global from '../global';
+import PhysicsEntity from './PhysicsEntity';
 
 const RADIUS = 10;
 

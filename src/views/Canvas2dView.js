@@ -1,11 +1,11 @@
-import global from '../global.js';
+import global from '../global';
 
 export default class Canvas2dView {
 
     constructor() {
         this.children = [];
 
-        var canvas = this.canvas = window.document.createElement('canvas');
+        const canvas = this.canvas = window.document.createElement('canvas');
         canvas.style.position = 'absolute';
 
         if (/Firefox\//.test(navigator.userAgent)) {
@@ -24,10 +24,10 @@ export default class Canvas2dView {
     }
 
     draw(delta) {
-        var context = this.context;
+        const context = this.context;
 
-        var children = this.children;
-        for (var i = 0, len = children.length; i < len; i++) {
+        const children = this.children;
+        for (let i = 0, len = children.length; i < len; i++) {
             children[i].draw(context, delta);
         }
     }
@@ -55,7 +55,7 @@ export default class Canvas2dView {
     }
 
     remove(child) {
-        var index = this.children.indexOf(child);
+        const index = this.children.indexOf(child);
         if (index > -1) {
             this.children.splice(index, 1);
             return child;
@@ -69,7 +69,7 @@ export default class Canvas2dView {
     }
 
     resize(width, height, ratio) {
-        var canvas = this.canvas;
+        const canvas = this.canvas;
         this.width = width;
         this.height = height;
         this.pixelRatio = ratio;
@@ -78,8 +78,8 @@ export default class Canvas2dView {
         canvas.style.width = this.width + 'px';
         canvas.style.height = this.height + 'px';
 
-        var children = this.children;
-        for (var i = 0, len = children.length; i < len; i++) {
+        const children = this.children;
+        for (let i = 0, len = children.length; i < len; i++) {
             children[i].resize(width, height, ratio);
         }
     }

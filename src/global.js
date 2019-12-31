@@ -1,4 +1,4 @@
-import { webgl } from './env.js';
+import { webgl } from './env';
 
 const document = window.document;
 const navigator = window.navigator;
@@ -78,9 +78,9 @@ export default {
         if (this.debug && source === undefined) {
             throw 'extend "source" param undefined.';
         }
-        for (var prop in source) {
-            if (source.hasOwnProperty(prop)) {
-                if (!target.hasOwnProperty(prop)) {
+        for (const prop in source) {
+            if (Object.prototype.hasOwnProperty.call(source, prop)) {
+                if (!Object.prototype.hasOwnProperty.call(target, prop)) {
                     const copy = source[prop];
                     if (copy !== undefined) {
                         target[prop] = copy;
@@ -96,7 +96,7 @@ export default {
             throw 'copy "source" param undefined.';
         }
         target = target || {};
-        for (var prop in source) {
+        for (const prop in source) {
             target[prop] = source[prop];
         }
         return target;
