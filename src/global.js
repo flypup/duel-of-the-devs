@@ -3,9 +3,6 @@ import { webgl } from './env';
 const document = window.document;
 const navigator = window.navigator;
 
-export const TIME_STEP = 1000 / 60;
-export const version = '0.3.0';
-
 export default {
     debug: 0,
     ready: false,

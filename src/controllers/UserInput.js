@@ -425,7 +425,7 @@ export default class UserInput {
             break;
 
         default:
-            console.log(String.fromCharCode(keyCode), keyCode);
+            // console.log(String.fromCharCode(keyCode), keyCode);
         }
     }
 

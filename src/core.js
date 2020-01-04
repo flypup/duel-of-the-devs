@@ -1,4 +1,4 @@
-import global, { TIME_STEP, version as globalVersion } from './global';
+import global from './global';
 import { traceTime, traceTimeEnd } from './logging';
 import appCache from './controllers/appCache';
 import { resizeDisplay } from './controllers/display';
@@ -21,7 +21,9 @@ import Canvas2dCreditsView from './views/Canvas2dCreditsView';
 import ChipmunkDebugView from './views/ChipmunkDebugView';
 import DebugView from './views/DebugView';
 import ThreeJsWorldView from './views/ThreeJsWorldView';
+import { TIME_STEP } from './constants/physics';
 
+const version = '0.3.0';
 const max = Math.max;
 const min = Math.min;
 
@@ -72,18 +74,18 @@ export default class Core {
 
         this.loadSettings();
 
-        this.trackEvent('core', 'preload', globalVersion, undefined, true);
+        this.trackEvent('core', 'preload', version, undefined, true);
     }
 
     loadSettings() {
         //version and settings check
-        const version = this.getLocal('version');
-        if (!version) {
+        const localVersion = this.getLocal('version');
+        if (!localVersion) {
             this.clearLocal();
         }
-        if (version !== globalVersion) {
+        if (localVersion !== version) {
             this.setLocal('debug', 0);
-            this.setLocal('version', globalVersion);
+            this.setLocal('version', version);
         }
         if (global.mobile) {
             this.setLocal('debug', 0);
@@ -259,7 +261,7 @@ export default class Core {
         }
 
         //-------- TRACKING --------//
-        this.trackEvent('core', 'inited', globalVersion, undefined, true);
+        this.trackEvent('core', 'inited', version, undefined, true);
 
         // DEV: Skip opening scene
         // this.resume();
@@ -405,7 +407,7 @@ export default class Core {
     }
 
     gameOver() {
-        this.trackEvent('game', 'gameover', globalVersion);
+        this.trackEvent('game', 'gameover', version);
 
         cancelAnimationFrame(this.rafId);
         this.rafId = requestAnimationFrame((time) => this.animateGameOver(time));
@@ -418,7 +420,7 @@ export default class Core {
 
     rollCredits() {
         global.playerInteractions = 36;
-        this.trackEvent('game', 'credits', globalVersion);
+        this.trackEvent('game', 'credits', version);
 
         cancelAnimationFrame(this.rafId);
         this.rafId = requestAnimationFrame((time) => this.animateCredits(time));

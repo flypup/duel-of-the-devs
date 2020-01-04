@@ -1,6 +1,7 @@
 import global from '../global';
 import { traceTime, traceTimeEnd } from '../logging';
 import MapElement from './MapElement';
+import { TIME_STEP } from '../constants/physics';
 
 const cp = window.cp;
 const v = cp.v;
@@ -31,10 +32,10 @@ export default class World {
         this.space = new cp.Space();
         space.gravity = v(0, 0);
         space.iterations = 10;
-        space.sleepTimeThreshold = global.TIME_STEP * 9;//Infinity;//
+        space.sleepTimeThreshold = TIME_STEP * 9;//Infinity;//
         space.idleSpeedThreshold = 0.1;//5;//0.01;//
         space.collisionSlop = 0.025;
-        space.collisionBias = Math.pow(1 - 0.75, 60);
+        space.collisionBias = Math.pow(0.25, 60);
         space.damping = 0.5;//0.95;//0.66;//1
     }
 

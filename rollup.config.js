@@ -2,7 +2,7 @@
 export default {
     input: 'src/main.js',
     output: {
-        file: 'app/index.js',
+        file: 'app/dist/index.js',
         format: 'iife'
     }
 };

@@ -15,6 +15,23 @@ function sortEntities(a, b) {
     return 0;
 }
 
+class Camera {
+
+    constructor() {
+        this.x = 16;
+        this.y = 16;
+        this.width = 1;
+        this.height = 1;
+        this.pixelRatio = 1;
+        this.zoom = 1;
+    }
+
+    lookAt(x, y) {
+        this.x = -this.width / this.scaleX / 2 + x;
+        this.y = -this.height / this.scaleY / 2 + y;
+    }
+}
+
 export default class Canvas2dWorldView {
 
     constructor(world) {
@@ -27,15 +44,8 @@ export default class Canvas2dWorldView {
         this.entityRenderer = new Canvas2dEntityView();
         this.entitiesInLayers = [];
 
-        this.camera = {
-            lookAt(x, y) {
-                this.x = -this.width / this.scaleX / 2 + x;
-                this.y = -this.height / this.scaleY / 2 + y;
-            }
-        };
-        this.camera.x = this.camera.y = 16;
-        this.camera.zoom = 1;
-        this.viewport = {l: 0, t: 0, r: 0, b: 0};
+        this.camera = new Camera();
+        this.viewport = { l: 0, t: 0, r: 0, b: 0 };
 
         if (global.debug > 1 && this.constructor === Canvas2dWorldView) {
             Object.seal(this);

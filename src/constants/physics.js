@@ -1,3 +1,5 @@
+export const TIME_STEP = 1000 / 60;
+
 //shape layers
 export const GRABABLE_MASK_BIT = 1 << 31;
 export const NOT_GRABABLE_MASK = ~GRABABLE_MASK_BIT;

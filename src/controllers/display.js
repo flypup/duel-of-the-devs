@@ -32,8 +32,8 @@ export function resizeDisplay() {
 
     } else {
         // fit to browser window
-        const x = 16;
-        const y = 9;
+        const x =  16; // window.innerWidth;
+        const y =  9; // Math.min(window.innerHeight, window.innerWidth * 4 / 3);
         const maxWidth = window.innerWidth;
         const maxHeight = window.innerHeight;
 

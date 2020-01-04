@@ -1,4 +1,5 @@
-import global, { TIME_STEP } from '../global';
+import global from '../global';
+import { TIME_STEP } from '../constants/physics';
 
 const Stats = window.Stats;
 
@@ -84,12 +85,12 @@ export default class DebugView {
                 remember: true,
                 target: world.space,
                 props: [
-                    {name: 'iterations', params: {min: 1, max: 40}},
-                    {name: 'sleepTimeThreshold', params: {step: TIME_STEP, min: TIME_STEP, max: 1}},
-                    {name: 'collisionSlop', params: {step: 0.1, min: 0.1, max: 1}},
+                    { name: 'iterations', params: { min: 1, max: 40 }},
+                    { name: 'sleepTimeThreshold', params: { step: TIME_STEP, min: TIME_STEP, max: 1 }},
+                    { name: 'collisionSlop', params: { step: 0.1, min: 0.1, max: 1 }},
                     'damping',
-                    {name: 'idleSpeedThreshold', listen: true, params: {min: 0, max: 50}},
-                    {name: 'collisionBias'},
+                    { name: 'idleSpeedThreshold', listen: true, params: { min: 0, max: 50 }},
+                    { name: 'collisionBias' },
                     'enableContactGraph'
                 ]
             }
@@ -99,8 +100,8 @@ export default class DebugView {
                 name: 'gravity',
                 target: world.space.gravity,
                 props: [
-                    {name: 'x', params: {step: 10, min: -1000, max: 1000}},
-                    {name: 'y', params: {step: 10, min: -1000, max: 1000}}
+                    { name: 'x', params: { step: 10, min: -1000, max: 1000 }},
+                    { name: 'y', params: { step: 10, min: -1000, max: 1000 }}
                 ]
             }
         ]);
